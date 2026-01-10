@@ -17,25 +17,46 @@
 
 ---
 
-## 🚀 How to Use
+## 🔄 Two Workflows
 
-### Starting a New Project
+### Workflow A: Project Setup (Starting New)
 
-1. **Read** the relevant standards docs here (don't copy them)
-2. **Reference** them in your project's `Docs/1-AGENT_BRIEFING.md`:
-   ```markdown
-   > **Standards Reference**: See `_RPI_STANDARDS/` for universal frameworks
-   ```
-3. **Create project-specific** scope docs in your project's `Docs/` folder
+```
+READ standards → CREATE project → CREATE project-specific docs → REFERENCE standards
+```
 
-### Why This Structure?
+1. **Read** the standards in this folder
+2. AI creates project folder, GAS project, GitHub repo
+3. AI creates project-specific `Docs/` that **reference** (not copy) standards
+4. **JDM does first-time GAS auth** via Editor UI (one-time manual step)
+5. AI deploys and continues
+
+### Workflow B: Development (Learning Something New)
+
+```
+Working on project → Hit a gotcha → UPDATE standards → PUSH → Continue project
+```
+
+**"Shit, we forgot that. Document. Keep moving."**
+
+```bash
+# During any project, when you learn something universal:
+cd /Users/joshd.millang/Projects/_RPI_STANDARDS
+git add -A && git commit -m "docs: [what you learned]" && git push
+cd /Users/joshd.millang/Projects/[PROJECT_NAME]  # Continue working
+```
+
+---
+
+## 🚀 Why This Structure?
 
 | Problem | Solution |
 |---------|----------|
-| Standards scattered across projects | **One folder**, one source of truth |
-| Old versions copied to new projects | **Reference, don't copy** |
-| Updates don't propagate | **Update here**, all projects benefit |
-| Git conflicts with standards | **Separate repo**, independent versioning |
+| Standards scattered | **One folder**: `_RPI_STANDARDS/` |
+| Old versions in new projects | **Reference, don't copy** |
+| Updates don't propagate | **Update once**, all projects benefit |
+| Git conflicts | **Separate repo**, independent versioning |
+| "Forgot to document that" | **Living Documentation Protocol** |
 
 ---
 
