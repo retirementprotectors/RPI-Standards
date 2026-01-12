@@ -2,18 +2,45 @@
 
 > **Single Source of Truth** for all RPI project standards, templates, and frameworks.
 > 
-> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/`
+> **Location**: `/Users/joshd.millang/Projects/RPI-Standards/`  
 > **GitHub**: https://github.com/retirementprotectors/RPI-Standards
 
 ---
 
 ## 📁 Contents
 
+### `+0-` Core Standards (Always Read)
+
 | File | Purpose |
 |------|---------|
 | `+0- MASTER_AGENT_FRAMEWORK.md` | Universal agent team patterns, parallelization rules, handoff protocols |
-| `+0- PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting any new project |
+| `+0- PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting **NEW** projects |
 | `+0- UI_DESIGN_GUIDELINES.md` | RPI Design System - colors, typography, components, forbidden patterns |
+
+### `+1-` Task Templates (Use as Needed)
+
+| File | Purpose |
+|------|---------|
+| `+1- EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify/fix **EXISTING** projects against all standards |
+
+### Naming Convention
+
+| Prefix | Meaning |
+|--------|---------|
+| `+0-` | Core standards — the rules |
+| `+1-` | Task templates — how to apply the rules |
+
+---
+
+## 🔀 Kickoff vs Audit
+
+```
++0- PROJECT_KICKOFF_TEMPLATE    →    For NEW projects (do it right from the start)
+           ↕ mirrors ↕
++1- EXISTING_PROJECT_AUDIT      →    For EXISTING projects (verify/fix retroactively)
+```
+
+**Both check the same things** — one guides you through setup, the other audits what already exists.
 
 ---
 
