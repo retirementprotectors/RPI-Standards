@@ -325,6 +325,7 @@ Begin by checking git status and listing the Docs/ folder.
 | PRODASH | `/Projects/PRODASH` | ✅ Compliant |
 | SENTINEL | `/Projects/sentinel` | ✅ Compliant |
 | RPI Content Manager | `/Projects/RPI Content Manager` | ✅ Compliant |
+| RAPID_CORE | `/Projects/RAPID_CORE` | ✅ Compliant |
 | [Add more] | | |
 
 ---
