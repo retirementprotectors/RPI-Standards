@@ -1,13 +1,15 @@
-# Agent Task: Align Project Docs with RPI-Standards v1.2
+# Existing Project Standards Audit
 
-> **Task Type**: Documentation Alignment  
+> **When to Use**: Bringing an EXISTING project up to date with RPI-Standards  
+> **How to Use**: Copy the DEPLOYMENT PROMPT into a new Cursor chat for each project  
 > **Created**: January 11, 2026  
-> **Source**: DAVID-HUB alignment session  
-> **Usage**: Copy the DEPLOYMENT PROMPT below into a new Cursor chat for each project
+> **Version**: v1.2 alignment
 
 ---
 
-## 🎯 What This Task Does
+## 🎯 Purpose
+
+Use this when you have an **existing project** that was created before the latest RPI-Standards updates, or that drifted out of compliance. This agent task:
 
 Updates a project's `Docs/` folder to align with RPI-Standards v1.2, specifically:
 
