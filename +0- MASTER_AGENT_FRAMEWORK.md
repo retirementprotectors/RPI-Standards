@@ -621,10 +621,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-## Appendix B: Version History
+## Appendix B: Incident Log
+
+> "Document failures so we never repeat them."
+
+### INC-001: DAVID-Hub Missing Git (Jan 11, 2026)
+
+**What Happened:**
+- DAVID-Hub project was created and developed over multiple sessions
+- Agents deployed code via `clasp push` successfully
+- OPS documentation included `git commit && git push` commands
+- **Git was never initialized** - `git init` was skipped during project setup
+- Result: Months of development with zero version control history
+
+**Root Cause:**
+- Project kickoff template had git init buried in a single bash block
+- No verification checkpoint to confirm git was working
+- Agents assumed git existed because deploy docs referenced it
+- `clasp push` succeeded, so no one noticed git commands were failing
+
+**Impact:**
+- All version history lost (only final v6.1 state preserved)
+- No ability to rollback or review changes
+- 12,515 lines of code with no commit history
+
+**Fix Applied:**
+1. Updated `+0- PROJECT_KICKOFF_TEMPLATE.md`:
+   - Git init is now Step 1 (before GAS setup)
+   - Added mandatory `🛑 CHECKPOINT 2A` verification
+   - Split setup into Phase 2A (Git) and Phase 2B (GAS)
+   - Added explicit "DO NOT PROCEED" gate
+2. DAVID-Hub retroactively initialized with git + GitHub repo
+
+**Prevention:**
+- Agents MUST run `git remote -v` and report output before proceeding
+- If output doesn't show `origin` URL, STOP and fix
+
+---
+
+## Appendix C: Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.2 | Jan 12, 2026 | Added Appendix B (Incident Log) - INC-001 DAVID-Hub git failure |
 | v1.1 | Jan 11, 2026 | Added Part 11 (Cursor Agent Deployment) and Part 12 (GAS Gotchas) from DAVID-Hub learnings |
 | v1.0 | Jan 10, 2026 | Initial framework with Domain/Module/Hybrid models |
 

@@ -44,7 +44,15 @@ Working on project → Hit a gotcha → UPDATE _RPI_STANDARDS → PUSH standards
 
 ## Phase 2: Technical Setup
 
-### AI Executes These Commands (JDM Does Not)
+### ⚠️ CRITICAL: Git MUST Be Initialized FIRST
+
+**DAVID-Hub Incident (Jan 2026):** Git was never initialized. Agents ran deploy commands for months without version control. All history lost.
+
+**Prevention:** Git init is now Step 1, with mandatory verification.
+
+---
+
+### Step 2A: Create Project + Git (AI Executes)
 
 ```bash
 # 1. Create project folder
@@ -52,22 +60,64 @@ mkdir -p /Users/joshd.millang/Projects/PROJECT_NAME
 mkdir -p /Users/joshd.millang/Projects/PROJECT_NAME/Docs
 cd /Users/joshd.millang/Projects/PROJECT_NAME
 
-# 2. Create GAS project
+# 2. Initialize git FIRST (before anything else)
+git init
+git config user.email "josh@retireprotected.com"
+git config user.name "Josh Millang"
+
+# 3. Create .gitignore
+cat > .gitignore << 'EOF'
+.DS_Store
+.cursor/
+.clasprc.json
+node_modules/
+.env
+.env.local
+*.log
+EOF
+
+# 4. Create GitHub repo
+gh repo create retirementprotectors/PROJECT_NAME --private --source=. --push --description "PROJECT_NAME - [description]"
+```
+
+### 🛑 CHECKPOINT 2A: Git Verification (MANDATORY)
+
+**Agent MUST run and report these results before proceeding:**
+
+```bash
+cd /Users/joshd.millang/Projects/PROJECT_NAME
+git status
+git remote -v
+```
+
+**Expected output:**
+```
+On branch main
+origin  https://github.com/retirementprotectors/PROJECT_NAME.git (fetch)
+origin  https://github.com/retirementprotectors/PROJECT_NAME.git (push)
+```
+
+**If this fails, DO NOT PROCEED. Fix git setup first.**
+
+---
+
+### Step 2B: Create GAS Project (AI Executes)
+
+```bash
+cd /Users/joshd.millang/Projects/PROJECT_NAME
+
+# 5. Create GAS project
 NODE_TLS_REJECT_UNAUTHORIZED=0 clasp create --type webapp --title "PROJECT_NAME"
 
-# 3. Configure appsscript.json (CRITICAL for web apps)
-# Must include webapp block or deployment URLs won't work
+# 6. Configure appsscript.json (see template below)
 
-# 4. Initialize git
-git init
+# 7. Initial commit with GAS config
+git add -A && git commit -m "Initial setup: GAS project created" && git push
 
-# 5. Create GitHub repo and push
-gh repo create retirementprotectors/PROJECT_NAME --public --source=. --push
-
-# 6. Push to GAS
+# 8. Push to GAS
 NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
 
-# 7. STOP - JDM must do first-time auth (see below)
+# 9. STOP - JDM must do first-time auth (see below)
 ```
 
 ### ⚠️ First-Time GAS Deployment (JDM Manual Step)
@@ -99,18 +149,26 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
 }
 ```
 
-### Setup Checklist
+### Setup Checklist (GATE - All Must Pass)
 
+**Phase 2A - Git Setup (MUST complete before 2B):**
 - [ ] Project folder created in `/Projects/`
 - [ ] `Docs/` subfolder created
+- [ ] **`git init` executed**
+- [ ] **`.gitignore` created**
+- [ ] **GitHub repo created (`gh repo create`)**
+- [ ] **🛑 CHECKPOINT: `git remote -v` shows origin URL**
+
+**Phase 2B - GAS Setup:**
 - [ ] GAS project created (`clasp create`)
 - [ ] `appsscript.json` has `webapp` block
-- [ ] Git repo initialized
-- [ ] GitHub repo created (`gh repo create`)
+- [ ] Initial commit pushed to GitHub
 - [ ] Code pushed to GAS (`clasp push`)
 - [ ] **JDM: First-time auth via GAS Editor UI**
 - [ ] Production URL documented
 - [ ] MATRIX_ID set in Script Properties (if applicable)
+
+**⚠️ If any Phase 2A item is unchecked, STOP. Do not proceed to 2B.**
 
 ---
 
