@@ -447,13 +447,18 @@ HANDOFF TO OPS:
 YOUR JOB: Validate → Deploy → Document
 NOT YOUR JOB: Write features → Make architecture decisions
 
-PRE-FLIGHT:
-cd /path && git pull && git status
+PRE-FLIGHT (MUST PASS BEFORE DEPLOY):
+cd /path
+git status          # Must show "on branch main"
+git remote -v       # Must show origin URL
 
-DEPLOY (3-command):
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push && \
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -d "vX.X" && \
-git add -A && git commit -m "vX.X" && git push
+DEPLOY (ALL 4 MUST SUCCEED):
+1. clasp push --force
+2. clasp version "vX.X - desc"
+3. clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X"
+4. git add -A && git commit -m "vX.X - desc" && git push
+
+⚠️ IF GIT FAILS, REPORT FAILURE - DO NOT REPORT SUCCESS
 
 VALIDATION:
 - Run all DEBUG_* functions
@@ -461,6 +466,31 @@ VALIDATION:
 - Test in browser
 - Verify no console errors
 ```
+
+### OPS Deploy Report Template (MANDATORY)
+
+```markdown
+## OPS Deploy Report: vX.X
+
+### Pre-Flight
+- [ ] `git status`: On branch main, working tree clean
+- [ ] `git remote -v`: origin https://github.com/retirementprotectors/[REPO].git
+
+### Deploy Results
+| Step | Command | Result |
+|------|---------|--------|
+| 1 | `clasp push` | ✅/❌ |
+| 2 | `clasp version` | ✅/❌ Version N created |
+| 3 | `clasp deploy` | ✅/❌ |
+| 4 | `git commit` | ✅/❌ [commit hash] |
+| 5 | `git push` | ✅/❌ |
+
+### Status: ✅ COMPLETE / ❌ BLOCKED
+
+[If blocked, explain what failed]
+```
+
+**⚠️ "clasp push succeeded" is NOT a complete deploy. All 5 steps must pass.**
 
 ### SPC Quick Reference
 
@@ -651,11 +681,17 @@ document.addEventListener('DOMContentLoaded', () => {
    - Added mandatory `🛑 CHECKPOINT 2A` verification
    - Split setup into Phase 2A (Git) and Phase 2B (GAS)
    - Added explicit "DO NOT PROCEED" gate
-2. DAVID-Hub retroactively initialized with git + GitHub repo
+2. Updated OPS Quick Reference:
+   - Pre-flight now requires `git status` and `git remote -v`
+   - Added mandatory **OPS Deploy Report Template**
+   - Explicit warning: "clasp push succeeded" ≠ complete deploy
+3. DAVID-Hub retroactively initialized with git + GitHub repo
 
 **Prevention:**
 - Agents MUST run `git remote -v` and report output before proceeding
 - If output doesn't show `origin` URL, STOP and fix
+- OPS must use Deploy Report Template showing ALL 5 steps passed
+- If git fails, OPS must report BLOCKED, not success
 
 ---
 
