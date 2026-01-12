@@ -481,10 +481,151 @@ REPORT FORMAT:
 
 ---
 
+## Part 11: Cursor Agent Deployment
+
+**How to spin up SPC agents in separate Cursor chats.**
+
+### Deployment Prompt Template
+
+When GA delegates to an SPC, create a **single copy/paste prompt** containing:
+
+```markdown
+You are SPC #[N] [NAME] for the [PROJECT] project.
+
+READ THESE FILES FIRST (in order):
+1. /path/to/project/Docs/1-AGENT_BRIEFING.md
+2. /path/to/project/Docs/3.X-AGENT_SCOPE_SPCX_[NAME].md
+3. /path/to/project/Docs/0-SESSION_HANDOFF.md
+
+TASK: [Clear Title]
+
+Pre-Computed Context:
+- Current version: vX.X
+- Project: /path/to/project
+- Current state: [what exists now]
+- Desired state: [what should exist after]
+- Reference pattern: [file to look at for patterns]
+- Target user: [who this is for]
+
+Files to Create/Modify:
+- [filename] - [what to do]
+
+Acceptance Criteria:
+- [Specific, testable outcome]
+- [Another outcome]
+- No alert/confirm/prompt
+- Follows existing patterns
+
+When complete, report what you built and that it's ready for [next step].
+
+Begin by reading the docs, then [do the work].
+```
+
+### Deployment Orchestration
+
+GA tells JDM:
+1. **What to deploy now** (which SPCs)
+2. **What can run in parallel** (independent SPCs)
+3. **What waits** (dependent SPCs, OPS)
+
+Example:
+```
+DEPLOY NOW (parallel):
+- #3 MEC ← new chat, paste prompt
+- #4 SPH ← new chat, paste prompt
+
+AFTER both report complete:
+- OPS ← validates and deploys
+```
+
+### Parallelization Rules
+
+| Can Run Simultaneously | Must Wait |
+|------------------------|-----------|
+| Independent module SPCs | UI waits for backend SPCs |
+| Bug fixes in different files | OPS waits for all SPCs |
+| | Dependent modules wait for upstream |
+
+### OPS as Quality Gate
+
+OPS validates BEFORE deployment:
+- Run DEBUG_* functions
+- grep for banned patterns
+- Browser test
+- Check for missing components (UI, API endpoints)
+
+**OPS can BLOCK deployment** if validation fails. This is correct behavior.
+
+---
+
+## Part 12: GAS Deployment Gotchas
+
+### Deployment ID Flag (CRITICAL)
+
+Always specify deployment ID explicitly:
+```bash
+# WRONG - creates new deployment
+clasp deploy -d "v1.0"
+
+# RIGHT - updates existing deployment
+clasp deploy -i AKfycby...DEPLOYMENT_ID... -V [VERSION] -d "v1.0"
+```
+
+### Template Variable Truthiness Bug
+
+GAS HTML templates render booleans as strings:
+```javascript
+// In Code.gs
+template.skipQual = false;
+
+// In Index.html - WRONG (string "false" is truthy!)
+const SKIP = <?= skipQual ?>;
+if (SKIP) { /* THIS RUNS! */ }
+
+// In Index.html - RIGHT
+const SKIP = '<?= skipQual ?>' === 'true';
+if (SKIP) { /* Only runs if actually true */ }
+```
+
+### Google Sheet Tab Names
+
+Tab names must match **exactly**, including:
+- Underscores: `_AGENT_MASTER` ≠ `AGENT MASTER`
+- Case sensitivity
+- Leading/trailing spaces
+
+### GAS Caching
+
+After `clasp push`, changes may take 2-3 minutes to reflect:
+- Use versioned deployments for production
+- Test in incognito to avoid browser cache
+- Clear GAS cache: Deploy → Manage deployments → Archive old ones
+
+### Multiple DOMContentLoaded Handlers
+
+If you have multiple handlers, they ALL run:
+```javascript
+// WRONG - both run, may conflict
+document.addEventListener('DOMContentLoaded', initQualWizard);
+document.addEventListener('DOMContentLoaded', initCalculator);
+
+// RIGHT - single handler with conditional logic
+document.addEventListener('DOMContentLoaded', () => {
+  if (shouldShowWizard) {
+    initQualWizard();
+  } else {
+    initCalculator();
+  }
+});
+```
+
+---
+
 ## Appendix B: Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.1 | Jan 11, 2026 | Added Part 11 (Cursor Agent Deployment) and Part 12 (GAS Gotchas) from DAVID-Hub learnings |
 | v1.0 | Jan 10, 2026 | Initial framework with Domain/Module/Hybrid models |
 
 ---
