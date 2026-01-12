@@ -515,6 +515,38 @@ REPORT FORMAT:
 
 **How to spin up SPC agents in separate Cursor chats.**
 
+### ⚠️ CRITICAL: Single Code Block Format
+
+**ALL delegation prompts MUST be in a single ``` code block.**
+
+Why: JDM copies prompts to paste into new agent chats. Multiple code blocks or mixed markdown makes copy/paste painful - he has to click and drag to select everything.
+
+```
+GOOD: One code block, easy to copy
+┌─────────────────────────────────┐
+│ ```                             │
+│ You are SPC #1...               │
+│ READ THESE FILES...             │
+│ TASK: ...                       │
+│ [entire prompt in one block]    │
+│ ```                             │
+└─────────────────────────────────┘
+
+BAD: Multiple blocks, markdown mixed in
+┌─────────────────────────────────┐
+│ ```                             │
+│ You are SPC #1...               │
+│ ```                             │
+│ Some markdown text here         │
+│ ```bash                         │
+│ cd /path && command             │
+│ ```                             │
+│ More markdown...                │
+└─────────────────────────────────┘
+```
+
+**Rule: If JDM can't copy the prompt with one click on the copy button, you formatted it wrong.**
+
 ### Deployment Prompt Template
 
 When GA delegates to an SPC, create a **single copy/paste prompt** containing:
@@ -699,6 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.3 | Jan 12, 2026 | Added single code block format requirement for delegation prompts (Part 11) |
 | v1.2 | Jan 12, 2026 | Added Appendix B (Incident Log) - INC-001 DAVID-Hub git failure |
 | v1.1 | Jan 11, 2026 | Added Part 11 (Cursor Agent Deployment) and Part 12 (GAS Gotchas) from DAVID-Hub learnings |
 | v1.0 | Jan 10, 2026 | Initial framework with Domain/Module/Hybrid models |
