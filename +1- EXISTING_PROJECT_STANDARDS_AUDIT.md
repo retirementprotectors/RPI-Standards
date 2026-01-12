@@ -322,8 +322,8 @@ Begin by checking git status and listing the Docs/ folder.
 |---------|------|--------------|
 | DAVID-HUB | `/Projects/DAVID-HUB` | ✅ Compliant |
 | CAM | `/Projects/CAM` | ✅ Compliant |
-| PRODASH | `/Projects/PRODASH` | 🔲 Pending |
-| SENTINEL | `/Projects/sentinel` | 🔲 Pending |
+| PRODASH | `/Projects/PRODASH` | ✅ Compliant |
+| SENTINEL | `/Projects/sentinel` | ✅ Compliant |
 | [Add more] | | |
 
 ---
