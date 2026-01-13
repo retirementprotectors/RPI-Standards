@@ -1,10 +1,18 @@
 # RPI AI Platform - Strategic Roadmap & Architecture Guide
 
-> **Version**: v1.1  
+> **Version**: v1.2  
 > **Created**: January 13, 2026  
 > **Author**: Josh D. Millang + Claude  
 > **Scope**: Universal - Defines the AI-powered future of RPI operations  
 > **Status**: Strategic Vision + Active Development
+
+---
+
+## The Mission
+
+> **Tearing the Health + Wealth + Legacy Industries to the ground, and #RunningOurOwnRACE — Rebuilding Around the Client Experience.**
+
+This platform is how we execute that mission at scale.
 
 ---
 
@@ -577,6 +585,7 @@ Not everyone needs everything. Team interfaces scope access appropriately.
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.2 | Jan 13, 2026 | Added The Mission - #RunningOurOwnRACE |
 | v1.1 | Jan 13, 2026 | Added Strategic Context section - platform vs weapon, competitive moat |
 | v1.0 | Jan 13, 2026 | Initial strategic roadmap |
 
