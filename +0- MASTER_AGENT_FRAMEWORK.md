@@ -422,7 +422,27 @@ Report completion → GA reviews → OPS deploys
 
 ---
 
-## Appendix A: Role Quick Reference Cards
+## Appendix A: MCP Tools for Development
+
+Agents have access to healthcare MCP tools during development sessions. These tools allow direct queries to external data sources without leaving the chat.
+
+**Full Documentation:** `RPI-Standards/+0- MCP_TOOLS_SETUP.md`
+
+### MCP Quick Reference
+
+| Tool | Use When... | Example |
+|------|-------------|---------|
+| `lookup_npi` | Verify provider NPI | "Look up NPI 1234567890" |
+| `search_providers` | Find providers by name/location | "Find cardiologists in Phoenix, AZ" |
+| `search_diagnosis_codes` | Need ICD-10 diagnosis code | "ICD-10 code for type 2 diabetes" |
+| `lookup_code` | Have a code, need description | "What is ICD-10 code E11.9?" |
+| `check_dme_coverage` | Medicare DME questions | "Is a wheelchair covered by Medicare?" |
+
+**Setup Required:** Clone `RPI-MCP-Servers`, run `npm install && ./setup.sh`, restart Cursor.
+
+---
+
+## Appendix B: Role Quick Reference Cards
 
 ### GA Quick Reference
 
@@ -651,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-## Appendix B: Incident Log
+## Appendix C: Incident Log
 
 > "Document failures so we never repeat them."
 
@@ -695,11 +715,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ---
 
-## Appendix C: Version History
+## Appendix D: Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v1.2 | Jan 12, 2026 | Added Appendix B (Incident Log) - INC-001 DAVID-Hub git failure |
+| v1.4 | Jan 13, 2026 | Added reference to AI Platform Strategic Roadmap |
+| v1.3 | Jan 13, 2026 | Added Appendix A (MCP Tools) - healthcare data access during development |
+| v1.2 | Jan 12, 2026 | Added Appendix C (Incident Log) - INC-001 DAVID-Hub git failure |
 | v1.1 | Jan 11, 2026 | Added Part 11 (Cursor Agent Deployment) and Part 12 (GAS Gotchas) from DAVID-Hub learnings |
 | v1.0 | Jan 10, 2026 | Initial framework with Domain/Module/Hybrid models |
 
