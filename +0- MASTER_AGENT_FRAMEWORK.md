@@ -719,8 +719,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v1.4 | Jan 13, 2026 | Added reference to AI Platform Strategic Roadmap |
-| v1.3 | Jan 13, 2026 | Added Appendix A (MCP Tools) - healthcare data access during development |
+| v1.5 | Jan 13, 2026 | Added reference to AI Platform Strategic Roadmap |
+| v1.4 | Jan 13, 2026 | Added Appendix A (MCP Tools) - healthcare data access during development |
+| v1.3 | Jan 12, 2026 | Added single code block format requirement for delegation prompts (Part 11) |
 | v1.2 | Jan 12, 2026 | Added Appendix C (Incident Log) - INC-001 DAVID-Hub git failure |
 | v1.1 | Jan 11, 2026 | Added Part 11 (Cursor Agent Deployment) and Part 12 (GAS Gotchas) from DAVID-Hub learnings |
 | v1.0 | Jan 10, 2026 | Initial framework with Domain/Module/Hybrid models |
