@@ -14,7 +14,10 @@
 | File | Purpose |
 |------|---------|
 | `+0- MASTER_AGENT_FRAMEWORK.md` | Universal agent team patterns, parallelization rules, handoff protocols |
-| `+0- CLAUDE_CODE_EXECUTION.md` | **NEW** - Native multi-agent orchestration via Claude Code Task tool |
+| `+0- CLAUDE_CODE_EXECUTION.md` | Native multi-agent orchestration via Claude Code Task tool |
+| `+0- MDJ_STRATEGIC_VISION.md` | **NEW** - MyDigitalJosh AI capability layer for scaling to 500K clients |
+| `+0- AI_PLATFORM_STRATEGIC_ROADMAP.md` | Platform architecture and MCP roadmap |
+| `+0- RPI_PLATFORM_BLUEPRINT.md` | Complete system architecture - data, apps, experiences |
 | `+0- PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting **NEW** projects |
 | `+0- UI_DESIGN_GUIDELINES.md` | RPI Design System - colors, typography, components, forbidden patterns |
 
