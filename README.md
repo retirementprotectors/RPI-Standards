@@ -27,6 +27,14 @@
 |------|---------|
 | `+1- EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify/fix **EXISTING** projects against all standards |
 
+### `Plans/` Project Plans Archive
+
+| File | Purpose |
+|------|---------|
+| `Plans/PLAN_INDEX.md` | **Index of all project plans** - active, completed, and reference |
+
+Contains 15 canonical project plans covering Commission Intelligence, CAM, DAVID-HUB, and RPI infrastructure. See [Plans/PLAN_INDEX.md](Plans/PLAN_INDEX.md) for full inventory.
+
 ### Naming Convention
 
 | Prefix | Meaning |
