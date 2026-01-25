@@ -660,16 +660,16 @@ Each MDJ instance requires:
 | cam-mcp | Application | 🔲 Future | Retirement + BD MDJs |
 | david-mcp | Application | 🔲 Future | MDJ-BD |
 
-### Q Medicare - Database Evolution
+### QUE Medicare - Database Evolution
 
-The Medicare MCPs will evolve into **Q Medicare** - a dedicated database-backed project for production scale:
+The Medicare MCPs will evolve into **QUE Medicare** (Quoting, Underwriting, Enrollment) - a dedicated database-backed project for production scale:
 
 | Phase | Architecture | Capabilities |
 |-------|--------------|--------------|
 | **Now** | Flat files → Memory cache → MCP | Individual lookups, plan comparison |
 | **Q Medicare** | PostgreSQL → Indexed queries → MCP | Batch analysis, cross-dataset joins, client integration |
 
-**Why Q Medicare Matters for MDJ**:
+**Why QUE Medicare Matters for MDJ**:
 - MDJ-Sales-Medicare needs: "Compare Jo Ann's current plan vs all alternatives given her drugs, pharmacy, and doctors"
 - MDJ-Service-Medicare needs: "Which clients are affected by Dr. Smith retiring?"
 - These queries require relational data + client database integration

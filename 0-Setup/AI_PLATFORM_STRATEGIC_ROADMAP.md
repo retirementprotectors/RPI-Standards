@@ -249,9 +249,9 @@ The compound effect of every well-built piece creates a capability gap that comp
 | `prodash-mcp` | Application | 🔲 Future | Client/account logic |
 | `cam-mcp` | Application | 🔲 Future | Commission calculations |
 
-### Q Medicare - Database Evolution (Future)
+### QUE Medicare - Database Evolution (Future)
 
-The Medicare MCPs above currently use flat CMS data files loaded into memory. For scale (500K+ clients), this evolves into **Q Medicare** - a database-backed system:
+The Medicare MCPs above currently use flat CMS data files loaded into memory. For scale (500K+ clients), this evolves into **QUE Medicare** (Quoting, Underwriting, Enrollment) - a database-backed system:
 
 ```
 CURRENT STATE (MCP Hub - Proof of Concept):
@@ -263,7 +263,7 @@ CURRENT STATE (MCP Hub - Proof of Concept):
 │  └─────────────┘ └─────────────┘ └─────────────────────────┘│
 └─────────────────────────────────────────────────────────────┘
 
-FUTURE STATE (Q Medicare - Production Scale):
+FUTURE STATE (QUE Medicare - Production Scale):
 ┌─────────────────────────────────────────────────────────────┐
 │  Q Medicare Platform                                         │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐│
