@@ -3,7 +3,7 @@
 > **When to Use**: Weekly audit of all active projects  
 > **Frequency**: Every Monday or first day of work week  
 > **Time Required**: 15-30 minutes  
-> **Version**: v1.0 (January 25, 2026)
+> **Version**: v1.1 (January 25, 2026)
 
 ---
 
@@ -14,6 +14,7 @@ Quick verification that all projects maintain baseline health:
 - No forbidden code patterns introduced
 - MCP tools functioning
 - Documentation current
+- **Project alignment with vision** (monthly or on-demand)
 
 This is a **quick check**, not a full audit. For comprehensive project audits, use `EXISTING_PROJECT_STANDARDS_AUDIT.md`.
 
@@ -133,6 +134,58 @@ Pick one project each week and verify:
 
 ---
 
+### 6. Project Alignment Audit (Monthly or On-Demand)
+
+Run a deeper check across all projects for vision alignment, drift, redundancies, and blind spots.
+
+**When to run**: Monthly, or when prompted with "run project alignment audit"
+
+#### Vision Alignment Check
+
+For each project's `Docs/1-AGENT_BRIEFING.md`:
+- [ ] Purpose still aligns with overall vision (see `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md`)
+- [ ] No project has drifted into scope of another
+- [ ] Module status reflects actual code state (no stale "Not Started" on completed modules)
+
+#### Stale Reference Scan
+
+```bash
+cd /Users/joshd.millang/Projects
+for dir in CAM DAVID-HUB PRODASH sentinel RAPID_CORE RAPID_IMPORT RAPID_API; do
+  echo "=== $dir ==="
+  grep -rn "_RPI_STANDARDS\|+0-\|+1-\|+2-" "$dir/Docs/" 2>/dev/null | head -5 || echo "  Clean"
+done
+```
+
+**Expected**: No output (all references updated to `0-Setup/`, `1-Manage/`, `2-Production/`).
+
+#### Redundancy Check
+
+- [ ] No two projects duplicating the same functionality
+- [ ] Shared code lives in RAPID_CORE, not copied into individual projects
+- [ ] No duplicate documentation across projects (reference RPI-Standards instead)
+
+#### Blind Spot Scan
+
+- [ ] All projects have session handoffs (`Docs/0-SESSION_HANDOFF.md`)
+- [ ] Security concerns documented (auth gaps, PHI handling)
+- [ ] Dependencies between projects documented in briefings
+- [ ] Compliance considerations noted where applicable (see `0-Setup/COMPLIANCE_STANDARDS.md`)
+
+#### Project Status Summary
+
+| Project | Vision Aligned | Stale Refs | Session Handoff | Notes |
+|---------|---------------|------------|-----------------|-------|
+| CAM | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| DAVID-HUB | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| PRODASH | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| sentinel | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| RAPID_CORE | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| RAPID_IMPORT | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+| RAPID_API | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+
+---
+
 ## Weekly Report Template
 
 ```markdown
@@ -159,6 +212,12 @@ Pick one project each week and verify:
 - **Spot-checked**: [PROJECT_NAME]
 - [ ] Handoff current
 - [ ] No stale temp files
+
+### Project Alignment (if run this week)
+- [ ] All projects aligned with vision
+- [ ] No stale references found
+- [ ] No redundancies identified
+- [ ] Blind spots: [List any found]
 
 ### Issues Found
 [List any issues and remediation taken]
@@ -190,6 +249,8 @@ Pick one project each week and verify:
 
 | Related Standard | When to Use Instead |
 |-----------------|---------------------|
+| `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md` | Vision reference for alignment checks |
+| `0-Setup/COMPLIANCE_STANDARDS.md` | Security/PHI concerns discovered |
 | `EXISTING_PROJECT_STANDARDS_AUDIT.md` | Full compliance audit (monthly or new projects) |
 | `DOCUMENTATION_CLEANUP_GUIDE.md` | Major doc reorganization needed |
 | `ECOSYSTEM_DOCUMENTATION_INVENTORY.md` | Tracking all docs across projects |
@@ -200,6 +261,7 @@ Pick one project each week and verify:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.1 | Jan 25, 2026 | Added Project Alignment Audit (Section 6) |
 | v1.0 | Jan 25, 2026 | Initial weekly health check |
 
 ---
