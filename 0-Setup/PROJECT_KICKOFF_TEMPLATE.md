@@ -375,9 +375,10 @@ cd /Users/joshd.millang/Projects/[PROJECT_NAME]
 │   ├── 2-Production/            ← Production Launch
 │   │   ├── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
 │   │   └── ...
-│   ├── Plans/                   ← Project Plans Archive
-│   ├── Playbooks/               ← Team Operational Guides
-│   └── Strategic/               ← Company Strategy
+│   └── 3-Reference/             ← Supporting Materials
+│       ├── Plans/               ← Project Plans Archive
+│       ├── Playbooks/           ← Team Operational Guides
+│       └── Strategic/           ← Company Strategy
 │
 └── [PROJECT_NAME]/              ← PROJECT-SPECIFIC
     ├── Docs/

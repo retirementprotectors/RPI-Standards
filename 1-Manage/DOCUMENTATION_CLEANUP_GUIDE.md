@@ -33,7 +33,9 @@ Projects accumulate documentation debt:
 | **`RPI-Standards/0-Setup/`** | Setup standards (new agents/projects) | `MASTER_AGENT_FRAMEWORK.md`, `PROJECT_KICKOFF_TEMPLATE.md` |
 | **`RPI-Standards/1-Manage/`** | Management standards (weekly audits) | `WEEKLY_HEALTH_CHECK.md`, `DOCUMENTATION_CLEANUP_GUIDE.md` |
 | **`RPI-Standards/2-Production/`** | Production standards | `PRE_LAUNCH_CHECKLIST.md`, `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` |
-| **`RPI-Standards/Plans/`** | All project plans | `*.plan.md` files |
+| **`RPI-Standards/3-Reference/Plans/`** | All project plans | `*.plan.md` files |
+| **`RPI-Standards/3-Reference/Playbooks/`** | Team operational guides | Sales, Service, Support, Leadership playbooks |
+| **`RPI-Standards/3-Reference/Strategic/`** | Company strategy docs | `rpi-data-division-strategy.md` |
 
 ### Naming Conventions
 
@@ -113,18 +115,18 @@ mv 2.*-AGENT_SCOPE_*.md Docs/ 2>/dev/null
 mv 3.*-AGENT_SCOPE_*.md Docs/ 2>/dev/null
 ```
 
-#### Step 2.2: Move Plan Files to RPI-Standards/Plans/
+#### Step 2.2: Move Plan Files to RPI-Standards/3-Reference/Plans/
 
 ```bash
 # From project roots
-mv *.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/
+mv *.plan.md /Users/joshd.millang/Projects/RPI-Standards/3-Reference/Plans/
 
 # From hidden Cursor location
-mv ~/.cursor/plans/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/
+mv ~/.cursor/plans/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/3-Reference/Plans/
 
 # From Desktop/Trash
-mv ~/Desktop/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/ 2>/dev/null
-mv ~/.Trash/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/ 2>/dev/null
+mv ~/Desktop/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/3-Reference/Plans/ 2>/dev/null
+mv ~/.Trash/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/3-Reference/Plans/ 2>/dev/null
 ```
 
 #### Step 2.3: Organize Docs/ Subfolders (if needed)
@@ -153,7 +155,7 @@ mv Docs/REVENUE_*.md Docs/Revenue/
 #### Step 3.1: Review Relocated Plan Files
 
 ```bash
-ls -la /Users/joshd.millang/Projects/RPI-Standards/Plans/*.plan.md
+ls -la /Users/joshd.millang/Projects/RPI-Standards/3-Reference/Plans/*.plan.md
 ```
 
 **For each plan file, determine:**
@@ -188,10 +190,10 @@ Look for docs that should be centralized:
 
 | Content Type | Move To |
 |--------------|---------|
-| Team playbooks | `RPI-Standards/Playbooks/` |
-| Strategic docs | `RPI-Standards/Strategic/` |
-| Setup guides | `RPI-Standards/Onboarding/` |
-| Project plans | `RPI-Standards/Plans/` |
+| Team playbooks | `RPI-Standards/3-Reference/Playbooks/` |
+| Strategic docs | `RPI-Standards/3-Reference/Strategic/` |
+| Setup guides | `RPI-Standards/0-Setup/` |
+| Project plans | `RPI-Standards/3-Reference/Plans/` |
 
 ---
 
@@ -199,7 +201,7 @@ Look for docs that should be centralized:
 
 #### Step 4.1: Update PLAN_INDEX.md
 
-After adding new plans, update `RPI-Standards/Plans/PLAN_INDEX.md`:
+After adding new plans, update `RPI-Standards/3-Reference/Plans/PLAN_INDEX.md`:
 
 1. Add to **Quick Reference** table
 2. Add to appropriate **Category** section
@@ -270,11 +272,11 @@ git push origin main
 |-----------|-----|
 | Agent docs in root | `mv *AGENT*.md Docs/` |
 | PROJECT_STANDARDS.md in project | Delete (reference central) |
-| Plan files on Desktop | Move to `RPI-Standards/Plans/` |
-| Plans in `~/.cursor/plans/` | Move to `RPI-Standards/Plans/` |
+| Plan files on Desktop | Move to `RPI-Standards/3-Reference/Plans/` |
+| Plans in `~/.cursor/plans/` | Move to `RPI-Standards/3-Reference/Plans/` |
 | `x` prefixed files mixed with code | Move to `Docs/Archive/` |
 | Task docs from old sprints | Delete if completed, archive if historical |
-| Playbooks in project | Move to `RPI-Standards/Playbooks/` |
+| Playbooks in project | Move to `RPI-Standards/3-Reference/Playbooks/` |
 
 ---
 

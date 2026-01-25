@@ -35,18 +35,10 @@ RPI-Standards/
 │   ├── PRE_LAUNCH_CHECKLIST.md
 │   └── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
 │
-├── Plans/                       # Project Plans Archive
-│   └── (12 plan files)
-│
-├── Playbooks/                   # Team Operational Guides
-│   ├── ProDash 101.md
-│   ├── RPI- Leadership Team Playbook.md
-│   ├── RPI Sales Team- Playbook.md
-│   ├── RPI Service Team- Playbook.md
-│   └── RPI Support Team- Playbook.md
-│
-└── Strategic/                   # Company Strategy
-    └── rpi-data-division-strategy.md
+└── 3-Reference/                 # REFERENCE: Supporting Materials
+    ├── Plans/                   # Project Plans Archive (12 files)
+    ├── Playbooks/               # Team Operational Guides (5 files)
+    └── Strategic/               # Company Strategy Docs
 ```
 
 ---
@@ -90,21 +82,15 @@ Documents for taking projects to production.
 | `PRE_LAUNCH_CHECKLIST.md` | **NEW** Technical verification before deployment |
 | `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | User-facing documentation suite for production launches |
 
----
+### `3-Reference/` — REFERENCE: Supporting Materials
 
-## 📁 Supporting Folders
+Context and reference materials that support the standards but aren't direct instructions.
 
-### `Plans/` — Project Plans Archive
-
-Contains project plans covering Commission Intelligence, CAM, DAVID-HUB, and RPI infrastructure. See [Plans/PLAN_INDEX.md](Plans/PLAN_INDEX.md) for full inventory.
-
-### `Playbooks/` — Team Operational Guides
-
-Human-facing operational guides for RPI teams (Sales, Service, Support, Leadership). These are NOT agent standards—they're employee playbooks.
-
-### `Strategic/` — Company Strategy
-
-High-level company strategy documents (e.g., "Weaponizing Operational Excellence" Data Division strategy).
+| Subfolder | Purpose |
+|-----------|---------|
+| `Plans/` | Project plans archive (12 files). See [3-Reference/Plans/PLAN_INDEX.md](3-Reference/Plans/PLAN_INDEX.md) |
+| `Playbooks/` | Human-facing team operational guides (Sales, Service, Support, Leadership) |
+| `Strategic/` | High-level company strategy (e.g., "Weaponizing Operational Excellence") |
 
 ---
 
@@ -215,5 +201,6 @@ Universal standards live in `RPI-Standards/` (not in this project):
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v2.1 | Jan 25, 2026 | Added `3-Reference/` folder for Plans, Playbooks, Strategic |
 | v2.0 | Jan 25, 2026 | Reorganized into `0-Setup/`, `1-Manage/`, `2-Production/` folders. Added WEEKLY_HEALTH_CHECK and PRE_LAUNCH_CHECKLIST. Consolidated Global_Project_Docs. |
 | v1.0 | Jan 2026 | Initial structure with `+0-`, `+1-`, `+2-` prefix naming |
