@@ -30,7 +30,9 @@ Projects accumulate documentation debt:
 | **`Docs/User/`** | Human-facing guides | `Admin_Guide.html`, `Overview.html` |
 | **`Docs/Reference/`** | Strategic/architecture docs | `PROJECT_MASTER.md`, `ARCHITECTURE_VISION.md` |
 | **`Docs/Archive/`** | Backup files, old versions | `xCode_v11_BACKUP.gs` |
-| **`RPI-Standards/`** | Universal standards (reference, don't copy) | `+0-*.md`, `+1-*.md` |
+| **`RPI-Standards/0-Setup/`** | Setup standards (new agents/projects) | `MASTER_AGENT_FRAMEWORK.md`, `PROJECT_KICKOFF_TEMPLATE.md` |
+| **`RPI-Standards/1-Manage/`** | Management standards (weekly audits) | `WEEKLY_HEALTH_CHECK.md`, `DOCUMENTATION_CLEANUP_GUIDE.md` |
+| **`RPI-Standards/2-Production/`** | Production standards | `PRE_LAUNCH_CHECKLIST.md`, `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` |
 | **`RPI-Standards/Plans/`** | All project plans | `*.plan.md` files |
 
 ### Naming Conventions
@@ -280,9 +282,11 @@ git push origin main
 
 | Standard | Purpose | When to Use |
 |----------|---------|-------------|
-| `+0- PROJECT_KICKOFF_TEMPLATE.md` | Prevent mess from day 0 | New projects |
-| `+1- EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify project compliance | Any project |
-| `+1- PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | Add user-facing docs | Before production |
+| `0-Setup/PROJECT_KICKOFF_TEMPLATE.md` | Prevent mess from day 0 | New projects |
+| `1-Manage/EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify project compliance | Any project |
+| `1-Manage/WEEKLY_HEALTH_CHECK.md` | Quick weekly verification | Every Monday |
+| `2-Production/PRE_LAUNCH_CHECKLIST.md` | Technical pre-launch verification | Before production |
+| `2-Production/PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | Add user-facing docs | After production deployment |
 | **This Guide** | Clean up accumulated docs + consolidation review | Monthly/as needed |
 
 ---

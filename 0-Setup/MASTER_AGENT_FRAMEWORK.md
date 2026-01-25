@@ -377,10 +377,17 @@ For any project, create these documents:
 
 ```
 /RPI-Standards/                      ← CENTRAL STANDARDS (read, don't copy)
-├── +0- MASTER_AGENT_FRAMEWORK.md    # THIS FILE - agent team patterns
-├── +0- JDM_WORKING_CONTEXT.md       # ⭐ HOW TO WORK WITH JDM - read this!
-├── +0- PROJECT_KICKOFF_TEMPLATE.md  # How to start projects
-├── +0- UI_DESIGN_GUIDELINES.md      # RPI UI standards
+├── 0-Setup/                         # Every New Agent + Project
+│   ├── MASTER_AGENT_FRAMEWORK.md    # THIS FILE - agent team patterns
+│   ├── JDM_WORKING_CONTEXT.md       # ⭐ HOW TO WORK WITH JDM - read this!
+│   ├── PROJECT_KICKOFF_TEMPLATE.md  # How to start projects
+│   └── UI_DESIGN_GUIDELINES.md      # RPI UI standards
+├── 1-Manage/                        # Weekly Audit/Cleanup
+│   ├── WEEKLY_HEALTH_CHECK.md       # Quick weekly verification
+│   └── EXISTING_PROJECT_STANDARDS_AUDIT.md
+└── 2-Production/                    # Production Launch
+    ├── PRE_LAUNCH_CHECKLIST.md      # Technical verification
+    └── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
 │
 /Project/                            ← PROJECT-SPECIFIC
 └── Docs/
@@ -392,7 +399,7 @@ For any project, create these documents:
 
 ### ⭐ Critical: JDM Working Context
 
-**All agents must read `+0- JDM_WORKING_CONTEXT.md` before starting work.**
+**All agents must read `0-Setup/JDM_WORKING_CONTEXT.md` before starting work.**
 
 This document explains:
 - JDM's role (CEO/Visionary - does NOT code)
@@ -442,7 +449,7 @@ Report completion → GA reviews → OPS deploys
 
 Agents have access to healthcare MCP tools during development sessions. These tools allow direct queries to external data sources without leaving the chat.
 
-**Full Documentation:** `RPI-Standards/+0- MCP_TOOLS_SETUP.md`
+**Full Documentation:** `RPI-Standards/0-Setup/MCP_TOOLS_SETUP.md`
 
 ### MCP Quick Reference
 
