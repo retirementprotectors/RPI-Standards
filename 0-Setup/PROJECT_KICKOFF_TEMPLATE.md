@@ -1,10 +1,41 @@
 # RPI Project Kickoff Template
 ## Starting a New Project with Agent Teams
 
-> **Version**: v1.1  
-> **Updated**: January 10, 2026  
-> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/`  
+> **Version**: v2.0  
+> **Updated**: January 25, 2026  
+> **Location**: `/Users/joshd.millang/Projects/RPI-Standards/0-Setup/`  
 > **Scope**: Universal - Use this to start ANY new project
+
+---
+
+## 🚨 CRITICAL: Directory Location Rule
+
+> **All projects MUST be in `/Users/joshd.millang/Projects/`**
+
+```
+/Users/joshd.millang/
+└── Projects/                    ← ALL PROJECTS GO HERE
+    ├── RPI-Standards/           ← This standards repo
+    ├── RAPID_CORE/              ← Core library
+    ├── RAPID_IMPORT/            ← Import system
+    ├── RAPID_API/               ← REST API
+    ├── PRODASH/                 ← Dashboard
+    ├── CAM/                     ← Commission management
+    ├── DAVID-HUB/               ← BD operations
+    └── sentinel/                ← Monitoring
+```
+
+### ❌ DON'T: Clone to home directory root
+```bash
+cd /Users/joshd.millang
+git clone https://github.com/...  # WRONG!
+```
+
+### ✅ DO: Clone to Projects folder
+```bash
+cd /Users/joshd.millang/Projects
+git clone https://github.com/...  # CORRECT!
+```
 
 ---
 
@@ -16,12 +47,12 @@
 READ standards → CREATE project → CREATE project-specific docs → REFERENCE standards
 ```
 
-**You READ from `_RPI_STANDARDS/`, you DON'T COPY into projects.**
+**You READ from `RPI-Standards/`, you DON'T COPY into projects.**
 
 ### Workflow B: Development (Learning Something New)
 
 ```
-Working on project → Hit a gotcha → UPDATE _RPI_STANDARDS → PUSH standards repo → Continue project
+Working on project → Hit a gotcha → UPDATE RPI-Standards → PUSH standards repo → Continue project
 ```
 
 **"Shit, we forgot that. Document. Keep moving."**
@@ -34,23 +65,11 @@ Working on project → Hit a gotcha → UPDATE _RPI_STANDARDS → PUSH standards
 
 | Document | Location | Purpose |
 |----------|----------|---------|
-| `+0- MASTER_AGENT_FRAMEWORK.md` | `_RPI_STANDARDS/` | Agent team patterns, decision tree |
-| `+0- UI_DESIGN_GUIDELINES.md` | `_RPI_STANDARDS/` | RPI Design System |
-| `+0- JDM_KNOWLEDGE.md` | `_RPI_STANDARDS/` | JDM context, communication style |
-| This template | `_RPI_STANDARDS/` | Step-by-step setup |
+| `MASTER_AGENT_FRAMEWORK.md` | `RPI-Standards/0-Setup/` | Agent team patterns, decision tree |
+| `UI_DESIGN_GUIDELINES.md` | `RPI-Standards/0-Setup/` | RPI Design System |
+| This template | `RPI-Standards/0-Setup/` | Step-by-step setup |
 
 **Do NOT copy these into your project.**
-
-### MCP Tools Available (All Projects)
-
-All projects have access to MCP tools. No per-project setup needed.
-
-| Category | MCPs Available |
-|----------|----------------|
-| Integration | `gdrive`, `gmail`, `google-calendar`, `slack`, `playwright` |
-| Healthcare | `npi-registry`, `icd10-codes`, `cms-coverage` |
-
-**Full MCP Documentation:** `/Users/joshd.millang/Projects/MCP-Hub/`
 
 ---
 
@@ -244,15 +263,16 @@ Heavy integrations ───────────────► DOMAIN-BASED
 
 ## 📚 Standards Reference
 
-Universal standards live in `_RPI_STANDARDS/` (NOT in this project):
+Universal standards live in `RPI-Standards/` (NOT in this project):
 
 | Document | Purpose |
 |----------|---------|
-| `+0- MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization |
-| `+0- PROJECT_KICKOFF_TEMPLATE.md` | New project checklist |
-| `+0- UI_DESIGN_GUIDELINES.md` | RPI Design System |
+| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization |
+| `0-Setup/PROJECT_KICKOFF_TEMPLATE.md` | New project checklist |
+| `0-Setup/UI_DESIGN_GUIDELINES.md` | RPI Design System |
+| `0-Setup/JDM_WORKING_CONTEXT.md` | How to work with JDM |
 
-**Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/`  
+**Location**: `/Users/joshd.millang/Projects/RPI-Standards/`  
 **GitHub**: https://github.com/retirementprotectors/RPI-Standards
 
 ⚠️ **Do NOT copy standards into project repos** - reference them from central location.
@@ -288,14 +308,14 @@ JDM assigns task → AI does work → AI deploys → Repeat
 ### When You Learn Something New (Living Documentation)
 
 ```
-AI hits gotcha → AI updates _RPI_STANDARDS → AI pushes standards repo → AI continues project
+AI hits gotcha → AI updates RPI-Standards → AI pushes standards repo → AI continues project
 ```
 
 **Commands to update standards:**
 
 ```bash
 # 1. Update the relevant file in standards repo
-cd /Users/joshd.millang/Projects/_RPI_STANDARDS
+cd /Users/joshd.millang/Projects/RPI-Standards
 
 # 2. Commit and push
 git add -A
@@ -310,7 +330,9 @@ cd /Users/joshd.millang/Projects/[PROJECT_NAME]
 
 | Content | Location | Example |
 |---------|----------|---------|
-| Universal patterns | `_RPI_STANDARDS/` | "First-time GAS deploy needs Editor UI" |
+| Universal patterns | `RPI-Standards/0-Setup/` | "First-time GAS deploy needs Editor UI" |
+| Weekly management | `RPI-Standards/1-Manage/` | "Project compliance audit checklist" |
+| Production launch | `RPI-Standards/2-Production/` | "User documentation suite" |
 | Project-specific | Project's `Docs/` | "CAM uses MATRIX for comp grids" |
 | Project config | Project root | `CAM_Config.gs` |
 
@@ -321,13 +343,17 @@ cd /Users/joshd.millang/Projects/[PROJECT_NAME]
 | Resource | URL |
 |----------|-----|
 | Standards Repo | https://github.com/retirementprotectors/RPI-Standards |
-| Standards Local | `/Users/joshd.millang/Projects/_RPI_STANDARDS/` |
+| Standards Local | `/Users/joshd.millang/Projects/RPI-Standards/` |
 
 | Project | GitHub | Local |
 |---------|--------|-------|
 | CAM | https://github.com/retirementprotectors/CAM | `/Projects/CAM` |
 | PRODASH | https://github.com/retirementprotectors/PRODASH | `/Projects/PRODASH` |
+| DAVID-HUB | https://github.com/retirementprotectors/DAVID-HUB | `/Projects/DAVID-HUB` |
 | SENTINEL | https://github.com/retirementprotectors/SENTINEL | `/Projects/sentinel` |
+| RAPID_CORE | https://github.com/retirementprotectors/RAPID_CORE | `/Projects/RAPID_CORE` |
+| RAPID_IMPORT | https://github.com/retirementprotectors/RAPID_IMPORT | `/Projects/RAPID_IMPORT` |
+| RAPID_API | https://github.com/retirementprotectors/RAPID_API | `/Projects/RAPID_API` |
 
 ---
 
@@ -336,11 +362,23 @@ cd /Users/joshd.millang/Projects/[PROJECT_NAME]
 ```
 /Users/joshd.millang/Projects/
 │
-├── _RPI_STANDARDS/              ← CENTRAL (read, don't copy)
-│   ├── +0- MASTER_AGENT_FRAMEWORK.md
-│   ├── +0- PROJECT_KICKOFF_TEMPLATE.md
-│   ├── +0- UI_DESIGN_GUIDELINES.md
-│   └── README.md
+├── RPI-Standards/               ← CENTRAL (read, don't copy)
+│   ├── README.md
+│   ├── 0-Setup/                 ← Every New Agent + Project
+│   │   ├── MASTER_AGENT_FRAMEWORK.md
+│   │   ├── PROJECT_KICKOFF_TEMPLATE.md
+│   │   ├── UI_DESIGN_GUIDELINES.md
+│   │   └── ...
+│   ├── 1-Manage/                ← Weekly Audit/Cleanup
+│   │   ├── EXISTING_PROJECT_STANDARDS_AUDIT.md
+│   │   └── ...
+│   ├── 2-Production/            ← Production Launch
+│   │   ├── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
+│   │   └── ...
+│   └── 3-Reference/             ← Supporting Materials
+│       ├── Plans/               ← Project Plans Archive
+│       ├── Playbooks/           ← Team Operational Guides
+│       └── Strategic/           ← Company Strategy
 │
 └── [PROJECT_NAME]/              ← PROJECT-SPECIFIC
     ├── Docs/
@@ -380,6 +418,41 @@ cd /Users/joshd.millang/Projects/[PROJECT_NAME]
 
 - **Execute as**: Me
 - **Who has access**: Anyone within RPI (Domain)
+
+---
+
+## Appendix: GAS Common Issues
+
+### After clasp push
+
+**IMPORTANT**: For GAS web apps, after `clasp push` you must:
+
+1. Open GAS Editor
+2. Deploy → Manage deployments
+3. Edit existing deployment OR create new
+4. Click Deploy
+
+The deployed version doesn't auto-update from `clasp push`!
+
+### RAPID_CORE Library Issue
+
+The RAPID_CORE library tends to "disappear" from GAS projects. If you see errors about the library not being found:
+
+1. GAS Editor → Resources → Libraries
+2. Add: `1-HKxgcOIkx6Ov2uXk6TU-yJM24cvB4ctyCTuqS3NLEBs5XA-FFGWGJSI`
+3. Version: 2
+4. Identifier: `RAPID_CORE`
+5. **Redeploy the web app** (required!)
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v2.0 | Jan 25, 2026 | Merged PROJECT_DIRECTORY_STANDARDS, updated to new folder structure |
+| v1.1 | Jan 10, 2026 | Added INC-001 git verification checkpoints |
+| v1.0 | Jan 5, 2026 | Initial template |
 
 ---
 

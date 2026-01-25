@@ -7,65 +7,129 @@
 
 ---
 
-## 📁 Contents
+## 📁 Structure Overview
 
-### `+0-` Core Standards (Always Read)
-
-| File | Purpose |
-|------|---------|
-| `+0- MASTER_AGENT_FRAMEWORK.md` | Universal agent team patterns, parallelization rules, handoff protocols |
-| `+0- CLAUDE_CODE_EXECUTION.md` | Native multi-agent orchestration via Claude Code Task tool |
-| `+0- MDJ_STRATEGIC_VISION.md` | MyDigitalJosh AI capability layer for scaling to 500K clients |
-| `+0- JDM_KNOWLEDGE.md` | **NEW** - JDM context, communication style, priorities for agents |
-| `+0- AI_PLATFORM_STRATEGIC_ROADMAP.md` | Platform architecture and MCP roadmap |
-| `+0- RPI_PLATFORM_BLUEPRINT.md` | Complete system architecture - data, apps, experiences |
-| `+0- PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting **NEW** projects |
-| `+0- UI_DESIGN_GUIDELINES.md` | RPI Design System - colors, typography, components, forbidden patterns |
-
-### `+1-` Task Templates (Use as Needed)
-
-| File | Purpose |
-|------|---------|
-| `+1- EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify/fix **EXISTING** projects against all standards |
-| `+1- PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | Production launch checklist |
-
-### Other Resources
-
-| File | Purpose |
-|------|---------|
-| `MDJ_Vision_OnePager_TEAM.md` | Plain-English MDJ explanation for team |
-| `GHL_API_Integration_Knowledge_Base.html` | GoHighLevel API reference |
-
-### MCP Documentation → MCP-Hub
-
-> ⚠️ **MCP docs have moved to MCP-Hub**
-> 
-> Location: `/Users/joshd.millang/Projects/MCP-Hub/`
-
-| Old File | New Location |
-|----------|--------------|
-| `MCP_REFERENCE.md` | MCP-Hub/README.md |
-| `+0- MCP_TOOLS_SETUP.md` | MCP-Hub/docs/setup-new-machine.md |
-| `MCP_BACKUP/` | Deprecated - use MCP-Hub |
-
-### Naming Convention
-
-| Prefix | Meaning |
-|--------|---------|
-| `+0-` | Core standards — the rules |
-| `+1-` | Task templates — how to apply the rules |
+```
+RPI-Standards/
+├── README.md                    # This file
+│
+├── 0-Setup/                     # SETUP: Every New Agent + Project
+│   ├── AI_PLATFORM_STRATEGIC_ROADMAP.md
+│   ├── CLAUDE_CODE_EXECUTION.md
+│   ├── COMPLIANCE_STANDARDS.md
+│   ├── JDM_WORKING_CONTEXT.md
+│   ├── MASTER_AGENT_FRAMEWORK.md
+│   ├── MCP_TOOLS_SETUP.md
+│   ├── MDJ_STRATEGIC_VISION.md
+│   ├── NEW_MACHINE_SETUP.md
+│   ├── PROJECT_KICKOFF_TEMPLATE.md
+│   ├── RPI_PLATFORM_BLUEPRINT.md
+│   └── UI_DESIGN_GUIDELINES.md
+│
+├── 1-Manage/                    # MANAGE: Weekly Audit/Cleanup
+│   ├── DOCUMENTATION_CLEANUP_GUIDE.md
+│   ├── ECOSYSTEM_DOCUMENTATION_INVENTORY.md
+│   ├── EXISTING_PROJECT_STANDARDS_AUDIT.md
+│   └── WEEKLY_HEALTH_CHECK.md
+│
+├── 2-Production/                # POLISH: Production Launch
+│   ├── PRE_LAUNCH_CHECKLIST.md
+│   └── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
+│
+└── 3-Reference/                 # REFERENCE: Supporting Materials
+    ├── Plans/                   # Project Plans Archive (12 files)
+    ├── Playbooks/               # Team Operational Guides (5 files)
+    └── Strategic/               # Company Strategy Docs
+```
 
 ---
 
-## 🔀 Kickoff vs Audit
+## 🎯 The Three Categories
 
+### `0-Setup/` — SETUP: Every New Agent + Project
+
+Documents every agent and new project MUST read. Core standards, frameworks, and context.
+
+| File | Purpose |
+|------|---------|
+| `MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization rules, handoff protocols |
+| `CLAUDE_CODE_EXECUTION.md` | Native multi-agent orchestration via Claude Code Task tool |
+| `COMPLIANCE_STANDARDS.md` | Data classification, HIPAA considerations, security standards |
+| `JDM_WORKING_CONTEXT.md` | How to work effectively with Josh D. Millang |
+| `MDJ_STRATEGIC_VISION.md` | MyDigitalJosh AI capability layer for scaling to 500K clients |
+| `AI_PLATFORM_STRATEGIC_ROADMAP.md` | Platform architecture and MCP roadmap |
+| `RPI_PLATFORM_BLUEPRINT.md` | Complete system architecture - data, apps, experiences |
+| `PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting NEW projects |
+| `NEW_MACHINE_SETUP.md` | Complete setup guide for new development machines |
+| `MCP_TOOLS_SETUP.md` | MCP server configuration and tool reference |
+| `UI_DESIGN_GUIDELINES.md` | RPI Design System - colors, typography, components |
+
+### `1-Manage/` — MANAGE: Weekly Audit/Cleanup
+
+Documents for maintaining healthy projects on an ongoing basis.
+
+| File | Purpose |
+|------|---------|
+| `WEEKLY_HEALTH_CHECK.md` | **NEW** Quick weekly verification of all projects |
+| `EXISTING_PROJECT_STANDARDS_AUDIT.md` | Comprehensive project compliance audit |
+| `DOCUMENTATION_CLEANUP_GUIDE.md` | Clean up scattered docs, enforce folder structure |
+| `ECOSYSTEM_DOCUMENTATION_INVENTORY.md` | Inventory of all docs across all projects |
+
+### `2-Production/` — POLISH: Production Launch
+
+Documents for taking projects to production.
+
+| File | Purpose |
+|------|---------|
+| `PRE_LAUNCH_CHECKLIST.md` | **NEW** Technical verification before deployment |
+| `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | User-facing documentation suite for production launches |
+
+### `3-Reference/` — REFERENCE: Supporting Materials
+
+Context and reference materials that support the standards but aren't direct instructions.
+
+| Subfolder | Purpose |
+|-----------|---------|
+| `Plans/` | Project plans archive (12 files). See [3-Reference/Plans/PLAN_INDEX.md](3-Reference/Plans/PLAN_INDEX.md) |
+| `Playbooks/` | Human-facing team operational guides (Sales, Service, Support, Leadership) |
+| `Strategic/` | High-level company strategy (e.g., "Weaponizing Operational Excellence") |
+
+---
+
+## 🔀 When to Use What
+
+### Starting a New Project
 ```
-+0- PROJECT_KICKOFF_TEMPLATE    →    For NEW projects (do it right from the start)
-           ↕ mirrors ↕
-+1- EXISTING_PROJECT_AUDIT      →    For EXISTING projects (verify/fix retroactively)
+0-Setup/PROJECT_KICKOFF_TEMPLATE.md → Follow step by step
 ```
 
-**Both check the same things** — one guides you through setup, the other audits what already exists.
+### New Agent Joining a Project
+```
+0-Setup/JDM_WORKING_CONTEXT.md → Read first
+0-Setup/MASTER_AGENT_FRAMEWORK.md → Understand roles
+Project's Docs/1-AGENT_BRIEFING.md → Project specifics
+```
+
+### Weekly Maintenance
+```
+1-Manage/WEEKLY_HEALTH_CHECK.md → Quick 15-min check
+```
+
+### Fixing a Project's Standards
+```
+1-Manage/EXISTING_PROJECT_STANDARDS_AUDIT.md → Full audit
+```
+
+### Deploying to Production
+```
+2-Production/PRE_LAUNCH_CHECKLIST.md → Technical verification
+2-Production/PRODUCTION_LAUNCH_ROLLOUT_KIT.md → User documentation
+```
+
+### Setting Up a New Machine
+```
+0-Setup/NEW_MACHINE_SETUP.md → Complete environment setup
+```
 
 ---
 
@@ -77,7 +141,7 @@
 READ standards → CREATE project → CREATE project-specific docs → REFERENCE standards
 ```
 
-1. **Read** the standards in this folder
+1. **Read** the standards in `0-Setup/`
 2. AI creates project folder, GAS project, GitHub repo
 3. AI creates project-specific `Docs/` that **reference** (not copy) standards
 4. **JDM does first-time GAS auth** via Editor UI (one-time manual step)
@@ -92,35 +156,10 @@ Working on project → Hit a gotcha → UPDATE standards → PUSH → Continue p
 **"Shit, we forgot that. Document. Keep moving."**
 
 ```bash
-# During any project, when you learn something universal:
-cd /Users/joshd.millang/Projects/_RPI_STANDARDS
+cd /Users/joshd.millang/Projects/RPI-Standards
 git add -A && git commit -m "docs: [what you learned]" && git push
 cd /Users/joshd.millang/Projects/[PROJECT_NAME]  # Continue working
 ```
-
----
-
-## 🚀 Why This Structure?
-
-| Problem | Solution |
-|---------|----------|
-| Standards scattered | **One folder**: `_RPI_STANDARDS/` |
-| Old versions in new projects | **Reference, don't copy** |
-| Updates don't propagate | **Update once**, all projects benefit |
-| Git conflicts | **Separate repo**, independent versioning |
-| "Forgot to document that" | **Living Documentation Protocol** |
-
----
-
-## 📝 Living Documentation Protocol
-
-**"Shit, we forgot that. Document. Keep moving."**
-
-When you learn something that should be universal:
-
-1. Update the relevant file in THIS repo
-2. `git add -A && git commit -m "docs: [what you learned]" && git push`
-3. Continue with your project work
 
 ---
 
@@ -131,13 +170,16 @@ In each project's `Docs/1-AGENT_BRIEFING.md`, add:
 ```markdown
 ## Standards Reference
 
-Universal standards live in `_RPI_STANDARDS/` (not in this project):
-- Agent Framework: `+0- MASTER_AGENT_FRAMEWORK.md`
-- Kickoff Template: `+0- PROJECT_KICKOFF_TEMPLATE.md`  
-- UI Guidelines: `+0- UI_DESIGN_GUIDELINES.md`
-- MCP Tools: See MCP-Hub (`/Users/joshd.millang/Projects/MCP-Hub/`)
+Universal standards live in `RPI-Standards/` (not in this project):
 
-GitHub: https://github.com/retirementprotectors/RPI-Standards
+| Folder | Purpose |
+|--------|---------|
+| `0-Setup/` | Agent frameworks, project kickoff, design system |
+| `1-Manage/` | Weekly audits, documentation cleanup |
+| `2-Production/` | Pre-launch checks, user documentation |
+
+**Location**: `/Users/joshd.millang/Projects/RPI-Standards/`  
+**GitHub**: https://github.com/retirementprotectors/RPI-Standards
 ```
 
 ---
@@ -153,3 +195,15 @@ GitHub: https://github.com/retirementprotectors/RPI-Standards
 - ✅ Reference these docs from project briefings
 - ✅ Update these docs when you learn something universal
 - ✅ Keep project-specific scope docs in project's `Docs/` folder
+- ✅ Run weekly health checks
+
+---
+
+## 📝 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v2.2 | Jan 25, 2026 | Added `COMPLIANCE_STANDARDS.md`, fixed stale path references |
+| v2.1 | Jan 25, 2026 | Added `3-Reference/` folder for Plans, Playbooks, Strategic |
+| v2.0 | Jan 25, 2026 | Reorganized into `0-Setup/`, `1-Manage/`, `2-Production/` folders. Added WEEKLY_HEALTH_CHECK and PRE_LAUNCH_CHECKLIST. Consolidated Global_Project_Docs. |
+| v1.0 | Jan 2026 | Initial structure with `+0-`, `+1-`, `+2-` prefix naming |
