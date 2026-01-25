@@ -414,7 +414,7 @@ This document explains:
 Agent starts session
     │
     ▼
-Read +0- JDM_WORKING_CONTEXT.md (how to work with JDM)
+Read 0-Setup/JDM_WORKING_CONTEXT.md (how to work with JDM)
     │
     ▼
 Read 1-AGENT_BRIEFING.md (project context)
@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - 12,515 lines of code with no commit history
 
 **Fix Applied:**
-1. Updated `+0- PROJECT_KICKOFF_TEMPLATE.md`:
+1. Updated `0-Setup/PROJECT_KICKOFF_TEMPLATE.md`:
    - Git init is now Step 1 (before GAS setup)
    - Added mandatory `🛑 CHECKPOINT 2A` verification
    - Split setup into Phase 2A (Git) and Phase 2B (GAS)

@@ -574,10 +574,10 @@ Not everyone needs everything. Team interfaces scope access appropriately.
 
 | Document | Purpose |
 |----------|---------|
-| `+0- MASTER_AGENT_FRAMEWORK.md` | Agent roles and patterns |
-| `+0- MCP_TOOLS_SETUP.md` | MCP server setup guide |
-| `+0- UI_DESIGN_GUIDELINES.md` | RPI design system |
-| `+0- PROJECT_KICKOFF_TEMPLATE.md` | Starting new projects |
+| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent roles and patterns |
+| `0-Setup/MCP_TOOLS_SETUP.md` | MCP server setup guide |
+| `0-Setup/UI_DESIGN_GUIDELINES.md` | RPI design system |
+| `0-Setup/PROJECT_KICKOFF_TEMPLATE.md` | Starting new projects |
 
 ---
 

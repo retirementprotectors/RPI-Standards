@@ -148,7 +148,7 @@ These tools are available in Cursor via RPI-MCP-Servers. Use them during develop
 | `explain_medicare_parts` | Medicare coverage questions | "What does Medicare Part B cover?" |
 | `check_dme_coverage` | DME coverage questions | "Is a wheelchair covered by Medicare?" |
 
-**Setup:** See `RPI-Standards/+0- MCP_TOOLS_SETUP.md`
+**Setup:** See `RPI-Standards/0-Setup/MCP_TOOLS_SETUP.md`
 
 ---
 ```

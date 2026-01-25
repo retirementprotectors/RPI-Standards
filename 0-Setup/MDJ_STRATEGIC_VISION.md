@@ -803,23 +803,23 @@ Each MDJ instance requires:
 ┌─────────────────────────────────────────────────────────────────┐
 │                    STRATEGIC DOCUMENT MAP                        │
 │                                                                  │
-│   +0- AI_PLATFORM_STRATEGIC_ROADMAP.md                          │
+│   0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md                      │
 │   └── Defines the platform architecture (4 layers)              │
 │       └── MDJ is Layer 5 - the Team AI Interfaces               │
 │                                                                  │
-│   +0- RPI_PLATFORM_BLUEPRINT.md                                 │
+│   0-Setup/RPI_PLATFORM_BLUEPRINT.md                             │
 │   └── Defines data, apps, and use cases                         │
 │       └── MDJ instances map to Experience Layer                 │
 │                                                                  │
-│   +0- MDJ_STRATEGIC_VISION.md (THIS DOCUMENT)                   │
+│   0-Setup/MDJ_STRATEGIC_VISION.md (THIS DOCUMENT)               │
 │   └── Defines MDJ specifically                                   │
 │       └── How expertise scales to 500K clients                  │
 │                                                                  │
-│   +0- MASTER_AGENT_FRAMEWORK.md                                 │
+│   0-Setup/MASTER_AGENT_FRAMEWORK.md                             │
 │   └── Defines how AI agents build software                      │
 │       └── MDJ is built using this framework                     │
 │                                                                  │
-│   +0- CLAUDE_CODE_EXECUTION.md                                  │
+│   0-Setup/CLAUDE_CODE_EXECUTION.md                              │
 │   └── Defines Claude Code native orchestration                  │
 │       └── Used to build MDJ components                          │
 │                                                                  │

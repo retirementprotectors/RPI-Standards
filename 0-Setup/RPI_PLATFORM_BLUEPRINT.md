@@ -562,9 +562,9 @@ When each app becomes an MCP server:
 
 | Document | Purpose |
 |----------|---------|
-| `+0- AI_PLATFORM_STRATEGIC_ROADMAP.md` | Strategic vision and competitive positioning |
-| `+0- MCP_TOOLS_SETUP.md` | MCP server setup and tool reference |
-| `+0- MASTER_AGENT_FRAMEWORK.md` | Agent roles and patterns |
+| `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md` | Strategic vision and competitive positioning |
+| `0-Setup/MCP_TOOLS_SETUP.md` | MCP server setup and tool reference |
+| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent roles and patterns |
 
 ## C. Version History
 

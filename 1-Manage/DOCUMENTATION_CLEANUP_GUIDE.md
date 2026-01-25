@@ -42,7 +42,7 @@ Projects accumulate documentation debt:
 | Type | Convention | Example |
 |------|------------|---------|
 | Agent Docs | Numbered prefix | `0-SESSION_HANDOFF.md`, `1-AGENT_BRIEFING.md` |
-| Universal Standards | `+0-` or `+1-` prefix | `+0- MASTER_AGENT_FRAMEWORK.md` |
+| Universal Standards | `0-Setup/`, `1-Manage/`, `2-Production/` folders | `0-Setup/MASTER_AGENT_FRAMEWORK.md` |
 | Task/Debug Docs | `FIX_`, `CHECK_`, `TEST_` prefix | `FIX_VERSION_UNDEFINED.md` |
 | Plan Files | `.plan.md` extension | `cam_comp_grid_build.plan.md` |
 

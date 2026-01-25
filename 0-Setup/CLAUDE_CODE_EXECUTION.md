@@ -121,7 +121,7 @@ When JDM requests work, GA (Claude Code main session) follows this protocol:
 READ (in order):
 1. Project's Docs/1-AGENT_BRIEFING.md
 2. Relevant AGENT_SCOPE docs
-3. _RPI_STANDARDS/+0- MASTER_AGENT_FRAMEWORK.md (if needed)
+3. RPI-Standards/0-Setup/MASTER_AGENT_FRAMEWORK.md (if needed)
 4. Current state of files being modified
 ```
 
@@ -543,19 +543,19 @@ git push
 ┌─────────────────────────────────────────────────────────────┐
 │                    _RPI_STANDARDS/                          │
 │                                                             │
-│  +0- MASTER_AGENT_FRAMEWORK.md    ← Defines WHAT           │
+│  0-Setup/MASTER_AGENT_FRAMEWORK.md    ← Defines WHAT       │
 │      (roles, rules, ownership)                              │
 │                                                             │
-│  +0- CLAUDE_CODE_EXECUTION.md     ← Defines HOW            │
+│  0-Setup/CLAUDE_CODE_EXECUTION.md     ← Defines HOW        │
 │      (THIS DOCUMENT - automation)    (you are here)        │
 │                                                             │
-│  +0- UI_DESIGN_GUIDELINES.md      ← Defines LOOK           │
+│  0-Setup/UI_DESIGN_GUIDELINES.md      ← Defines LOOK       │
 │      (colors, components, patterns)                         │
 │                                                             │
-│  +0- PROJECT_KICKOFF_TEMPLATE.md  ← Defines START          │
+│  0-Setup/PROJECT_KICKOFF_TEMPLATE.md  ← Defines START      │
 │      (new project setup)                                    │
 │                                                             │
-│  +1- EXISTING_PROJECT_AUDIT.md    ← Defines VERIFY         │
+│  1-Manage/EXISTING_PROJECT_STANDARDS_AUDIT.md ← Defines VERIFY │
 │      (compliance checking)                                  │
 └─────────────────────────────────────────────────────────────┘
 ```

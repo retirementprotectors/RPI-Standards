@@ -16,6 +16,7 @@ RPI-Standards/
 ├── 0-Setup/                     # SETUP: Every New Agent + Project
 │   ├── AI_PLATFORM_STRATEGIC_ROADMAP.md
 │   ├── CLAUDE_CODE_EXECUTION.md
+│   ├── COMPLIANCE_STANDARDS.md
 │   ├── JDM_WORKING_CONTEXT.md
 │   ├── MASTER_AGENT_FRAMEWORK.md
 │   ├── MCP_TOOLS_SETUP.md
@@ -53,6 +54,7 @@ Documents every agent and new project MUST read. Core standards, frameworks, and
 |------|---------|
 | `MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization rules, handoff protocols |
 | `CLAUDE_CODE_EXECUTION.md` | Native multi-agent orchestration via Claude Code Task tool |
+| `COMPLIANCE_STANDARDS.md` | Data classification, HIPAA considerations, security standards |
 | `JDM_WORKING_CONTEXT.md` | How to work effectively with Josh D. Millang |
 | `MDJ_STRATEGIC_VISION.md` | MyDigitalJosh AI capability layer for scaling to 500K clients |
 | `AI_PLATFORM_STRATEGIC_ROADMAP.md` | Platform architecture and MCP roadmap |
@@ -201,6 +203,7 @@ Universal standards live in `RPI-Standards/` (not in this project):
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v2.2 | Jan 25, 2026 | Added `COMPLIANCE_STANDARDS.md`, fixed stale path references |
 | v2.1 | Jan 25, 2026 | Added `3-Reference/` folder for Plans, Playbooks, Strategic |
 | v2.0 | Jan 25, 2026 | Reorganized into `0-Setup/`, `1-Manage/`, `2-Production/` folders. Added WEEKLY_HEALTH_CHECK and PRE_LAUNCH_CHECKLIST. Consolidated Global_Project_Docs. |
 | v1.0 | Jan 2026 | Initial structure with `+0-`, `+1-`, `+2-` prefix naming |
