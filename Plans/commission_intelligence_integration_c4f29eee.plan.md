@@ -621,3 +621,55 @@ For now: Commission Intelligence MCP exposes the data, we query via Cursor/Claud
 3. Can detect Aetna level from single transaction
 4. DAVID-HUB MEC shows carrier-specific commission comparison
 5. MDJ-BD can answer "What's their commission level?" queries
+
+---
+
+## Appendix A: App Integration Reference
+
+### MATRIX Commission Tabs
+
+| Tab | Purpose |
+|-----|---------|
+| `_COMP_GRID_MAPD` | Medicare Advantage rates |
+| `_COMP_GRID_MEDSUPP` | Medicare Supplement rates |
+| `_COMP_GRID_PDP` | Prescription Drug Plan rates |
+| `_COMP_GRID_LIFE` | Life insurance rates |
+| `_COMP_GRID_ANNUITY` | Annuity rates |
+| `_CARRIERS` | Carrier master list |
+
+### CAM Functions (Existing)
+
+- `getCompGridByProduct(productType)` - Get all entries for a product
+- `getCarrierCompRate(carrierId, productType)` - Carrier-specific rate lookup
+- `calculateTransactionCommission(transaction)` - Uses carrier rates
+
+**Default Rates (fallback):** MAPD $600/enrollment, MEDSUPP 20%, PDP $100/enrollment
+
+### SENTINEL MAPD Logic
+
+**Commission Model:**
+```
+TOTAL = Base (CMS FMV) + Override (from Grid) + Co-Op
+Initial: $694 (2026) + $0-175 override + $0-50 co-op
+Renewal: $347 (2026) + $0-65 override
+```
+
+**Contract Levels:** STREET, LOA, GA, MGA, GMO, MMO, SGA, SMO, RMO, FMO
+
+**Spark Sheet:** `https://docs.google.com/spreadsheets/d/1aOCiuuRLuDwAP6gPwO08gDkR9sOGHKqBzGKpn_dbvak`
+
+### Integration Points
+
+| App | Current State | CI-MCP Integration |
+|-----|---------------|-------------------|
+| **CAM** | Has structure, simplified defaults | Call `get_agent_rates` for lookups |
+| **SENTINEL** | Has MAPD logic | Delegate MedSupp to CI-MCP |
+| **DAVID-HUB** | `getCompGrid()` empty | CI-MCP fills the gap |
+| **RAPID_CORE** | Planned but not implemented | Call CI-MCP for `getCommissionRate()` |
+
+### MCP vs MATRIX Relationship
+
+**MATRIX** = Database (source of truth, human-editable)  
+**CI-MCP** = Calculation service (stateless, AI-callable)  
+
+MCP reads from MATRIX grids but doesn't replace them. Apps call CI-MCP for calculations, MATRIX for CRUD.
