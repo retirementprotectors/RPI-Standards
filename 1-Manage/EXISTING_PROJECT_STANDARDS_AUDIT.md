@@ -49,9 +49,15 @@ You are a Standards Audit Agent. Your task is to verify this project complies wi
 - **GitHub Repo**: https://github.com/retirementprotectors/[PROJECT_NAME].git
 
 ## STANDARDS REFERENCE (Read First)
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/MASTER_AGENT_FRAMEWORK.md
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/PROJECT_KICKOFF_TEMPLATE.md
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/UI_DESIGN_GUIDELINES.md
+- /Users/joshd.millang/Projects/_RPI_STANDARDS/+0- MASTER_AGENT_FRAMEWORK.md
+- /Users/joshd.millang/Projects/_RPI_STANDARDS/+0- PROJECT_KICKOFF_TEMPLATE.md
+- /Users/joshd.millang/Projects/_RPI_STANDARDS/+0- UI_DESIGN_GUIDELINES.md
+- /Users/joshd.millang/Projects/_RPI_STANDARDS/+0- JDM_KNOWLEDGE.md
+
+## MCP TOOLS AVAILABLE
+- Full documentation: /Users/joshd.millang/Projects/MCP-Hub/
+- Integration MCPs: gdrive, gmail, google-calendar, slack, playwright
+- Healthcare MCPs: npi-registry, icd10-codes, cms-coverage
 
 ---
 
@@ -101,14 +107,13 @@ Check `Docs/` folder contains:
 ```markdown
 ## 📚 Standards Reference
 
-Universal standards live in `RPI-Standards/` (NOT in this project):
+Universal standards live in `_RPI_STANDARDS/` (NOT in this project):
 
 | Document | Purpose |
 |----------|---------|
-| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization |
-| `0-Setup/PROJECT_KICKOFF_TEMPLATE.md` | New project checklist |
-| `0-Setup/UI_DESIGN_GUIDELINES.md` | RPI Design System |
-| `0-Setup/JDM_WORKING_CONTEXT.md` | How to work with JDM |
+| `+0- MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization |
+| `+0- PROJECT_KICKOFF_TEMPLATE.md` | New project checklist |
+| `+0- UI_DESIGN_GUIDELINES.md` | RPI Design System |
 
 **Location**: `/Users/joshd.millang/Projects/RPI-Standards/`
 **GitHub**: https://github.com/retirementprotectors/RPI-Standards

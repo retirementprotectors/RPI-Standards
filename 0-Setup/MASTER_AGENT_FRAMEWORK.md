@@ -1,8 +1,9 @@
 # RPI Master Agent Framework
 ## Building AI Agent Teams for Cursor Projects
 
-> **Version**: v1.6  
-> **Created**: January 10, 2026  
+> **Version**: v1.6
+> **Created**: January 10, 2026
+> **Updated**: January 18, 2026  
 > **Scope**: Universal - Applies to ALL RPI Projects  
 > **Author**: Josh D. Millang + Claude
 
@@ -376,20 +377,11 @@ Before reporting complete:
 For any project, create these documents:
 
 ```
-/RPI-Standards/                      ← CENTRAL STANDARDS (read, don't copy)
-├── 0-Setup/                         # Every New Agent + Project
-│   ├── MASTER_AGENT_FRAMEWORK.md    # THIS FILE - agent team patterns
-│   ├── JDM_WORKING_CONTEXT.md       # ⭐ HOW TO WORK WITH JDM - read this!
-│   ├── PROJECT_KICKOFF_TEMPLATE.md  # How to start projects
-│   └── UI_DESIGN_GUIDELINES.md      # RPI UI standards
-├── 1-Manage/                        # Weekly Audit/Cleanup
-│   ├── WEEKLY_HEALTH_CHECK.md       # Quick weekly verification
-│   └── EXISTING_PROJECT_STANDARDS_AUDIT.md
-└── 2-Production/                    # Production Launch
-    ├── PRE_LAUNCH_CHECKLIST.md      # Technical verification
-    └── PRODUCTION_LAUNCH_ROLLOUT_KIT.md
+/Project/
+├── +0-MASTER_AGENT_FRAMEWORK.md    # THIS FILE (copy to new projects)
+├── +0-PROJECT_KICKOFF_TEMPLATE.md  # How to start projects
+├── +UI_DESIGN_GUIDELINES.md        # RPI UI standards
 │
-/Project/                            ← PROJECT-SPECIFIC
 └── Docs/
     ├── 1-AGENT_BRIEFING.md         # Universal context for THIS project
     ├── 2.1-AGENT_SCOPE_GENERAL.md  # GA role
@@ -397,27 +389,13 @@ For any project, create these documents:
     └── 3.X-AGENT_SCOPE_SPC*.md     # One per specialist
 ```
 
-### ⭐ Critical: JDM Working Context
-
-**All agents must read `0-Setup/JDM_WORKING_CONTEXT.md` before starting work.**
-
-This document explains:
-- JDM's role (CEO/Visionary - does NOT code)
-- Communication style and preferences
-- Deliverable standards (complete solutions, not partial fixes)
-- Business context and terminology
-- What to do / what NOT to do
-
 ### Document Flow
 
 ```
 Agent starts session
     │
     ▼
-Read 0-Setup/JDM_WORKING_CONTEXT.md (how to work with JDM)
-    │
-    ▼
-Read 1-AGENT_BRIEFING.md (project context)
+Read 1-AGENT_BRIEFING.md (universal context)
     │
     ▼
 Read own AGENT_SCOPE (role-specific)
@@ -431,7 +409,230 @@ Report completion → GA reviews → OPS deploys
 
 ---
 
-## Part 10: Anti-Patterns to Avoid
+## Part 10: Mandatory Gates & Compliance
+
+> **"The process enforces the standards, not JDM."**
+
+These gates are **non-negotiable**. An agent cannot proceed past a gate without showing compliance in the chat. If a gate cannot be passed, the agent must report BLOCKED.
+
+---
+
+### GATE 1: Session Start (All Agents)
+
+**Before ANY work begins, show this in chat:**
+
+```
+## SESSION START VERIFICATION
+
+Project: [project name]
+Role: [GA / SPC #X / OPS]
+Working Directory: [path]
+
+### Pre-Flight Checks
+- [ ] Read briefing: `Docs/1-AGENT_BRIEFING.md` ✓
+- [ ] Read scope doc: `Docs/[my scope doc]` ✓
+- [ ] Git status: [paste output]
+- [ ] Git remote: [paste output]
+
+### Current State
+- Version: vX.X
+- Branch: [branch name]
+- Uncommitted changes: Yes/No
+
+### Session Goal
+[What this session will accomplish]
+
+**READY TO PROCEED: Yes / No (if No, explain blocker)**
+```
+
+**⛔ CANNOT START WORK until this is shown.**
+
+---
+
+### GATE 2: Before Modifying Files (SPCs)
+
+**Before editing any file, confirm:**
+
+```
+## FILE MODIFICATION CHECK
+
+File: [filename]
+Owned by: [GA / SPC #X / OPS]
+I am: [my role]
+
+✅ I own this file - proceeding
+❌ I do NOT own this file - BLOCKED, need [owner] to modify
+```
+
+**⛔ CANNOT EDIT files you don't own.**
+
+---
+
+### GATE 3: Before Reporting Complete (SPCs)
+
+**Before saying "done", show this:**
+
+```
+## SPC COMPLETION REPORT: #X [Name]
+
+### Changes Made
+| File | Lines | Change |
+|------|-------|--------|
+| [file] | [X-Y] | [what changed] |
+
+### Self-Verification Checklist
+- [ ] No `alert()`, `confirm()`, `prompt()`
+- [ ] All functions return `{ success, data/error }`
+- [ ] No hardcoded colors
+- [ ] Follows existing patterns in file
+- [ ] [Module-specific check if applicable]
+
+### Verification Method
+[How I verified this works - e.g., "Reviewed code logic" or "Tested in browser"]
+
+**STATUS: ✅ COMPLETE / ❌ BLOCKED**
+[If blocked, explain what's stopping completion]
+```
+
+**⛔ CANNOT report "done" without this format.**
+
+---
+
+### GATE 4: Before Deployment (OPS)
+
+**Before running deploy commands, show pre-flight:**
+
+```
+## OPS PRE-FLIGHT CHECK
+
+### Git Verification
+```bash
+$ git status
+[paste actual output]
+
+$ git remote -v
+[paste actual output]
+```
+
+### Pre-Flight Result
+- [ ] On correct branch (main or feature branch)
+- [ ] Working tree clean (or changes are intentional)
+- [ ] Remote points to correct repo
+
+**PRE-FLIGHT: ✅ PASSED / ❌ FAILED**
+[If failed, STOP - do not proceed to deploy]
+```
+
+**⛔ CANNOT run deploy commands until pre-flight passes.**
+
+---
+
+### GATE 5: After Deployment (OPS)
+
+**After deploy, show complete report:**
+
+```
+## OPS DEPLOY REPORT: vX.X
+
+### Deploy Results
+| Step | Command | Result |
+|------|---------|--------|
+| 1 | `clasp push` | ✅/❌ [output summary] |
+| 2 | `clasp version` | ✅/❌ Version N created |
+| 3 | `clasp deploy -i [ID] -V [N]` | ✅/❌ |
+| 4 | `git commit` | ✅/❌ [hash] |
+| 5 | `git push` | ✅/❌ |
+
+### Post-Deploy Verification
+- [ ] Tested in browser
+- [ ] No console errors
+- [ ] Expected behavior confirmed
+
+**DEPLOY STATUS: ✅ COMPLETE / ❌ BLOCKED**
+[If blocked, explain which step failed and why]
+```
+
+**⛔ "clasp push succeeded" is NOT a complete deploy. All 5 steps must pass and be shown.**
+
+---
+
+### GATE 6: Learning Detected
+
+**When you encounter something undocumented:**
+
+```
+## LEARNING DETECTED
+
+### What Was Learned
+[The gotcha, pattern, or insight]
+
+### Where to Document
+- [ ] `_RPI_STANDARDS/+0- MASTER_AGENT_FRAMEWORK.md` (universal)
+- [ ] `_RPI_STANDARDS/+0- [other standard]` (specific)
+- [ ] `Project/Docs/[doc]` (project-specific)
+
+### Documentation Action
+- [ ] Added to [file] at [section]
+- [ ] Committed: `docs: [message]`
+- [ ] Pushed to repo
+
+**LEARNING CAPTURED: ✅ Yes / ⏳ Deferred (explain why)**
+```
+
+**⛔ Learnings must be documented before session ends, or explicitly deferred with reason.**
+
+---
+
+### GATE 7: Session End (All Agents)
+
+**Before ending session, show:**
+
+```
+## SESSION CLOSE
+
+### Work Completed
+- [x] [Task 1]
+- [x] [Task 2]
+- [ ] [Task 3 - not finished, state: X%]
+
+### State Left Behind
+- Uncommitted changes: Yes/No
+- Deployed: Yes (vX.X) / No
+- Handoff doc updated: Yes/No/N/A
+
+### Learnings This Session
+- [Learning 1 → documented in X]
+- [Learning 2 → documented in Y]
+- None
+
+### Next Session Should
+1. [First priority]
+2. [Second priority]
+
+**SESSION STATUS: ✅ Clean close / ⚠️ Handoff required / ❌ Incomplete**
+```
+
+**⛔ Sessions should not end without this summary.**
+
+---
+
+### Gate Enforcement Summary
+
+| Gate | When | Blocker If Missing |
+|------|------|-------------------|
+| Session Start | Beginning of any work | Cannot proceed |
+| File Modification | Before editing | Cannot edit |
+| SPC Complete | Before reporting done | Cannot report complete |
+| Pre-Flight | Before deploy commands | Cannot deploy |
+| Deploy Report | After deploy | Deploy not confirmed |
+| Learning Detected | When discovering something new | Must document or defer |
+| Session End | Before closing | Incomplete handoff |
+
+**JDM's role**: Review BLOCKED reports and exception requests. The gates handle routine compliance.
+
+---
+
+## Part 11: Anti-Patterns to Avoid
 
 | Bad Pattern | Why It's Bad | Correct Approach |
 |-------------|--------------|------------------|
@@ -447,21 +648,29 @@ Report completion → GA reviews → OPS deploys
 
 ## Appendix A: MCP Tools for Development
 
-Agents have access to healthcare MCP tools during development sessions. These tools allow direct queries to external data sources without leaving the chat.
+Agents have access to MCP tools during ALL development sessions. These tools allow direct interaction with external services and data sources.
 
-**Full Documentation:** `RPI-Standards/0-Setup/MCP_TOOLS_SETUP.md`
+**Full Documentation:** `/Users/joshd.millang/Projects/MCP-Hub/`
 
-### MCP Quick Reference
+### Integration MCPs (All Sessions)
 
-| Tool | Use When... | Example |
-|------|-------------|---------|
-| `lookup_npi` | Verify provider NPI | "Look up NPI 1234567890" |
-| `search_providers` | Find providers by name/location | "Find cardiologists in Phoenix, AZ" |
-| `search_diagnosis_codes` | Need ICD-10 diagnosis code | "ICD-10 code for type 2 diabetes" |
-| `lookup_code` | Have a code, need description | "What is ICD-10 code E11.9?" |
-| `check_dme_coverage` | Medicare DME questions | "Is a wheelchair covered by Medicare?" |
+| MCP | What It Does | Example |
+|-----|--------------|---------|
+| `gdrive` | Google Drive access | "Search Drive for MATRIX" |
+| `gmail` | Email read/send | "Check inbox for messages from John" |
+| `google-calendar` | Calendar events | "What's on my calendar tomorrow?" |
+| `slack` | Slack messaging | "Post to #general" |
+| `playwright` | Browser automation | "Screenshot the CAM app" |
 
-**Setup Required:** Clone `RPI-MCP-Servers`, run `npm install && ./setup.sh`, restart Cursor.
+### Healthcare MCPs (All Sessions)
+
+| MCP | What It Does | Example |
+|-----|--------------|---------|
+| `npi-registry` | Provider lookup | "Look up NPI 1234567890" |
+| `icd10-codes` | Diagnosis/procedure codes | "ICD-10 code for type 2 diabetes" |
+| `cms-coverage` | Medicare coverage | "Is a wheelchair covered by Medicare?" |
+
+**No setup required per-project.** MCPs are configured at IDE level (`~/.cursor/mcp.json`).
 
 ---
 
@@ -719,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - 12,515 lines of code with no commit history
 
 **Fix Applied:**
-1. Updated `0-Setup/PROJECT_KICKOFF_TEMPLATE.md`:
+1. Updated `+0- PROJECT_KICKOFF_TEMPLATE.md`:
    - Git init is now Step 1 (before GAS setup)
    - Added mandatory `🛑 CHECKPOINT 2A` verification
    - Split setup into Phase 2A (Git) and Phase 2B (GAS)
@@ -742,7 +951,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v1.6 | Jan 22, 2026 | Added JDM_WORKING_CONTEXT.md reference - how to work with JDM |
+| v1.6 | Jan 18, 2026 | Added Part 10: Mandatory Gates & Compliance - non-negotiable checkpoints |
 | v1.5 | Jan 13, 2026 | Added reference to AI Platform Strategic Roadmap |
 | v1.4 | Jan 13, 2026 | Added Appendix A (MCP Tools) - healthcare data access during development |
 | v1.3 | Jan 12, 2026 | Added single code block format requirement for delegation prompts (Part 11) |
