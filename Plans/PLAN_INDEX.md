@@ -7,7 +7,7 @@ Central reference for all project plans across the RPI ecosystem.
 
 ---
 
-## Quick Reference (13 Plans)
+## Quick Reference (12 Plans)
 
 | Plan | Status | Purpose |
 |------|--------|---------|
@@ -71,7 +71,6 @@ Plans/
 ├── commission_intelligence_status_a793145c.plan.md  # Completed - Status snapshot
 ├── david-hub_build_2346e99e.plan.md                 # Pending
 ├── mcp_setup_+_cam_testing_813d2e93.plan.md         # In Progress
-├── mcp_standards_documentation_5b1c00eb.plan.md     # Early version (pending)
 ├── mcp_standards_documentation_f714bec3.plan.md     # Completed - MCP docs
 ├── meeting_analysis_template_5cb38b0e.plan.md       # Completed
 ├── midwest_medigap_document_inventory_c4276db6.plan.md # Completed - Carrier inventory
@@ -83,10 +82,13 @@ Plans/
 
 ## Consolidation Log
 
+**2026-01-25**: Deleted duplicate plan
+- `mcp_standards_documentation_5b1c00eb` - Early version deleted, keeping completed `f714bec3`
+
 **2026-01-25**: Rescued 3 plans from hidden `~/.cursor/plans/`
 - `midwest_medigap_document_inventory_c4276db6` - Carrier document inventory
 - `mcp_standards_documentation_f714bec3` - MCP setup (completed version)
-- `mcp_standards_documentation_5b1c00eb` - MCP setup (early version)
+- `mcp_standards_documentation_5b1c00eb` - MCP setup (early version) - **DELETED**
 
 **2026-01-25**: Consolidated from 15 → 10 files
 
