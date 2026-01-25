@@ -650,11 +650,31 @@ Each MDJ instance requires:
 | npi-registry | Reference | ✅ Built | - |
 | icd10-codes | Reference | ✅ Built | - |
 | cms-coverage | Reference | ✅ Built | - |
+| blue-button-parser | Application | ✅ Built | - |
+| medicare-plans | Application | ✅ Built | - |
+| formulary-lookup | Application | ✅ Built | - |
+| pharmacy-network | Application | ✅ Built | - |
+| commission-intelligence | Application | ✅ Built | - |
 | matrix-mcp | Raw Data | 🔲 Planned | All MDJs |
 | prodash-mcp | Application | 🔲 Planned | Service + Sales MDJs |
 | cam-mcp | Application | 🔲 Future | Retirement + BD MDJs |
 | david-mcp | Application | 🔲 Future | MDJ-BD |
-| plan-optimizer-mcp | Application | 🔲 Future | MDJ-Sales-Medicare |
+
+### Q Medicare - Database Evolution
+
+The Medicare MCPs will evolve into **Q Medicare** - a dedicated database-backed project for production scale:
+
+| Phase | Architecture | Capabilities |
+|-------|--------------|--------------|
+| **Now** | Flat files → Memory cache → MCP | Individual lookups, plan comparison |
+| **Q Medicare** | PostgreSQL → Indexed queries → MCP | Batch analysis, cross-dataset joins, client integration |
+
+**Why Q Medicare Matters for MDJ**:
+- MDJ-Sales-Medicare needs: "Compare Jo Ann's current plan vs all alternatives given her drugs, pharmacy, and doctors"
+- MDJ-Service-Medicare needs: "Which clients are affected by Dr. Smith retiring?"
+- These queries require relational data + client database integration
+
+**Migration**: Same MCP interface to MDJ - backend changes from file→SQL. No MDJ changes required.
 
 **Critical Path**: `matrix-mcp` → `prodash-mcp` → First MDJ instances
 

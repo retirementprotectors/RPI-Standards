@@ -236,13 +236,50 @@ The compound effect of every well-built piece creates a capability gap that comp
 
 | MCP Server | Type | Status | What It Does |
 |------------|------|--------|--------------|
-| `npi-registry` | Reference | ✅ Built | Healthcare provider lookups |
-| `icd10-codes` | Reference | ✅ Built | Diagnosis/procedure codes |
-| `cms-coverage` | Reference | ✅ Built | Medicare coverage info |
+| `npi-registry` | Reference | ✅ Built | Healthcare provider lookups (live CMS API) |
+| `icd10-codes` | Reference | ✅ Built | Diagnosis/procedure codes (live NIH API) |
+| `cms-coverage` | Reference | ✅ Built | Medicare coverage info (live CMS API) |
+| `blue-button-parser` | Application | ✅ Built | Parse Medicare.gov "Download My Data" PDFs |
+| `medicare-plans` | Application | ✅ Built | Search/compare MA & PDP plans by county |
+| `formulary-lookup` | Application | ✅ Built | Drug coverage by NDC - tier, PA, step therapy |
+| `pharmacy-network` | Application | ✅ Built | Pharmacy in-network status by NPI |
+| `commission-intelligence` | Application | ✅ Built | Med Supp/Ancillary commission rate lookups |
 | `matrix-mcp` | Raw Data | 🔲 Planned | Direct MATRIX queries |
 | `drive-mcp` | Raw Data | 🔲 Planned | Google Drive search/read |
 | `prodash-mcp` | Application | 🔲 Future | Client/account logic |
 | `cam-mcp` | Application | 🔲 Future | Commission calculations |
+
+### Q Medicare - Database Evolution (Future)
+
+The Medicare MCPs above currently use flat CMS data files loaded into memory. For scale (500K+ clients), this evolves into **Q Medicare** - a database-backed system:
+
+```
+CURRENT STATE (MCP Hub - Proof of Concept):
+┌─────────────────────────────────────────────────────────────┐
+│  Medicare MCPs                                               │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐│
+│  │ Flat Files  │→│ Memory Cache│→│ MCP Tools               ││
+│  │ (2.5GB)     │ │ (Node.js)   │ │ (Individual lookups)    ││
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘│
+└─────────────────────────────────────────────────────────────┘
+
+FUTURE STATE (Q Medicare - Production Scale):
+┌─────────────────────────────────────────────────────────────┐
+│  Q Medicare Platform                                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐│
+│  │ PostgreSQL  │→│ Indexed     │→│ Medicare MCP            ││
+│  │ + Client DB │ │ Queries     │ │ (Same interface, SQL)   ││
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘│
+│                                                              │
+│  CAPABILITIES:                                               │
+│  - "Which of my 500 clients have drugs going off-formulary?"│
+│  - "All clients with PCP retiring + alternative plans"      │
+│  - Cross-dataset joins: plan + formulary + pharmacy + client│
+│  - Sub-second queries on billions of rows                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Migration Path**: Same MCP interface - swap file reads for SQL queries. Data already parsed and structured.
 
 ---
 
