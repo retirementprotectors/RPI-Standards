@@ -108,7 +108,7 @@ Universal standards live in `RPI-Standards/` (NOT in this project):
 Plan files (`.plan.md`) belong in `RPI-Standards/Plans/`:
 
 ```bash
-# Find scattered plan files
+# Find scattered plan files in Projects
 find /Users/joshd.millang/Projects -name "*.plan.md" -not -path "*RPI-Standards*"
 
 # Move to central location
@@ -116,6 +116,37 @@ mv *.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/
 
 # Update PLAN_INDEX.md with new entries
 ```
+
+### Step 6: Check Cursor's Hidden Plans Folder (CRITICAL)
+
+**⚠️ Cursor stores plan files in a hidden location that's NOT in any project!**
+
+```bash
+# Check for orphaned plans
+ls ~/.cursor/plans/
+
+# Example output:
+# midwest_medigap_document_inventory_c4276db6.plan.md
+# mcp_standards_documentation_f714bec3.plan.md
+```
+
+**Why this matters:**
+- Plans created during Cursor sessions go to `~/.cursor/plans/`
+- These files are **NOT in any git repo** - they will be lost on machine rebuild
+- They don't sync between machines
+- You've probably been doing valuable work here without realizing it
+
+**Action:**
+```bash
+# Move to RPI-Standards
+mv ~/.cursor/plans/*.plan.md /Users/joshd.millang/Projects/RPI-Standards/Plans/
+
+# Update PLAN_INDEX.md
+# Commit and push
+```
+
+**Prevention:**
+When creating a new plan in Cursor, always specify the target directory as `RPI-Standards/Plans/` or the relevant project's folder - don't let Cursor use its default location.
 
 ### Step 6: Commit Cleanup
 
@@ -140,6 +171,7 @@ Add to your workflow to prevent future accumulation:
 - [ ] Run `ls *.md` in project root - should be only `README.md`
 - [ ] Check `Docs/` for task docs that should be deleted
 - [ ] Check Desktop/Trash for orphaned plan files
+- [ ] **Check `~/.cursor/plans/`** for hidden Cursor plans (often forgotten!)
 
 ### After Major Milestones
 - [ ] Delete completed `FIX_*.md` and `TEST_*.md` files
