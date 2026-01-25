@@ -26,14 +26,38 @@
 | File | Purpose |
 |------|---------|
 | `+1- EXISTING_PROJECT_STANDARDS_AUDIT.md` | Verify/fix **EXISTING** projects against all standards |
+| `+1- PRODUCTION_LAUNCH_ROLLOUT_KIT.md` | User-facing documentation suite for production launches |
+| `+1- DOCUMENTATION_CLEANUP_GUIDE.md` | **NEW** - Clean up scattered docs, enforce folder structure |
 
-### `Plans/` Project Plans Archive
+---
+
+## 📁 Subfolders
+
+### `Plans/` - Project Plans Archive
+
+Contains 10 canonical project plans covering Commission Intelligence, CAM, DAVID-HUB, and RPI infrastructure. See [Plans/PLAN_INDEX.md](Plans/PLAN_INDEX.md) for full inventory.
+
+### `Playbooks/` - Team Playbooks
 
 | File | Purpose |
 |------|---------|
-| `Plans/PLAN_INDEX.md` | **Index of all project plans** - active, completed, and reference |
+| `RPI- Leadership Team Playbook.md` | Leadership team operations and standards |
+| `RPI Sales Team- Playbook.md` | Sales team processes and workflows |
+| `RPI Service Team- Playbook.md` | Service team standards and procedures |
+| `RPI Support Team- Playbook.md` | Support team guidelines |
+| `ProDash 101.md` | ProDash training and reference guide |
 
-Contains 15 canonical project plans covering Commission Intelligence, CAM, DAVID-HUB, and RPI infrastructure. See [Plans/PLAN_INDEX.md](Plans/PLAN_INDEX.md) for full inventory.
+### `Strategic/` - Strategic Documents
+
+| File | Purpose |
+|------|---------|
+| `rpi-data-division-strategy.md` | RPI Data Division strategy and vision |
+
+### `Onboarding/` - New Machine Setup
+
+| File | Purpose |
+|------|---------|
+| `setup-new-machine.md` | Complete setup guide for new development machines |
 
 ### Naming Convention
 
