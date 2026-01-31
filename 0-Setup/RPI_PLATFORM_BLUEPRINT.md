@@ -1,10 +1,31 @@
 # RPI Platform Blueprint
 
-> **Version**: v0.1 (Draft - Awaiting JDM Input)  
+> **Version**: v0.2  
 > **Created**: January 13, 2026  
+> **Updated**: January 26, 2026  
 > **Author**: Josh D. Millang + Claude  
-> **Purpose**: Master architecture for total market capture  
-> **Status**: Structure complete, content pending JDM brain dump
+> **Purpose**: Five-layer system architecture (Datasets → Experiences)  
+> **Status**: Active - References THREE_PLATFORM_ARCHITECTURE.md
+
+---
+
+## ⚠️ Architecture Update Notice
+
+**The platform architecture has evolved to a three-platform model.**
+
+For the current master architecture including:
+- Three platforms: **SENTINEL** (B2B), **RIIMO** (B2E), **PRODASH** (B2C)
+- Three MATRIXes: SENTINEL_MATRIX, RAPID_MATRIX, PRODASH_MATRIX
+- Channel definitions: RPI, DAVID, RAPID
+- SuperProject folder structure
+- Pipeline stages per platform
+
+**See: `THREE_PLATFORM_ARCHITECTURE.md`**
+
+This Blueprint document remains valid for:
+- Five-layer architecture concept (Datasets → Experiences)
+- Use-case definitions and workflows
+- Build sequence concepts
 
 ---
 

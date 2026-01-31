@@ -6,6 +6,16 @@
 
 ---
 
+## Platform Context
+
+MCP-Hub is a **shared service** in RAPID_TOOLS, consumed by both:
+- **SENTINEL** (B2B) - Commission intelligence, rate lookups
+- **PRODASH** (B2C) - Plan intelligence, quoting
+
+See `THREE_PLATFORM_ARCHITECTURE.md` for full platform architecture.
+
+---
+
 ## Single Source of Truth
 
 MCP-Hub is now the canonical source for all MCP documentation:

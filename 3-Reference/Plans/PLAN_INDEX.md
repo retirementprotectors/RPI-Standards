@@ -2,8 +2,26 @@
 
 Central reference for all project plans across the RPI ecosystem.
 
-**Location:** `/Users/joshd.millang/Projects/RPI-Standards/Plans/`  
-**Last Updated:** 2026-01-25
+**Location:** `/Users/joshd.millang/Projects/_RPI_STANDARDS/3-Reference/Plans/`  
+**Last Updated:** 2026-01-26
+
+---
+
+## ⚠️ Master Architecture (Jan 26, 2026)
+
+**The master platform architecture is now defined in:**
+
+`0-Setup/THREE_PLATFORM_ARCHITECTURE.md`
+
+This document defines:
+- Three platforms: **SENTINEL** (B2B), **RIIMO** (B2E), **PRODASH** (B2C)
+- Three MATRIXes: SENTINEL_MATRIX, RAPID_MATRIX, PRODASH_MATRIX
+- Channel definitions: RPI, DAVID, RAPID
+- SuperProject folder structure
+- Pipeline stages per platform
+- Implementation roadmap
+
+Plans in this folder are implementation-specific and reference the master architecture.
 
 ---
 
@@ -11,7 +29,7 @@ Central reference for all project plans across the RPI ecosystem.
 
 | Plan | Status | Purpose |
 |------|--------|---------|
-| [commission_intelligence_integration_c4f29eee](commission_intelligence_integration_c4f29eee.plan.md) | Partial | **Master architecture** - 4-channel empire, all integrations |
+| [commission_intelligence_integration_c4f29eee](commission_intelligence_integration_c4f29eee.plan.md) | Partial | Commission Intelligence MCP + 4-channel context (see THREE_PLATFORM for master arch) |
 | [commission_intelligence_status_a793145c](commission_intelligence_status_a793145c.plan.md) | Completed | Current state snapshot (573 rows, 15 tools) |
 | [cam_platform_build_e9d007ab](cam_platform_build_e9d007ab.plan.md) | Completed | CAM current state |
 | [cam_comp_grid_build_b10bb6d3](cam_comp_grid_build_b10bb6d3.plan.md) | **Pending** | Next CAM phase - Comp Grid engine |
@@ -107,7 +125,9 @@ Plans/
 
 | Resource | Location |
 |----------|----------|
-| RPI-Standards | `/Users/joshd.millang/Projects/RPI-Standards/` |
+| RPI-Standards | `/Users/joshd.millang/Projects/_RPI_STANDARDS/` |
+| Three-Platform Architecture | `0-Setup/THREE_PLATFORM_ARCHITECTURE.md` |
 | MCP-Hub | `/Users/joshd.millang/Projects/MCP-Hub/` |
 | Commission Intelligence MCP | `MCP-Hub/commission-intelligence/` |
 | Healthcare MCPs | `MCP-Hub/healthcare-mcps/` |
+| Implementation Plan | `~/.cursor/plans/three-matrix_database_architecture_6ff65db7.plan.md` |

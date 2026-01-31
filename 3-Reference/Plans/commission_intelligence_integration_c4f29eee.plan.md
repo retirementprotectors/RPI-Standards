@@ -1,6 +1,6 @@
 ---
 name: RPI Empire Platform Architecture
-overview: Complete tech + data platform architecture across all 4 channels (B2C RPI, B2B DAVID, B2E Data Services, B2I Product Ownership) with Commission Intelligence MCP as the immediate build priority.
+overview: Complete tech + data platform architecture across all 4 channels (B2C RPI, B2B DAVID, B2E Data Services, B2I Product Ownership) with Commission Intelligence MCP as the immediate build priority. NOTE - See THREE_PLATFORM_ARCHITECTURE.md for updated platform structure.
 todos:
   - id: document-ecosystem
     content: Finalize the complete ecosystem map with all 4 channels, existing apps, and MCPs
@@ -30,6 +30,25 @@ isProject: false
 ---
 
 # RPI Empire: Complete Tech + Data Platform Architecture
+
+## ⚠️ Architecture Update (Jan 26, 2026)
+
+**This plan has been superseded by the three-platform architecture.**
+
+For the current master architecture, see:
+`0-Setup/THREE_PLATFORM_ARCHITECTURE.md`
+
+Key updates:
+- **RIIMO** (B2E) is now the platform UI for RAPID shared services
+- Three MATRIXes: SENTINEL_MATRIX, RAPID_MATRIX, PRODASH_MATRIX
+- Shared services consumed by both B2B and B2C platforms
+
+This plan remains valid for:
+- Commission Intelligence MCP implementation
+- Four-channel revenue model concept
+- MCP integration patterns
+
+---
 
 ## The Four Channels
 

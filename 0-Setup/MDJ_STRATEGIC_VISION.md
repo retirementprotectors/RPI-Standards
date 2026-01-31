@@ -1,11 +1,31 @@
 # MDJ (MyDigitalJosh) Strategic Vision
 ## AI-Powered Expertise Scaling for RPI Operations
 
-> **Version**: v1.0
+> **Version**: v1.1
 > **Created**: January 18, 2026
+> **Updated**: January 26, 2026
 > **Author**: Josh D. Millang + Claude
 > **Scope**: Strategic - Defines the AI capability layer for operational scale
 > **Status**: Vision Document - Foundational Strategy
+
+---
+
+## ⚠️ Architecture Update Notice
+
+**MDJ instances now operate within a three-platform architecture.**
+
+For platform and MATRIX access patterns:
+- **SENTINEL** (B2B) + SENTINEL_MATRIX → MDJ-BD
+- **PRODASH** (B2C) + PRODASH_MATRIX → MDJ-Service, MDJ-Sales
+- **RIIMO** (B2E) + RAPID_MATRIX → MDJ-Marketing, Operations
+
+**See: `THREE_PLATFORM_ARCHITECTURE.md`**
+
+This MDJ Vision document remains valid for:
+- MDJ concept and force multiplier model
+- Per-unit MDJ instance specifications
+- Scale problem analysis (6K → 500K clients)
+- Success metrics
 
 ---
 

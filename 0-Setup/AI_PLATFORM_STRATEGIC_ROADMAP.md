@@ -1,10 +1,30 @@
 # RPI AI Platform - Strategic Roadmap & Architecture Guide
 
-> **Version**: v1.2  
+> **Version**: v1.3  
 > **Created**: January 13, 2026  
+> **Updated**: January 26, 2026  
 > **Author**: Josh D. Millang + Claude  
-> **Scope**: Universal - Defines the AI-powered future of RPI operations  
+> **Scope**: MCP architecture and AI platform strategy  
 > **Status**: Strategic Vision + Active Development
+
+---
+
+## ⚠️ Architecture Update Notice
+
+**The platform architecture has evolved to a three-platform model.**
+
+For the current master architecture including:
+- Three platforms: **SENTINEL** (B2B), **RIIMO** (B2E), **PRODASH** (B2C)
+- Three MATRIXes: SENTINEL_MATRIX, RAPID_MATRIX, PRODASH_MATRIX
+- Channel definitions: RPI, DAVID, RAPID
+
+**See: `THREE_PLATFORM_ARCHITECTURE.md`**
+
+This Roadmap document remains valid for:
+- MCP server types and architecture
+- AI platform strategic vision
+- "Apps become MCPs" concept
+- Vision query examples
 
 ---
 

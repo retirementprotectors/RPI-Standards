@@ -2,8 +2,24 @@
 
 > **Single Source of Truth** for all RPI project standards, templates, and frameworks.
 > 
-> **Location**: `/Users/joshd.millang/Projects/RPI-Standards/`  
+> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/`  
 > **GitHub**: https://github.com/retirementprotectors/RPI-Standards
+
+---
+
+## 🏗️ Three-Platform Architecture
+
+RPI operates through **three channels**, each with a dedicated **platform** and **database**:
+
+| Channel | Acronym | Full Name | Platform | Focus |
+|---------|---------|-----------|----------|-------|
+| **B2C** | RPI | Retirement Protectors, Inc | **PRODASH** | Direct client sales + service |
+| **B2B** | DAVID | Disruptive and Vertically Integrated Distribution | **SENTINEL** | M&A + Partnerships |
+| **B2E** | RAPID | The [API]s between [R]PI and [D]AVID | **RIIMO** | Shared services operations |
+
+**RIIMO** = Retirement Insurance and Insurance **Management Operations**
+
+**Full architecture details**: See `0-Setup/THREE_PLATFORM_ARCHITECTURE.md`
 
 ---
 
@@ -14,6 +30,7 @@ RPI-Standards/
 ├── README.md                    # This file
 │
 ├── 0-Setup/                     # SETUP: Every New Agent + Project
+│   ├── THREE_PLATFORM_ARCHITECTURE.md  # MASTER ARCHITECTURE
 │   ├── AI_PLATFORM_STRATEGIC_ROADMAP.md
 │   ├── CLAUDE_CODE_EXECUTION.md
 │   ├── COMPLIANCE_STANDARDS.md
@@ -52,13 +69,14 @@ Documents every agent and new project MUST read. Core standards, frameworks, and
 
 | File | Purpose |
 |------|---------|
+| `THREE_PLATFORM_ARCHITECTURE.md` | **MASTER ARCHITECTURE** - Three platforms, MATRIXes, channels |
 | `MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization rules, handoff protocols |
 | `CLAUDE_CODE_EXECUTION.md` | Native multi-agent orchestration via Claude Code Task tool |
 | `COMPLIANCE_STANDARDS.md` | Data classification, HIPAA considerations, security standards |
 | `JDM_WORKING_CONTEXT.md` | How to work effectively with Josh D. Millang |
 | `MDJ_STRATEGIC_VISION.md` | MyDigitalJosh AI capability layer for scaling to 500K clients |
-| `AI_PLATFORM_STRATEGIC_ROADMAP.md` | Platform architecture and MCP roadmap |
-| `RPI_PLATFORM_BLUEPRINT.md` | Complete system architecture - data, apps, experiences |
+| `AI_PLATFORM_STRATEGIC_ROADMAP.md` | MCP architecture and AI platform strategy |
+| `RPI_PLATFORM_BLUEPRINT.md` | Five-layer system architecture (references THREE_PLATFORM) |
 | `PROJECT_KICKOFF_TEMPLATE.md` | Checklist and templates for starting NEW projects |
 | `NEW_MACHINE_SETUP.md` | Complete setup guide for new development machines |
 | `MCP_TOOLS_SETUP.md` | MCP server configuration and tool reference |
@@ -203,6 +221,7 @@ Universal standards live in `RPI-Standards/` (not in this project):
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.0 | Jan 26, 2026 | **MAJOR**: Added `THREE_PLATFORM_ARCHITECTURE.md` - Master architecture for SENTINEL/RIIMO/PRODASH platforms. Updated channel definitions. |
 | v2.2 | Jan 25, 2026 | Added `COMPLIANCE_STANDARDS.md`, fixed stale path references |
 | v2.1 | Jan 25, 2026 | Added `3-Reference/` folder for Plans, Playbooks, Strategic |
 | v2.0 | Jan 25, 2026 | Reorganized into `0-Setup/`, `1-Manage/`, `2-Production/` folders. Added WEEKLY_HEALTH_CHECK and PRE_LAUNCH_CHECKLIST. Consolidated Global_Project_Docs. |

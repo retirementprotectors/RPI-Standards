@@ -1,28 +1,52 @@
 # RPI Project Kickoff Template
 ## Starting a New Project with Agent Teams
 
-> **Version**: v2.0  
-> **Updated**: January 25, 2026  
-> **Location**: `/Users/joshd.millang/Projects/RPI-Standards/0-Setup/`  
+> **Version**: v2.1  
+> **Updated**: January 26, 2026  
+> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/`  
 > **Scope**: Universal - Use this to start ANY new project
+
+---
+
+## 🏗️ Platform Selection (First Decision)
+
+Before creating a new project, determine which **SuperProject** it belongs to:
+
+| Platform | SuperProject | Purpose |
+|----------|--------------|---------|
+| **SENTINEL** | `SENTINEL_TOOLS/` | B2B apps (DAVID channel) |
+| **RIIMO** | `RAPID_TOOLS/` | Shared services (B2E) |
+| **PRODASH** | `PRODASH_TOOLS/` | B2C apps (RPI channel) |
+
+**See `THREE_PLATFORM_ARCHITECTURE.md` for full architecture.**
 
 ---
 
 ## 🚨 CRITICAL: Directory Location Rule
 
-> **All projects MUST be in `/Users/joshd.millang/Projects/`**
+> **All projects MUST be in `/Users/joshd.millang/Projects/` within the appropriate SuperProject folder**
 
 ```
 /Users/joshd.millang/
 └── Projects/                    ← ALL PROJECTS GO HERE
-    ├── RPI-Standards/           ← This standards repo
-    ├── RAPID_CORE/              ← Core library
-    ├── RAPID_IMPORT/            ← Import system
-    ├── RAPID_API/               ← REST API
-    ├── PRODASH/                 ← Dashboard
-    ├── CAM/                     ← Commission management
-    ├── DAVID-HUB/               ← BD operations
-    └── sentinel/                ← Monitoring
+    ├── _RPI_STANDARDS/          ← This standards repo (root level)
+    ├── RAPID_TOOLS/             ← Shared services (B2E)
+    │   ├── C3/                  ← Content/Campaign Manager (was RPI-Content-Manager)
+    │   ├── CAM/                 ← Commission Accounting
+    │   ├── CEO-Dashboard/       ← Executive visibility
+    │   ├── MCP-Hub/             ← Intelligence layer
+    │   ├── RAPID_API/           ← REST API
+    │   ├── RAPID_CORE/          ← Core GAS library
+    │   ├── RAPID_IMPORT/        ← Data ingestion
+    │   ├── RPI-Command-Center/  ← Cross-suite comms
+    │   └── RIIMO/               ← Operations UI (to be built)
+    ├── SENTINEL_TOOLS/          ← B2B apps (DAVID)
+    │   ├── DAVID-HUB/           ← BD qualification + calculators
+    │   └── sentinel/            ← M&A platform
+    └── PRODASH_TOOLS/           ← B2C apps (RPI)
+        ├── PRODASH/             ← Client portal
+        └── QUE/                 ← Quoting suite
+            └── QUE-Medicare/    ← Medicare quoting
 ```
 
 ### ❌ DON'T: Clone to home directory root
