@@ -91,6 +91,38 @@ done
 
 ---
 
+### 2b. GAS DevTools Pattern Check
+
+Verify all GAS projects have centralized DevTools files:
+
+```bash
+cd /Users/joshd.millang/Projects
+
+echo "=== GAS Projects - DevTools Pattern Check ==="
+for dir in DEX RAPID_CORE RAPID_IMPORT RAPID_API CAM sentinel; do
+  if [ -d "$dir" ]; then
+    devtools=$(ls "$dir"/*DevTools.gs 2>/dev/null | head -1)
+    if [ -n "$devtools" ]; then
+      echo "✅ $dir: $(basename $devtools)"
+    else
+      # Check for scattered DEBUG/SETUP/TEST functions
+      scattered=$(grep -l "function.*\(DEBUG_\|SETUP_\|TEST_\|FIX_\)" "$dir"/*.gs 2>/dev/null | wc -l | tr -d ' ')
+      if [ "$scattered" -gt "0" ]; then
+        echo "⚠️ $dir: Missing DevTools.gs ($scattered files have DEBUG/SETUP/TEST/FIX functions)"
+      else
+        echo "✅ $dir: No dev functions (OK)"
+      fi
+    fi
+  fi
+done
+```
+
+**Expected**: Each GAS project shows a `*_DevTools.gs` file.
+
+**If missing**: See `0-Setup/GAS_PROJECT_STANDARDS.md` for consolidation steps.
+
+---
+
 ### 3. MCP Tools Verification
 
 Open Cursor → Settings → Tools & MCP
@@ -251,6 +283,7 @@ done
 |-----------------|---------------------|
 | `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md` | Vision reference for alignment checks |
 | `0-Setup/COMPLIANCE_STANDARDS.md` | Security/PHI concerns discovered |
+| `0-Setup/GAS_PROJECT_STANDARDS.md` | GAS DevTools pattern & structure standards |
 | `EXISTING_PROJECT_STANDARDS_AUDIT.md` | Full compliance audit (monthly or new projects) |
 | `DOCUMENTATION_CLEANUP_GUIDE.md` | Major doc reorganization needed |
 | `ECOSYSTEM_DOCUMENTATION_INVENTORY.md` | Tracking all docs across projects |
@@ -261,6 +294,7 @@ done
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.2 | Feb 1, 2026 | Added GAS DevTools Pattern Check (Section 2b) |
 | v1.1 | Jan 25, 2026 | Added Project Alignment Audit (Section 6) |
 | v1.0 | Jan 25, 2026 | Initial weekly health check |
 
