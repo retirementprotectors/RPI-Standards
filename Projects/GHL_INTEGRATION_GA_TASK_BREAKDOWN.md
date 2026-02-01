@@ -2,8 +2,24 @@
 
 > **Project**: GHL → PRODASH Integration  
 > **Created**: January 31, 2026  
+> **Completed**: February 1, 2026  
 > **GA**: Claude (Tech Lead)  
-> **Status**: ACTIVE
+> **Status**: ✅ COMPLETE
+
+---
+
+## 🚨 CRITICAL LEARNINGS (Added Feb 1, 2026)
+
+**See: `0-Setup/GHL_INTEGRATION_BEST_PRACTICES.md` for full documentation**
+
+Key discoveries from 12+ hours of debugging:
+
+1. **Account-Based Qualification** - Don't filter by "3+ custom fields". A contact with an account IS a client.
+2. **3,552 Real Clients** - Not 80. The filter was throwing away 97% of real clients.
+3. **GHL Custom Objects API** - Use `POST /objects/:schemaKey/records/search`, not GET.
+4. **GAS Library Gotcha** - Use `var` not `let` at module level.
+
+---
 
 ---
 

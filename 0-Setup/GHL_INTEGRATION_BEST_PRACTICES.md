@@ -1,0 +1,195 @@
+# GHL Integration Best Practices
+
+> **Created**: February 1, 2026  
+> **Source**: PRODASH GHL sync debugging session (12+ hours)  
+> **Status**: CRITICAL - Follow these patterns for all GHL integrations
+
+---
+
+## 🎯 Key Principle: Account-Based Client Qualification
+
+**NEVER** filter contacts by arbitrary criteria like "3+ custom fields populated."
+
+**ALWAYS** use account-based qualification:
+- A contact with an account **IS** a client
+- Extract contact IDs from Custom Objects (accounts) first
+- Then fetch and sync those specific contacts
+
+### Why This Matters
+- GHL has 4,637 contacts but only 3,552 are real clients
+- The difference: junk leads, phone-only entries, test data
+- The PROOF of a real client: they have accounts (Annuities, Life, Medicare, BD/RIA)
+
+---
+
+## 📡 GHL Custom Objects API
+
+### CRITICAL: Use POST for Records Search
+
+**WRONG** (returns 0 records):
+```javascript
+// GET endpoint doesn't work for Custom Objects records
+GET /objects/:schemaKey?locationId=xxx
+```
+
+**CORRECT**:
+```javascript
+// POST to records/search endpoint
+POST /objects/:schemaKey/records/search
+{
+  "locationId": "xxx",
+  "page": 1,
+  "pageLimit": 100,
+  "searchAfter": ["lastRecordId"]  // for pagination
+}
+```
+
+### Schema Keys for RPI
+```javascript
+const GHL_OBJECT_TYPES = {
+  annuities: 'custom_objects.annuities',
+  life: 'custom_objects.life',
+  medicare: 'custom_objects.medicare',
+  bd_ria: 'custom_objects.bd_ria'
+};
+```
+
+### Contact ID Extraction
+Custom Object records link to contacts via `relations` array:
+```javascript
+function extractContactId(record) {
+  if (record.relations && record.relations.length > 0) {
+    return record.relations[0].recordId;  // This is the contact ID
+  }
+  return null;
+}
+```
+
+---
+
+## 🔗 Data Flow Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              GHL (GoHighLevel)                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  CONTACTS (~4,600)              CUSTOM OBJECTS (~7,000)                      │
+│  ├── Many are junk leads        ├── ANNUITIES (linked to contacts)          │
+│  ├── Phone-only entries         ├── LIFE (linked to contacts)               │
+│  └── Test data                  ├── MEDICARE (linked to contacts)           │
+│                                 └── BD_RIA (linked to contacts)             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                    STEP 1: Get unique contact IDs from accounts
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        RAPID_IMPORT (IMPORT_GHL.gs)                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  1. fetchGHLCustomObjects() → Get ALL accounts                               │
+│  2. Extract unique contact IDs → ~3,500 real clients                         │
+│  3. fetchGHLContactById() → Get each contact's details                       │
+│  4. mapGHLContactToClient() → Transform to MATRIX format                     │
+│  5. Write to _CLIENT_MASTER                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PRODASH_MATRIX (Google Sheet)                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  _CLIENT_MASTER (102 columns)    _ACCOUNT_ANNUITY (47 columns)              │
+│  _ACCOUNT_LIFE (44 columns)      _ACCOUNT_MEDICARE (32 columns)             │
+│  _ACCOUNT_BDRIA (33 columns)                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ GAS Library Best Practices
+
+### Use `var` Not `let` at Module Level
+```javascript
+// WRONG - can break library loading
+let _cachedData = null;
+
+// CORRECT - GAS library compatible
+var _cachedData = null;
+```
+
+### Always Create Explicit Versions
+```bash
+clasp push --force
+clasp version "v18 - Description of changes"
+```
+
+### Use developmentMode for Rapid Iteration
+```json
+{
+  "userSymbol": "IMPORT_GHL",
+  "libraryId": "xxx",
+  "version": "18",
+  "developmentMode": true
+}
+```
+
+---
+
+## 🐛 Debugging Strategy
+
+### 1. Never Trust Arbitrary Filters
+If sync says "80 contacts imported" but you have 3,500+ clients, **investigate**.
+
+### 2. Count Actual Data
+```javascript
+// Create diagnostic endpoints
+GET /config/ghl/unique-clients → Count contacts with accounts
+GET /config/ghl/debug-sync → Show filter breakdown
+```
+
+### 3. Validate Assumptions
+- "How many contacts?" → Fetch and count
+- "How many have accounts?" → Extract contact IDs from Custom Objects
+- "Why are contacts filtered?" → Log filter reasons
+
+### 4. Don't Guess - Get Evidence
+- Add console.log statements
+- Create diagnostic endpoints
+- Trace data through the entire pipeline
+
+---
+
+## 📋 Sync Endpoints (RAPID_API)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/config/ghl/unique-clients` | GET | Count unique clients from accounts (~60s) |
+| `/config/ghl/sync-by-accounts` | POST | Sync contacts by account-linked IDs |
+| `/config/ghl/debug-sync` | GET | Show filter analysis |
+| `/config/ghl/debug-objects` | GET | Test Custom Objects API |
+| `/sync/ghl/contacts` | POST | Legacy sync (uses filters) |
+| `/sync/ghl/accounts` | POST | Sync account records |
+
+### Recommended Sync Flow
+1. Call `/config/ghl/unique-clients` to get contact IDs (~3,500)
+2. Call `/config/ghl/sync-by-accounts` with batches of 100 IDs
+3. Repeat until all contacts synced
+
+---
+
+## ⚠️ Common Pitfalls
+
+1. **Wrong API endpoint for Custom Objects** - Use POST /records/search
+2. **Arbitrary qualification filters** - Use account-based qualification
+3. **`let` at module level in libraries** - Use `var`
+4. **Not following POST redirects** - GAS web apps return 302
+5. **Trusting "X contacts imported"** - Validate against actual client count
+6. **Caching stale data** - Invalidate cache after writes
+
+---
+
+## 🔗 Related Documents
+
+- `GHL_INTEGRATION_GA_TASK_BREAKDOWN.md` - Original task breakdown
+- `RAPID_IMPORT/IMPORT_GHL.gs` - Implementation
+- `RAPID_API/API_GHL_Sync.gs` - API endpoints
+- `MATRIX_CONFIGURATION_STANDARDS.md` - MATRIX architecture
