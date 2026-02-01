@@ -192,9 +192,55 @@ Copy each function to the appropriate section in DevTools. Add `@source` tag to 
 
 Run each function from DevTools to ensure it still works (dependencies are global in GAS, so this should "just work").
 
-### Step 5: (Optional) Remove Duplicates
+### Step 5: Remove Duplicates (REQUIRED)
 
-Once verified, you can remove the original functions from their source files. This is optional - GAS allows duplicate function names (last one wins), but it's cleaner to remove duplicates.
+**After verification, remove the original functions from their source files.**
+
+This is NOT optional because:
+1. **Avoids confusion** - duplicate functions make it unclear which is "the real one"
+2. **Prevents drift** - if someone edits the wrong copy, changes are lost
+3. **Reduces file size** - cleaner, more maintainable codebase
+
+**Leave a redirect comment** in the original file:
+
+```javascript
+// ============================================================================
+// UI WRAPPER FUNCTIONS
+// ============================================================================
+// NOTE: DEBUG/SETUP/TEST/FIX functions moved to PROJECT_DevTools.gs
+```
+
+**For files that were ONLY setup functions** (like `DEX_Setup.gs`), replace the entire file with a stub:
+
+```javascript
+/**
+ * PROJECT_Setup.gs
+ * 
+ * ============================================================================
+ * ALL SETUP FUNCTIONS HAVE MOVED TO PROJECT_DevTools.gs
+ * ============================================================================
+ * 
+ * To find setup functions:
+ *   1. Open PROJECT_DevTools.gs
+ *   2. Go to Section 3: SETUP FUNCTIONS
+ *   3. Functions are sorted alphabetically
+ */
+
+// This file intentionally left mostly empty.
+// All functionality has been moved to PROJECT_DevTools.gs
+```
+
+### Step 6: Push Changes
+
+```bash
+# Push to GitHub
+git add -A && git commit -m "Consolidate dev functions to DevTools, remove duplicates" && git push
+
+# Push to Google Apps Script
+clasp push
+```
+
+**Remember**: `git push` and `clasp push` are separate - you need both!
 
 ---
 
@@ -243,4 +289,5 @@ See **DEX** project for a complete example:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v1.1 | 2026-02-01 | Made duplicate removal REQUIRED (Step 5), added Step 6 push guidance |
 | v1.0 | 2026-02-01 | Initial release - DevTools pattern documented |
