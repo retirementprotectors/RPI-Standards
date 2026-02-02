@@ -161,15 +161,15 @@ RPI operates through **three channels**, each with a dedicated **platform UI** a
 
 | Tab | Purpose |
 |-----|---------|
-| `_CLIENT_MASTER` | B2C clients |
-| `_ACCOUNT_MASTER` | Client accounts/policies |
+| `_CLIENT_MASTER` | B2C clients (102 fields from GHL) |
+| `_ACCOUNT_ANNUITY` | Annuity accounts (24 fields) |
+| `_ACCOUNT_LIFE` | Life insurance policies (14 fields) |
+| `_ACCOUNT_MEDICARE` | Medicare plans (14 fields) |
+| `_ACCOUNT_BDRIA` | BD/RIA investment accounts (16 fields) |
 | `Opportunities` | Sales opportunities |
-| `_GHL_CONTACTS` | GHL sync cache |
-| `_GHL_OPPORTUNITIES` | GHL pipeline sync |
 | `_ACTIVITY_LOG` | Client activity |
 | `_RMD_TRACKING` | Required Min Distributions |
 | `_COMMISSION_SUMMARY` | Client revenue view |
-| `_POLICY_RENEWALS` | Renewal tracking |
 | `Tasks` | Service tasks |
 | `_DOCUMENTS` | Document registry |
 | `_NOTES` | Client notes |

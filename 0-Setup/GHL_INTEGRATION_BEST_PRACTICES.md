@@ -65,6 +65,43 @@ function extractContactId(record) {
 }
 ```
 
+### Custom Objects Field Structure
+
+**Raw API Response Structure:**
+```javascript
+{
+  id: "696eb0326c35cb451abb6ead",
+  createdAt: "2026-01-19T22:29:06.435Z",
+  relations: [{ objectKey: "contact", recordId: "D8Kn8bQx4IKfSEgTpbRz" }],
+  properties: {
+    account_: 28254970,           // Simple values
+    status: "active",              // LOWERCASE - normalize for UI
+    carriers: "nassau",
+    account_value: { currency: "default", value: 46401.1 },  // Currency fields
+    benefit_factors: { income_rider_name: "..." }            // Nested objects
+  }
+}
+```
+
+**After `transformCustomObjectRecord_()`:**
+```javascript
+{
+  id: "696eb0326c35cb451abb6ead",
+  contactId: "D8Kn8bQx4IKfSEgTpbRz",
+  "custom_objects.annuities.account_": 28254970,
+  "custom_objects.annuities.status": "active",
+  "custom_objects.annuities.carriers": "nassau",
+  "custom_objects.annuities.account_value": 46401.1,  // Currency extracted
+  "custom_objects.annuities.benefit_factors.income_rider_name": "..."
+}
+```
+
+**Key Patterns:**
+1. **Currency fields** - GHL returns `{ currency: "default", value: X }`, extract `.value`
+2. **Status normalization** - GHL returns lowercase (`active`), UI expects Title Case (`Active`)
+3. **Field prefixing** - After transform, keys become `custom_objects.{type}.{field}`
+4. **Contact ID** - Extract from `relations` array, not a direct field
+
 ---
 
 ## 🔗 Data Flow Architecture
