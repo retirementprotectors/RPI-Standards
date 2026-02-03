@@ -2,7 +2,7 @@
 
 > ⚠️ **UPDATED**: MCP setup has moved to MCP-Hub.
 > 
-> **Go to:** `/Users/joshd.millang/Projects/MCP-Hub/`
+> **Go to:** `/Users/joshd.millang/Projects/RAPID_TOOLS/MCP-Hub/`
 
 ---
 
@@ -28,6 +28,7 @@ MCP-Hub is now the canonical source for all MCP documentation:
 | Strategic roadmap | `MCP-Hub/docs/roadmap.md` |
 | Healthcare MCPs | `MCP-Hub/healthcare-mcps/` |
 | Commission MCPs | `MCP-Hub/commission-intelligence/` |
+| Document Processing | `MCP-Hub/document-processor/` |
 
 ---
 
@@ -61,6 +62,7 @@ MCP-Hub is now the canonical source for all MCP documentation:
 | MCP | Purpose |
 |-----|---------|
 | `rpi-meeting-processor` | Process meeting transcripts |
+| `document-processor` | PDF processing, Drive uploads, OCR prep |
 
 ---
 
@@ -71,12 +73,13 @@ Include this in agent briefings:
 ```markdown
 ## MCP Tools Available
 
-MCP Hub: `/Users/joshd.millang/Projects/MCP-Hub/`
+MCP Hub: `/Users/joshd.millang/Projects/RAPID_TOOLS/MCP-Hub/`
 
 Active tools:
 - Google Drive, Gmail, Calendar, Slack, Playwright (integration)
 - NPI Registry, ICD-10 Codes, CMS Coverage, Medicare Plans (healthcare)
 - Commission Intelligence (commission rates)
+- Document Processor (PDF processing, Drive uploads)
 
 Setup: See MCP-Hub/docs/setup-new-machine.md
 ```
@@ -87,6 +90,7 @@ Setup: See MCP-Hub/docs/setup-new-machine.md
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v2.1 | Feb 3, 2026 | Added document-processor MCP, fixed paths to RAPID_TOOLS |
 | v2.0 | Jan 25, 2026 | Redirected to MCP-Hub, updated MCP list |
 | v1.0 | Jan 13, 2026 | Initial setup guide |
 
