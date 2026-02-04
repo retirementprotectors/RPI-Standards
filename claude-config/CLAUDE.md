@@ -423,6 +423,31 @@ git push
 
 ---
 
+## Three-Platform Architecture
+
+| Platform | Channel | Purpose | Key Projects |
+|----------|---------|---------|--------------|
+| **SENTINEL** | B2B (DAVID) | M&A + Partnerships | sentinel, sentinel-v2, DAVID-HUB |
+| **RIIMO** | B2E (RAPID) | Shared services | CAM, DEX, C3, RIIMO, CEO-Dashboard |
+| **PRODASH** | B2C (RPI) | Direct client sales | PRODASH, QUE-Medicare |
+
+**Shared Services (used by all):**
+- RAPID_CORE (GAS library)
+- RAPID_IMPORT (data ingestion)
+- RAPID_API (REST endpoints)
+- MCP-Hub (intelligence layer)
+
+**Dependency Chain:**
+```
+RAPID_CORE ← Used by ALL GAS projects (library dependency)
+     ↑
+RAPID_IMPORT ← Feeds data into SENTINEL + PRODASH
+     ↑
+MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
+```
+
+---
+
 ## Project Locations
 
 ```
@@ -430,15 +455,51 @@ git push
 ├── _RPI_STANDARDS/              # Cross-suite standards
 ├── RAPID_TOOLS/                 # Shared services (B2E)
 │   ├── RPI-Command-Center/      # Leadership visibility
-│   ├── PRODASH/                 # Client management (if here)
 │   ├── CAM/                     # Commission accounting
-│   ├── MCP-Hub/                 # Intelligence + MCPs
-│   └── CEO-Dashboard/           # Executive dashboard
+│   ├── DEX/                     # Document efficiency
+│   ├── C3/                      # Content/Campaign manager
+│   ├── RIIMO/                   # Operations UI
+│   ├── CEO-Dashboard/           # Executive dashboard
+│   ├── RAPID_CORE/              # Core GAS library
+│   ├── RAPID_IMPORT/            # Data ingestion
+│   ├── RAPID_API/               # REST API
+│   └── MCP-Hub/                 # Intelligence + MCPs
 ├── SENTINEL_TOOLS/              # B2B Platform
 │   ├── DAVID-HUB/               # Entry calculators
-│   └── sentinel/                # Main B2B app
+│   ├── sentinel/                # Main B2B app (legacy)
+│   └── sentinel-v2/             # Main B2B app (current)
 └── PRODASH_TOOLS/               # B2C Platform
-    └── PRODASH/                 # Main B2C app
+    ├── PRODASH/                 # Client portal
+    └── QUE/QUE-Medicare/        # Medicare quoting
+```
+
+---
+
+## Key MATRIX Sheet IDs
+
+**Projects that use MATRIX sheets for configuration:**
+
+| Project | MATRIX ID | Purpose |
+|---------|-----------|---------|
+| SENTINEL | `1YOUR_SENTINEL_MATRIX_ID` | B2B commission grids |
+| PRODASH | `1YOUR_PRODASH_MATRIX_ID` | B2C client data |
+| CAM | `1YOUR_CAM_MATRIX_ID` | Commission accounting |
+
+*(Get actual IDs from Script Properties in each project's GAS editor)*
+
+---
+
+## Key API Endpoints
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| healthcare-mcps | `http://localhost:3456` | Medicare data API (must be running) |
+| RAPID_API | GAS Web App | REST endpoints for external integrations |
+
+**To start healthcare-mcps:**
+```bash
+cd /Users/joshd.millang/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps
+npm run que-api
 ```
 
 ---
