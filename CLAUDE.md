@@ -424,6 +424,18 @@ git push
 
 ---
 
+## GAS Project Session Start
+
+**When starting work on ANY GAS project:**
+1. Check if `.clasp.json` exists (confirms it's a GAS project)
+2. Run `clasp login --status` to verify auth
+3. If auth expired/missing → Tell JDM: "Clasp auth expired. Please run `clasp login` in terminal."
+4. Wait for JDM to say "TCO" (Took Care Of) before proceeding
+
+**This prevents wasted work when clasp commands will fail.**
+
+---
+
 ## Maintenance Behaviors
 
 **When JDM says "weekly check" or "health check":**
