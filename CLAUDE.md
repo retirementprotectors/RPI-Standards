@@ -155,6 +155,22 @@ return { success: false, error: 'What went wrong' };
 
 ---
 
+## PHI Handling Rules (CRITICAL)
+
+**RPI handles Protected Health Information. These rules are NON-NEGOTIABLE:**
+
+| Rule | Requirement |
+|------|-------------|
+| **Storage** | PHI ONLY in Google Workspace (Drive, Sheets) - NEVER Slack, text, personal email |
+| **Logging** | NEVER log PHI to console, error messages, or debug output |
+| **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
+| **Breach** | Report suspected breaches to John Behn immediately |
+| **PHI Projects** | PRODASH, QUE-Medicare, DEX, CAM - extra caution required |
+
+**For full policy details:** Read `_RPI_STANDARDS/reference/compliance/PHI_POLICY.md`
+
+---
+
 ## GAS Gotchas (CRITICAL - Memorize These)
 
 ### 1. Date Serialization Kills Data
@@ -294,6 +310,19 @@ function saveDraft(packageId, wizardState) {
 }
 ```
 
+### 10. MATRIX Writes Go Through RAPID_API
+**RAPID_API is the single source of truth for all MATRIX writes.**
+
+```javascript
+// ❌ WRONG - Direct sheet writes (legacy pattern)
+sheet.appendRow([clientData...]);
+
+// ✅ CORRECT - Call RAPID_API
+const result = callRapidAPI_('import/client', 'POST', { client: clientData });
+```
+
+**See `_RPI_STANDARDS/reference/integrations/MATRIX_CONFIG.md` for full details.**
+
 ### Self-Check (Before Every GAS Commit)
 - [ ] All `*ForUI()` functions use `JSON.parse(JSON.stringify())`
 - [ ] No Date objects passed to client without conversion
@@ -301,6 +330,7 @@ function saveDraft(packageId, wizardState) {
 - [ ] Large payloads are batched
 - [ ] Modal uses flexbox scroll pattern
 - [ ] Caching uses `var` not `let`
+- [ ] New MATRIX writes use RAPID_API (not direct sheet writes)
 
 ### Self-Check (Before Every GAS Deploy)
 - [ ] No hardcoded credentials in code (use Script Properties)

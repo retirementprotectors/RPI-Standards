@@ -1,11 +1,13 @@
 #!/bin/bash
-# RPI Hookify Setup Script
+# RPI Development Machine Setup Script
 # Run this on a new development machine after cloning _RPI_STANDARDS
 #
 # Usage: ./scripts/setup-hookify-symlinks.sh
 #
-# This creates symlinks from each RPI project's .claude/ directory
-# to the master hookify rules in _RPI_STANDARDS/hookify/
+# This script:
+# 1. Symlinks ~/.claude/CLAUDE.md to _RPI_STANDARDS/CLAUDE.md (global standards)
+# 2. Creates symlinks from each RPI project's .claude/ directory
+#    to the master hookify rules in _RPI_STANDARDS/hookify/
 
 set -e
 
@@ -16,12 +18,47 @@ HOOKIFY_DIR="$STANDARDS_ROOT/hookify"
 PROJECTS_ROOT="$(dirname "$STANDARDS_ROOT")"
 
 echo "================================================"
-echo "RPI Hookify Symlink Setup"
+echo "RPI Development Machine Setup"
 echo "================================================"
 echo "Standards root: $STANDARDS_ROOT"
 echo "Hookify rules:  $HOOKIFY_DIR"
 echo "Projects root:  $PROJECTS_ROOT"
 echo ""
+
+# ============================================
+# Step 1: Global CLAUDE.md Symlink
+# ============================================
+echo "Setting up global CLAUDE.md..."
+
+GLOBAL_CLAUDE_DIR="$HOME/.claude"
+GLOBAL_CLAUDE_FILE="$GLOBAL_CLAUDE_DIR/CLAUDE.md"
+MASTER_CLAUDE_FILE="$STANDARDS_ROOT/CLAUDE.md"
+
+# Create ~/.claude directory if it doesn't exist
+mkdir -p "$GLOBAL_CLAUDE_DIR"
+
+# Check if master CLAUDE.md exists
+if [ ! -f "$MASTER_CLAUDE_FILE" ]; then
+  echo "❌ ERROR: Master CLAUDE.md not found at $MASTER_CLAUDE_FILE"
+  exit 1
+fi
+
+# Remove existing CLAUDE.md (file or symlink) and create symlink
+if [ -L "$GLOBAL_CLAUDE_FILE" ]; then
+  rm "$GLOBAL_CLAUDE_FILE"
+elif [ -f "$GLOBAL_CLAUDE_FILE" ]; then
+  echo "   Backing up existing CLAUDE.md to CLAUDE.md.backup"
+  mv "$GLOBAL_CLAUDE_FILE" "$GLOBAL_CLAUDE_FILE.backup"
+fi
+
+ln -s "$MASTER_CLAUDE_FILE" "$GLOBAL_CLAUDE_FILE"
+echo "✅ Global CLAUDE.md linked to $MASTER_CLAUDE_FILE"
+echo ""
+
+# ============================================
+# Step 2: Hookify Rules Symlinks
+# ============================================
+echo "Setting up hookify rules..."
 
 # Verify hookify rules exist
 if [ ! -d "$HOOKIFY_DIR" ] || [ -z "$(ls -A $HOOKIFY_DIR/*.local.md 2>/dev/null)" ]; then
@@ -87,9 +124,17 @@ echo ""
 echo "================================================"
 echo "Setup Complete"
 echo "================================================"
-echo "✅ Configured: $SUCCESS projects"
-echo "⚠️  Skipped:    $SKIPPED projects (not found)"
 echo ""
-echo "Hookify rules are now active in all configured projects."
-echo "Edit rules in: $HOOKIFY_DIR"
+echo "Global Standards:"
+echo "  ✅ ~/.claude/CLAUDE.md → $MASTER_CLAUDE_FILE"
+echo ""
+echo "Hookify Rules:"
+echo "  ✅ Configured: $SUCCESS projects"
+echo "  ⚠️  Skipped:    $SKIPPED projects (not found)"
+echo ""
+echo "All RPI standards and enforcement rules are now active."
+echo ""
+echo "To edit:"
+echo "  - Standards: $MASTER_CLAUDE_FILE"
+echo "  - Rules:     $HOOKIFY_DIR/"
 echo ""
