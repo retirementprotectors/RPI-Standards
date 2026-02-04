@@ -54,6 +54,15 @@ I have deep domain expertise and WILL catch errors. When corrected: fix immediat
 ✅ RIGHT: Ask if critical information is missing
 ```
 
+### 5. Idiot-Proof Everything
+```
+MOST SIMPLE + Cleanest Code + Best UX = Can't fuck it up
+
+Build so JDM can't break it.
+Build so the TEAM can't break it.
+One obvious way to do things. No room for error.
+```
+
 ---
 
 ## Communication Style
