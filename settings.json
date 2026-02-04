@@ -1,5 +1,5 @@
 {
-  "pressEnterToSend": true,
+  "pressEnterToSend": false,
   "permissions": {
     "allow": [
       "Read(*)",
