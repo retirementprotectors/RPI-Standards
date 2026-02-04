@@ -1,49 +1,64 @@
 # RPI Claude Code Configuration
 
-> **One-command setup for any new machine.**
+> **One command. Any computer. Fully configured.**
 
 ---
 
-## What's Here
+## Quick Setup (Do This)
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | Global context injected into every Claude Code session |
-| `settings.template.json` | Permissions, MCP servers (with placeholder tokens) |
-| `setup.sh` | Installation script |
-
----
-
-## New Machine Setup
+**Open Terminal. Paste this. Done.**
 
 ```bash
-# 1. Clone _RPI_STANDARDS (if not already)
+mkdir -p ~/.claude && curl -sSL https://raw.githubusercontent.com/retirementprotectors/RPI-Standards/main/claude-config/CLAUDE.md > ~/.claude/CLAUDE.md
+```
+
+That's it. Claude Code now has all RPI standards, GAS gotchas, and rules auto-injected every session.
+
+---
+
+## What You Just Installed
+
+| What | Effect |
+|------|--------|
+| JDM/RPI context | Every agent knows who you are and how you work |
+| Golden rules | Complete solutions, act don't ask |
+| Code standards | No alert/confirm/prompt, structured responses |
+| **ALL GAS gotchas** | Date serialization, JSON roundtrip, base64, etc. |
+| Deployment rules | 5-step deploy, commit+deploy together |
+| New project setup | Points to kickoff template |
+
+---
+
+## Full Setup (Optional)
+
+If you want pre-approved permissions + MCP servers (Slack, Gmail, etc.):
+
+```bash
+# Clone the repo
 cd ~/Projects
 git clone https://github.com/retirementprotectors/RPI-Standards.git _RPI_STANDARDS
 
-# 2. Run setup
+# Run full setup
 cd _RPI_STANDARDS/claude-config
-chmod +x setup.sh
 ./setup.sh
-```
 
-That's it. Claude Code is now configured with all RPI standards.
-
-### After Setup: Add Your Secrets
-
-The setup script installs a template. You need to add your actual tokens:
-
-```bash
-# Edit settings.json
+# Add your Slack tokens
 nano ~/.claude/settings.json
-
-# Add your Slack tokens:
-# - SLACK_BOT_TOKEN: xoxb-...
-# - SLACK_USER_TOKEN: xoxp-...
-# - SLACK_TEAM_ID: T...
 ```
 
-Get tokens from: https://api.slack.com/apps (or ask JDM for RPI workspace tokens)
+---
+
+## What's In This Folder
+
+| File | Purpose |
+|------|---------|
+| `CLAUDE.md` | Global context (the important one) |
+| `settings.template.json` | Permissions + MCP config template |
+| `setup.sh` | Full installation script |
+
+---
+
+*Quick setup = 1 command. Full setup = 3 commands + tokens.*
 
 ---
 
