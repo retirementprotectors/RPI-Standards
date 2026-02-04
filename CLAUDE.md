@@ -302,6 +302,11 @@ function saveDraft(packageId, wizardState) {
 - [ ] Modal uses flexbox scroll pattern
 - [ ] Caching uses `var` not `let`
 
+### Self-Check (Before Every GAS Deploy)
+- [ ] No hardcoded credentials in code (use Script Properties)
+- [ ] Web app access set to "Anyone within Retirement Protectors INC"
+- [ ] No `alert()`, `confirm()`, `prompt()` calls
+
 ---
 
 ## Deployment Rules (ALL GAS Projects)
@@ -331,7 +336,27 @@ git push
 | clasp deploy | ✅/❌ |
 | git commit | ✅ [hash] |
 | git push | ✅/❌ |
+| Access: Org only | ✅/❌ |
 ```
+
+### 🔒 SECURITY: Organization-Only Access (MANDATORY)
+
+**ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
+
+```
+❌ NEVER: "Anyone" or "Anyone with Google account"
+✅ ALWAYS: "Anyone within Retirement Protectors INC"
+```
+
+**When to verify:**
+- **New deployments:** Set access to organization-only during initial deploy
+- **Existing deployments:** Verify via Deploy → Manage Deployments → "Who has access"
+- **After ANY deploy:** Confirm the deploy report includes "Access: Org only ✅"
+
+**If you see "Anyone" access on an RPI internal app:**
+1. STOP and alert JDM immediately
+2. Do NOT proceed with other work until access is corrected
+3. Update via Deploy → Manage Deployments → Edit → Who has access → "Anyone within Retirement Protectors INC"
 
 ---
 
@@ -411,6 +436,7 @@ git push
 3. **Set up .clasp.json** - Script ID configuration
 4. **Create Code.gs with doGet()** - Entry point
 5. **JDM: First-time auth via GAS Editor UI** - One-time manual step
+6. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
 
 **For detailed checklist:** Read `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md`
 
@@ -496,7 +522,14 @@ When you see this section in a project's CLAUDE.md, read those files immediately
 **When JDM says "audit [project]":**
 - Verify: git initialized, CLAUDE.md exists, follows code standards
 - Check: no alert/confirm/prompt, structured responses, proper deploy setup
+- **🔒 SECURITY:** Verify web app access is "Anyone within Retirement Protectors INC"
 - Report: compliance status, issues found, fixes needed
+
+**When JDM says "security audit" or "security check":**
+- Check ALL GAS web apps for organization-only access
+- Verify no hardcoded credentials in code
+- Confirm Script Properties are used for secrets
+- Reference: `_RPI_STANDARDS/security/SECURITY_COMPLIANCE.md`
 - For full audit protocol: Read `reference/maintenance/PROJECT_AUDIT.md`
 
 **When starting work on unfamiliar project:**
