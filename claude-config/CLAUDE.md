@@ -4,6 +4,23 @@
 
 ---
 
+## 🚨 SESSION START PROTOCOL (DO THIS IMMEDIATELY)
+
+**Before responding to ANY task, you MUST:**
+
+1. **Read the project CLAUDE.md** (if one exists in current directory)
+2. **If in `_RPI_STANDARDS/` or any RPI project**, read these files:
+   - `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/MASTER_AGENT_FRAMEWORK.md`
+   - `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/CLAUDE_CODE_EXECUTION.md`
+   - `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/GAS_COMMON_ISSUES.md`
+   - `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/PROJECT_KICKOFF_TEMPLATE.md`
+
+**Do NOT ask JDM to tell you to read these. Just read them.**
+
+**Do NOT summarize what you read unless asked. Just confirm: "Standards loaded. What's the task?"**
+
+---
+
 ## Who I Am
 
 **Josh D. Millang (JDM)** - CEO/Visionary of Retirement Protectors, Inc. (RPI)
