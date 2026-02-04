@@ -130,12 +130,90 @@ RIIMO.AUDIT_ALL_OLD_SOURCES()
 
 ---
 
+## RAPID_API: Single Source of Truth for Writes
+
+**All MATRIX writes should go through RAPID_API.** This ensures:
+- Consistent validation across all import sources
+- Single audit trail for data changes
+- Centralized business logic
+
+### Architecture
+
+```
+Sources (SPC_INTAKE, GHL, NIPR, Carrier BoB, etc.)
+         │
+         ▼
+┌─────────────────────────────────────┐
+│         RAPID_IMPORT                │
+│  Parse, normalize, prepare data     │
+└─────────────────────────────────────┘
+         │
+         ▼ (UrlFetchApp.fetch)
+┌─────────────────────────────────────┐
+│         RAPID_API                   │
+│  Validate, write to MATRIX          │
+│  SINGLE SOURCE OF TRUTH            │
+└─────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────────┐
+│      MATRIX Spreadsheets            │
+│  PRODASH_MATRIX, SENTINEL_MATRIX    │
+└─────────────────────────────────────┘
+```
+
+### API Endpoints for Writes
+
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /import/client` | Create/update single client |
+| `POST /import/clients` | Batch client import |
+| `POST /import/account` | Create/update single account |
+| `POST /import/accounts` | Batch account import |
+| `POST /import/batch` | Clients + accounts together |
+| `POST /import/finalize` | Finalize intake case (ACF, Ai3, etc.) |
+
+### Migration Status
+
+| Module | Status | Notes |
+|--------|--------|-------|
+| `IMPORT_Intake.gs` | ✅ Uses RAPID_API | Sets the pattern |
+| `IMPORT_Client.gs` | ⏳ Legacy (direct writes) | To be migrated |
+| `IMPORT_GHL.gs` | ⏳ Legacy (direct writes) | To be migrated |
+| `IMPORT_Agent.gs` | ⏳ Legacy (direct writes) | To be migrated |
+| `IMPORT_Revenue.gs` | ⏳ Legacy (direct writes) | To be migrated |
+| `IMPORT_Account.gs` | ⏳ Legacy (direct writes) | To be migrated |
+
+### Pattern for New Modules
+
+```javascript
+// ✅ CORRECT - Call RAPID_API for writes
+function createClientViaAPI_(clientData) {
+  const url = RAPID_API_URL + '?path=import/client';
+  const response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify({ client: clientData })
+  });
+  return JSON.parse(response.getContentText());
+}
+
+// ❌ WRONG - Direct sheet writes (legacy pattern)
+function createClient(clientData) {
+  const sheet = SpreadsheetApp.openById(MATRIX_ID).getSheetByName('_CLIENT_MASTER');
+  sheet.appendRow([...]); // Don't do this in new code
+}
+```
+
+---
+
 ## Do NOT
 
 1. **Do NOT hardcode MATRIX IDs directly in project files** - Always use RAPID_CORE
 2. **Do NOT create new tabs without updating schemas** - Coordinate with RIIMO
 3. **Do NOT access MATRIX via different patterns in different files** - Use consistent helper functions
 4. **Do NOT store MATRIX IDs in multiple places** - RAPID_CORE is the single source
+5. **Do NOT write directly to MATRIX in new modules** - Use RAPID_API endpoints
 
 ---
 
