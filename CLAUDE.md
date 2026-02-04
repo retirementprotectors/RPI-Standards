@@ -436,6 +436,56 @@ git push
 
 ---
 
+## Reference Detection Protocol (Belt & Suspenders)
+
+**Every session, BEFORE starting work, run this protocol to ensure you're using all relevant reference docs.**
+
+### The Belt: Auto-Detection
+
+Run these checks on any project and load matching reference docs:
+
+| Check | Detection Method | If Found → Read |
+|-------|------------------|-----------------|
+| **GHL Integration** | Grep for `gohighlevel\|GHL\|highlevel` in code | `reference/integrations/GHL_INTEGRATION.md` |
+| **MATRIX Sheets** | Grep for `MATRIX` in code or config | `reference/integrations/MATRIX_CONFIG.md` |
+| **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/compliance/COMPLIANCE_STANDARDS.md` |
+| **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | `reference/integrations/` (check which apply) |
+| **New Project** | No existing code files, or JDM says "new project" | `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md` |
+| **Pre-Launch** | JDM mentions "launch", "go live", "production" | `reference/production/PRE_LAUNCH_CHECKLIST.md` |
+
+### The Suspenders: Project Declarations
+
+Individual project CLAUDE.md files should declare required references:
+
+```markdown
+## Required References
+<!-- Claude: Read these from _RPI_STANDARDS at session start -->
+- integrations/GHL_INTEGRATION.md
+- compliance/COMPLIANCE_STANDARDS.md
+```
+
+When you see this section in a project's CLAUDE.md, read those files immediately.
+
+### Protocol Execution
+
+1. **Check project CLAUDE.md** for `## Required References` section → Read listed docs
+2. **Run auto-detection grep** on the codebase → Read matching docs
+3. **Report what you loaded:**
+   ```
+   📚 Reference docs loaded:
+   - GHL_INTEGRATION.md (declared in project CLAUDE.md)
+   - COMPLIANCE_STANDARDS.md (detected: PHI patterns found)
+   ```
+4. **Then proceed with the task**
+
+### Why Both?
+
+- **Belt (auto-detect):** Catches requirements even if project CLAUDE.md is incomplete
+- **Suspenders (declarations):** Makes intent explicit, catches edge cases detection misses
+- **Together:** You never miss critical context
+
+---
+
 ## Maintenance Behaviors
 
 **When JDM says "weekly check" or "health check":**
@@ -583,8 +633,9 @@ You report results to me
 ### Starting
 1. JDM gives task or context
 2. Read project CLAUDE.md (if exists in current directory)
-3. Begin work immediately
-4. Report completion, not progress
+3. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
+4. Begin work immediately
+5. Report completion, not progress
 
 ### During Work
 - Don't narrate what you're doing
