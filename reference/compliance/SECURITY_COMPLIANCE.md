@@ -148,10 +148,10 @@ When an employee/contractor leaves RPI:
 - [x] Location of signed BAA: Google Admin Console → Account → Legal and Compliance
 
 ### PHI Handling Policies
-- [ ] Staff trained on PHI handling
-- [ ] PHI only stored in approved systems (Workspace)
-- [ ] PHI not sent via unencrypted email
-- [ ] PHI access logged and reviewable
+- [x] Staff trained on PHI handling → `reference/compliance/PHI_TRAINING.md` + acknowledgment form
+- [x] PHI only stored in approved systems (Workspace) → `reference/compliance/PHI_POLICY.md`
+- [x] PHI not sent via unencrypted email → DLP rules configured in Google Admin
+- [x] PHI access logged and reviewable → `reference/compliance/AUDIT_LOG_GUIDE.md`
 
 ### Breach Notification
 - HIPAA requires notification within 60 days of discovering a breach
