@@ -335,6 +335,31 @@ git push
 
 ---
 
+## Available MCP Tools (Already Configured)
+
+**These are ready to use. Don't go looking for external tools - use these:**
+
+| MCP | What It Does | How To Use |
+|-----|--------------|------------|
+| **slack** | Read/send Slack messages | `mcp__slack__*` tools |
+| **gmail** | Read/send email | `mcp__gmail__*` tools |
+| **gdrive** | Google Drive access | `mcp__gdrive__*` tools |
+| **google-calendar** | Calendar events | `mcp__google-calendar__*` tools |
+| **playwright** | Browser automation | `mcp__playwright__*` tools |
+
+**Healthcare MCPs (in MCP-Hub):**
+| MCP | What It Does |
+|-----|--------------|
+| `npi-registry` | Provider lookup (CMS NPPES) |
+| `icd10-codes` | Diagnosis/procedure codes |
+| `medicare-plans` | MA/PDP plan search |
+| `formulary-lookup` | Drug coverage lookup |
+| `pharmacy-network` | Pharmacy network status |
+
+**Before searching for an external tool, check if it's already here.**
+
+---
+
 ## New Project Setup
 
 **When starting ANY new project, follow the kickoff template:**
