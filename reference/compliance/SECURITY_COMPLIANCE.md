@@ -160,12 +160,60 @@ When an employee/contractor leaves RPI:
 
 ---
 
+## Part 7: Completed Security Actions (2026-02-04)
+
+This section documents security improvements completed during the initial security audit.
+
+### Infrastructure Security
+- [x] Enabled 2FA enforcement for Google Workspace (1-week grace period for existing users)
+- [x] Accepted HIPAA Business Associate Amendment with Google
+- [x] Verified GitHub repos are private
+
+### Application Security
+- [x] Removed hardcoded credentials from code (CEO-Dashboard, RAPID_API)
+- [x] Rotated exposed Slack tokens
+- [x] Updated all MCP config files with new tokens
+- [x] Added API key authentication to RAPID_API
+- [x] Replaced forbidden UI patterns (alert/confirm/prompt)
+- [x] Verified PRODASH has organization-only access
+
+### Documentation
+- [x] Created security compliance documentation
+- [x] Added org-only access enforcement to CLAUDE.md
+- [x] Added deploy-time security hook for access verification
+
+### Pending Verification
+| App | Organization-Only Access |
+|-----|-------------------------|
+| PRODASH | ✅ Verified 2026-02-04 |
+| SENTINEL | ⏳ Pending |
+| DEX | ⏳ Pending |
+| RIIMO | ⏳ Pending |
+| CAM | ⏳ Pending |
+| CEO-Dashboard | ⏳ Pending |
+| C3 | ⏳ Pending |
+
+---
+
+## Part 8: Remaining Action Items
+
+### This Week (Priority 2)
+- [ ] Review current Workspace users for former employees/contractors
+- [ ] Confirm offboarding process with COO (John Behn)
+
+### This Month (Priority 3)
+- [ ] Set quarterly calendar reminders for access reviews
+- [ ] Brief team on 2FA requirements and security reporting
+
+---
+
 ## Revision History
 
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-02-04 | Initial document created | Claude Code |
 | 2026-02-04 | 2FA enforcement enabled, HIPAA BAA accepted | JDM + Claude Code |
+| 2026-02-04 | Merged IMMEDIATE_ACTIONS.md into this document | Claude Code |
 
 ---
 
