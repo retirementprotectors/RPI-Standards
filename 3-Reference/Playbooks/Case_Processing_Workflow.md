@@ -1,8 +1,9 @@
 # Client Case Processing Workflow
 ## From Source Documents to ProDash Pipeline
 
-> **Version**: v1.0  
+> **Version**: v1.1  
 > **Created**: February 3, 2026  
+> **Last Updated**: February 3, 2026  
 > **Status**: Active - Reference Workflow  
 > **Owner**: RAPID (Shared Services)  
 > **Destination**: ProDash Sales Pipeline (when built)
@@ -143,16 +144,50 @@ Generate a comprehensive markdown/Google Doc containing:
 - Critical observations (flags, deadlines)
 - Delegation assignments (who owns what)
 
-### MATRIX Updates
+### MATRIX Updates (via RAPID_API)
 
-Update PRODASH_MATRIX:
-- **_CLIENT_MASTER**: Add/update client records
-- **_ACCOUNT_BDRIA**: Investment accounts
+**CRITICAL: Never write directly to MATRIX tables. Always route through RAPID_API.**
+
+```
+AI Extraction → document-processor (import_batch) → RAPID_API → RAPID_IMPORT → MATRIX
+                           │
+                           └── Validation, Normalization, Deduplication
+```
+
+**Why this matters:**
+- Prevents duplicate records
+- Standardizes carrier names, phone formats, states
+- Validates required fields before write
+- Creates ACF folder automatically
+- Maintains data integrity
+
+**Endpoint Examples:**
+
+```bash
+# Import client via RAPID_API
+POST /import/client
+{
+  "client": { "first_name": "John", "last_name": "Doe", "dob": "1965-03-15" },
+  "options": { "createFolder": true }
+}
+
+# Import batch (clients + accounts)
+POST /import/batch
+{
+  "clients": [...],
+  "accounts": [...],
+  "options": { "source": "DOCUMENT_PROCESSOR" }
+}
+```
+
+**Data Routes:**
+- **_CLIENT_MASTER**: Client demographics
+- **_ACCOUNT_BDRIA**: Investment/BD-RIA accounts
 - **_ACCOUNT_ANNUITY**: Annuity accounts
 - **_ACCOUNT_LIFE**: Life policies
 - **_ACCOUNT_MEDICARE**: Medicare plans
 
-Link client record to ACF via `gdrive_folder_url` field.
+Client record is linked to ACF via `gdrive_folder_url` field (auto-populated when `createFolder: true`).
 
 ---
 
@@ -170,14 +205,17 @@ When ProDash Sales Pipeline is built, this workflow will automatically:
 
 ---
 
-## MCP Tools Used
+## MCP Tools & APIs Used
 
-| Tool | Purpose |
-|------|---------|
-| `gdrive` | Create folders, search, create docs |
-| `document-processor` | Upload PDFs to Drive |
-| `getGoogleSheetContent` | Read Ai3 template, MATRIX data |
-| `updateGoogleSheet` | Write to Ai3, MATRIX |
+| Tool/API | Purpose |
+|----------|---------|
+| `gdrive` MCP | Create ACF folders, search, create docs |
+| `document-processor` MCP | PDF→Images, Upload files, **Import to MATRIX via RAPID_API** |
+| `getGoogleSheetContent` | Read Ai3 template |
+| `updateGoogleSheet` | Write to Ai3 (NOT MATRIX - use RAPID_API) |
+| **RAPID_API** | `/import/client`, `/import/account`, `/import/batch` - validated MATRIX writes |
+| **RAPID_IMPORT** | Backend validation, normalization, deduplication |
+| **RAPID_CORE** | Shared data functions (carrier lookup, phone format, etc.) |
 
 ---
 
@@ -188,18 +226,23 @@ When ProDash Sales Pipeline is built, this workflow will automatically:
 - Slack DM with initial client info
 
 **Processing**:
-1. Converted 52 PDF pages to images
-2. Extracted client data (Sara + Arthur), 5 accounts
-3. Populated Ai3 with household data
-4. Created ACF folder structure in Drive
+1. Converted 52 PDF pages to images (pdf_to_images)
+2. Extracted client data (Sara + Arthur), 5 accounts (Claude vision)
+3. Populated Ai3 with household data (updateGoogleSheet)
+4. **Import via RAPID_API** (document-processor.import_batch):
+   - Validated client/account data
+   - Normalized names, phones, carriers
+   - Checked for duplicates
+   - Created ACF folder structure
 5. Generated Executive Summary
-6. Added to PRODASH_MATRIX (_CLIENT_MASTER, _ACCOUNT_BDRIA)
-7. Uploaded source PDFs to ACF
+6. Uploaded source PDFs to ACF (document-processor.upload_folder)
 
 **Output**:
 - Ai3 Sheet: `1bKYo-Zkm725lazCnLbwEOkK-i100yGy9_yBcMJwG49M`
 - ACF Folder: `1JV53YRstEao6ARV3JAaQM_31_6pWOOOi`
 - Client IDs: `878bbf57...`, `a77b5ee8...`
+
+**Lesson Learned**: Initial implementation wrote directly to MATRIX, causing duplicate records. The corrected flow routes all data through RAPID_API for proper validation and dedup.
 
 ---
 
@@ -219,6 +262,7 @@ When ProDash Sales Pipeline is built, this workflow will automatically:
 | Version | Date | Changes |
 |---------|------|---------|
 | v1.0 | Feb 3, 2026 | Initial workflow documented from Demetry case |
+| v1.1 | Feb 3, 2026 | **Critical fix**: Route MATRIX updates through RAPID_API (not direct writes). Added import tools to document-processor MCP. |
 
 ---
 
