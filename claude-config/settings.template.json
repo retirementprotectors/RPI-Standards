@@ -65,6 +65,43 @@
     "playwright": {
       "command": "npx",
       "args": ["@executeautomation/playwright-mcp-server"]
+    },
+    "npi-registry": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/npi-registry.js"]
+    },
+    "icd10-codes": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/icd10-codes.js"]
+    },
+    "cms-coverage": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/cms-coverage.js"]
+    },
+    "medicare-plans": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/medicare-plans.js"]
+    },
+    "formulary-lookup": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/formulary-lookup.js"]
+    },
+    "pharmacy-network": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/pharmacy-network.js"]
+    },
+    "humana-fhir": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/humana-fhir.js"]
+    },
+    "aetna-fhir": {
+      "command": "node",
+      "args": ["/Users/YOUR_USERNAME/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps/src/aetna-fhir.js"],
+      "env": {
+        "AETNA_CLIENT_ID": "YOUR_AETNA_CLIENT_ID",
+        "AETNA_CLIENT_SECRET": "YOUR_AETNA_CLIENT_SECRET",
+        "AETNA_ENVIRONMENT": "production"
+      }
     }
   }
 }
