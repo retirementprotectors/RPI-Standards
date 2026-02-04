@@ -1,10 +1,12 @@
 # RPI Project Kickoff Template
 ## Starting a New Project with Agent Teams
 
-> **Version**: v2.1  
-> **Updated**: January 26, 2026  
-> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/`  
+> **Version**: v3.0
+> **Updated**: February 3, 2026
+> **Location**: `/Users/joshd.millang/Projects/_RPI_STANDARDS/0-Setup/`
 > **Scope**: Universal - Use this to start ANY new project
+>
+> **Key Change in v3.0**: CLAUDE.md is now a REQUIRED step. Rules get BAKED INTO the project CLAUDE.md, not just referenced. This ensures auto-enforcement in every Claude Code session.
 
 ---
 
@@ -156,7 +158,95 @@ origin  https://github.com/retirementprotectors/PROJECT_NAME.git (push)
 
 ---
 
-### Step 2B: Create GAS Project (AI Executes)
+### Step 2B: Create CLAUDE.md (CRITICAL - Do This First)
+
+**CLAUDE.md is auto-injected into every Claude Code session.** This is how rules get enforced.
+
+```bash
+cd /Users/joshd.millang/Projects/PROJECT_NAME
+
+# Create CLAUDE.md with project-specific rules BAKED IN
+cat > CLAUDE.md << 'EOF'
+# PROJECT_NAME
+
+> **[One-line project description]**
+
+---
+
+## What This Is
+
+[2-3 sentences about the project purpose]
+
+---
+
+## Current State
+
+| Attribute | Value |
+|-----------|-------|
+| **Platform** | Google Apps Script Web App |
+| **Status** | Development |
+| **Location** | `/Users/joshd.millang/Projects/[SUPERPROJECT]/PROJECT_NAME/` |
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `Code.gs` | Entry point, doGet() |
+| `Index.html` | Main UI |
+| `Styles.html` | CSS |
+| `Scripts.html` | JavaScript |
+
+---
+
+## Deployment
+
+**Script ID:** `[SCRIPT_ID_HERE]`
+**Deployment ID:** `[DEPLOYMENT_ID_HERE]`
+
+```bash
+# Pre-flight
+git status && git remote -v
+
+# Deploy (all 5 steps)
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp version "vX.X - description"
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOYMENT_ID] -V [VERSION] -d "vX.X"
+git add -A && git commit -m "vX.X - description"
+git push
+```
+
+---
+
+## Project-Specific Rules
+
+[COPY RELEVANT RULES FROM TEMPLATE LIBRARY HERE]
+
+See `~/.claude/CLAUDE.md` for:
+- Template library locations
+- Global code standards
+- GAS gotchas (auto-enforced)
+
+---
+
+*Read `~/.claude/CLAUDE.md` for global JDM/RPI context.*
+EOF
+```
+
+#### Template Library (Copy Into CLAUDE.md As Needed)
+
+| If Project Uses... | Copy From |
+|--------------------|-----------|
+| GHL/GoHighLevel | `0-Setup/GHL_INTEGRATION_BEST_PRACTICES.md` |
+| PHI/PII data | `0-Setup/COMPLIANCE_STANDARDS.md` |
+| MATRIX sheets | `0-Setup/MATRIX_CONFIGURATION_STANDARDS.md` |
+
+**Rules get BAKED IN, not referenced.** The CLAUDE.md should contain everything an agent needs.
+
+---
+
+### Step 2C: Create GAS Project (AI Executes)
 
 ```bash
 cd /Users/joshd.millang/Projects/PROJECT_NAME
@@ -166,8 +256,8 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp create --type webapp --title "PROJECT_NAME"
 
 # 6. Configure appsscript.json (see template below)
 
-# 7. Initial commit with GAS config
-git add -A && git commit -m "Initial setup: GAS project created" && git push
+# 7. Initial commit with GAS config + CLAUDE.md
+git add -A && git commit -m "Initial setup: GAS project + CLAUDE.md" && git push
 
 # 8. Push to GAS
 NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
@@ -214,16 +304,22 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
 - [ ] **GitHub repo created (`gh repo create`)**
 - [ ] **🛑 CHECKPOINT: `git remote -v` shows origin URL**
 
-**Phase 2B - GAS Setup:**
+**Phase 2B - CLAUDE.md (MUST complete before 2C):**
+- [ ] **`CLAUDE.md` created in project root**
+- [ ] **Project-specific rules BAKED IN (not just referenced)**
+- [ ] **Relevant templates copied from 0-Setup library**
+
+**Phase 2C - GAS Setup:**
 - [ ] GAS project created (`clasp create`)
 - [ ] `appsscript.json` has `webapp` block
-- [ ] Initial commit pushed to GitHub
+- [ ] Initial commit pushed to GitHub (includes CLAUDE.md)
 - [ ] Code pushed to GAS (`clasp push`)
 - [ ] **JDM: First-time auth via GAS Editor UI**
-- [ ] Production URL documented
+- [ ] Production URL documented in CLAUDE.md
+- [ ] Deployment ID added to CLAUDE.md
 - [ ] MATRIX_ID set in Script Properties (if applicable)
 
-**⚠️ If any Phase 2A item is unchecked, STOP. Do not proceed to 2B.**
+**⚠️ If any Phase 2A item is unchecked, STOP. Do not proceed to 2B/2C.**
 
 ---
 
@@ -474,6 +570,7 @@ The RAPID_CORE library tends to "disappear" from GAS projects. If you see errors
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.0 | Feb 3, 2026 | **CLAUDE.md revolution** - Added as required Phase 2B step, rules BAKED IN not referenced |
 | v2.0 | Jan 25, 2026 | Merged PROJECT_DIRECTORY_STANDARDS, updated to new folder structure |
 | v1.1 | Jan 10, 2026 | Added INC-001 git verification checkpoints |
 | v1.0 | Jan 5, 2026 | Initial template |
