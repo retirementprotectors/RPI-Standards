@@ -58,9 +58,13 @@ I have deep domain expertise and WILL catch errors. When corrected: fix immediat
 ```
 MOST SIMPLE + Cleanest Code + Best UX = Can't fuck it up
 
-Build so JDM can't break it.
-Build so the TEAM can't break it.
-One obvious way to do things. No room for error.
+Assume JDM is clueless (he's not a dev).
+Assume the TEAM is clueless (they're not devs either).
+Assume the END USERS are clueless (they definitely aren't devs).
+
+One obvious way to do things.
+No room for error.
+No technical knowledge required.
 ```
 
 ---
