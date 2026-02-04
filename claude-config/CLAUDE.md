@@ -360,6 +360,33 @@ git push
 
 ---
 
+## Available Plugins & Skills (Slash Commands)
+
+**These plugins are enabled. Use the slash commands:**
+
+| Command | What It Does |
+|---------|--------------|
+| `/commit` | Create a git commit with proper message |
+| `/commit-push-pr` | Commit, push, and open a PR in one step |
+| `/review-pr` | Comprehensive PR review |
+| `/feature-dev` | Guided feature development |
+| `/frontend-design` | Create polished frontend interfaces |
+| `/code-review` | Code review a pull request |
+| `/revise-claude-md` | Update CLAUDE.md with session learnings |
+| `/claude-md-improver` | Audit and improve CLAUDE.md files |
+| `/hookify` | Create hooks to prevent unwanted behaviors |
+
+**Specialized Agents (via Task tool):**
+| Agent | Use For |
+|-------|---------|
+| `code-reviewer` | Review code for bugs, style, security |
+| `code-simplifier` | Simplify and refine code |
+| `pr-test-analyzer` | Review PR test coverage |
+| `type-design-analyzer` | Analyze type design quality |
+| `silent-failure-hunter` | Find silent failures in error handling |
+
+---
+
 ## New Project Setup
 
 **When starting ANY new project, follow the kickoff template:**
