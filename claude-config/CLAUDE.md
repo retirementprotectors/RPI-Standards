@@ -337,7 +337,23 @@ git push
 
 ## Available MCP Tools (Already Configured)
 
-**These are ready to use. Don't go looking for external tools - use these:**
+### 🚨 RULE: USE WHAT'S HERE. DON'T GO HUNTING.
+
+**Before you EVER search for an external tool, npm package, or MCP:**
+1. Check this list
+2. If it's here, USE IT
+3. Do NOT install anything new
+4. Do NOT search for alternatives
+5. Do NOT say "I need to find a way to..."
+
+**If you need Slack → Use `mcp__slack__*` (IT'S HERE)**
+**If you need Gmail → Use `mcp__gmail__*` (IT'S HERE)**
+**If you need Drive → Use `mcp__gdrive__*` (IT'S HERE)**
+**If you need Calendar → Use `mcp__google-calendar__*` (IT'S HERE)**
+**If you need browser automation → Use `mcp__playwright__*` (IT'S HERE)**
+**If you need healthcare data → Use the healthcare MCPs (THEY'RE HERE)**
+
+**These are ready to use:**
 
 | MCP | What It Does | How To Use |
 |-----|--------------|------------|
@@ -356,7 +372,7 @@ git push
 | `formulary-lookup` | Drug coverage lookup |
 | `pharmacy-network` | Pharmacy network status |
 
-**Before searching for an external tool, check if it's already here.**
+**STOP. USE THESE. Don't waste time looking for something else.**
 
 ---
 
