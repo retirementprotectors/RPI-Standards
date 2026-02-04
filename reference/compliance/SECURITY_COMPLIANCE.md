@@ -23,9 +23,11 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 | Question | Response |
 |----------|----------|
 | "Are you SOC 2 certified?" | "Our infrastructure runs on Google Cloud, which is SOC 2 Type II certified. RPI has not pursued independent SOC 2 certification as our architecture delegates infrastructure security to Google." |
-| "Are you HIPAA compliant?" | **If BAA confirmed:** "Yes, we maintain a Business Associate Agreement with Google and operate on HIPAA-eligible infrastructure." **If not:** "We operate on HIPAA-eligible Google infrastructure. Please contact us to discuss specific PHI handling requirements." |
+| "Are you HIPAA compliant?" | "Yes, we maintain a Business Associate Agreement with Google and operate on HIPAA-eligible infrastructure." |
 | "What security measures do you have?" | See Security Controls section below |
 | "Can you sign a BAA with us?" | "We can execute a Business Associate Agreement. Our infrastructure is HIPAA-eligible through Google Cloud." |
+| "Do you have encryption?" | "Yes - all data is encrypted both in transit (TLS 1.3) and at rest (AES-256). Gmail uses TLS for all transmissions, and Google encrypts all stored data automatically." |
+| "Is email encrypted?" | "Yes. Gmail-to-Gmail is always encrypted via TLS. External email uses opportunistic TLS (encrypted when recipient supports it, which most servers do). For sensitive content, we can use Google Confidential Mode for additional restrictions." |
 
 ### Security Controls Summary (For Client Conversations)
 

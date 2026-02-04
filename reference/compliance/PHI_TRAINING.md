@@ -161,7 +161,7 @@ Any information about a person's health that can identify them. If you can conne
 
 After reading this document, complete the acknowledgment form:
 
-**[PHI Training Acknowledgment Form](https://forms.google.com/YOUR_FORM_LINK_HERE)**
+**[PHI Training Acknowledgment Form](https://docs.google.com/forms/d/e/1FAIpQLSeuHMcmxPIBYxzWjxF9DfRQBs8WtlM6DKM9mXp38NJBaylmPw/viewform)**
 
 By completing the form, you confirm:
 1. You read and understand this training
