@@ -48,17 +48,17 @@ Consolidate duplicated patterns into RAPID_CORE, modularize monolithic files, an
 
 ## Phase 2: Frontend Modularization
 
-### 2.1 Split PRODASH/Index.html
-- **Current:** 4,091 lines (CSS + HTML + JS mixed)
-- **Target Structure:**
+### 2.1 Split PRODASH/Index.html ✅
+- **Before:** 4,091 lines (CSS + HTML + JS mixed)
+- **After:**
   ```
   PRODASH/
-  ├── Index.html (~500 lines) - Structure + includes
-  ├── Styles.html (~1,500 lines) - All CSS
-  └── Scripts.html (~1,000 lines) - All JavaScript
+  ├── Index.html (1,160 lines) - Structure + includes
+  ├── Styles.html (1,179 lines) - All CSS
+  └── Scripts.html (1,759 lines) - All JavaScript
   ```
-- **Pattern:** Match QUE-Medicare's cleaner structure
-- **Status:** [ ] Not Started
+- **Pattern:** Matches QUE-Medicare's cleaner structure
+- **Status:** [x] **COMPLETE** (2026-02-04)
 
 ### 2.2 Split sentinel-v2 Index.html (if needed)
 - **Current:** Review size after v1 exclusion
@@ -150,7 +150,7 @@ Consolidate duplicated patterns into RAPID_CORE, modularize monolithic files, an
 | 1.1 | Extract callApi() | GA | **DONE** | 2026-02-04 |
 | 1.2 | Extract readMatrixSheet() | GA | **DONE** | 2026-02-04 |
 | 1.3 | Add PHI masking utilities | GA | **DONE** | 2026-02-04 |
-| 2.1 | Split PRODASH/Index.html | - | Not Started | |
+| 2.1 | Split PRODASH/Index.html | GA | **DONE** | 2026-02-04 |
 | 2.2 | Assess sentinel-v2 HTML | - | Not Started | |
 | 2.3 | Create shared UI library | - | Not Started | |
 | 3.1 | Split IMPORT_GHL.gs | - | Not Started | |
@@ -176,6 +176,7 @@ Consolidate duplicated patterns into RAPID_CORE, modularize monolithic files, an
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-02-04 | v1.4 | Completed 2.1 (PRODASH HTML split) - 4,091 lines → 3 modular files |
 | 2026-02-04 | v1.3 | Completed 4.1 (QUE-Medicare error handling) - QUE v1.1.0 |
 | 2026-02-04 | v1.2 | Completed 1.2 (readMatrixSheet) - RAPID_CORE v1.2.0. **Phase 1 COMPLETE!** |
 | 2026-02-04 | v1.1 | Completed 1.1 (callApi) and 1.3 (PHI masking) - RAPID_CORE v1.1.0 |
