@@ -390,7 +390,7 @@ git push
 
 ---
 
-## Available MCP Tools (Already Configured)
+## Available MCP Tools
 
 ### 🚨 RULE: USE WHAT'S HERE. DON'T GO HUNTING.
 
@@ -401,31 +401,38 @@ git push
 4. Do NOT search for alternatives
 5. Do NOT say "I need to find a way to..."
 
-**If you need Slack → Use `mcp__slack__*` (IT'S HERE)**
-**If you need Gmail → Use `mcp__gmail__*` (IT'S HERE)**
-**If you need Drive → Use `mcp__gdrive__*` (IT'S HERE)**
-**If you need Calendar → Use `mcp__google-calendar__*` (IT'S HERE)**
-**If you need browser automation → Use `mcp__playwright__*` (IT'S HERE)**
-**If you need healthcare data → Use the healthcare MCPs (THEY'RE HERE)**
-
-**These are ready to use:**
+**Currently configured MCPs:**
 
 | MCP | What It Does | How To Use |
 |-----|--------------|------------|
-| **slack** | Read/send Slack messages | `mcp__slack__*` tools |
-| **gmail** | Read/send email | `mcp__gmail__*` tools |
 | **gdrive** | Google Drive access | `mcp__gdrive__*` tools |
-| **google-calendar** | Calendar events | `mcp__google-calendar__*` tools |
-| **playwright** | Browser automation | `mcp__playwright__*` tools |
+| **google-calendar** | Calendar events | `mcp__google_calendar__*` tools |
+| **gmail** | Read/send email | `mcp__gmail__*` tools |
+| **playwright** | Browser automation | `mcp__playwright__*` tools (plugin) |
 
-**Healthcare MCPs (in MCP-Hub):**
-| MCP | What It Does |
-|-----|--------------|
-| `npi-registry` | Provider lookup (CMS NPPES) |
-| `icd10-codes` | Diagnosis/procedure codes |
-| `medicare-plans` | MA/PDP plan search |
-| `formulary-lookup` | Drug coverage lookup |
-| `pharmacy-network` | Pharmacy network status |
+**To verify what's loaded:** `claude mcp list`
+
+### MCP Configuration (CRITICAL - Read This)
+
+**MCPs are configured via CLI, NOT settings.json:**
+
+```bash
+# Add MCP globally (available in all projects)
+claude mcp add <name> -e 'KEY=value' --scope user -- <command>
+
+# Add MCP to current project only
+claude mcp add <name> -e 'KEY=value' -- <command>
+
+# List configured MCPs
+claude mcp list
+
+# Remove an MCP
+claude mcp remove <name> --scope user
+```
+
+**Config is stored in:** `~/.claude.json` (NOT `~/.claude/settings.json`)
+
+**After adding/removing MCPs:** Restart Claude Code for changes to take effect.
 
 **STOP. USE THESE. Don't waste time looking for something else.**
 
