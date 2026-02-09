@@ -81,6 +81,20 @@ No technical knowledge required.
 
 **Be direct. Skip fluff. Show results, not process.**
 
+### GAS Editor Instructions (MANDATORY)
+When asking JDM to run ANY function in the GAS editor, ALWAYS include ALL THREE:
+1. **The exact project name** (e.g., `RAPID_IMPORT`, `RAPID_API`, `RAPID_CORE`)
+2. **The exact file name** (e.g., `IMPORT_Approval.gs`)
+3. **The exact function name** (e.g., `DEBUG_TestSlackToken`)
+
+```
+❌ WRONG: "Run DEBUG_TestSlackToken in RAPID_IMPORT"
+❌ WRONG: "Run DEBUG_TestSlackToken in IMPORT_Approval.gs"
+✅ RIGHT: "In RAPID_IMPORT → IMPORT_Approval.gs → run DEBUG_TestSlackToken"
+✅ RIGHT: "Project: RAPID_IMPORT | File: IMPORT_Approval.gs | Run: DEBUG_TestSlackToken"
+```
+JDM has multiple GAS projects open. He needs Project + File + Function every time.
+
 ---
 
 ## The RPI Business
