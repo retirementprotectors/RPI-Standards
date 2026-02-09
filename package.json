@@ -1,0 +1,23 @@
+{
+  "name": "_rpi_standards",
+  "version": "1.0.0",
+  "description": "> **One file. Every session. All the knowledge.**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/retirementprotectors/RPI-Standards.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/retirementprotectors/RPI-Standards/issues"
+  },
+  "homepage": "https://github.com/retirementprotectors/RPI-Standards#readme",
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}
