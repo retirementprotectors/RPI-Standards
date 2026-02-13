@@ -61,7 +61,7 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 | Item | Required State | Status | Verified Date |
 |------|---------------|--------|---------------|
 | No hardcoded credentials in code | All secrets in Script Properties | [x] | 2026-02-04 |
-| Apps deployed as "Organization only" | All internal apps restricted | [~] | 2026-02-04 (PRODASH verified, others pending) |
+| Apps deployed as "Organization only" | All internal apps restricted | [x] | 2026-02-13 (all 7 apps verified DOMAIN) |
 | No alert()/confirm()/prompt() | Using custom modals | [x] | 2026-02-04 |
 | API endpoints authenticated | API key validation where needed | [x] | 2026-02-04 |
 | Git repos private | All RPI repos private on GitHub | [x] | 2026-02-04 |
@@ -184,16 +184,16 @@ This section documents security improvements completed during the initial securi
 - [x] Added org-only access enforcement to CLAUDE.md
 - [x] Added deploy-time security hook for access verification
 
-### Pending Verification
-| App | Organization-Only Access |
-|-----|-------------------------|
-| PRODASH | ✅ Verified 2026-02-04 |
-| SENTINEL | ⏳ Pending |
-| DEX | ⏳ Pending |
-| RIIMO | ⏳ Pending |
-| CAM | ⏳ Pending |
-| CEO-Dashboard | ⏳ Pending |
-| C3 | ⏳ Pending |
+### Organization-Only Access Verification (Complete)
+| App | Access | Verified Date | Notes |
+|-----|--------|---------------|-------|
+| PRODASH | DOMAIN | 2026-02-04 | Already compliant |
+| SENTINEL | DOMAIN | 2026-02-13 | Latest deploy (v381) was already DOMAIN; old deploys were ANYONE |
+| DEX | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v64) |
+| RIIMO | DOMAIN | 2026-02-13 | Already compliant (v7) |
+| CAM | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v51) |
+| CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
+| C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 
 ---
 
@@ -216,6 +216,7 @@ This section documents security improvements completed during the initial securi
 | 2026-02-04 | Initial document created | Claude Code |
 | 2026-02-04 | 2FA enforcement enabled, HIPAA BAA accepted | JDM + Claude Code |
 | 2026-02-04 | Merged IMMEDIATE_ACTIONS.md into this document | Claude Code |
+| 2026-02-13 | All 7 GAS apps verified org-only. Fixed DEX, CAM, CEO-Dashboard. | Claude Code |
 
 ---
 
