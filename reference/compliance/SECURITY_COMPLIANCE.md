@@ -47,13 +47,13 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 
 | Item | Required State | Status | Verified Date |
 |------|---------------|--------|---------------|
-| 2FA enforced for all users | ON | [x] | 2026-02-04 |
+| 2FA enforced for all users | ON | [x] | 2026-02-13 |
 | Less secure app access | OFF | [ ] | |
-| Third-party app access | Restricted to approved apps | [ ] | |
+| Third-party app access | Restricted to approved apps | [x] | 2026-02-13 |
 | External sharing (Drive) | Restricted or warn | [ ] | |
 | Email authentication (SPF/DKIM/DMARC) | Configured | [ ] | |
-| Mobile device management | Basic or higher | [ ] | |
-| Admin roles | Principle of least privilege | [ ] | |
+| Mobile device management | Basic or higher | [x] | 2026-02-13 |
+| Admin roles | Principle of least privilege | [x] | 2026-02-13 |
 | BAA with Google | Signed (if handling PHI) | [x] | 2026-02-04 |
 
 ### Application Security
@@ -70,33 +70,31 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 
 | Item | Required State | Status | Verified Date |
 |------|---------------|--------|---------------|
-| User access list current | No former employees have access | [ ] | |
-| Admin access limited | Only necessary personnel | [ ] | |
-| Offboarding checklist exists | Documented process | [ ] | |
-| Contractor access reviewed | Time-limited, minimal access | [ ] | |
+| User access list current | No former employees have access | [x] | 2026-02-13 |
+| Admin access limited | Only necessary personnel | [x] | 2026-02-13 |
+| Offboarding checklist exists | Documented process | [x] | 2026-02-13 |
+| Contractor access reviewed | Time-limited, minimal access | [x] | 2026-02-13 |
 
 ---
 
 ## Part 3: Scheduled Security Tasks
 
-### Weekly (Automated/Passive)
-- Google Workspace automatically logs authentication events
-- No manual action required
+### Automated (GAS Triggers in RAPID_API → API_Compliance.gs)
 
-### Monthly
-| Task | Owner | Week |
-|------|-------|------|
-| Review Google Workspace login alerts | Admin | 1st week |
-| Check for any new third-party app authorizations | Admin | 1st week |
+| Trigger | Frequency | Function | What It Does |
+|---------|-----------|----------|--------------|
+| Quarterly Audit | Feb, May, Aug, Nov 1st @ 7 AM | `runQuarterlyAuditIfDue_()` | Full compliance audit → posts to Slack |
+| Weekly Stale User Monitor | Mondays @ 7 AM | `runWeeklyStaleUserCheck_()` | Flags users inactive 30+ days |
+| Monthly Token Hygiene | 15th @ 7 AM | `runMonthlyTokenHygiene_()` | Scans for unapproved apps with sensitive scopes |
 
-### Quarterly
-| Task | Owner | Month |
-|------|-------|-------|
-| Full access review (who has Workspace access) | Admin/COO | Jan, Apr, Jul, Oct |
-| Verify 2FA still enforced | Admin | Jan, Apr, Jul, Oct |
-| Review and rotate any API keys/tokens | Dev | Jan, Apr, Jul, Oct |
-| Update this compliance document | CEO/CTO | Jan, Apr, Jul, Oct |
-| Test offboarding procedure | COO | Jan, Apr, Jul, Oct |
+**Setup:** Project: RAPID_API | File: API_Compliance.gs | Run: `SETUP_ComplianceTrigger` (and/or `SETUP_WeeklyStaleUserMonitor`, `SETUP_MonthlyTokenHygiene`)
+
+### Manual Quarterly (Claude Code-Assisted)
+| Task | Owner | Months |
+|------|-------|--------|
+| Review automated audit results in Slack | CEO/Admin | Feb, May, Aug, Nov |
+| Remediate critical findings via Claude Code | CEO/Admin | Feb, May, Aug, Nov |
+| Update this compliance document | CEO/CTO | Feb, May, Aug, Nov |
 
 ### Annually
 | Task | Owner | Month |
@@ -162,16 +160,16 @@ When an employee/contractor leaves RPI:
 
 ---
 
-## Part 7: Completed Security Actions (2026-02-04)
+## Part 7: Completed Security Actions
 
-This section documents security improvements completed during the initial security audit.
+### Initial Security Audit (2026-02-04)
 
-### Infrastructure Security
+#### Infrastructure Security
 - [x] Enabled 2FA enforcement for Google Workspace (1-week grace period for existing users)
 - [x] Accepted HIPAA Business Associate Amendment with Google
 - [x] Verified GitHub repos are private
 
-### Application Security
+#### Application Security
 - [x] Removed hardcoded credentials from code (CEO-Dashboard, RAPID_API)
 - [x] Rotated exposed Slack tokens
 - [x] Updated all MCP config files with new tokens
@@ -179,12 +177,12 @@ This section documents security improvements completed during the initial securi
 - [x] Replaced forbidden UI patterns (alert/confirm/prompt)
 - [x] Verified PRODASH has organization-only access
 
-### Documentation
+#### Documentation
 - [x] Created security compliance documentation
 - [x] Added org-only access enforcement to CLAUDE.md
 - [x] Added deploy-time security hook for access verification
 
-### Organization-Only Access Verification (Complete)
+#### Organization-Only Access Verification (Complete)
 | App | Access | Verified Date | Notes |
 |-----|--------|---------------|-------|
 | PRODASH | DOMAIN | 2026-02-04 | Already compliant |
@@ -196,17 +194,60 @@ This section documents security improvements completed during the initial securi
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 
+### Q1 2026 Compliance Audit (2026-02-13)
+
+#### Token Revocations (26 total)
+| User | Tokens Revoked | Details |
+|------|---------------|---------|
+| Josh | 3 | cloudHQ (full Gmail+Drive), Adobe Acrobat (admin scope), Zoominfo (gmail.readonly) |
+| Christa | 17 | Full deprovision — all tokens revoked |
+| Allison | 2 | Microsoft + Chrome — already suspended, tokens cleaned |
+| Nikki | 1 | Adobe Acrobat (admin.directory.user.readonly) |
+
+#### User Suspensions (2 new)
+| User | Action |
+|------|--------|
+| rpifax@ | Suspended — 382+ days since last login |
+| christa@ | Suspended + fully deprovisioned (17 tokens revoked) |
+
+#### OU Corrections (2)
+| User | From → To | Reason |
+|------|-----------|--------|
+| nikki@ | Non-Archived → Archived | Securities/FINRA email archiving compliance |
+| talan@ | / (root) → Non-Archived | Proper OU placement |
+
+#### Super Admin Downgrades (3)
+| User | Before → After |
+|------|----------------|
+| shane@ | Super Admin → Delegated Admin (Billing, Groups, Storage, Help Desk) |
+| matt@ | Super Admin → No admin roles |
+| jmdconsulting@ | Super Admin → No admin roles |
+
+**Result: Super Admins reduced 5 → 2 (Josh + John Behn only)**
+
+#### 2FA Status
+- Enforced org-wide: 19/19 users
+- Enrolled: 5/19 (Josh, Angelique, Christa, Robert, Vince)
+- Grace period set in Admin Console for remaining users
+
+#### Automation Built
+- [x] Created `API_Compliance.gs` in RAPID_API — automated quarterly audit with Slack posting
+- [x] Added `delete_mobile_device` tool to rpi-workspace-mcp (10 → 11 admin tools)
+- [x] Quarterly/weekly/monthly triggers for continuous monitoring
+
 ---
 
 ## Part 8: Remaining Action Items
 
-### This Week (Priority 2)
-- [ ] Review current Workspace users for former employees/contractors
-- [ ] Confirm offboarding process with COO (John Behn)
+### Immediate (Post Q1 Audit)
+- [ ] Delete 13 stale mobile devices (requires MCP restart for `delete_mobile_device` tool)
+- [ ] JDM: Run `SETUP_ComplianceTrigger` in RAPID_API → API_Compliance.gs (authorizes Admin SDK + creates trigger)
+- [ ] JDM: Set SLACK_BOT_TOKEN and SLACK_CHANNEL_ADMIN in RAPID_API Script Properties (for audit Slack notifications)
 
 ### This Month (Priority 3)
-- [ ] Set quarterly calendar reminders for access reviews
-- [ ] Brief team on 2FA requirements and security reporting
+- [ ] Brief team on 2FA enrollment requirement (grace period active)
+- [ ] Review Josh's ~45 SSO-only app tokens for cleanup (low risk, clutter reduction)
+- [ ] Optionally enable weekly + monthly monitors: `SETUP_WeeklyStaleUserMonitor`, `SETUP_MonthlyTokenHygiene`
 
 ---
 
@@ -219,6 +260,9 @@ This section documents security improvements completed during the initial securi
 | 2026-02-04 | Merged IMMEDIATE_ACTIONS.md into this document | Claude Code |
 | 2026-02-13 | All 7 GAS apps verified org-only. Fixed DEX, CAM, CEO-Dashboard. | Claude Code |
 | 2026-02-13 | Stale deployment cleanup: 38 old ANYONE deploys (19 DEX + 19 SENTINEL) updated to DOMAIN. | Claude Code |
+| 2026-02-13 | Q1 2026 audit: 26 tokens revoked, 2 users suspended, 3 Super Admins downgraded, 2 OU moves | Claude Code |
+| 2026-02-13 | Part 2 checklist updated. Part 3 rewritten with automated triggers. Part 7/8 expanded. | Claude Code |
+| 2026-02-13 | API_Compliance.gs added to RAPID_API — quarterly/weekly/monthly automated compliance | Claude Code |
 
 ---
 
