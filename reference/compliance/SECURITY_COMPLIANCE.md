@@ -188,8 +188,9 @@ This section documents security improvements completed during the initial securi
 | App | Access | Verified Date | Notes |
 |-----|--------|---------------|-------|
 | PRODASH | DOMAIN | 2026-02-04 | Already compliant |
-| SENTINEL | DOMAIN | 2026-02-13 | Latest deploy (v381) was already DOMAIN; old deploys were ANYONE |
-| DEX | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v64) |
+| SENTINEL | DOMAIN | 2026-02-13 | All 21 deploys DOMAIN (19 stale ANYONE deploys updated to v381) |
+| SENTINEL v2 | DOMAIN | 2026-02-13 | All 2 deploys already DOMAIN — clean |
+| DEX | DOMAIN | 2026-02-13 | All 20 deploys DOMAIN (19 stale ANYONE deploys updated to v64) |
 | RIIMO | DOMAIN | 2026-02-13 | Already compliant (v7) |
 | CAM | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v51) |
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
@@ -217,6 +218,7 @@ This section documents security improvements completed during the initial securi
 | 2026-02-04 | 2FA enforcement enabled, HIPAA BAA accepted | JDM + Claude Code |
 | 2026-02-04 | Merged IMMEDIATE_ACTIONS.md into this document | Claude Code |
 | 2026-02-13 | All 7 GAS apps verified org-only. Fixed DEX, CAM, CEO-Dashboard. | Claude Code |
+| 2026-02-13 | Stale deployment cleanup: 38 old ANYONE deploys (19 DEX + 19 SENTINEL) updated to DOMAIN. | Claude Code |
 
 ---
 
