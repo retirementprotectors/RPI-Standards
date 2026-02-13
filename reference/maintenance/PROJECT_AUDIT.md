@@ -1,13 +1,13 @@
 # Existing Project Standards Audit
 
-> **When to Use**: Verifying an EXISTING project follows RPI-Standards  
-> **Counterpart**: `+0- PROJECT_KICKOFF_TEMPLATE.md` (for NEW projects)  
-> **How to Use**: Copy the DEPLOYMENT PROMPT into a new Cursor chat  
-> **Version**: v2.0 (January 11, 2026)
+> **When to Use**: Verifying an EXISTING project follows RPI-Standards
+> **Counterpart**: `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md` (for NEW projects)
+> **How to Run**: Tell Claude Code "audit [PROJECT_NAME]"
+> **Version**: v3.0 (February 13, 2026)
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 This audit verifies an **existing project** is fully compliant with RPI-Standards. It checks everything the Kickoff Template establishes, but retroactively.
 
@@ -19,324 +19,174 @@ This audit verifies an **existing project** is fully compliant with RPI-Standard
 
 ---
 
-## 📋 What Gets Checked
+## What Gets Checked
 
 | Category | Items |
 |----------|-------|
-| **Git & Deployment** | Git initialized, remote set, pre-flight in OPS, deploy report template |
-| **Document Structure** | All required docs exist in `Docs/` |
-| **Standards Reference** | Agent Briefing references `_RPI_STANDARDS/`, doesn't copy |
-| **Agent Model** | Correct model chosen (Domain/Module/Hybrid) with rationale |
-| **Role Boundaries** | GA/OPS/SPC scopes clearly defined |
-| **Self-Verification** | Each SPC has checklist |
-| **UI Compliance** | Design system followed, no forbidden patterns |
-| **Code Quality** | No `alert()`/`confirm()`/`prompt()`, structured responses |
+| **Git & Deployment** | Git initialized, remote set, on main branch, synced |
+| **Document Structure** | CLAUDE.md, Docs/ with handoff + briefing |
+| **Standards Reference** | References `_RPI_STANDARDS/`, doesn't copy |
+| **Code Quality** | No `alert()`/`confirm()`/`prompt()`, structured responses, no hardcoded colors |
+| **Security** | Org-only access, no hardcoded credentials, Script Properties for secrets |
+| **PHI Compliance** | No PHI in logs/errors, SSN masking, PHI only in Workspace |
 
 ---
 
-## 🚀 DEPLOYMENT PROMPT
-
-**Copy everything below this line into a new Cursor chat:**
-
----
-
-```
-You are a Standards Audit Agent. Your task is to verify this project complies with RPI-Standards and fix any gaps.
-
-## PROJECT INFO
-- **Project Path**: /Users/joshd.millang/Projects/[PROJECT_NAME]
-- **Project Name**: [PROJECT_NAME]
-- **GitHub Repo**: https://github.com/retirementprotectors/[PROJECT_NAME].git
-
-## STANDARDS REFERENCE (Read First)
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/MASTER_AGENT_FRAMEWORK.md
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/PROJECT_KICKOFF_TEMPLATE.md
-- /Users/joshd.millang/Projects/RPI-Standards/0-Setup/UI_DESIGN_GUIDELINES.md
-
----
-
-## AUDIT CHECKLIST
+## Audit Phases
 
 ### Phase 1: Git & Infrastructure
 
-**1.1 Git Verification**
 ```bash
-cd /Users/joshd.millang/Projects/[PROJECT_NAME]
+cd ~/Projects/[SUPERPROJECT]/[PROJECT_NAME]
 git status
 git remote -v
+git log --oneline -5
 ```
 
-Expected:
-- On branch main
-- Remote origin points to `https://github.com/retirementprotectors/[PROJECT_NAME].git`
+**Expected**:
+- On branch `main`
+- Remote origin: `https://github.com/retirementprotectors/[REPO_NAME].git`
+- Recent commits, clean working tree
 
-**Action if FAIL**: Initialize git, create GitHub repo, push.
+**Note**: GitHub repo names may differ from local folder names. See `reference/strategic/PROJECT_STRUCTURE.md` Section 8 for the mapping.
 
 ---
 
 ### Phase 2: Document Structure
 
-**2.1 Required Documents**
-
-Check `Docs/` folder contains:
+**Required documents:**
 
 | Document | Required | Purpose |
 |----------|----------|---------|
-| `0-SESSION_HANDOFF.md` | ✅ | Current state, continuity |
-| `1-AGENT_BRIEFING.md` | ✅ | Project context for all agents |
-| `2.1-AGENT_SCOPE_GENERAL.md` | ✅ | GA role definition |
-| `2.2-AGENT_SCOPE_OPS.md` | ✅ | OPS role + deployment info |
-| `3.X-AGENT_SCOPE_SPC*.md` | Per specialist | One per SPC |
-
-**Action if missing**: Create from templates in MASTER_AGENT_FRAMEWORK.md
+| `CLAUDE.md` | All projects | Project context for Claude Code |
+| `Docs/0-SESSION_HANDOFF*.md` | GAS projects | Current state, continuity |
+| `Docs/1-AGENT_BRIEFING.md` | GAS projects | Project context |
+| `.clasp.json` | GAS projects | Script ID configuration |
+| `appsscript.json` | GAS projects | GAS manifest |
 
 ---
 
-### Phase 3: Standards Reference (Not Copies)
+### Phase 3: Standards Compliance
 
-**3.1 Agent Briefing Header**
+**CLAUDE.md must include or reference:**
+- Project-specific context (what this project does, key modules)
+- Required References section pointing to `_RPI_STANDARDS/reference/`
+- Deployment ID for `clasp deploy -i`
 
-`1-AGENT_BRIEFING.md` MUST contain this section (or equivalent):
-
-```markdown
-## 📚 Standards Reference
-
-Universal standards live in `RPI-Standards/` (NOT in this project):
-
-| Document | Purpose |
-|----------|---------|
-| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent team patterns, parallelization |
-| `0-Setup/PROJECT_KICKOFF_TEMPLATE.md` | New project checklist |
-| `0-Setup/UI_DESIGN_GUIDELINES.md` | RPI Design System |
-| `0-Setup/JDM_WORKING_CONTEXT.md` | How to work with JDM |
-
-**Location**: `/Users/joshd.millang/Projects/RPI-Standards/`
-**GitHub**: https://github.com/retirementprotectors/RPI-Standards
-
-⚠️ **Do NOT copy standards into project repos** - reference them from central location.
-```
-
-**3.2 No Duplicate Standards**
-
-Search for and DELETE any files like:
-- `+PROJECT_STANDARDS.md`
-- `+DEPLOYMENT_MASTER_PLAN.md`
-- `+Claude_Code_Strategies*.md`
-- Any file duplicating content from `_RPI_STANDARDS/`
+**Must NOT contain:**
+- Copies of global standards (reference `_RPI_STANDARDS/` instead)
+- Outdated paths (`0-Setup/`, `1-Manage/`, `2-Production/`)
 
 ---
 
-### Phase 4: Agent Model Documentation
-
-**4.1 Model Selection**
-
-`1-AGENT_BRIEFING.md` should document which model is used:
-
-| Model | When to Use |
-|-------|-------------|
-| Domain-Based | 1-2 modules, tech domains more important |
-| Module-Based | 3+ modules, all built at once |
-| Hybrid | 3+ modules, built in phases, UI consistency critical |
-
-**Check for**: Clear statement like "CAM uses the **Hybrid model** because..."
-
-**Action if missing**: Add agent model section with rationale.
-
----
-
-### Phase 5: OPS Scope Compliance
-
-**5.1 Pre-Flight Checks (MANDATORY)**
-
-`2.2-AGENT_SCOPE_OPS.md` MUST contain:
-
-```markdown
-## 🛑 Pre-Flight Checks (MANDATORY)
-
-**Run these BEFORE any deployment:**
-
-\`\`\`bash
-cd /Users/joshd.millang/Projects/[PROJECT_NAME]
-git status          # Must show "on branch main"
-git remote -v       # Must show origin URL
-\`\`\`
-
-⚠️ **IF GIT FAILS, REPORT FAILURE - DO NOT REPORT SUCCESS**
-```
-
-**5.2 Deploy Report Template (MANDATORY)**
-
-`2.2-AGENT_SCOPE_OPS.md` MUST contain:
-
-```markdown
-## 📋 OPS Deploy Report Template (MANDATORY)
-
-\`\`\`markdown
-## OPS Deploy Report: vX.X
-
-### Pre-Flight
-- [ ] \`git status\`: On branch main, working tree clean
-- [ ] \`git remote -v\`: origin https://github.com/retirementprotectors/[PROJECT_NAME].git
-
-### Deploy Results
-| Step | Command | Result |
-|------|---------|--------|
-| 1 | \`clasp push\` | ✅/❌ |
-| 2 | \`clasp version\` | ✅/❌ Version N created |
-| 3 | \`clasp deploy\` | ✅/❌ |
-| 4 | \`git commit\` | ✅/❌ [commit hash] |
-| 5 | \`git push\` | ✅/❌ |
-
-### Status: ✅ COMPLETE / ❌ BLOCKED
-\`\`\`
-
-**⚠️ "clasp push succeeded" is NOT a complete deploy. All 5 steps must pass.**
-```
-
-**5.3 Deployment Info**
-
-OPS scope should include:
-- [ ] Production URL documented
-- [ ] Deployment ID for `clasp deploy -i` flag
-- [ ] Version history (reasonably current)
-
----
-
-### Phase 6: SPC Scope Compliance
-
-**6.1 Self-Verification Checklists**
-
-Each `3.X-AGENT_SCOPE_SPC*.md` should contain:
-
-```markdown
-## ✅ Self-Verification Checklist
-
-Before reporting complete:
-- [ ] No `alert()`, `confirm()`, `prompt()` in my changes
-- [ ] All functions return `{ success: true/false, data/error }`
-- [ ] No hardcoded colors (use CSS variables)
-- [ ] My code follows existing patterns in the file
-```
-
----
-
-### Phase 7: Code Quality Scan
-
-**7.1 Forbidden Patterns**
+### Phase 4: Code Quality Scan
 
 ```bash
-cd /Users/joshd.millang/Projects/[PROJECT_NAME]
+# Forbidden function calls
+grep -rn '\balert(\|confirm(\|prompt(' *.html *.gs 2>/dev/null \
+  | grep -v 'showConfirm\|showToast\|showAlert\|//\|CLAUDE\|\.md'
 
-# Check for banned dialog functions
-grep -r "alert\|confirm\|prompt" *.html *.gs 2>/dev/null | grep -v "// " | grep -v "showConfirm"
+# Hardcoded colors
+grep -rn 'style=.*#[0-9a-fA-F]\{3,6\}' *.html 2>/dev/null
 
-# Check for hardcoded colors in HTML
-grep -r 'style=.*#[0-9a-fA-F]' *.html 2>/dev/null
+# Hardcoded credentials
+grep -rn 'api_key\|apiKey\|password\|secret' *.gs 2>/dev/null \
+  | grep -v 'PropertiesService\|getProperty\|CLAUDE\|\.md\|//'
 ```
 
-**Action if found**: Report specific file:line for remediation.
+---
 
-**7.2 MATRIX Tab Names**
+### Phase 5: Security Check
 
-If project uses MATRIX, verify tab names use underscore prefix:
-- ✅ `_AGENT_MASTER`
-- ❌ `AGENT MASTER`
+- [ ] GAS web app deployed as "Anyone within Retirement Protectors INC"
+- [ ] No hardcoded credentials in code (all in Script Properties)
+- [ ] No PHI in console.log/Logger.log statements
+- [ ] Error messages don't expose sensitive data
 
 ---
 
-### Phase 8: Session Handoff
-
-**8.1 Handoff Document**
-
-`0-SESSION_HANDOFF.md` should contain:
-- [ ] Current version number
-- [ ] What's complete vs in-progress
-- [ ] Production URL
-- [ ] Deployment commands
-- [ ] Key learnings/gotchas
-
----
-
-## AUDIT REPORT FORMAT
-
-After completing all checks, report:
+## Audit Report Format
 
 ```markdown
 ## Standards Audit Report: [PROJECT_NAME]
-
-### Pre-Flight
-- [ ] `git status`: [result]
-- [ ] `git remote -v`: [result]
-
-### Document Structure
-| Document | Status |
-|----------|--------|
-| `0-SESSION_HANDOFF.md` | ✅/❌/🔧 Fixed |
-| `1-AGENT_BRIEFING.md` | ✅/❌/🔧 Fixed |
-| `2.1-AGENT_SCOPE_GENERAL.md` | ✅/❌/🔧 Fixed |
-| `2.2-AGENT_SCOPE_OPS.md` | ✅/❌/🔧 Fixed |
-| `3.X-AGENT_SCOPE_SPC*.md` | ✅/❌/🔧 Fixed |
-
-### Standards Compliance
-| Check | Status |
-|-------|--------|
-| References `_RPI_STANDARDS/` (no copies) | ✅/❌/🔧 |
-| Agent model documented with rationale | ✅/❌/🔧 |
-| OPS has pre-flight checks | ✅/❌/🔧 |
-| OPS has deploy report template | ✅/❌/🔧 |
-| SPC scopes have self-verification | ✅/❌/🔧 |
-| No forbidden patterns in code | ✅/❌/🔧 |
-
-### Changes Made
-| File | Change |
-|------|--------|
-| [file] | [what was added/fixed] |
+**Date**: YYYY-MM-DD
+**Path**: ~/Projects/[SUPERPROJECT]/[PROJECT_NAME]
 
 ### Git
-- Commit: [hash]
-- Push: ✅/❌
+| Check | Status |
+|-------|--------|
+| Git initialized | ✅/❌ |
+| Remote set correctly | ✅/❌ |
+| On main branch | ✅/❌ |
+| Clean working tree | ✅/❌ |
 
-### Final Status: ✅ FULLY COMPLIANT / ⚠️ PARTIAL / ❌ NEEDS WORK
+### Documentation
+| Document | Status |
+|----------|--------|
+| CLAUDE.md | ✅/❌ |
+| Docs/0-SESSION_HANDOFF.md | ✅/❌/N/A |
+| .clasp.json | ✅/❌/N/A |
 
-[Notes on any remaining issues]
+### Code Quality
+| Check | Status |
+|-------|--------|
+| No alert()/confirm()/prompt() | ✅/❌ |
+| No hardcoded colors | ✅/❌ |
+| No hardcoded credentials | ✅/❌ |
+| Structured responses ({success, data/error}) | ✅/❌ |
+
+### Security
+| Check | Status |
+|-------|--------|
+| Org-only access | ✅/❌/⏳ |
+| Script Properties for secrets | ✅/❌ |
+| No PHI in logs | ✅/❌ |
+
+### Final Status: ✅ COMPLIANT / ⚠️ PARTIAL / ❌ NEEDS WORK
 ```
 
 ---
 
-## EXECUTION INSTRUCTIONS
+## Project Tracker
 
-1. Read the standards reference docs first
-2. Run through each phase sequentially
-3. Fix issues as you find them (don't just report)
-4. Commit all changes with message: `docs: RPI-Standards audit - [summary of fixes]`
-5. Push to GitHub
-6. Report final status using the template above
-
-Begin by checking git status and listing the Docs/ folder.
-```
-
----
-
-## 📁 Project Tracker
-
-| Project | Path | Audit Status |
-|---------|------|--------------|
-| DAVID-HUB | `/Projects/DAVID-HUB` | ✅ Compliant |
-| CAM | `/Projects/CAM` | ✅ Compliant |
-| PRODASH | `/Projects/PRODASH` | ✅ Compliant |
-| SENTINEL | `/Projects/sentinel` | ✅ Compliant |
-| RPI Content Manager | `/Projects/RPI Content Manager` | ✅ Compliant |
-| RAPID_CORE | `/Projects/RAPID_CORE` | ✅ Compliant |
-| [Add more] | | |
+| Project | Path | Last Audit | Status |
+|---------|------|------------|--------|
+| _RPI_STANDARDS | `_RPI_STANDARDS` | 2026-02-13 | ✅ |
+| PRODASH | `PRODASH_TOOLS/PRODASH` | 2026-02-04 | ✅ |
+| QUE-Medicare | `PRODASH_TOOLS/QUE/QUE-Medicare` | — | ⏳ |
+| C3 | `RAPID_TOOLS/C3` | 2026-02-04 | ✅ |
+| CAM | `RAPID_TOOLS/CAM` | 2026-02-04 | ✅ |
+| CEO-Dashboard | `RAPID_TOOLS/CEO-Dashboard` | — | ⏳ |
+| DEX | `RAPID_TOOLS/DEX` | — | ⏳ |
+| MCP-Hub | `RAPID_TOOLS/MCP-Hub` | — | ⏳ |
+| PDF_SERVICE | `RAPID_TOOLS/PDF_SERVICE` | — | ⏳ |
+| RAPID_API | `RAPID_TOOLS/RAPID_API` | 2026-02-04 | ✅ |
+| RAPID_CORE | `RAPID_TOOLS/RAPID_CORE` | 2026-02-04 | ✅ |
+| RAPID_IMPORT | `RAPID_TOOLS/RAPID_IMPORT` | — | ⏳ |
+| RIIMO | `RAPID_TOOLS/RIIMO` | — | ⏳ |
+| RPI-Command-Center | `RAPID_TOOLS/RPI-Command-Center` | — | ⏳ |
+| DAVID-HUB | `SENTINEL_TOOLS/DAVID-HUB` | 2026-02-04 | ✅ |
+| sentinel | `SENTINEL_TOOLS/sentinel` | 2026-02-04 | ✅ |
+| sentinel-v2 | `SENTINEL_TOOLS/sentinel-v2` | — | ⏳ |
 
 ---
 
-## 💡 Tips for Batch Audits
+## Batch Audit Tips
 
-1. **Parallel Execution**: Launch multiple agents simultaneously — they're independent projects
-2. **Replace Placeholders**: Before pasting, replace `[PROJECT_NAME]` with actual name
-3. **Verify Commits**: Each agent reports a commit hash — verify in GitHub
-4. **Update Tracker**: Mark projects as compliant after successful audit
+1. **Parallel Execution**: Claude Code spawns sub-agents per project — independent audits run simultaneously
+2. **Fix as you go**: Don't just report — fix issues when found
+3. **Commit per project**: Each project gets its own commit with message `docs: RPI-Standards audit - [summary]`
+4. **Update tracker**: Mark projects as compliant after successful audit
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v3.0 | Feb 13, 2026 | Rewritten for SuperProject paths, Claude Code, simplified phases, updated tracker |
+| v2.0 | Jan 11, 2026 | Added deployment prompt format |
+| v1.0 | Jan 2026 | Initial audit checklist |
 
 ---
 

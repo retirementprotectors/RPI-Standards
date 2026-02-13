@@ -1,9 +1,9 @@
 # Weekly Health Check
 
-> **When to Use**: Weekly audit of all active projects  
-> **Frequency**: Every Monday or first day of work week  
-> **Time Required**: 15-30 minutes  
-> **Version**: v1.1 (January 25, 2026)
+> **When to Use**: Weekly audit of all active projects
+> **Frequency**: Every Monday or first day of work week
+> **Time Required**: 15-30 minutes (automated via Claude Code)
+> **Version**: v2.0 (February 13, 2026)
 
 ---
 
@@ -14,207 +14,134 @@ Quick verification that all projects maintain baseline health:
 - No forbidden code patterns introduced
 - MCP tools functioning
 - Documentation current
-- **Project alignment with vision** (monthly or on-demand)
 
-This is a **quick check**, not a full audit. For comprehensive project audits, use `EXISTING_PROJECT_STANDARDS_AUDIT.md`.
+This is a **quick check**, not a full audit. For comprehensive project audits, use `PROJECT_AUDIT.md`.
+
+---
+
+## How to Run
+
+Tell Claude Code: **"weekly check"** or **"health check"**
+
+Claude Code will automatically:
+1. Check git status across all 16 projects (using SuperProject paths)
+2. Scan for forbidden code patterns
+3. Verify documentation status
+4. Report results
 
 ---
 
 ## Weekly Checklist
 
-### 1. Git Health (All Projects)
-
-Run this script to check all projects at once:
+### 1. Git Health (All 16 Projects)
 
 ```bash
-cd /Users/joshd.millang/Projects
-
-for dir in RPI-Standards CAM DAVID-HUB PRODASH sentinel RAPID_CORE RAPID_IMPORT RAPID_API; do
-  echo "=== $dir ==="
-  if [ -d "$dir" ]; then
-    cd "$dir"
-    git status --short
-    git remote -v | head -1
-    cd ..
+for repo in \
+  ~/Projects/_RPI_STANDARDS \
+  ~/Projects/PRODASH_TOOLS/PRODASH \
+  ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+  ~/Projects/RAPID_TOOLS/C3 \
+  ~/Projects/RAPID_TOOLS/CAM \
+  ~/Projects/RAPID_TOOLS/CEO-Dashboard \
+  ~/Projects/RAPID_TOOLS/DEX \
+  ~/Projects/RAPID_TOOLS/MCP-Hub \
+  ~/Projects/RAPID_TOOLS/PDF_SERVICE \
+  ~/Projects/RAPID_TOOLS/RAPID_API \
+  ~/Projects/RAPID_TOOLS/RAPID_CORE \
+  ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/RAPID_TOOLS/RIIMO \
+  ~/Projects/RAPID_TOOLS/RPI-Command-Center \
+  ~/Projects/SENTINEL_TOOLS/DAVID-HUB \
+  ~/Projects/SENTINEL_TOOLS/sentinel \
+  ~/Projects/SENTINEL_TOOLS/sentinel-v2; do
+  name=$(echo "$repo" | sed "s|$HOME/Projects/||")
+  git_short=$(git -C "$repo" status --short 2>/dev/null)
+  branch=$(git -C "$repo" branch --show-current 2>/dev/null)
+  last=$(git -C "$repo" log -1 --format="%ar" 2>/dev/null)
+  if [ -z "$git_short" ]; then
+    echo "$name | CLEAN | $branch | $last"
   else
-    echo "  [NOT FOUND]"
+    count=$(echo "$git_short" | wc -l | tr -d ' ')
+    echo "$name | DIRTY ($count) | $branch | $last"
   fi
-  echo ""
 done
 ```
 
-**Expected**: Each project shows clean status and correct origin URL.
-
 **Red Flags**:
+- `DIRTY` → Commit and push
 - `fatal: not a git repository` → Git not initialized (CRITICAL)
-- Uncommitted changes → Commit and push
-- Ahead/behind origin → Sync with remote
+- Last commit > 2 weeks ago on active project → Check if stale
 
 ---
 
 ### 2. Code Quality Scan
 
-Quick check for forbidden patterns across all projects:
+Scan for forbidden patterns across all GAS web apps:
 
 ```bash
-cd /Users/joshd.millang/Projects
-
-# Check for alert/confirm/prompt
-echo "=== Checking for alert/confirm/prompt ==="
-for dir in CAM DAVID-HUB PRODASH sentinel; do
-  if [ -d "$dir" ]; then
-    results=$(grep -rn "alert\|confirm\|prompt" "$dir"/*.html "$dir"/*.gs 2>/dev/null | grep -v "showConfirm\|showToast" | head -5)
-    if [ -n "$results" ]; then
-      echo "⚠️ $dir:"
-      echo "$results"
-    fi
-  fi
+# alert()/confirm()/prompt() — actual function calls only
+# Exclude: variable names, CSS classes, comments, parameter names
+for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+  ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/DEX ~/Projects/SENTINEL_TOOLS/sentinel; do
+  name=$(basename "$repo")
+  grep -rn '\balert(\|confirm(\|prompt(' "$repo"/*.html "$repo"/*.gs 2>/dev/null \
+    | grep -v 'showConfirm\|showToast\|showAlert\|//\|CLAUDE\|\.md' | head -3
 done
 
-# Check for hardcoded colors
-echo ""
-echo "=== Checking for hardcoded colors ==="
-for dir in CAM DAVID-HUB PRODASH sentinel; do
-  if [ -d "$dir" ]; then
-    results=$(grep -rn 'style=.*#[0-9a-fA-F]' "$dir"/*.html 2>/dev/null | head -3)
-    if [ -n "$results" ]; then
-      echo "⚠️ $dir:"
-      echo "$results"
-    fi
-  fi
+# Hardcoded inline colors
+for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+  ~/Projects/RAPID_TOOLS/DEX ~/Projects/SENTINEL_TOOLS/sentinel; do
+  name=$(basename "$repo")
+  grep -rn 'style=.*#[0-9a-fA-F]\{3,6\}' "$repo"/*.html 2>/dev/null | head -3
 done
 ```
 
-**Expected**: No output (clean).
+**Known violations to track:**
 
-**If violations found**: Create task to fix, assign to appropriate SPC.
-
----
-
-### 2b. GAS DevTools Pattern Check
-
-Verify all GAS projects have centralized DevTools files:
-
-```bash
-cd /Users/joshd.millang/Projects
-
-echo "=== GAS Projects - DevTools Pattern Check ==="
-for dir in DEX RAPID_CORE RAPID_IMPORT RAPID_API CAM sentinel; do
-  if [ -d "$dir" ]; then
-    devtools=$(ls "$dir"/*DevTools.gs 2>/dev/null | head -1)
-    if [ -n "$devtools" ]; then
-      echo "✅ $dir: $(basename $devtools)"
-    else
-      # Check for scattered DEBUG/SETUP/TEST functions
-      scattered=$(grep -l "function.*\(DEBUG_\|SETUP_\|TEST_\|FIX_\)" "$dir"/*.gs 2>/dev/null | wc -l | tr -d ' ')
-      if [ "$scattered" -gt "0" ]; then
-        echo "⚠️ $dir: Missing DevTools.gs ($scattered files have DEBUG/SETUP/TEST/FIX functions)"
-      else
-        echo "✅ $dir: No dev functions (OK)"
-      fi
-    fi
-  fi
-done
-```
-
-**Expected**: Each GAS project shows a `*_DevTools.gs` file.
-
-**If missing**: See `0-Setup/GAS_PROJECT_STANDARDS.md` for consolidation steps.
+| Project | Issue | Severity |
+|---------|-------|----------|
+| QUE-Medicare | 3x `alert()` + 1x `confirm()` in Scripts.html | HIGH — real forbidden calls |
+| PRODASH | Hardcoded hex colors in Index.html + C3-Evolution.html | MEDIUM |
+| QUE-Medicare | Hardcoded hex colors in Index.html + Scripts.html | MEDIUM |
+| DEX | Hardcoded hex colors in Index.html (input modal) | LOW |
+| sentinel | Hardcoded hex colors in Index.html (modals) | LOW |
 
 ---
 
 ### 3. MCP Tools Verification
 
-Open Cursor → Settings → Tools & MCP
-
-**Check these are Connected**:
-| MCP Server | Status |
-|------------|--------|
-| gdrive | ✅ Connected |
-| gmail | ✅ Connected |
-| google-calendar | ✅ Connected |
-| slack | ✅ Connected |
-| npi-registry | ✅ Connected |
-| medicare-plans | ✅ Connected |
-| commission-intelligence | ✅ Connected |
-
-**If any show Error**: See `0-Setup/NEW_MACHINE_SETUP.md` for troubleshooting.
-
----
-
-### 4. Standards Repo Sync
-
 ```bash
-cd /Users/joshd.millang/Projects/RPI-Standards
-git fetch origin
-git status
+claude mcp list
 ```
 
-**Expected**: `Your branch is up to date with 'origin/main'`
+**Check these are running:**
 
-**If behind**: `git pull` to get latest standards.
+| MCP | Type | What It Does |
+|-----|------|--------------|
+| rpi-workspace | Consolidated (59 tools) | GAS execution, Chat, People, WordPress, Canva |
+| rpi-business | Consolidated (23 tools) | Commission intelligence, Meeting processor |
+| rpi-healthcare | Consolidated (14 tools) | NPI, ICD-10, CMS coverage |
+| gdrive | Third-party | Google Drive access |
+| google-calendar | Third-party | Calendar events |
+| gmail | Third-party | Read/send email |
+| slack | Third-party | Slack messages/channels |
+| playwright | Plugin | Browser automation |
 
 ---
 
-### 5. Documentation Spot Check
+### 4. Documentation Spot Check
 
 Pick one project each week and verify:
 
+- [ ] `CLAUDE.md` exists and is current
 - [ ] `Docs/0-SESSION_HANDOFF.md` reflects current state
 - [ ] Version number in handoff matches deployed version
-- [ ] No stale `FIX_*.md` or `TEST_*.md` files in root
 
----
+**Projects missing session handoffs (as of 2026-02-13):**
+- QUE-Medicare, C3, MCP-Hub, PDF_SERVICE, RIIMO, RPI-Command-Center, sentinel-v2
 
-### 6. Project Alignment Audit (Monthly or On-Demand)
-
-Run a deeper check across all projects for vision alignment, drift, redundancies, and blind spots.
-
-**When to run**: Monthly, or when prompted with "run project alignment audit"
-
-#### Vision Alignment Check
-
-For each project's `Docs/1-AGENT_BRIEFING.md`:
-- [ ] Purpose still aligns with overall vision (see `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md`)
-- [ ] No project has drifted into scope of another
-- [ ] Module status reflects actual code state (no stale "Not Started" on completed modules)
-
-#### Stale Reference Scan
-
-```bash
-cd /Users/joshd.millang/Projects
-for dir in CAM DAVID-HUB PRODASH sentinel RAPID_CORE RAPID_IMPORT RAPID_API; do
-  echo "=== $dir ==="
-  grep -rn "_RPI_STANDARDS\|+0-\|+1-\|+2-" "$dir/Docs/" 2>/dev/null | head -5 || echo "  Clean"
-done
-```
-
-**Expected**: No output (all references updated to `0-Setup/`, `1-Manage/`, `2-Production/`).
-
-#### Redundancy Check
-
-- [ ] No two projects duplicating the same functionality
-- [ ] Shared code lives in RAPID_CORE, not copied into individual projects
-- [ ] No duplicate documentation across projects (reference RPI-Standards instead)
-
-#### Blind Spot Scan
-
-- [ ] All projects have session handoffs (`Docs/0-SESSION_HANDOFF.md`)
-- [ ] Security concerns documented (auth gaps, PHI handling)
-- [ ] Dependencies between projects documented in briefings
-- [ ] Compliance considerations noted where applicable (see `0-Setup/COMPLIANCE_STANDARDS.md`)
-
-#### Project Status Summary
-
-| Project | Vision Aligned | Stale Refs | Session Handoff | Notes |
-|---------|---------------|------------|-----------------|-------|
-| CAM | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| DAVID-HUB | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| PRODASH | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| sentinel | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| RAPID_CORE | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| RAPID_IMPORT | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
-| RAPID_API | ✅ / ⚠️ | ✅ / ⚠️ | ✅ / ⚠️ | |
+**Projects missing Docs/ directory entirely:**
+- PDF_SERVICE, RIIMO
 
 ---
 
@@ -223,33 +150,37 @@ done
 ```markdown
 ## Weekly Health Check Report
 **Date**: YYYY-MM-DD
-**Checked by**: [Agent/Person]
+**Checked by**: Claude Code GA
 
 ### Git Status
-| Project | Status | Notes |
-|---------|--------|-------|
-| RPI-Standards | ✅ | Clean |
-| CAM | ✅ | Clean |
-| DAVID-HUB | ✅ | Clean |
-| PRODASH | ✅ | Clean |
-| sentinel | ✅ | Clean |
+| Project | Status | Last Commit | Notes |
+|---------|--------|-------------|-------|
+| _RPI_STANDARDS | ✅/⚠️ | X ago | |
+| PRODASH_TOOLS/PRODASH | ✅/⚠️ | X ago | |
+| PRODASH_TOOLS/QUE/QUE-Medicare | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/C3 | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/CAM | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/CEO-Dashboard | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/DEX | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/MCP-Hub | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/PDF_SERVICE | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/RAPID_API | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/RAPID_CORE | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/RAPID_IMPORT | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/RIIMO | ✅/⚠️ | X ago | |
+| RAPID_TOOLS/RPI-Command-Center | ✅/⚠️ | X ago | |
+| SENTINEL_TOOLS/DAVID-HUB | ✅/⚠️ | X ago | |
+| SENTINEL_TOOLS/sentinel | ✅/⚠️ | X ago | |
+| SENTINEL_TOOLS/sentinel-v2 | ✅/⚠️ | X ago | |
 
 ### Code Quality
-- [ ] No forbidden patterns found
+- [ ] No new forbidden pattern violations
 
 ### MCP Tools
 - [ ] All MCPs connected
 
 ### Documentation
 - **Spot-checked**: [PROJECT_NAME]
-- [ ] Handoff current
-- [ ] No stale temp files
-
-### Project Alignment (if run this week)
-- [ ] All projects aligned with vision
-- [ ] No stale references found
-- [ ] No redundancies identified
-- [ ] Blind spots: [List any found]
 
 ### Issues Found
 [List any issues and remediation taken]
@@ -264,12 +195,12 @@ done
 **Immediate Action Required**:
 - Git not initialized on any project
 - MCP tools all failing (auth issue)
-- Forbidden patterns in production code
+- New `alert()`/`confirm()`/`prompt()` calls in production code
 
 **Schedule Fix This Week**:
 - Uncommitted changes older than 3 days
 - Out-of-date session handoffs
-- Temp files accumulating
+- New hardcoded colors introduced
 
 **Note for Next Week**:
 - Minor documentation gaps
@@ -281,12 +212,10 @@ done
 
 | Related Standard | When to Use Instead |
 |-----------------|---------------------|
-| `0-Setup/AI_PLATFORM_STRATEGIC_ROADMAP.md` | Vision reference for alignment checks |
-| `0-Setup/COMPLIANCE_STANDARDS.md` | Security/PHI concerns discovered |
-| `0-Setup/GAS_PROJECT_STANDARDS.md` | GAS DevTools pattern & structure standards |
-| `EXISTING_PROJECT_STANDARDS_AUDIT.md` | Full compliance audit (monthly or new projects) |
-| `DOCUMENTATION_CLEANUP_GUIDE.md` | Major doc reorganization needed |
-| `ECOSYSTEM_DOCUMENTATION_INVENTORY.md` | Tracking all docs across projects |
+| `reference/strategic/PROJECT_STRUCTURE.md` | Directory structure reference |
+| `reference/compliance/COMPLIANCE_STANDARDS.md` | Security/PHI concerns discovered |
+| `reference/maintenance/PROJECT_AUDIT.md` | Full compliance audit (monthly or new projects) |
+| `reference/production/PRE_LAUNCH_CHECKLIST.md` | Before deploying new features |
 
 ---
 
@@ -294,8 +223,9 @@ done
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v1.2 | Feb 1, 2026 | Added GAS DevTools Pattern Check (Section 2b) |
-| v1.1 | Jan 25, 2026 | Added Project Alignment Audit (Section 6) |
+| v2.0 | Feb 13, 2026 | Rewritten for SuperProject paths, Claude Code (not Cursor), consolidated MCPs, all 16 projects |
+| v1.2 | Feb 1, 2026 | Added GAS DevTools Pattern Check |
+| v1.1 | Jan 25, 2026 | Added Project Alignment Audit |
 | v1.0 | Jan 25, 2026 | Initial weekly health check |
 
 ---
