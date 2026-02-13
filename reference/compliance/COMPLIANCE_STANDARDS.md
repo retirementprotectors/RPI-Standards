@@ -1,9 +1,10 @@
 # RPI Compliance & Security Standards
 
-> **Version**: v0.1 (Skeleton - Awaiting Review)  
-> **Created**: January 25, 2026  
-> **Scope**: Universal - Applies to ALL RPI Projects  
-> **Status**: Draft - Requires legal/compliance review before enforcement
+> **Version**: v1.0
+> **Created**: January 25, 2026
+> **Updated**: February 13, 2026
+> **Scope**: Universal - Applies to ALL RPI Projects
+> **Status**: Active - Enforced
 
 ---
 
@@ -44,46 +45,47 @@ This document establishes compliance and security standards for RPI's AI-powered
 
 ---
 
-## Part 2: HIPAA Considerations
+## Part 2: HIPAA Compliance
 
-> **Note**: This section is a placeholder. RPI should consult with healthcare compliance counsel to determine HIPAA applicability and requirements.
+> **Status**: HIPAA applies to RPI. BAA signed with Google (February 4, 2026). PHI training deployed and enforced.
 
-### Questions to Answer
+### Determination
 
-- [ ] Is RPI a "Covered Entity" under HIPAA?
-- [ ] Is RPI a "Business Associate" of any Covered Entity?
-- [ ] What Business Associate Agreements (BAAs) are required?
-- [ ] Does Google Workspace meet HIPAA requirements for our use case?
-- [ ] What training is required for team members?
+- [x] Is RPI a "Covered Entity" under HIPAA? — **Yes.** RPI handles PHI (Medicare data, health conditions, claims) as part of client service.
+- [x] Is RPI a "Business Associate" of any Covered Entity? — **Yes.** RPI processes PHI on behalf of clients.
+- [x] What Business Associate Agreements (BAAs) are required? — **Google Workspace BAA signed Feb 4, 2026.**
+- [x] Does Google Workspace meet HIPAA requirements for our use case? — **Yes.** Google Workspace is HIPAA-compliant with BAA in place. PHI stored only in Google Workspace (Drive, Sheets).
+- [x] What training is required for team members? — **PHI Training deployed.** See `reference/compliance/PHI_TRAINING.md`. 10 of 13 team members completed acknowledgment as of Feb 13, 2026.
 
-### Potential HIPAA Triggers
+### HIPAA Triggers (Active)
 
-| Activity | Potential HIPAA Implication |
-|----------|---------------------------|
-| Storing client health conditions | May require PHI protections |
-| Blue Button API integration | Requires client consent + security |
-| AI processing health data | Requires safeguards + audit trail |
-| Sharing health info with carriers | May require BAA |
+| Activity | HIPAA Status | Controls |
+|----------|-------------|----------|
+| Storing client health conditions | **Active** — PHI in MATRIX (Google Sheets) | BAA + encryption at rest |
+| Blue Button API integration | **Future** — Requires client consent + security | Design pending |
+| AI processing health data | **Active** — MCP tools access health data | Scoped access, no PHI in logs |
+| Sharing health info with carriers | **Active** — Carrier data exchanges | BAA per carrier (TBD) |
 
-### Placeholder Controls (Pending Legal Review)
-
-If HIPAA applies, RPI will need:
+### Controls (Implemented)
 
 1. **Administrative Safeguards**
-   - Designated Security Officer
-   - Risk assessment process
-   - Workforce training
-   - Incident response procedures
+   - Designated Security Officer: John Behn (COO)
+   - PHI Training: `reference/compliance/PHI_TRAINING.md` (deployed Feb 4, 2026)
+   - Acknowledgment form: 10/13 team members completed
+   - Incident response: Report breaches to John Behn immediately
+   - PHI Policy: `reference/compliance/PHI_POLICY.md`
 
 2. **Physical Safeguards**
-   - Workstation security policies
-   - Device controls
+   - Google Workspace handles physical security (SOC 2, ISO 27001)
+   - Device policy: No PHI on personal devices outside Google Workspace
 
 3. **Technical Safeguards**
-   - Access controls (role-based)
-   - Audit controls (logging)
-   - Integrity controls (change tracking)
-   - Transmission security (encryption)
+   - Access controls: MATRIX role-based permissions
+   - Audit controls: Google Sheets edit history + GAS execution logs
+   - Integrity controls: RAPID_API single-source-of-truth for writes
+   - Transmission security: Google Workspace TLS encryption in transit
+   - PHI masking: SSN shows last 4 only, DOB masked unless task-required
+   - No PHI in: logs, error messages, Slack, personal email
 
 ---
 
@@ -204,8 +206,8 @@ If HIPAA applies, RPI will need:
 
 | Scenario | Who to Notify | Timeline |
 |----------|---------------|----------|
-| PHI breach (if HIPAA applies) | HHS + affected individuals | 60 days |
-| PII breach (if state laws apply) | State AG + affected individuals | Varies by state |
+| PHI breach | HHS + affected individuals | 60 days |
+| PII breach (state laws apply) | State AG + affected individuals | Varies by state (Iowa: 60 days) |
 | Security incident (internal) | Leadership | Immediate |
 
 ---
@@ -293,21 +295,28 @@ Before using new vendors that handle client data:
 
 ## Part 10: Training & Awareness
 
-### Required Training (Placeholder)
+### Required Training
 
-| Role | Training Required | Frequency |
-|------|-------------------|-----------|
-| All team members | Data handling basics | Annual |
-| Service/Sales | PHI/PII handling (if HIPAA applies) | Annual |
-| Technical | Security best practices | Annual |
-| Leadership | Incident response | Annual |
+| Role | Training Required | Frequency | Status |
+|------|-------------------|-----------|--------|
+| All team members | PHI handling | Annual | **Deployed** — 10/13 completed |
+| Service/Sales | PHI/PII handling | Annual | **Deployed** (same as above) |
+| Technical | Security best practices | Annual | TBD |
+| Leadership | Incident response | Annual | TBD |
 
-### Training Not Yet Developed
+### Training Status
 
-- [ ] General data privacy training
-- [ ] HIPAA training (if applicable)
-- [ ] AI usage guidelines
-- [ ] Incident reporting process
+- [x] PHI Training — `reference/compliance/PHI_TRAINING.md` (deployed Feb 4, 2026)
+- [x] PHI Acknowledgment Form — Live, 10 of 13 team members completed
+- [ ] General data privacy training — Not yet developed
+- [ ] AI usage guidelines — Not yet developed
+- [ ] Incident reporting process — Not yet developed
+
+### PHI Training Completion (as of Feb 13, 2026)
+
+| Completed | Outstanding |
+|-----------|-------------|
+| Susan Kaelin, Bob Lacy, Vinnie Vazquez, Josh Archer, Aprille Trupiano, Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn | Shane Parmenter (CFO), Matt McCormick (B2B) |
 
 ---
 
@@ -352,14 +361,14 @@ Before using new vendors that handle client data:
 
 ---
 
-## Appendix B: Open Questions for Legal/Compliance Review
+## Appendix B: Open Questions
 
-1. **HIPAA Status**: Is RPI a Covered Entity or Business Associate?
-2. **State Laws**: What state privacy laws apply (Iowa, others)?
+1. ~~**HIPAA Status**: Is RPI a Covered Entity or Business Associate?~~ — **RESOLVED.** Yes to both. BAA signed with Google Feb 4, 2026.
+2. **State Laws**: What state privacy laws apply (Iowa, others)? — Iowa Consumer Data Protection Act (effective Jan 1, 2025)
 3. **Retention**: What are legal retention requirements for different data types?
 4. **Consent**: What consent language is needed for AI processing of client data?
-5. **Breach Notification**: What are our exact notification obligations?
-6. **Training**: What formal training is legally required?
+5. **Breach Notification**: What are our exact notification obligations? — Iowa: 60 days, HHS: 60 days for PHI
+6. ~~**Training**: What formal training is legally required?~~ — **RESOLVED.** PHI Training deployed, acknowledgment form live.
 
 ---
 
@@ -379,8 +388,5 @@ Before using new vendors that handle client data:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v0.1 | Jan 25, 2026 | Initial skeleton - awaiting legal review |
-
----
-
-*This document is a starting point. It requires review by legal counsel and compliance professionals before enforcement. RPI's specific regulatory obligations depend on factors that should be assessed by qualified advisors.*
+| v0.1 | Jan 25, 2026 | Initial skeleton |
+| v1.0 | Feb 13, 2026 | HIPAA status resolved (BAA signed), PHI training status updated (10/13 complete), version upgraded from draft to active |

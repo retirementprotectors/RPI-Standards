@@ -51,7 +51,8 @@ _RPI_STANDARDS/
 │   ├── production/              # Launch checklists, rollout
 │   └── strategic/               # Vision, roadmap, architecture
 └── scripts/
-    └── setup-hookify-symlinks.sh   # Run on new machine to link CLAUDE.md + hookify
+    ├── clone-all-repos.sh            # Run FIRST on new machine (clones repos into SuperProject folders)
+    └── setup-hookify-symlinks.sh     # Run SECOND (links CLAUDE.md + hookify rules)
 ```
 
 **New-machine setup**: From `_RPI_STANDARDS/`, run:
@@ -221,45 +222,69 @@ SENTINEL_TOOLS/
 
 ## 7. Replicating on another machine
 
-1. **Clone or copy `_RPI_STANDARDS`** into `~/Projects/_RPI_STANDARDS/`.
-2. **Create the three SuperProject folders** (empty is fine):
-   - `~/Projects/PRODASH_TOOLS/`
-   - `~/Projects/RAPID_TOOLS/`
-   - `~/Projects/SENTINEL_TOOLS/`
-3. **Run the setup script** (from `_RPI_STANDARDS`):
-   ```bash
-   chmod +x scripts/setup-hookify-symlinks.sh
-   ./scripts/setup-hookify-symlinks.sh
-   ```
-   This sets global CLAUDE.md and prepares `.claude/` for every project that exists; missing projects are skipped with a warning.
-4. **Clone or copy each app** into the correct SuperProject (see sections 3–5). Match paths to the script’s project list so hookify symlinks line up.
-5. **New projects**: Create them under the right SuperProject and either add their path to `setup-hookify-symlinks.sh` and re-run it, or manually create `.claude/` and symlink each `_RPI_STANDARDS/hookify/*.local.md` into it.
+### Quick Start (3 commands)
+
+```bash
+mkdir -p ~/Projects && cd ~/Projects
+gh repo clone retirementprotectors/RPI-Standards _RPI_STANDARDS
+./_RPI_STANDARDS/scripts/clone-all-repos.sh
+./_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
+```
+
+### What each script does
+
+**`clone-all-repos.sh`** (run FIRST):
+- Creates the three SuperProject folders (RAPID_TOOLS, SENTINEL_TOOLS, PRODASH_TOOLS)
+- Clones every repo from the `retirementprotectors` GitHub org into its correct SuperProject subfolder
+- Maps repo names to local paths (e.g., GitHub `ProDash` → local `PRODASH_TOOLS/PRODASH/`)
+- Skips repos that already exist locally
+- **This is the script that prevents the "flat clone" problem** where repos land at the top level
+
+**`setup-hookify-symlinks.sh`** (run SECOND):
+- Symlinks `~/.claude/CLAUDE.md` → `_RPI_STANDARDS/CLAUDE.md`
+- Creates `.claude/` directories with hookify rule symlinks for every project
+
+### Why repos end up flat without the clone script
+
+GitHub repos are flat — `retirementprotectors/CAM` has no concept of living inside `RAPID_TOOLS/`. If you `gh repo clone retirementprotectors/CAM` from `~/Projects/`, it creates `~/Projects/CAM/` instead of `~/Projects/RAPID_TOOLS/CAM/`. The clone script contains the canonical mapping from GitHub repo name → local SuperProject path.
+
+### Adding new projects
+
+1. Add the repo mapping to `clone-all-repos.sh` (format: `"REPO_NAME:LOCAL_PATH"`)
+2. Add the local path to the `PROJECTS` array in `setup-hookify-symlinks.sh`
+3. Re-run both scripts (they skip existing repos/symlinks)
 
 ---
 
-## 8. Canonical project list (from setup script)
+## 8. Canonical project list (from clone script)
 
-Use this to ensure the other machine has the same “universe” of projects (and to add new ones to the script):
+Use this to ensure the other machine has the same "universe" of projects. The **GitHub repo name** is what's on GitHub; the **local path** is where it lands after running `clone-all-repos.sh`.
 
-| SuperProject   | Project path (relative to `~/Projects/`) |
-|----------------|------------------------------------------|
-| PRODASH_TOOLS  | PRODASH_TOOLS/PRODASH                    |
-| PRODASH_TOOLS  | PRODASH_TOOLS/QUE/QUE-Medicare           |
-| RAPID_TOOLS    | RAPID_TOOLS/C3                           |
-| RAPID_TOOLS    | RAPID_TOOLS/CAM                          |
-| RAPID_TOOLS    | RAPID_TOOLS/CEO-Dashboard                |
-| RAPID_TOOLS    | RAPID_TOOLS/DEX                          |
-| RAPID_TOOLS    | RAPID_TOOLS/MCP-Hub                      |
-| RAPID_TOOLS    | RAPID_TOOLS/RAPID_API                    |
-| RAPID_TOOLS    | RAPID_TOOLS/RAPID_CORE                   |
-| RAPID_TOOLS    | RAPID_TOOLS/RAPID_IMPORT                 |
-| RAPID_TOOLS    | RAPID_TOOLS/RIIMO                        |
-| RAPID_TOOLS    | RAPID_TOOLS/RPI-Command-Center           |
-| RAPID_TOOLS    | RAPID_TOOLS/TOMIS                        |
-| SENTINEL_TOOLS | SENTINEL_TOOLS/DAVID-HUB                 |
-| SENTINEL_TOOLS | SENTINEL_TOOLS/sentinel                  |
-| SENTINEL_TOOLS | SENTINEL_TOOLS/sentinel-v2               |
-| (standards)    | _RPI_STANDARDS                           |
+| SuperProject   | GitHub Repo Name       | Local Path (relative to `~/Projects/`) |
+|----------------|------------------------|----------------------------------------|
+| (standards)    | `RPI-Standards`        | `_RPI_STANDARDS`                       |
+| PRODASH_TOOLS  | `ProDash`              | `PRODASH_TOOLS/PRODASH`                |
+| PRODASH_TOOLS  | `QUE-Medicare`         | `PRODASH_TOOLS/QUE/QUE-Medicare`       |
+| RAPID_TOOLS    | `RPI-Content-Manager`  | `RAPID_TOOLS/C3`                       |
+| RAPID_TOOLS    | `CAM`                  | `RAPID_TOOLS/CAM`                      |
+| RAPID_TOOLS    | `CEO-Dashboard`        | `RAPID_TOOLS/CEO-Dashboard`            |
+| RAPID_TOOLS    | `DEX`                  | `RAPID_TOOLS/DEX`                      |
+| RAPID_TOOLS    | `MCP-Hub`              | `RAPID_TOOLS/MCP-Hub`                  |
+| RAPID_TOOLS    | `PDF_SERVICE`          | `RAPID_TOOLS/PDF_SERVICE`              |
+| RAPID_TOOLS    | `RAPID_API`            | `RAPID_TOOLS/RAPID_API`                |
+| RAPID_TOOLS    | `RAPID_CORE`           | `RAPID_TOOLS/RAPID_CORE`               |
+| RAPID_TOOLS    | `RAPID_IMPORT`         | `RAPID_TOOLS/RAPID_IMPORT`             |
+| RAPID_TOOLS    | `RIIMO`                | `RAPID_TOOLS/RIIMO`                    |
+| RAPID_TOOLS    | `RPI-Command-Center`   | `RAPID_TOOLS/RPI-Command-Center`       |
+| RAPID_TOOLS    | `TOMIS`                | `RAPID_TOOLS/TOMIS` *(repo TBD)*       |
+| SENTINEL_TOOLS | `DAVID-HUB`            | `SENTINEL_TOOLS/DAVID-HUB`             |
+| SENTINEL_TOOLS | `sentinel`             | `SENTINEL_TOOLS/sentinel`              |
+| SENTINEL_TOOLS | `sentinel-v2`          | `SENTINEL_TOOLS/sentinel-v2`           |
+
+**Name mismatches to be aware of:**
+- GitHub `RPI-Content-Manager` → local `C3` (renamed locally)
+- GitHub `ProDash` → local `PRODASH` (casing normalized)
+- GitHub `RPI-Standards` → local `_RPI_STANDARDS` (prefixed for sort order)
 
 ---
 
@@ -273,7 +298,8 @@ Use this to ensure the other machine has the same “universe” of projects (an
 | Compliance / PHI        | `_RPI_STANDARDS/reference/compliance/`              |
 | Integrations (GHL, etc.) | `_RPI_STANDARDS/reference/integrations/`           |
 | Strategy / architecture| `_RPI_STANDARDS/reference/strategic/`              |
-| New machine setup       | `_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh` |
+| New machine clone       | `_RPI_STANDARDS/scripts/clone-all-repos.sh`         |
+| New machine standards   | `_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`  |
 
 ---
 
