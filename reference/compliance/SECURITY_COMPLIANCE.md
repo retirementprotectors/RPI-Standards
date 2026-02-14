@@ -60,8 +60,8 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 
 | Item | Required State | Status | Verified Date |
 |------|---------------|--------|---------------|
-| No hardcoded credentials in code | All secrets in Script Properties | [x] | 2026-02-04 |
-| Apps deployed as "Organization only" | All internal apps restricted | [x] | 2026-02-13 (all 7 apps verified DOMAIN) |
+| No hardcoded credentials in code | All secrets in Script Properties | [~] | 2026-02-14 (known gap: CORE_Config.gs syncAllProperties pattern stores plaintext secrets in source — remediation planned) |
+| Apps deployed as "Organization only" | All internal apps restricted | [~] | 2026-02-14 (13 GAS web apps identified; 8 verified DOMAIN on 2026-02-13; see Part 7) |
 | No alert()/confirm()/prompt() | Using custom modals | [x] | 2026-02-04 |
 | API endpoints authenticated | API key validation where needed | [x] | 2026-02-04 |
 | Git repos private | All RPI repos private on GitHub | [x] | 2026-02-04 |
@@ -74,6 +74,24 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 | Admin access limited | Only necessary personnel | [x] | 2026-02-13 |
 | Offboarding checklist exists | Documented process | [x] | 2026-02-13 |
 | Contractor access reviewed | Time-limited, minimal access | [x] | 2026-02-13 |
+
+### Source Code vs. Deployment Access (CRITICAL)
+
+> **Discovery Date:** 2026-02-14
+> **Impact:** Silent security regression on `clasp push`
+
+The GAS editor UI and `appsscript.json` are **two different settings** that can diverge:
+
+| Setting Location | What It Controls | How It's Set |
+|-----------------|-----------------|--------------|
+| GAS Editor UI (Deploy → Manage) | The LIVE deployment's access | Manual click in browser |
+| `appsscript.json` `"webapp.access"` | What `clasp push` + `clasp deploy` will SET | Source code file |
+
+**The danger:** If someone fixes access in the GAS editor UI but the source file still says `ANYONE_ANONYMOUS`, the next `clasp push --force` + `clasp deploy` silently reverts to public access.
+
+**Rule:** Always fix `appsscript.json` first. Always verify after deploy. Audits must check the source file, not just the GAS editor.
+
+**Projects with known disconnect (as of 2026-02-14):** RIIMO, RPI-Command-Center, DAVID-HUB
 
 ---
 
@@ -148,10 +166,10 @@ When an employee/contractor leaves RPI:
 - [x] Location of signed BAA: Google Admin Console → Account → Legal and Compliance
 
 ### PHI Handling Policies
-- [x] Staff trained on PHI handling → `reference/compliance/PHI_TRAINING.md` + acknowledgment form
+- [x] Staff trained on PHI handling — training materials archived (10/13 completed as of Feb 13, 2026). See `PHI_POLICY.md` for current requirements.
 - [x] PHI only stored in approved systems (Workspace) → `reference/compliance/PHI_POLICY.md`
 - [x] PHI not sent via unencrypted email → DLP rules configured in Google Admin
-- [x] PHI access logged and reviewable → `reference/compliance/AUDIT_LOG_GUIDE.md`
+- [x] PHI access logged and reviewable → Google Workspace audit logs (retained per Google policy)
 
 ### Breach Notification
 - HIPAA requires notification within 60 days of discovering a breach
@@ -189,10 +207,15 @@ When an employee/contractor leaves RPI:
 | SENTINEL | DOMAIN | 2026-02-13 | All 21 deploys DOMAIN (19 stale ANYONE deploys updated to v381) |
 | SENTINEL v2 | DOMAIN | 2026-02-13 | All 2 deploys already DOMAIN — clean |
 | DEX | DOMAIN | 2026-02-13 | All 20 deploys DOMAIN (19 stale ANYONE deploys updated to v64) |
-| RIIMO | DOMAIN | 2026-02-13 | Already compliant (v7) |
+| RIIMO | ANYONE_ANONYMOUS (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json has ANYONE_ANONYMOUS since initial commit. GAS editor UI showed DOMAIN but source file was wrong. |
 | CAM | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v51) |
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
+| RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook reception — approved exception. Document rationale. |
+| RAPID_IMPORT | Not verified | 2026-02-14 | Needs source file audit |
+| RPI-Command-Center | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
+| QUE-Medicare | Not verified | 2026-02-14 | Needs source file audit |
+| DAVID-HUB | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
 
 ### Q1 2026 Compliance Audit (2026-02-13)
 
@@ -258,11 +281,12 @@ When an employee/contractor leaves RPI:
 | 2026-02-04 | Initial document created | Claude Code |
 | 2026-02-04 | 2FA enforcement enabled, HIPAA BAA accepted | JDM + Claude Code |
 | 2026-02-04 | Merged IMMEDIATE_ACTIONS.md into this document | Claude Code |
-| 2026-02-13 | All 7 GAS apps verified org-only. Fixed DEX, CAM, CEO-Dashboard. | Claude Code |
+| 2026-02-13 | 8 of 13 GAS apps verified org-only. Fixed DEX, CAM, CEO-Dashboard. | Claude Code |
 | 2026-02-13 | Stale deployment cleanup: 38 old ANYONE deploys (19 DEX + 19 SENTINEL) updated to DOMAIN. | Claude Code |
 | 2026-02-13 | Q1 2026 audit: 26 tokens revoked, 2 users suspended, 3 Super Admins downgraded, 2 OU moves | Claude Code |
 | 2026-02-13 | Part 2 checklist updated. Part 3 rewritten with automated triggers. Part 7/8 expanded. | Claude Code |
 | 2026-02-13 | API_Compliance.gs added to RAPID_API — quarterly/weekly/monthly automated compliance | Claude Code |
+| 2026-02-14 | Corrected app count (13 identified, 8 verified). Fixed RIIMO false-positive. Added source-code-vs-deployment section. Added 5 missing apps to tracker. | Claude Code |
 
 ---
 

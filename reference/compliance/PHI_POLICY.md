@@ -127,7 +127,6 @@ Violations of this policy may result in:
 
 | Document | Location |
 |----------|----------|
-| PHI Training | `reference/compliance/PHI_TRAINING.md` |
 | Security Compliance Framework | `reference/compliance/SECURITY_COMPLIANCE.md` |
 | Compliance Standards | `reference/compliance/COMPLIANCE_STANDARDS.md` |
 

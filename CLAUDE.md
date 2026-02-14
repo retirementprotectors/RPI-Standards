@@ -263,7 +263,7 @@ return { success: false, error: 'What went wrong' };
 | **Storage** | PHI ONLY in Google Workspace (Drive, Sheets) - NEVER Slack, text, personal email |
 | **Logging** | NEVER log PHI to console, error messages, or debug output |
 | **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
-| **Breach** | Report suspected breaches to John Behn immediately |
+| **Breach** | Report suspected breaches to JDM or John Behn immediately |
 | **PHI Projects** | PRODASH, QUE-Medicare, DEX, CAM - extra caution required |
 
 **For full policy details:** Read `_RPI_STANDARDS/reference/compliance/PHI_POLICY.md`
@@ -420,7 +420,16 @@ sheet.appendRow([clientData...]);
 const result = callRapidAPI_('import/client', 'POST', { client: clientData });
 ```
 
-**See `_RPI_STANDARDS/reference/integrations/MATRIX_CONFIG.md` for full details.**
+**For tab routing, read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly.**
+
+### 11. appsscript.json Controls Web App Access, Not the GAS Editor
+**`clasp push --force` deploys whatever's in appsscript.json.**
+
+If someone sets DOMAIN in the GAS editor but the source file says `ANYONE_ANONYMOUS`, the next `clasp push` silently reverts to `ANYONE_ANONYMOUS`.
+
+```
+Always fix the source file. Always verify after deploy.
+```
 
 ### Self-Check (Before Every GAS Commit)
 - [ ] All `*ForUI()` functions use `JSON.parse(JSON.stringify())`
@@ -434,6 +443,7 @@ const result = callRapidAPI_('import/client', 'POST', { client: clientData });
 ### Self-Check (Before Every GAS Deploy)
 - [ ] No hardcoded credentials in code (use Script Properties)
 - [ ] Web app access set to "Anyone within Retirement Protectors INC"
+- [ ] `appsscript.json` contains `"access": "DOMAIN"` (source file, not just GAS editor UI)
 - [ ] No `alert()`, `confirm()`, `prompt()` calls
 
 ---
@@ -553,6 +563,7 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 Source code: ~/Projects/RAPID_TOOLS/MCP-Hub/rpi-{workspace,business,healthcare}-mcp/
 Pattern: Export { TOOLS, HANDLERS } from a new *-tools.js file, import in index.js
+For MCP development standards, directory structure, and OAuth setup: read `MCP-Hub/CLAUDE.md`
 ```
 
 **To verify what's loaded:** `claude mcp list`
@@ -620,15 +631,11 @@ claude mcp remove <name> --scope user
 5. **JDM: First-time auth via GAS Editor UI** - One-time manual step
 6. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
 
-**For detailed checklist:** Read `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md`
-
 ### Reference Docs (Read When Needed)
 | Document | When to Read |
 |----------|--------------|
 | `reference/integrations/GHL_INTEGRATION.md` | Project uses GHL/GoHighLevel |
-| `reference/integrations/MATRIX_CONFIG.md` | Project uses MATRIX sheets |
 | `reference/compliance/COMPLIANCE_STANDARDS.md` | Project handles PHI/PII |
-| `reference/strategic/THREE_PLATFORM_ARCHITECTURE.md` | Need full platform context |
 
 ---
 
@@ -655,11 +662,9 @@ Run these checks on any project and load matching reference docs:
 | Check | Detection Method | If Found → Read |
 |-------|------------------|-----------------|
 | **GHL Integration** | Grep for `gohighlevel\|GHL\|highlevel` in code | `reference/integrations/GHL_INTEGRATION.md` |
-| **MATRIX Sheets** | Grep for `MATRIX` in code or config | `reference/integrations/MATRIX_CONFIG.md` |
+| **MATRIX Sheets** | Grep for `MATRIX` in code or config | Read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly |
 | **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/compliance/COMPLIANCE_STANDARDS.md` |
-| **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | `reference/integrations/` (check which apply) |
-| **New Project** | No existing code files, or JDM says "new project" | `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md` |
-| **Pre-Launch** | JDM mentions "launch", "go live", "production" | `reference/production/PRE_LAUNCH_CHECKLIST.md` |
+| **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | MCP-Hub healthcare tools (already loaded) |
 
 ### The Suspenders: Project Declarations
 
@@ -691,6 +696,27 @@ When you see this section in a project's CLAUDE.md, read those files immediately
 - **Belt (auto-detect):** Catches requirements even if project CLAUDE.md is incomplete
 - **Suspenders (declarations):** Makes intent explicit, catches edge cases detection misses
 - **Together:** You never miss critical context
+
+---
+
+## Documentation Maintenance Triggers
+
+When you change the codebase, update the corresponding docs:
+
+| When You...                    | Update These                                          |
+|-------------------------------|-------------------------------------------------------|
+| Add a new GAS project          | WEEKLY_HEALTH_CHECK.md (project list + scan loop)     |
+|                                | PROJECT_AUDIT.md (tracker table)                       |
+|                                | SECURITY_COMPLIANCE.md (verification table)            |
+|                                | clone-all-repos.sh + setup-hookify-symlinks.sh         |
+|                                | CLAUDE.md Project Locations tree                       |
+| Add a new GAS web app (webapp) | SECURITY_COMPLIANCE.md (add to verification table)     |
+| Complete a security audit      | SECURITY_COMPLIANCE.md (audit trail + dates)           |
+| Change deploy process          | CLAUDE.md ONLY — never reference docs                  |
+| Add a new MCP tool             | MCP-Hub/CLAUDE.md (directory listing)                  |
+| Change compliance rules        | CLAUDE.md = the rule. Reference doc = the procedure.   |
+
+**Rules live in CLAUDE.md. Procedures live in reference docs. Never duplicate rules into reference docs.**
 
 ---
 
@@ -778,7 +804,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 **MATRIX IDs are managed by `RAPID_CORE.getMATRIX_ID()` — never hardcode them.**
 
-For tab routing, schemas, and configuration details: `_RPI_STANDARDS/reference/integrations/MATRIX_CONFIG.md`
+For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` directly (TABLE_ROUTING constant).
 
 ---
 

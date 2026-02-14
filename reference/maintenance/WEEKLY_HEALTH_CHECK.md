@@ -3,7 +3,7 @@
 > **When to Use**: Weekly audit of all active projects
 > **Frequency**: Every Monday or first day of work week
 > **Time Required**: 15-30 minutes (automated via Claude Code)
-> **Version**: v2.0 (February 13, 2026)
+> **Version**: v3.0 (February 14, 2026)
 
 ---
 
@@ -49,6 +49,7 @@ for repo in \
   ~/Projects/RAPID_TOOLS/RAPID_API \
   ~/Projects/RAPID_TOOLS/RAPID_CORE \
   ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/RAPID_TOOLS/SPARK_WEBHOOK_PROXY \
   ~/Projects/RAPID_TOOLS/RIIMO \
   ~/Projects/RAPID_TOOLS/RPI-Command-Center \
   ~/Projects/SENTINEL_TOOLS/DAVID-HUB \
@@ -82,7 +83,10 @@ Scan for forbidden patterns across all GAS web apps:
 # alert()/confirm()/prompt() — actual function calls only
 # Exclude: variable names, CSS classes, comments, parameter names
 for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
-  ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/DEX ~/Projects/SENTINEL_TOOLS/sentinel; do
+  ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
+  ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
+  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
   name=$(basename "$repo")
   grep -rn '\balert(\|confirm(\|prompt(' "$repo"/*.html "$repo"/*.gs 2>/dev/null \
     | grep -v 'showConfirm\|showToast\|showAlert\|//\|CLAUDE\|\.md' | head -3
@@ -90,7 +94,10 @@ done
 
 # Hardcoded inline colors
 for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
-  ~/Projects/RAPID_TOOLS/DEX ~/Projects/SENTINEL_TOOLS/sentinel; do
+  ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
+  ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
+  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
   name=$(basename "$repo")
   grep -rn 'style=.*#[0-9a-fA-F]\{3,6\}' "$repo"/*.html 2>/dev/null | head -3
 done
@@ -106,6 +113,28 @@ done
 | DEX | Hardcoded hex colors in Index.html (input modal) | LOW |
 | sentinel | Hardcoded hex colors in Index.html (modals) | LOW |
 
+### Source Code Security Scan
+
+```bash
+# Check all appsscript.json for wrong access settings
+grep -rn '"access"' ~/Projects/*/appsscript.json ~/Projects/*/*/appsscript.json 2>/dev/null | grep -v DOMAIN
+
+# Check for hardcoded MATRIX IDs outside RAPID_CORE
+grep -rn '1nnSY-J3n6DtVvKqyC40zpEt1sROtHkIEqmSwG-5d9dU\|1K_DLb-txoI4F1dLrUyoFOuFc0xwsH1iW5eff3pQ_o6E' ~/Projects/ --include='*.gs' --include='*.html' --include='*.json' 2>/dev/null | grep -v RAPID_CORE | grep -v node_modules
+
+# Check for plaintext tokens/secrets in source
+grep -rn 'xoxb-\|xoxp-\|hooks\.slack\.com/services' ~/Projects/ --include='*.gs' --include='*.js' --include='*.json' 2>/dev/null | grep -v node_modules
+
+# Check GitHub repo privacy
+gh repo list retirementprotectors --visibility public 2>/dev/null
+```
+
+**Red Flags**:
+- Any `appsscript.json` NOT showing DOMAIN (except RAPID_API -- approved exception for SPARK webhook)
+- Any MATRIX IDs outside RAPID_CORE
+- Any plaintext tokens in source files
+- Any public repos
+
 ---
 
 ### 3. MCP Tools Verification
@@ -118,9 +147,9 @@ claude mcp list
 
 | MCP | Type | What It Does |
 |-----|------|--------------|
-| rpi-workspace | Consolidated (59 tools) | GAS execution, Chat, People, WordPress, Canva |
-| rpi-business | Consolidated (23 tools) | Commission intelligence, Meeting processor |
-| rpi-healthcare | Consolidated (14 tools) | NPI, ICD-10, CMS coverage |
+| rpi-workspace | Consolidated | GAS execution, Chat, People, WordPress, Canva, Video |
+| rpi-business | Consolidated | Commission intelligence, Meeting processor |
+| rpi-healthcare | Consolidated | NPI, ICD-10, CMS coverage |
 | gdrive | Third-party | Google Drive access |
 | google-calendar | Third-party | Calendar events |
 | gmail | Third-party | Read/send email |
@@ -212,10 +241,8 @@ Pick one project each week and verify:
 
 | Related Standard | When to Use Instead |
 |-----------------|---------------------|
-| `reference/strategic/PROJECT_STRUCTURE.md` | Directory structure reference |
 | `reference/compliance/COMPLIANCE_STANDARDS.md` | Security/PHI concerns discovered |
 | `reference/maintenance/PROJECT_AUDIT.md` | Full compliance audit (monthly or new projects) |
-| `reference/production/PRE_LAUNCH_CHECKLIST.md` | Before deploying new features |
 
 ---
 
@@ -223,6 +250,7 @@ Pick one project each week and verify:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v3.0 | Feb 14, 2026 | Expanded scans to all projects, added source code security scan, removed stale doc references |
 | v2.0 | Feb 13, 2026 | Rewritten for SuperProject paths, Claude Code (not Cursor), consolidated MCPs, all 16 projects |
 | v1.2 | Feb 1, 2026 | Added GAS DevTools Pattern Check |
 | v1.1 | Jan 25, 2026 | Added Project Alignment Audit |

@@ -1,9 +1,9 @@
 # Existing Project Standards Audit
 
 > **When to Use**: Verifying an EXISTING project follows RPI-Standards
-> **Counterpart**: `reference/new-project/PROJECT_KICKOFF_TEMPLATE.md` (for NEW projects)
+> **Counterpart**: See CLAUDE.md "New Project Setup" section (for NEW projects)
 > **How to Run**: Tell Claude Code "audit [PROJECT_NAME]"
-> **Version**: v3.0 (February 13, 2026)
+> **Version**: v4.0 (February 14, 2026)
 
 ---
 
@@ -48,7 +48,7 @@ git log --oneline -5
 - Remote origin: `https://github.com/retirementprotectors/[REPO_NAME].git`
 - Recent commits, clean working tree
 
-**Note**: GitHub repo names may differ from local folder names. See `reference/strategic/PROJECT_STRUCTURE.md` Section 8 for the mapping.
+**Note**: GitHub repo names may differ from local folder names.
 
 ---
 
@@ -89,17 +89,24 @@ grep -rn '\balert(\|confirm(\|prompt(' *.html *.gs 2>/dev/null \
 # Hardcoded colors
 grep -rn 'style=.*#[0-9a-fA-F]\{3,6\}' *.html 2>/dev/null
 
-# Hardcoded credentials
+# Plaintext credentials (tokens, webhook URLs, API keys)
+grep -rn 'xoxb-\|xoxp-\|hooks\.slack\.com/services\|sk-[a-zA-Z0-9]\{20,\}' *.gs *.js *.json 2>/dev/null | grep -v node_modules
+
+# Generic secret patterns (review manually — may include false positives)
 grep -rn 'api_key\|apiKey\|password\|secret' *.gs 2>/dev/null \
-  | grep -v 'PropertiesService\|getProperty\|CLAUDE\|\.md\|//'
+  | grep -v 'PropertiesService\|getProperty\|CLAUDE\|\.md\|//\|function\|param'
 ```
 
 ---
 
 ### Phase 5: Security Check
 
-- [ ] GAS web app deployed as "Anyone within Retirement Protectors INC"
+- [ ] `appsscript.json` contains `"access": "DOMAIN"` (source file, not just GAS editor UI)
+- [ ] `appsscript.json` contains `"executionApi": { "access": "DOMAIN" }` (if project needs MCP execute_script)
 - [ ] No hardcoded credentials in code (all in Script Properties)
+- [ ] No plaintext secrets in `.gs`, `.json`, `.js` files (check for `xoxb-`, `xoxp-`, webhook URLs, API keys)
+- [ ] `.gitignore` includes `credentials.json`, `.env`, `tokens.json`
+- [ ] GCP project linked to `90741179392` (manual GAS editor verification: Settings > GCP Project)
 - [ ] No PHI in console.log/Logger.log statements
 - [ ] Error messages don't expose sensitive data
 
@@ -168,6 +175,7 @@ grep -rn 'api_key\|apiKey\|password\|secret' *.gs 2>/dev/null \
 | DAVID-HUB | `SENTINEL_TOOLS/DAVID-HUB` | 2026-02-04 | ✅ |
 | sentinel | `SENTINEL_TOOLS/sentinel` | 2026-02-04 | ✅ |
 | sentinel-v2 | `SENTINEL_TOOLS/sentinel-v2` | — | ⏳ |
+| SPARK_WEBHOOK_PROXY | `RAPID_TOOLS/SPARK_WEBHOOK_PROXY` | — | ⏳ |
 
 ---
 
@@ -184,6 +192,7 @@ grep -rn 'api_key\|apiKey\|password\|secret' *.gs 2>/dev/null \
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v4.0 | Feb 14, 2026 | Added source file verification, expanded security checks, added SPARK_WEBHOOK_PROXY |
 | v3.0 | Feb 13, 2026 | Rewritten for SuperProject paths, Claude Code, simplified phases, updated tracker |
 | v2.0 | Jan 11, 2026 | Added deployment prompt format |
 | v1.0 | Jan 2026 | Initial audit checklist |

@@ -144,14 +144,7 @@ function extractContactId(record) {
 
 ## 🛠️ GAS Library Best Practices
 
-### Use `var` Not `let` at Module Level
-```javascript
-// WRONG - can break library loading
-let _cachedData = null;
-
-// CORRECT - GAS library compatible
-var _cachedData = null;
-```
+> **var vs let:** See CLAUDE.md GAS Gotcha #7 (var vs let for module-level caching).
 
 ### Always Create Explicit Versions
 ```bash
@@ -224,9 +217,7 @@ GET /config/ghl/debug-sync → Show filter breakdown
 
 ---
 
-## 🔗 Related Documents
+## Related Documents
 
-- `GHL_INTEGRATION_GA_TASK_BREAKDOWN.md` - Original task breakdown
 - `RAPID_IMPORT/IMPORT_GHL.gs` - Implementation
 - `RAPID_API/API_GHL_Sync.gs` - API endpoints
-- `MATRIX_CONFIGURATION_STANDARDS.md` - MATRIX architecture

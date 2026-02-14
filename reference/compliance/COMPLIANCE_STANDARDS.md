@@ -55,7 +55,7 @@ This document establishes compliance and security standards for RPI's AI-powered
 - [x] Is RPI a "Business Associate" of any Covered Entity? — **Yes.** RPI processes PHI on behalf of clients.
 - [x] What Business Associate Agreements (BAAs) are required? — **Google Workspace BAA signed Feb 4, 2026.**
 - [x] Does Google Workspace meet HIPAA requirements for our use case? — **Yes.** Google Workspace is HIPAA-compliant with BAA in place. PHI stored only in Google Workspace (Drive, Sheets).
-- [x] What training is required for team members? — **PHI Training deployed.** See `reference/compliance/PHI_TRAINING.md`. 10 of 13 team members completed acknowledgment as of Feb 13, 2026.
+- [x] What training is required for team members? — **PHI Training deployed.** Training materials archived; see `reference/compliance/PHI_POLICY.md` for current requirements. 10 of 13 team members completed acknowledgment as of Feb 13, 2026.
 
 ### HIPAA Triggers (Active)
 
@@ -70,7 +70,7 @@ This document establishes compliance and security standards for RPI's AI-powered
 
 1. **Administrative Safeguards**
    - Designated Security Officer: John Behn (COO)
-   - PHI Training: `reference/compliance/PHI_TRAINING.md` (deployed Feb 4, 2026)
+   - PHI Training: Training materials archived (deployed Feb 4, 2026). See `PHI_POLICY.md` for current requirements.
    - Acknowledgment form: 10/13 team members completed
    - Incident response: Report breaches to John Behn immediately
    - PHI Policy: `reference/compliance/PHI_POLICY.md`
@@ -306,7 +306,7 @@ Before using new vendors that handle client data:
 
 ### Training Status
 
-- [x] PHI Training — `reference/compliance/PHI_TRAINING.md` (deployed Feb 4, 2026)
+- [x] PHI Training — Training materials archived (deployed Feb 4, 2026). See `PHI_POLICY.md`.
 - [x] PHI Acknowledgment Form — Live, 10 of 13 team members completed
 - [ ] General data privacy training — Not yet developed
 - [ ] AI usage guidelines — Not yet developed
@@ -376,11 +376,11 @@ Before using new vendors that handle client data:
 
 | Document | Purpose |
 |----------|---------|
-| `0-Setup/MASTER_AGENT_FRAMEWORK.md` | Agent roles and access patterns |
-| `0-Setup/MDJ_STRATEGIC_VISION.md` | MDJ instance scoping |
-| `0-Setup/RPI_PLATFORM_BLUEPRINT.md` | Data architecture |
-| `1-Manage/WEEKLY_HEALTH_CHECK.md` | Operational verification |
-| `2-Production/PRE_LAUNCH_CHECKLIST.md` | Launch security checks |
+| `reference/compliance/PHI_POLICY.md` | PHI handling requirements |
+| `reference/compliance/SECURITY_COMPLIANCE.md` | Security framework and audit trail |
+| `reference/maintenance/WEEKLY_HEALTH_CHECK.md` | Operational verification |
+| `reference/maintenance/PROJECT_AUDIT.md` | Full compliance audit |
+| `reference/integrations/GHL_INTEGRATION.md` | GHL/GoHighLevel integration patterns |
 
 ---
 
