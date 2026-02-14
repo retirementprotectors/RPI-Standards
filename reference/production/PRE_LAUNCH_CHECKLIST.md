@@ -2,7 +2,7 @@
 
 > **When to Use**: Before deploying any project to production  
 > **Companion**: `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` (user documentation)  
-> **Version**: v1.0 (January 25, 2026)
+> **Version**: v1.1 (February 13, 2026)
 
 ---
 
@@ -127,6 +127,8 @@ cat .clasp.json
 
 - [ ] `.clasp.json` has correct `scriptId`
 - [ ] Deployment ID documented in `Docs/2.2-AGENT_SCOPE_OPS.md`
+- [ ] GCP project linked to `90741179392` (Settings → GCP Project in GAS editor)
+- [ ] `appsscript.json` includes `"executionApi": { "access": "DOMAIN" }`
 
 #### 4.2 Test Deployment
 
@@ -212,6 +214,37 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOYMENT_ID] -V [PREVIOUS_VERS
 
 See `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` for user documentation requirements.
 
+#### 7.3 Module Testing Guide (MANDATORY for major modules)
+
+**Every major module rollout gets a testing guide. Make one of these fuckers.**
+
+**Template**: `_RPI_STANDARDS/reference/production/TESTING_GUIDE_TEMPLATE.md` — copy it, fill in the blanks.
+**Reference example**: `PRODASH/Docs/TESTING_GUIDE_MEDICARE_CENTER.md` (and its HTML counterpart on Desktop).
+
+- [ ] Testing guide created in `Docs/TESTING_GUIDE_[MODULE_NAME].md`
+- [ ] HTML version generated on Desktop for interactive use (`~/Desktop/TESTING_GUIDE_[MODULE_NAME].html`)
+- [ ] Covers ALL tabs/views/features of the module with checkbox items
+- [ ] Includes prerequisite checklist (what must be running/configured before testing)
+- [ ] Includes data verification tables (expected values in sheets/systems)
+- [ ] Includes cross-feature end-to-end workflow test
+- [ ] Includes error handling / edge case section
+- [ ] Includes post-test summary with Pass/Fail per section + signature block
+- [ ] Version number matches the deployed version
+
+**What counts as a "major module":**
+- New Sales Center (Medicare, Life, Annuity, Advisory)
+- New Service Center or major Service Center upgrade
+- New integration (SPARK, carrier APIs, webhook endpoints)
+- AI3 or Strategy Output Engine upgrades
+- Any feature that touches 3+ files and creates new UI tabs/views
+
+**HTML version requirements:**
+- Interactive checkboxes with progress bar
+- RPI branding (Navy/Light Blue/Poppins)
+- Print-friendly (clean page breaks, visible checkbox squares)
+- Pass/Fail buttons in summary section
+- Self-contained single file (no external dependencies beyond Google Fonts)
+
 ---
 
 ## Pre-Launch Report Template
@@ -251,6 +284,7 @@ See `PRODUCTION_LAUNCH_ROLLOUT_KIT.md` for user documentation requirements.
 ### Documentation
 - [ ] Technical docs current
 - [ ] User docs created (if applicable)
+- [ ] Module testing guide created (if major module — see 7.3)
 
 ---
 
@@ -296,6 +330,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOY_ID] -V [PREVIOUS_VERSION]
 | Version | Date | Changes |
 |---------|------|---------|
 | v1.0 | Jan 25, 2026 | Initial pre-launch checklist |
+| v1.1 | Feb 13, 2026 | Added Phase 7.3: Module Testing Guide requirement (mandatory for major modules) |
 
 ---
 
