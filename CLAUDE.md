@@ -523,12 +523,12 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 **Currently configured MCPs (7 user + Anthropic-managed + plugins):**
 
-### Consolidated RPI MCPs (96 tools total)
-| MCP | Tools | What It Does |
-|-----|-------|--------------|
-| **rpi-workspace** | 59 | GAS execution (10) + Google Chat (7) + Google People (11) + WordPress (10) + Canva (21) |
-| **rpi-business** | 23 | Commission intelligence (13) + Meeting processor (10) |
-| **rpi-healthcare** | 14 | NPI registry (3) + ICD-10 codes (5) + CMS coverage (6) |
+### Consolidated RPI MCPs
+| MCP | What It Does |
+|-----|--------------|
+| **rpi-workspace** | GAS execution + Google Chat + Google People + WordPress + Canva + Admin SDK + Video (Veo) |
+| **rpi-business** | Commission intelligence + Meeting processor |
+| **rpi-healthcare** | NPI registry + ICD-10 codes + CMS coverage |
 
 ### Third-Party MCPs
 | MCP | What It Does | How To Use |
@@ -575,7 +575,7 @@ claude mcp list
 claude mcp remove <name> --scope user
 ```
 
-**Config is stored in:** `~/.claude.json` (NOT `~/.claude/settings.json`)
+**Config is stored in:** `~/.mcp.json` (NOT `~/.claude/settings.json`)
 
 **After adding/removing MCPs:** Restart Claude Code for changes to take effect.
 
@@ -711,7 +711,7 @@ When you see this section in a project's CLAUDE.md, read those files immediately
 - Check ALL GAS web apps for organization-only access
 - Verify no hardcoded credentials in code
 - Confirm Script Properties are used for secrets
-- Reference: `_RPI_STANDARDS/security/SECURITY_COMPLIANCE.md`
+- Reference: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
 - For full audit protocol: Read `reference/maintenance/PROJECT_AUDIT.md`
 
 **When starting work on unfamiliar project:**
@@ -774,17 +774,11 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 ---
 
-## Key MATRIX Sheet IDs
+## MATRIX Sheets
 
-**Projects that use MATRIX sheets for configuration:**
+**MATRIX IDs are managed by `RAPID_CORE.getMATRIX_ID()` — never hardcode them.**
 
-| Project | MATRIX ID | Purpose |
-|---------|-----------|---------|
-| SENTINEL | `1YOUR_SENTINEL_MATRIX_ID` | B2B commission grids |
-| PRODASH | `1YOUR_PRODASH_MATRIX_ID` | B2C client data |
-| CAM | `1YOUR_CAM_MATRIX_ID` | Commission accounting |
-
-*(Get actual IDs from Script Properties in each project's GAS editor)*
+For tab routing, schemas, and configuration details: `_RPI_STANDARDS/reference/integrations/MATRIX_CONFIG.md`
 
 ---
 
