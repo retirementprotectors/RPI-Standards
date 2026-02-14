@@ -443,7 +443,7 @@ const result = callRapidAPI_('import/client', 'POST', { client: clientData });
 ### Commit + Deploy Together
 **Never do one without the other.** Every change = git commit + GAS deploy.
 
-### The 5-Step Deploy (Memorize This)
+### The 6-Step Deploy (Memorize This)
 ```bash
 # Pre-flight (MUST PASS)
 git status && git remote -v
@@ -454,6 +454,11 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp version "vX.X - description"
 NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X"
 git add -A && git commit -m "vX.X - description"
 git push
+
+# VERIFY (MANDATORY — do NOT skip)
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deployments | grep "@[VERSION]"
+# Confirm the @VERSION number matches what you just deployed.
+# If it shows an OLD version number, the deploy FAILED — fix it before reporting success.
 ```
 
 ### Deploy Report (Always Provide)
@@ -463,10 +468,13 @@ git push
 | clasp push | ✅/❌ |
 | clasp version | ✅ vN |
 | clasp deploy | ✅/❌ |
+| **VERIFY: @version** | ✅ @N confirmed / ❌ MISMATCH |
 | git commit | ✅ [hash] |
 | git push | ✅/❌ |
 | Access: Org only | ✅/❌ |
 ```
+
+**CRITICAL: The VERIFY step is non-negotiable.** On 2026-02-14 we discovered RAPID_API production deployments had been stuck at @33 while code was at v108 — because the deploy command used the wrong `-V` number and nobody verified afterward. The deploy "looked" successful but was running ancient code. VERIFY catches this.
 
 ### GCP Project Linking (MANDATORY for MCP execute_script)
 
