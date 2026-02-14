@@ -468,6 +468,19 @@ git push
 | Access: Org only | ✅/❌ |
 ```
 
+### GCP Project Linking (MANDATORY for MCP execute_script)
+
+**ALL RPI GAS projects MUST be linked to GCP project `90741179392` (`my-project-rpi-mdj-platform`).**
+
+This enables the `execute_script` MCP tool to run GAS functions remotely. Without it, execute_script returns 404/403.
+
+**One-time setup per project (in GAS editor):**
+1. Settings (gear icon) → Google Cloud Platform (GCP) Project → Change project → `90741179392`
+2. Add to `appsscript.json`: `"executionApi": { "access": "DOMAIN" }`
+3. `clasp push --force`
+
+**Verify on every new project and pre-launch.** See MCP-Hub CLAUDE.md for full script ID list.
+
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
 **ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
@@ -836,9 +849,10 @@ You report results to me
 ### Starting
 1. JDM gives task or context
 2. Read project CLAUDE.md (if exists in current directory)
-3. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
-4. Begin work immediately
-5. Report completion, not progress
+3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASH_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
+4. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
+5. Begin work immediately
+6. Report completion, not progress
 
 ### During Work
 - Don't narrate what you're doing

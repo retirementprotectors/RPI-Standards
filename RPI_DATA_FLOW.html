@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RPI Data Pipeline - Team Reference</title>
+  <style>
+    @page { size: letter; margin: 0.3in 0.4in; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    :root {
+      --navy: hsl(213, 52%, 25%);
+      --navy-light: hsl(213, 46%, 35%);
+      --blue: hsl(204, 42%, 60%);
+      --blue-pale: hsl(208, 56%, 92%);
+      --green: hsl(134, 61%, 41%);
+      --green-bg: hsl(134, 41%, 90%);
+      --orange: hsl(30, 90%, 55%);
+      --orange-bg: hsl(30, 85%, 92%);
+      --red: hsl(354, 70%, 54%);
+      --purple: hsl(270, 50%, 55%);
+      --purple-bg: hsl(270, 45%, 92%);
+      --gray: hsl(210, 14%, 89%);
+      --gray-dark: hsl(207, 16%, 42%);
+      --text: hsl(213, 52%, 20%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 9.5px;
+      color: var(--text);
+      background: white;
+      line-height: 1.25;
+      width: 7.7in;
+      margin: 0 auto;
+    }
+
+    .doc-header {
+      background: var(--navy);
+      color: white;
+      padding: 8px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .doc-header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .doc-header .subtitle { font-size: 10px; opacity: 0.8; margin-top: 1px; }
+    .doc-header .logo-text { font-size: 11px; font-weight: 600; text-align: right; }
+    .doc-header .logo-text .tagline { font-size: 9px; font-weight: 400; opacity: 0.7; }
+
+    .content { padding: 8px 18px; }
+
+    .section { margin-bottom: 8px; }
+    .section-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--navy);
+      border-bottom: 2px solid var(--navy);
+      padding-bottom: 2px; margin-bottom: 5px;
+    }
+
+    /* Pipeline flow */
+    .pipeline {
+      display: flex; align-items: stretch; gap: 0;
+      margin: 5px 0;
+    }
+    .pipe-stage {
+      flex: 1; text-align: center; padding: 7px 4px;
+      border-radius: 5px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+    }
+    .pipe-stage .stage-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+    .pipe-stage .stage-detail { font-size: 7.5px; margin-top: 2px; opacity: 0.8; }
+    .pipe-arrow {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--navy); padding: 0 1px;
+      font-weight: 700;
+    }
+
+    .stage-intake { background: var(--blue-pale); color: var(--navy); }
+    .stage-process { background: var(--orange-bg); color: hsl(30, 70%, 30%); }
+    .stage-human { background: var(--purple-bg); color: hsl(270, 50%, 30%); }
+    .stage-write { background: var(--green-bg); color: hsl(134, 50%, 25%); }
+
+    /* Channel cards */
+    .channel-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;
+    }
+    .channel-card {
+      border: 1px solid var(--gray);
+      border-radius: 5px; padding: 5px 6px;
+      text-align: center;
+    }
+    .channel-card.active { border-color: var(--green); background: var(--green-bg); }
+    .channel-card.proposed { border-color: var(--orange); background: var(--orange-bg); border-style: dashed; }
+    .channel-name { font-size: 9px; font-weight: 700; }
+    .channel-trigger { font-size: 7.5px; color: var(--gray-dark); margin-top: 1px; }
+    .channel-badge {
+      display: inline-block; padding: 1px 5px; border-radius: 8px;
+      font-size: 7px; font-weight: 700; text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .badge-live { background: var(--green); color: white; }
+    .badge-proposed { background: var(--orange); color: white; }
+
+    /* Data destinations */
+    .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .matrix-card {
+      border: 2px solid var(--navy); border-radius: 6px; overflow: hidden;
+    }
+    .matrix-header {
+      background: var(--navy); color: white; padding: 4px 8px;
+      font-size: 9.5px; font-weight: 700;
+    }
+    .matrix-header .matrix-channel { font-size: 8px; font-weight: 400; opacity: 0.8; }
+    .matrix-tabs { padding: 5px 8px; }
+    .matrix-tab {
+      font-size: 8.5px; padding: 1px 0;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    }
+    .matrix-tab::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 5px; }
+    .tab-client::before { background: hsl(204, 60%, 50%); }
+    .tab-account::before { background: hsl(134, 50%, 45%); }
+    .tab-agent::before { background: hsl(30, 80%, 50%); }
+    .tab-revenue::before { background: hsl(354, 60%, 50%); }
+    .tab-ops::before { background: hsl(270, 50%, 55%); }
+    .tab-intake::before { background: hsl(45, 80%, 50%); }
+
+    /* Quality layers */
+    .quality-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    .quality-card {
+      border-radius: 5px; padding: 4px 6px; text-align: center;
+    }
+    .quality-card h4 { font-size: 9px; margin-bottom: 3px; }
+    .quality-card p { font-size: 7.5px; line-height: 1.3; }
+    .quality-card .trigger { font-size: 7px; font-weight: 600; margin-top: 3px; padding: 1px 5px; border-radius: 4px; display: inline-block; }
+    .q-normalize { background: hsl(204, 50%, 92%); color: hsl(204, 60%, 25%); }
+    .q-normalize .trigger { background: hsl(204, 50%, 80%); }
+    .q-dedup { background: hsl(270, 40%, 92%); color: hsl(270, 45%, 25%); }
+    .q-dedup .trigger { background: hsl(270, 40%, 82%); }
+    .q-reconcile { background: hsl(134, 35%, 90%); color: hsl(134, 50%, 22%); }
+    .q-reconcile .trigger { background: hsl(134, 35%, 78%); }
+    .q-drive { background: hsl(30, 60%, 92%); color: hsl(30, 60%, 25%); }
+    .q-drive .trigger { background: hsl(30, 55%, 80%); }
+
+    /* Review tools */
+    .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .tool-card {
+      border: 1px solid var(--gray); border-radius: 5px; padding: 4px 8px;
+    }
+    .tool-card h4 { font-size: 9.5px; color: var(--navy); margin-bottom: 2px; }
+    .tool-card p { font-size: 8px; color: var(--gray-dark); }
+    .tool-card .tool-path { font-family: monospace; font-size: 7.5px; color: var(--blue); margin-top: 2px; }
+
+    /* Legend */
+    .legend {
+      display: flex; gap: 14px; align-items: center;
+      padding: 5px 10px; background: hsl(210, 17%, 97%);
+      border-radius: 5px; margin-top: 6px; font-size: 8px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 3px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Relationship diagram */
+    .relationship-box {
+      border: 2px solid var(--navy); border-radius: 6px;
+      padding: 8px 10px; background: hsl(210, 17%, 98%);
+    }
+    .rel-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 5px;
+    }
+    .rel-row:last-child { margin-bottom: 0; }
+    .rel-entity {
+      flex: 0 0 90px; padding: 4px 8px;
+      border-radius: 5px; text-align: center;
+      font-weight: 700; font-size: 9px;
+    }
+    .rel-arrow { color: var(--navy); font-weight: 700; font-size: 12px; }
+    .rel-desc { font-size: 8.5px; color: var(--gray-dark); }
+    .ent-client { background: hsl(204, 50%, 88%); color: hsl(204, 60%, 25%); border: 1px solid hsl(204, 50%, 70%); }
+    .ent-account { background: hsl(134, 40%, 88%); color: hsl(134, 50%, 22%); border: 1px solid hsl(134, 40%, 65%); }
+    .ent-file { background: hsl(30, 70%, 90%); color: hsl(30, 60%, 25%); border: 1px solid hsl(30, 60%, 70%); }
+    .ent-agent { background: hsl(270, 40%, 90%); color: hsl(270, 45%, 25%); border: 1px solid hsl(270, 40%, 70%); }
+
+    /* Slack grid */
+    .slack-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+
+    .footer {
+      margin-top: 2px; padding-top: 2px;
+      border-top: 1px solid var(--gray);
+      display: flex; justify-content: space-between;
+      font-size: 8px; color: var(--gray-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <div>
+      <h1>The Machine: RPI Data Pipeline</h1>
+      <div class="subtitle">Client + Account + File Data Flow Reference</div>
+    </div>
+    <div class="logo-text">
+      Retirement Protectors, Inc.
+      <div class="tagline">We're Your People</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SECTION: Pipeline Overview -->
+    <div class="section">
+      <div class="section-title">End-to-End Pipeline</div>
+      <div class="pipeline">
+        <div class="pipe-stage stage-intake">
+          <div class="stage-label">1. Intake</div>
+          <div class="stage-detail">15 channels scan<br>for new data</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-intake">
+          <div class="stage-label">2. Queue</div>
+          <div class="stage-detail">_INTAKE_QUEUE<br>in PRODASH MATRIX</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-process">
+          <div class="stage-label">3. Extract</div>
+          <div class="stage-detail">Claude Vision reads<br>documents + classifies</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-process">
+          <div class="stage-label">4. Approve</div>
+          <div class="stage-detail">_APPROVAL_QUEUE<br>+ Slack notification</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-human">
+          <div class="stage-label">5. Review</div>
+          <div class="stage-detail">Human reviews via<br>Web UI (per field)</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-write">
+          <div class="stage-label">6. Write</div>
+          <div class="stage-detail">RAPID_API writes<br>to correct MATRIX</div>
+        </div>
+        <div class="pipe-arrow">&rarr;</div>
+        <div class="pipe-stage stage-write">
+          <div class="stage-label">7. Finalize</div>
+          <div class="stage-detail">ACF filed + Slack<br>completion notice</div>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: var(--blue-pale); border: 1px solid var(--blue);"></div> Automated Intake</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--orange-bg); border: 1px solid var(--orange);"></div> AI Processing</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--purple-bg); border: 1px solid var(--purple);"></div> Human Action</div>
+        <div class="legend-item"><div class="legend-dot" style="background: var(--green-bg); border: 1px solid var(--green);"></div> System Write</div>
+      </div>
+    </div>
+
+    <!-- SECTION: Import Modules -->
+    <div class="section">
+      <div class="section-title">Import Modules (Bulk Data Sources &mdash; 5 Live)</div>
+      <div class="channel-grid">
+        <div class="channel-card active">
+          <div class="channel-name">Agent Import</div>
+          <div class="channel-trigger">NIPR + LC3 Discovery</div>
+          <div class="channel-badge badge-live">Live</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Client Import</div>
+          <div class="channel-trigger">CRM + Carrier BoB</div>
+          <div class="channel-badge badge-live">Live</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Account Import</div>
+          <div class="channel-trigger">Policy Data + CRM</div>
+          <div class="channel-badge badge-live">Live</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Revenue Import</div>
+          <div class="channel-trigger">Stateable API</div>
+          <div class="channel-badge badge-live">Live</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">GHL Sync</div>
+          <div class="channel-trigger">GoHighLevel CRM</div>
+          <div class="channel-badge badge-live">Live</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Document Intake Channels -->
+    <div class="section">
+      <div class="section-title">Document Intake (Auto-Scanned &mdash; 4 Live + 6 Proposed)</div>
+      <div class="channel-grid">
+        <div class="channel-card active">
+          <div class="channel-name">SPC Drive</div>
+          <div class="channel-trigger">Specialist folders</div>
+          <div class="channel-badge badge-live">Live - 5 min</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Meet Transcripts</div>
+          <div class="channel-trigger">Google Meet recordings</div>
+          <div class="channel-badge badge-live">Live - 5 min</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Physical Mail</div>
+          <div class="channel-trigger">Scanned mail intake</div>
+          <div class="channel-badge badge-live">Live - 5 min</div>
+        </div>
+        <div class="channel-card active">
+          <div class="channel-name">Email Inboxes</div>
+          <div class="channel-trigger">service@ + sales@ Gmail</div>
+          <div class="channel-badge badge-live">Live - 5 min</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">Carrier API</div>
+          <div class="channel-trigger">Direct policy data feeds</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">IMO API</div>
+          <div class="channel-trigger">Commission / hierarchy</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">Twilio SMS</div>
+          <div class="channel-trigger">Inbound text messages</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">Carrier Webhook</div>
+          <div class="channel-trigger">Real-time policy updates</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">IMO Webhook</div>
+          <div class="channel-trigger">Real-time commission</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+        <div class="channel-card proposed">
+          <div class="channel-name">Fax / eFax</div>
+          <div class="channel-trigger">Inbound fax service</div>
+          <div class="channel-badge badge-proposed">Proposed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Data Quality -->
+    <div class="section">
+      <div class="section-title">Data Quality Layers (Automatic)</div>
+      <div class="quality-grid">
+        <div class="quality-card q-normalize">
+          <h4>Phase 1: Normalize</h4>
+          <p>90+ fields across 10 types: phone, DOB, names, carriers, states, emails, SSN</p>
+          <div class="trigger">Every Write</div>
+        </div>
+        <div class="quality-card q-dedup">
+          <h4>Phase 2: Dedup</h4>
+          <p>Pre-write scoring: MERGED (100), NOTIFY (85-99), REVIEW (70-84), INSERT (&lt;70)</p>
+          <div class="trigger">Every Insert</div>
+        </div>
+        <div class="quality-card q-reconcile">
+          <h4>Phase 3: Reconcile</h4>
+          <p>Batch scan for duplicate clients + accounts. Slack summary if new dupes found</p>
+          <div class="trigger">Monday 6 AM</div>
+        </div>
+        <div class="quality-card q-drive">
+          <h4>Drive Hygiene</h4>
+          <p>md5 checksum scan across My Drive + Shared Drives for duplicate files</p>
+          <div class="trigger">Wednesday 6 AM</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Data Destinations -->
+    <div class="section">
+      <div class="section-title">Data Destinations (Three-Platform Architecture)</div>
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <div class="matrix-header">
+            PRODASH MATRIX
+            <span class="matrix-channel">B2C (RPI)</span>
+          </div>
+          <div class="matrix-tabs">
+            <div class="matrix-tab tab-client">_CLIENT_MASTER</div>
+            <div class="matrix-tab tab-account">_ACCOUNT_ANNUITY</div>
+            <div class="matrix-tab tab-account">_ACCOUNT_LIFE</div>
+            <div class="matrix-tab tab-account">_ACCOUNT_MEDICARE</div>
+            <div class="matrix-tab tab-account">_ACCOUNT_BDRIA</div>
+            <div class="matrix-tab tab-intake">_INTAKE_QUEUE</div>
+          </div>
+        </div>
+        <div class="matrix-card">
+          <div class="matrix-header">
+            SENTINEL MATRIX
+            <span class="matrix-channel">B2B (DAVID)</span>
+          </div>
+          <div class="matrix-tabs">
+            <div class="matrix-tab tab-agent">_AGENT_MASTER</div>
+            <div class="matrix-tab tab-revenue">_REVENUE_MASTER</div>
+          </div>
+        </div>
+        <div class="matrix-card">
+          <div class="matrix-header">
+            RAPID MATRIX
+            <span class="matrix-channel">B2E (RAPID)</span>
+          </div>
+          <div class="matrix-tabs">
+            <div class="matrix-tab tab-ops">_APPROVAL_QUEUE</div>
+            <div class="matrix-tab tab-ops">_EMAIL_INBOX_CONFIG</div>
+            <div class="matrix-tab tab-ops">_SPECIALIST_FOLDERS</div>
+            <div class="matrix-tab tab-ops">_EXTRACTION_TRAINING</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Entity Relationships -->
+    <div class="section">
+      <div class="section-title">Entity Relationships</div>
+      <div class="relationship-box">
+        <div class="rel-row">
+          <div class="rel-entity ent-client">CLIENT</div>
+          <div class="rel-arrow">&rarr;</div>
+          <div class="rel-desc">
+            <strong>Has many ACCOUNTS</strong> (Annuity, Life, Medicare, BD/RIA).
+            One record in _CLIENT_MASTER with unique client_id.
+            Linked to a Google Drive ACF folder (gdrive_folder_url).
+          </div>
+        </div>
+        <div class="rel-row">
+          <div class="rel-entity ent-account">ACCOUNT</div>
+          <div class="rel-arrow">&rarr;</div>
+          <div class="rel-desc">
+            <strong>Belongs to one CLIENT</strong> via client_id FK.
+            Lives in product-specific tab (_ACCOUNT_ANNUITY, _ACCOUNT_LIFE, etc.).
+            Each account links to an ACF via acf_link.
+          </div>
+        </div>
+        <div class="rel-row">
+          <div class="rel-entity ent-file">FILE / ACF</div>
+          <div class="rel-arrow">&rarr;</div>
+          <div class="rel-desc">
+            <strong>Active Client File</strong> = Google Drive folder for a client.
+            Contains all scanned documents, applications, correspondence.
+            Source documents flow in via intake channels, filed after approval.
+          </div>
+        </div>
+        <div class="rel-row">
+          <div class="rel-entity ent-agent">AGENT</div>
+          <div class="rel-arrow">&rarr;</div>
+          <div class="rel-desc">
+            <strong>Services many CLIENTS</strong> via agent_id FK on client records.
+            Lives in _AGENT_MASTER in SENTINEL MATRIX.
+            Linked by NPN (National Producer Number).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Team Tools -->
+    <div class="section">
+      <div class="section-title">Review Tools (Your Daily Touchpoints)</div>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <h4>Approval Review</h4>
+          <p>Review extracted fields from new documents. Push, edit, or kill each field before it writes to the database.</p>
+          <div class="tool-path">?page=approval&amp;batch_id=XXX</div>
+        </div>
+        <div class="tool-card">
+          <h4>Duplicate Review</h4>
+          <p>Side-by-side comparison of duplicate records. Cherry-pick best values, merge or dismiss. Includes Drive file duplicates.</p>
+          <div class="tool-path">?page=reconcile</div>
+        </div>
+        <div class="tool-card">
+          <h4>Training Dashboard</h4>
+          <p>Card-based triage of extraction batches. Review AI accuracy and build training corpus for improved future extractions.</p>
+          <div class="tool-path">?page=training</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Slack Notifications -->
+    <div class="section">
+      <div class="section-title">Slack Notifications (#ai-data-approvals)</div>
+      <div class="slack-grid">
+        <div class="tool-card">
+          <h4>New Batch Ready</h4>
+          <p>When Claude extracts a document, Slack notifies with a "Review Now" link. No PHI in the message.</p>
+        </div>
+        <div class="tool-card">
+          <h4>Weekly Reconciliation</h4>
+          <p>Monday 6 AM: summary of duplicate pairs found across clients and accounts.</p>
+        </div>
+        <div class="tool-card">
+          <h4>Drive Hygiene</h4>
+          <p>Wednesday 6 AM: duplicate file count, wasted space, top offenders.</p>
+        </div>
+        <div class="tool-card">
+          <h4>Case Tasks</h4>
+          <p>Routed to #rpiservice or #sales-support based on document type and keywords.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>RPI Data Pipeline v3.9.16 | RAPID_IMPORT + RAPID_CORE + RAPID_API + PRODASH</div>
+      <div>February 2026 | #RunningOurOwnRACE</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
