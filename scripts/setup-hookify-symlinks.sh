@@ -72,8 +72,8 @@ echo ""
 
 # All RPI project directories (relative to PROJECTS_ROOT)
 PROJECTS=(
-  "PRODASH_TOOLS/PRODASH"
-  "PRODASH_TOOLS/QUE/QUE-Medicare"
+  "PRODASHX_TOOLS/PRODASHX"
+  "PRODASHX_TOOLS/QUE/QUE-Medicare"
   "RAPID_TOOLS/C3"
   "RAPID_TOOLS/CAM"
   "RAPID_TOOLS/CEO-Dashboard"

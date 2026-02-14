@@ -1,7 +1,7 @@
 # GHL Integration Best Practices
 
 > **Created**: February 1, 2026  
-> **Source**: PRODASH GHL sync debugging session (12+ hours)  
+> **Source**: PRODASHX GHL sync debugging session (12+ hours)
 > **Status**: CRITICAL - Follow these patterns for all GHL integrations
 
 ---
@@ -132,7 +132,7 @@ function extractContactId(record) {
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         PRODASH_MATRIX (Google Sheet)                        │
+│                        PRODASHX_MATRIX (Google Sheet)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  _CLIENT_MASTER (102 columns)    _ACCOUNT_ANNUITY (47 columns)              │
 │  _ACCOUNT_LIFE (44 columns)      _ACCOUNT_MEDICARE (32 columns)             │

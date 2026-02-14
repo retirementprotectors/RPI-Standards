@@ -190,7 +190,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 ### Three Channels
 | Channel | Acronym | Platform | Focus |
 |---------|---------|----------|-------|
-| **B2C** | RPI | PRODASH | Direct client sales + service |
+| **B2C** | RPI | PRODASHX | Direct client sales + service |
 | **B2B** | DAVID | SENTINEL | M&A + Partnerships |
 | **B2E** | RAPID | RIIMO | Shared services operations |
 
@@ -264,7 +264,7 @@ return { success: false, error: 'What went wrong' };
 | **Logging** | NEVER log PHI to console, error messages, or debug output |
 | **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
 | **Breach** | Report suspected breaches to JDM or John Behn immediately |
-| **PHI Projects** | PRODASH, QUE-Medicare, DEX, CAM - extra caution required |
+| **PHI Projects** | PRODASHX, QUE-Medicare, DEX, CAM - extra caution required |
 
 **For full policy details:** Read `_RPI_STANDARDS/reference/compliance/PHI_POLICY.md`
 
@@ -753,7 +753,7 @@ When you change the codebase, update the corresponding docs:
 |----------|---------|---------|--------------|
 | **SENTINEL** | B2B (DAVID) | M&A + Partnerships | sentinel, sentinel-v2, DAVID-HUB |
 | **RIIMO** | B2E (RAPID) | Shared services | CAM, DEX, C3, RIIMO, CEO-Dashboard |
-| **PRODASH** | B2C (RPI) | Direct client sales | PRODASH, QUE-Medicare |
+| **PRODASHX** | B2C (RPI) | Direct client sales | PRODASHX, QUE-Medicare |
 
 **Shared Services (used by all):**
 - RAPID_CORE (GAS library)
@@ -765,7 +765,7 @@ When you change the codebase, update the corresponding docs:
 ```
 RAPID_CORE ← Used by ALL GAS projects (library dependency)
      ↑
-RAPID_IMPORT ← Feeds data into SENTINEL + PRODASH
+RAPID_IMPORT ← Feeds data into SENTINEL + PRODASHX
      ↑
 MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 ```
@@ -793,8 +793,8 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 │   ├── DAVID-HUB/               # Entry calculators
 │   ├── sentinel/                # Main B2B app (legacy)
 │   └── sentinel-v2/             # Main B2B app (current)
-└── PRODASH_TOOLS/               # B2C Platform
-    ├── PRODASH/                 # Client portal
+└── PRODASHX_TOOLS/              # B2C Platform
+    ├── PRODASHX/                # Client portal
     └── QUE/QUE-Medicare/        # Medicare quoting
 ```
 
@@ -877,7 +877,7 @@ You report results to me
 ### Starting
 1. JDM gives task or context
 2. Read project CLAUDE.md (if exists in current directory)
-3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASH_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
+3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASHX_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
 4. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
 5. Begin work immediately
 6. Report completion, not progress

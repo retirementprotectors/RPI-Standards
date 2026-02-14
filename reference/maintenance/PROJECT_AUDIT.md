@@ -159,8 +159,8 @@ grep -rn 'api_key\|apiKey\|password\|secret' *.gs 2>/dev/null \
 | Project | Path | Last Audit | Status |
 |---------|------|------------|--------|
 | _RPI_STANDARDS | `_RPI_STANDARDS` | 2026-02-13 | ✅ |
-| PRODASH | `PRODASH_TOOLS/PRODASH` | 2026-02-04 | ✅ |
-| QUE-Medicare | `PRODASH_TOOLS/QUE/QUE-Medicare` | — | ⏳ |
+| PRODASHX | `PRODASHX_TOOLS/PRODASHX` | 2026-02-04 | ✅ |
+| QUE-Medicare | `PRODASHX_TOOLS/QUE/QUE-Medicare` | — | ⏳ |
 | C3 | `RAPID_TOOLS/C3` | 2026-02-04 | ✅ |
 | CAM | `RAPID_TOOLS/CAM` | 2026-02-04 | ✅ |
 | CEO-Dashboard | `RAPID_TOOLS/CEO-Dashboard` | — | ⏳ |

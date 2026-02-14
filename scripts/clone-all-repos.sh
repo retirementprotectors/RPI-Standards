@@ -22,9 +22,9 @@ ORG="retirementprotectors"
 # Format: "GITHUB_REPO_NAME:LOCAL_PATH_RELATIVE_TO_PROJECTS"
 # The local path includes the SuperProject folder.
 REPO_MAP=(
-  # PRODASH_TOOLS (B2C)
-  "ProDash:PRODASH_TOOLS/PRODASH"
-  "QUE-Medicare:PRODASH_TOOLS/QUE/QUE-Medicare"
+  # PRODASHX_TOOLS (B2C)
+  "ProDash:PRODASHX_TOOLS/PRODASHX"
+  "QUE-Medicare:PRODASHX_TOOLS/QUE/QUE-Medicare"
 
   # RAPID_TOOLS (Shared Services / B2E)
   "RPI-Content-Manager:RAPID_TOOLS/C3"
@@ -48,7 +48,7 @@ REPO_MAP=(
 
 # Name mismatches (for reference):
 #   GitHub "RPI-Content-Manager" → local "C3" (renamed locally)
-#   GitHub "ProDash"             → local "PRODASH" (casing normalized)
+#   GitHub "ProDash"             → local "PRODASHX" (casing normalized + renamed)
 #   GitHub "RPI-Standards"       → local "_RPI_STANDARDS" (prefixed for sort)
 
 echo "=== RPI Repository Clone Script ==="
@@ -68,7 +68,7 @@ fi
 
 # Create SuperProject folders
 echo "Creating SuperProject folders..."
-mkdir -p "${PROJECTS_DIR}/PRODASH_TOOLS/QUE"
+mkdir -p "${PROJECTS_DIR}/PRODASHX_TOOLS/QUE"
 mkdir -p "${PROJECTS_DIR}/RAPID_TOOLS"
 mkdir -p "${PROJECTS_DIR}/SENTINEL_TOOLS"
 echo ""

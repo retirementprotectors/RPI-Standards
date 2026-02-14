@@ -193,7 +193,7 @@ When an employee/contractor leaves RPI:
 - [x] Updated all MCP config files with new tokens
 - [x] Added API key authentication to RAPID_API
 - [x] Replaced forbidden UI patterns (alert/confirm/prompt)
-- [x] Verified PRODASH has organization-only access
+- [x] Verified PRODASHX has organization-only access
 
 #### Documentation
 - [x] Created security compliance documentation
@@ -203,7 +203,7 @@ When an employee/contractor leaves RPI:
 #### Organization-Only Access Verification (Complete)
 | App | Access | Verified Date | Notes |
 |-----|--------|---------------|-------|
-| PRODASH | DOMAIN | 2026-02-04 | Already compliant |
+| PRODASHX | DOMAIN | 2026-02-04 | Already compliant |
 | SENTINEL | DOMAIN | 2026-02-13 | All 21 deploys DOMAIN (19 stale ANYONE deploys updated to v381) |
 | SENTINEL v2 | DOMAIN | 2026-02-13 | All 2 deploys already DOMAIN — clean |
 | DEX | DOMAIN | 2026-02-13 | All 20 deploys DOMAIN (19 stale ANYONE deploys updated to v64) |

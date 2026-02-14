@@ -44,7 +44,7 @@ This policy applies to:
 |--------|---------|----------|
 | Google Workspace (Sheets/Drive/Docs) | Client records, MATRIX | Google BAA, encryption, access controls |
 | Gmail (@retireprotected.com) | Business communication | Google BAA, TLS encryption |
-| Google Apps Script applications | Internal tools (PRODASH, etc.) | Organization-only access, Google infrastructure |
+| Google Apps Script applications | Internal tools (PRODASHX, etc.) | Organization-only access, Google infrastructure |
 
 **PHI is PROHIBITED in:**
 - Personal email accounts

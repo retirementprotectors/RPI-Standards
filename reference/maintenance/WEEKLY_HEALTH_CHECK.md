@@ -38,8 +38,8 @@ Claude Code will automatically:
 ```bash
 for repo in \
   ~/Projects/_RPI_STANDARDS \
-  ~/Projects/PRODASH_TOOLS/PRODASH \
-  ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+  ~/Projects/PRODASHX_TOOLS/PRODASHX \
+  ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
   ~/Projects/RAPID_TOOLS/C3 \
   ~/Projects/RAPID_TOOLS/CAM \
   ~/Projects/RAPID_TOOLS/CEO-Dashboard \
@@ -82,7 +82,7 @@ Scan for forbidden patterns across all GAS web apps:
 ```bash
 # alert()/confirm()/prompt() — actual function calls only
 # Exclude: variable names, CSS classes, comments, parameter names
-for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
   ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
   ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
   ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
@@ -93,7 +93,7 @@ for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Me
 done
 
 # Hardcoded inline colors
-for repo in ~/Projects/PRODASH_TOOLS/PRODASH ~/Projects/PRODASH_TOOLS/QUE/QUE-Medicare \
+for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
   ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
   ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
   ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
@@ -108,7 +108,7 @@ done
 | Project | Issue | Severity |
 |---------|-------|----------|
 | QUE-Medicare | 3x `alert()` + 1x `confirm()` in Scripts.html | HIGH — real forbidden calls |
-| PRODASH | Hardcoded hex colors in Index.html + C3-Evolution.html | MEDIUM |
+| PRODASHX | Hardcoded hex colors in Index.html + C3-Evolution.html | MEDIUM |
 | QUE-Medicare | Hardcoded hex colors in Index.html + Scripts.html | MEDIUM |
 | DEX | Hardcoded hex colors in Index.html (input modal) | LOW |
 | sentinel | Hardcoded hex colors in Index.html (modals) | LOW |
@@ -185,8 +185,8 @@ Pick one project each week and verify:
 | Project | Status | Last Commit | Notes |
 |---------|--------|-------------|-------|
 | _RPI_STANDARDS | ✅/⚠️ | X ago | |
-| PRODASH_TOOLS/PRODASH | ✅/⚠️ | X ago | |
-| PRODASH_TOOLS/QUE/QUE-Medicare | ✅/⚠️ | X ago | |
+| PRODASHX_TOOLS/PRODASHX | ✅/⚠️ | X ago | |
+| PRODASHX_TOOLS/QUE/QUE-Medicare | ✅/⚠️ | X ago | |
 | RAPID_TOOLS/C3 | ✅/⚠️ | X ago | |
 | RAPID_TOOLS/CAM | ✅/⚠️ | X ago | |
 | RAPID_TOOLS/CEO-Dashboard | ✅/⚠️ | X ago | |
