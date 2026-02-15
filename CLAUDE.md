@@ -231,6 +231,9 @@ confirm('...');
 prompt('...');
 element.style.backgroundColor = '#hex';  // No inline colors
 console.log('user error');               // Not for user feedback
+// ❌ NEVER for person selection from known data sources
+<select id="owner-select">              // Use Smart Lookup instead
+<input type="text" id="agentName">      // Use Smart Lookup instead
 ```
 
 ### Required Patterns
@@ -246,10 +249,41 @@ return { success: true, data: result };
 return { success: false, error: 'What went wrong' };
 ```
 
+### Smart Lookup Required (Person Selection Fields)
+
+**Any field that selects a person from a known data source MUST use the Smart Lookup component.**
+
+```
+❌ NEVER for known entities:
+<select id="agent-select">...</select>          // Plain dropdown
+<input type="text" id="producerName">           // Free text for someone in our DB
+
+✅ ALWAYS for known entities:
+buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
+```
+
+**What counts as a "known entity":**
+- RPI team members (from `_USER_HIERARCHY` or `Users` sheet)
+- Agents/Producers (from `_PRODUCER_MASTER` or revenue records)
+- Clients (from `_CLIENT_MASTER`)
+- Any person stored in a MATRIX sheet
+
+**Exceptions (free text IS correct):**
+- Self-identification (user entering their own name, e.g., DAVID-HUB NPN lookup)
+- External contacts not in any RPI database
+- Multi-select assignment (use checkbox checklists instead)
+
+**Implementation pattern:**
+1. Hidden input carries the original element ID (existing `.value` reads work)
+2. Text input = `id + '-input'`, wrapper = `id + '-wrapper'`, results = `id + '-results'`
+3. CSS adapts to project theme (dark/light)
+4. Reference implementation: `_RPI_STANDARDS/reference/patterns/SMART_LOOKUP.md`
+
 ### Self-Verification (Before Reporting Complete)
 - [ ] No `alert()`, `confirm()`, `prompt()`
 - [ ] All functions return `{ success: true/false, data/error }`
 - [ ] No hardcoded colors - use CSS variables
+- [ ] No plain dropdowns or free text for known-entity person selection
 - [ ] Code follows existing patterns in the file
 
 ---
@@ -439,6 +473,7 @@ Always fix the source file. Always verify after deploy.
 - [ ] Modal uses flexbox scroll pattern
 - [ ] Caching uses `var` not `let`
 - [ ] New MATRIX writes use RAPID_API (not direct sheet writes)
+- [ ] Person-selection fields use Smart Lookup (not plain select/text)
 
 ### Self-Check (Before Every GAS Deploy)
 - [ ] No hardcoded credentials in code (use Script Properties)
