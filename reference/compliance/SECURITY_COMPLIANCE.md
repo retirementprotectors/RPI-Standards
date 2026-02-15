@@ -212,7 +212,7 @@ When an employee/contractor leaves RPI:
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 | RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook reception — approved exception. Document rationale. |
-| RAPID_IMPORT | Not verified | 2026-02-14 | Needs source file audit |
+| RAPID_IMPORT | DOMAIN | 2026-02-14 | Verified — appsscript.json has `"access": "DOMAIN"` in both webapp and executionApi |
 | RPI-Command-Center | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
 | QUE-Medicare | Not verified | 2026-02-14 | Needs source file audit |
 | DAVID-HUB | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
