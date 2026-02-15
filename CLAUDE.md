@@ -205,6 +205,10 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Dr. Aprille Trupiano | CMO/Legacy Services |
 | Jason Moran (JMDC) | Fractional CTO |
 
+### Org Structure
+- **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
+- **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
+
 ---
 
 ## Industry Terminology
@@ -285,6 +289,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 - [ ] No hardcoded colors - use CSS variables
 - [ ] No plain dropdowns or free text for known-entity person selection
 - [ ] Code follows existing patterns in the file
+- [ ] Hookify gotcha: `alert (` in comments triggers `block-alert-confirm-prompt` — use "notification" not "alert" before parens
 
 ---
 
@@ -299,6 +304,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 | **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
 | **Breach** | Report suspected breaches to JDM or John Behn immediately |
 | **PHI Projects** | PRODASHX, QUE-Medicare, DEX, CAM - extra caution required |
+| **Admin Access** | Super Admins locked to Josh + John Behn only. OU `/RPI- Archived Users` = FINRA archiving. |
 
 **For full policy details:** Read `_RPI_STANDARDS/reference/compliance/PHI_POLICY.md`
 
@@ -463,6 +469,29 @@ If someone sets DOMAIN in the GAS editor but the source file says `ANYONE_ANONYM
 
 ```
 Always fix the source file. Always verify after deploy.
+```
+
+### 12. Empty String indexOf Returns 0
+**`''.indexOf('')` returns 0 (truthy), not -1.**
+
+```javascript
+// ❌ BROKEN - Always matches, even on empty search
+if (value.indexOf(searchTerm) >= 0) { /* match */ }
+
+// ✅ FIXED - Guard empty strings first
+if (searchTerm && value.indexOf(searchTerm) >= 0) { /* match */ }
+```
+
+### 13. ZIP Code Zero-Padding
+**4-digit ZIP codes need a leading zero before deriving state.**
+
+```javascript
+// ❌ BROKEN - "7102" won't map to NJ
+const state = zipToState(zip);
+
+// ✅ FIXED - Pad to 5 digits first
+const paddedZip = String(zip).padStart(5, '0');
+const state = zipToState(paddedZip);
 ```
 
 ### Self-Check (Before Every GAS Commit)
@@ -775,6 +804,12 @@ When you change the codebase, update the corresponding docs:
 - Reference: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
 - For full audit protocol: Read `reference/maintenance/PROJECT_AUDIT.md`
 
+**Active launchd agents:**
+- `com.rpi.analytics-push` — daily 11pm (analytics → MATRIX)
+- `com.rpi.mcp-analytics` — Monday 8am (weekly Slack report)
+- `com.rpi.claude-cleanup` — Sunday 3am (session cleanup)
+- `com.rpi.knowledge-promote` — daily 11:15pm (MEMORY → CLAUDE.md promotion)
+
 **When starting work on unfamiliar project:**
 - Read that project's CLAUDE.md first
 - Check `git status` before making any changes
@@ -795,6 +830,10 @@ When you change the codebase, update the corresponding docs:
 - RAPID_IMPORT (data ingestion)
 - RAPID_API (REST endpoints)
 - MCP-Hub (intelligence layer)
+
+**Sales Centers** = QUE modules surfaced as PRODASH views (Medicare, Life, Annuity, Advisory)
+
+**Campaign Engine:** C3 → PRODASH, 60 campaigns, 661 templates, AEP Blackout Oct-Dec
 
 **Dependency Chain:**
 ```
@@ -841,6 +880,11 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` directly (TABLE_ROUTING constant).
 
+**Schema Rules:**
+- `TAB_SCHEMAS` define column order for all MATRIX writes
+- Missing schema fields cause **silent data loss** — always verify schema completeness
+- New fields flow: `RAPID_CORE` schemas → `RAPID_API` SETUP → `RAPID_IMPORT` maps → `watcher.js`
+
 ---
 
 ## Key API Endpoints
@@ -849,6 +893,10 @@ For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` 
 |---------|-----|---------|
 | healthcare-mcps | `https://que-api-r6j33zf47q-uc.a.run.app` | Medicare data API (Cloud Run, always on) |
 | RAPID_API | GAS Web App | REST endpoints for external integrations |
+
+**RAPID_API Deployment Notes:**
+- PRODASH calls RAPID_API deployment `AKfycbyf9IAI3...` (Workspace), NOT `AKfycbwaCzn...` (Primary) — both must stay synced
+- `client_status` (from GHL) carries classification, NOT `client_classification`
 
 **Healthcare-mcps (Cloud Run):**
 - Production: `https://que-api-r6j33zf47q-uc.a.run.app` (4Gi/2CPU, min 1 instance)
@@ -941,162 +989,3 @@ You report results to me
 ---
 
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Sheets Date normalization**: Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` in GAS gives locale format (NOT ISO). Use `normalizeDate_()` with `getFullYear()/getMonth()/getDate()`.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- `''.indexOf('')` returns 0 — always guard empty string searches
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **ZIP zero-pad**: 4-digit zips need leading zero before deriving state
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Hookify gotcha**: `alert (` in comments triggers block-alert-confirm-prompt — use "notification" not "alert" before parens
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **TAB_SCHEMAS** define column order for all MATRIX writes
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Missing schema fields → **silent data loss**
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- PRODASH calls RAPID_API deployment `AKfycbyf9IAI3...` (Workspace), NOT `AKfycbwaCzn...` — both must stay synced
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- client_status from GHL carries classification, NOT client_classification
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **launchd agents**: analytics-push (daily 11pm), mcp-analytics (Mon 8am), claude-cleanup (Sun 3am), knowledge-promote (daily 11:15pm)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Elementor CSS won't compile via REST API — use inline `style=""` attributes
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Campaign Engine: C3->PRODASH, 60 campaigns, 661 templates, AEP Blackout Oct-Dec
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **COR/AST/SPC = team LEVELS**, not routing indicators. Leaders sort within their teams.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Super Admins locked**: Josh + John Behn only. OU `/RPI- Archived Users` = FINRA archiving.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Sales Centers** = QUE modules as PRODASH views (Medicare, Life, Annuity, Advisory)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- 3 divisions: Sales(Vince), Service(Nikki), Legacy(Aprille). COR/AST/SPC per unit.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- 19 client dupes, 98 orphan accounts, 39 annuity dupes, married couple filter
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- claude-config repo synced on both machines, hooks active
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- QUE vs ProDashX Medicare decision needed before major features
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **googleapis scripts.run 404 bug** — fixed in gas-tools.js by using native `fetch`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Weekly Slack**: launchd `com.rpi.mcp-analytics` Monday 8am → #jdmceo (C09UNESEYMU)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- OAuth reuse: `~/.config/rpi-mcp/gcp-oauth.keys.json` + `~/.config/google-drive-mcp/tokens.json`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **npm scripts**: `unified`, `unified:push`, `unified:slack`, `unified:today`, `unified:week`, `unified:month`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Disable Elementor: set `_elementor_edit_mode` to empty + clear `_elementor_data`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Login via **GHL dashboard** only. App passwords for REST API, NOT wp-admin.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- CDN: Cloudflare `s-maxage=2592000`. Bust with `?v=timestamp`.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Kit=6, Header=18, Footer=36. Home=8, About=24
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- WP strips: `object-position`, `z-index`, `pointer-events`, `linear-gradient`, `overflow`, `inset`, `<style>` blocks
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Headshots, crops, design system details → `wordpress-patterns.md`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Campaign Engine**: C3→PRODASH, 60 campaigns, 661 templates, AEP Blackout Oct-Dec
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Watcher**: `MCP-Hub/document-processor/src/watcher.js`, polls _INTAKE_QUEUE 60s, heartbeat 6h
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Document Taxonomy**: 7-phase, leader-based routing (Vince=NewBiz, Nikki=Service, Aprille=Legacy)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- `resolveLeaderEmail_(taxonomyContext)` in IMPORT_Approval.gs — routes by `pipeline` + `document_type`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Operational Automation**: 6 phases / 30 items COMPLETE. C4 (CAM reconciliation) deferred.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- RAPID_CORE: v68 | RAPID_API: v112 (@112) | RIIMO: v27 (@27)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- RAPID_IMPORT: v156 (@156) | PRODASH: v163 | CEO-Dashboard: v32 (@34)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- _RPI_STANDARDS: v5.3 (7 ref docs, 16 hookify rules)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Smart Lookup deployed in: RIIMO, C3, CAM, PRODASH, sentinel-v2
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Phase 1-5, 7: COMPLETE. Phase 6: BLOCKED on CoF.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- 19 client dupes need manual review. 98 orphan accounts. 39 annuity dupes (may be legit).
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Married couple filter**: same last + different first + shared contact = skip
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **3 divisions**, each with Leader + COR/AST/SPC per unit:
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Each unit has 6 people + Leader. Leaders get auto-assigned, they delegate down.
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Repo**: `retirementprotectors/claude-config` (private)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **Both machines synced**: Air + Pro, SessionStart/SessionEnd hooks active
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **QUE vs ProDashX Medicare**: RIIMO BUILD_PLAN 6.2 — decision needed before major features
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- GCP Project: `90741179392` (`my-project-rpi-mdj-platform`)
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Shared Drives: Claude Code Workspace=`0AFUXPgL0EWC6Uk9PVA`, vMARKETING=`0AGmFddT_JhFUUk9PVA`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Node path (Apple Silicon): `/opt/homebrew/bin/node`
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Do things RIGHT not NOW — proper tooling over shortcuts
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **NEVER create anything in My Drive** — shared drives only
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- Before EVERY commit: re-read Documentation Maintenance Triggers in CLAUDE.md
-
-<!-- Promoted from MEMORY.md 2026-02-15 -->
-- **_RPI_STANDARDS is NOT a GAS project** — git commit + push only
