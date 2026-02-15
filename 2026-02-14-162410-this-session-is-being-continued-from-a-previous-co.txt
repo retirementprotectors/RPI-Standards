@@ -1,0 +1,339 @@
+
+▗ ▗   ▖ ▖  Claude Code v2.1.42
+           Opus 4.6 · Claude Team
+  ▘▘ ▝▝    ~/Projects/_RPI_STANDARDS
+
+✻ Conversation compacted (ctrl+o for history)
+
+  ⎿  Read scripts/clone-all-repos.sh (114 lines)
+  ⎿  Read scripts/setup-hookify-symlinks.sh (153 lines)
+  ⎿  Referenced file ../../../../private/tmp/claude-501/-Users-joshd-millang/tas
+     ks/ae7c7f3.output
+  ⎿  Referenced file CLAUDE.md
+  ⎿  Referenced file ../../../../private/tmp/claude-501/-Users-joshd-millang/tas
+     ks/ab63f24.output
+
+⏺ Task "Verify reference docs accuracy" completed in background
+
+⏺ Task "Fix SECURITY_COMPLIANCE.md" completed in background
+
+⏺ Task "Fix COMPLIANCE + PHI_POLICY + GHL docs" completed in background
+
+⏺ Task "Fix WEEKLY_HEALTH_CHECK + PROJECT_AUDIT" completed in background
+
+⏺ Task "Update CLAUDE.md per plan Phase 3" completed in background
+  ⎿  Plan file referenced (~/.claude/plans/crystalline-toasting-gadget.md)
+
+⏺ Picking up where I left off — completing the MEMORY.md update with the
+  self-enforcement lesson.
+
+⏺ Recalled 1 memory, wrote 1 memory (ctrl+o to expand)
+  ⎿  Loaded CLAUDE.md
+  ⎿  Loaded ../../.claude/CLAUDE.md
+
+⏺ Done. Memory updated with:
+
+  1. Self-Enforcement Rules — permanent reminder to self-audit against
+  Documentation Maintenance Triggers before every commit, and that writing a
+  rule then violating it is unacceptable
+  2. _RPI_STANDARDS v5.2 summary — current state of the repo after the pruning
+  work
+
+  The v5.2 plan from last session is fully complete. Both commits (6b5df9f v5.2
+  + f2aae56 v5.2.1) are pushed to main. Ready for whatever's next.
+
+✻ Worked for 2m 5s
+
+❯ Building a massive plan to get Remo from its current state all the way    
+  through production today. On my terminal session agent right next door    
+  here. Can you confirm that this is correct, or ask me if you're unsure? ⏺ 
+   Good news: the pruning agent's work is clean and doesn't conflict with   
+  our RIIMO plan. One discrepancy to flag:                                  
+                                                                            
+    SECURITY_COMPLIANCE.md now lists RAPID_API as an "approved exception"   
+  for ANYONE_ANONYMOUS (for SPARK webhooks). But you just told              
+    me RAPID_API is internal only. Our plan changes it to DOMAIN. I'll      
+  update SECURITY_COMPLIANCE.md when we fix it.                             
+                                                                            
+                                                                            
+    The plan holds. Let me add that one note and the Desktop copy action.   
+                                                                            
+                                                                            
+                                                                            
+  ⏺ Updated plan                                                            
+                                                                            
+    ⎿  /plan to preview                                                     
+                                                                            
+                                                                            
+                                                                            
+  ⏺ Plan is solid. _RPI_STANDARDS pruning aligns with everything. The       
+  cascading permission model is documented. Immediate actions               
+    (Desktop files + healthcare setup doc) queued for the moment you        
+  approve.                                                                  
+                                                                            
+
+⏺ Let me verify what I actually wrote in SECURITY_COMPLIANCE.md about RAPID_API.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The other agent is correct. Line 214 — I wrote:
+
+  RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook 
+  reception — approved exception. Document rationale.
+
+  That was based on the security audit findings from Feb 13 where I assumed
+  RAPID_API needed public access for SPARK webhooks. But if you're telling me
+  RAPID_API should be DOMAIN-only (meaning SPARK webhooks come in a different
+  way, or SPARK_WEBHOOK_PROXY handles the public-facing piece instead), then yes
+   — that line is wrong and should be updated when RAPID_API gets fixed to
+  DOMAIN.
+
+  The other agent's plan is correct: fix RAPID_API to DOMAIN, then update
+  SECURITY_COMPLIANCE.md line 214 to reflect compliance instead of an exception.
+   No conflict with the pruning work — just one line to update in a file I
+  touched.
+
+❯ Well, I guess I don't know the fucking answer. I was under the impression 
+   that RAPID_API was internal only? Maybe I'm thinking of RAPID_API as a   
+  library? This is certainly not internal only then? Please check it out. I 
+   don't want to fuck this up. Like, I don't really know how or where we    
+  engage Spark's API or webhooks. I could be completely fucking wrong.      
+  Please give me the definitive answer and confirm whether this other guy   
+  is correct or not before I turn him loose.                                
+
+⏺ Let me dig into the actual code. Spawning parallel agents to get the
+  definitive answer fast.
+
+⏺ 2 Explore agents finished (ctrl+o to expand)
+   ├─ Investigate RAPID_API endpoints · 5 tool uses · 127.1k tokens
+   │  ⎿  Done
+   └─ Investigate SPARK_WEBHOOK_PROXY · 19 tool uses · 109.9k tokens
+      ⎿  Done
+
+⏺ Here's the definitive answer.
+
+  RAPID_API MUST stay ANYONE_ANONYMOUS. The other agent is wrong.
+
+  The full flow:
+
+  SPARK (Optum platform, external)
+      │ POST webhook
+      ▼
+  SPARK_WEBHOOK_PROXY (Cloudflare Worker)
+      │ Handles GAS 302 redirect problem
+      ▼
+  RAPID_API (GAS Web App — ANYONE_ANONYMOUS)
+      │ API_Spark.gs processes webhook
+      │ Routes: CONTACT_CREATED, POLICY_CREATED, SOA_CREATED, etc.
+      ▼
+  RAPID_CORE → PRODASH_MATRIX (Sheets)
+
+  Why it can't be DOMAIN:
+  - SPARK is Optum's external SaaS platform — it can't authenticate with Google
+  Workspace domain credentials
+  - SPARK_WEBHOOK_PROXY is a Cloudflare Worker (also external to Google
+  Workspace)
+  - If you set RAPID_API to DOMAIN, Google returns 403 → SPARK webhooks break →
+  no contact/policy sync into PRODASH
+
+  RAPID_API is NOT just a library. It's a full REST API with 21+ endpoint
+  groups. The /spark/* routes are explicitly marked as public (no API key).
+  Everything else (/agent/*, /client/*, /account/*, etc.) requires an API key in
+   Script Properties.
+
+  My SECURITY_COMPLIANCE.md entry was correct:
+  RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook 
+  reception — approved exception.
+
+  Tell the other agent: RAPID_API stays ANYONE_ANONYMOUS. Do NOT change it to
+  DOMAIN. The RIIMO plan should leave RAPID_API access alone. The security
+  mitigation isn't access restriction — it's:
+  1. API key enforcement on all non-SPARK routes (already done)
+  2. Webhook signature verification (not yet implemented — future hardening)
+  3. The /pipeline route being public is the actual risk to clean up (marked
+  "temporary" in comments)
+
+✻ Cogitated for 1m 30s
+
+❯ Okay, I'm glad we went through that exercise. Just confirm RAPID_API does 
+   not create any security issues for us in how we're proceeding with it?   
+
+⏺ No security issues for how you're proceeding. But I'll give you the full
+  honest picture:
+
+  What's solid:
+  - All data routes (/agent/*, /client/*, /account/*, etc.) require an API key
+  stored in Script Properties — can't be hit without it
+  - SPARK webhook routes MUST be public — that's correct and unavoidable
+  - The API key is not hardcoded in source — it's in Script Properties where it
+  belongs
+
+  Two items to clean up later (not blocking):
+
+  1. /pipeline is marked public with a comment saying "temporary" — this should
+  require an API key like everything else. It's a data endpoint that got left
+  open. Low urgency but real.
+  2. No webhook signature verification on /spark/* — meaning anyone who
+  discovers the URL could POST fake SPARK events. The risk is mitigated by the
+  URL being obscure (long GAS deployment ID) and the proxy adding another layer,
+   but proper HMAC verification would harden it. Future improvement, not urgent.
+
+  Neither of these affects RIIMO, the RIIMO plan, or anything you're doing 
+  today. RIIMO should be DOMAIN-only like every other internal app. RAPID_API is
+   the one exception in the entire fleet, and it's a legitimate one.
+
+  Go turn him loose.
+
+❯ He's updating the plan, and I'm turning him loose.  
+
+⏺ Good. The plan is correct, RAPID_API is documented properly, and nothing from
+  the pruning work conflicts. Go build RIIMO.
+
+❯ Alright, here's what I'm left with for the remainder of the day/ night/   
+  morning haha... 1. ProDash- CaseWork Modules/ Outputs 2. ProDash- C3      
+  Module Interview/ Content Generation! 3. Marketing/ Tools Development  4. 
+   (YOU!)  5. RIIMO  6. RAPID_TOOLS- Data tings haha.  I have 2 things I    
+  need from you first: A. Please rename ProDash to ProDashX EVERYWHERE.     
+  Code/ Docs/ Everyting/ Everywhere.  B. Please standardize the "Medicare   
+  Center" Module in ProDash to Medicare- QUE, everywhere/ everyhow.  This   
+  aligns with our Life- QUE + Annuity- QUE strategy.  Can you please knock  
+  those 2 things out for me?  THEN, please review the Active Project Code/  
+  Docs everywhere OTHER THAN the things I've identified I'm working on      
+  already today... to determine a Plan of Attack for YOURSELF for the rest  
+  of the day!                                                               
+
+⏺ LFG. Scoping the blast radius on both renames first — spawning parallel agents
+   to find every occurrence across the entire ecosystem.
+
+⏺ 2 Explore agents finished (ctrl+o to expand)
+   ├─ Find all ProDash occurrences · 26 tool uses · 139.5k tokens
+   │  ⎿  Done
+   └─ Find all Medicare Center occurrences · 11 tool uses · 107.3k tokens
+      ⎿  Done
+
+⏺ Got the full picture. Here's the real answer before I execute.
+
+  Blast Radius Assessment
+
+  ProDash → ProDashX: 1,200+ occurrences across 15+ projects, 50+ files
+  Medicare Center → Medicare-QUE: 59 occurrences across 16 files
+
+  The Critical Issue
+
+  getMATRIX_ID('PRODASH') is called in RAPID_CORE's TABLE_ROUTING, and every
+  consuming project (PRODASH, RAPID_IMPORT, RAPID_API, RIIMO, sentinel) calls
+  it. Changing the routing key means every GAS project needs redeployment or the
+   data pipeline breaks.
+
+  You have agents working on RIIMO and ProDash CaseWork/C3 right now. If I
+  rename code in files they're simultaneously editing, merge conflicts.
+
+  My Recommendation: Two Phases
+
+  Phase 1 (doing NOW):
+  - All display text, comments, documentation, CLAUDE.md files
+  - _RPI_STANDARDS (docs, scripts, hookify)
+  - SENTINEL_TOOLS docs (nobody's working there today)
+  - QUE-Medicare references
+  - Code identifiers that are purely internal to a single file
+
+  Phase 2 (after your other agents finish tonight):
+  - RAPID_CORE TABLE_ROUTING key (PRODASH → PRODASHX)
+  - All getMATRIX_ID('PRODASH') calls across every project
+  - .gs file renames (PRODASH_*.gs → PRODASHX_*.gs)
+  - Local directory renames (PRODASH_TOOLS/ → PRODASHX_TOOLS/)
+  - GitHub repo rename (gh repo rename ProDashX)
+  - Coordinated redeploy of RAPID_CORE → then all consumers
+  - Navigation IDs, localStorage keys, HTML element IDs in PRODASH
+
+  Phase 2 is a coordinated 15-project deploy. It should happen AFTER the dust
+  settles on today's parallel work, not during.
+
+  Executing Phase 1 now.
+
+⏺ 5 Task agents launched (ctrl+o to expand)
+   ├─ Rename ProDash in _RPI_STANDARDS
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Rename ProDash in SENTINEL_TOOLS
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Rename in QUE-Medicare + MCP-Hub
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Rename ProDash in PRODASH app
+   │  ⎿  Running in the background (shift+↑ to manage)
+   └─ Rename in RIIMO audit docs
+      ⎿  Running in the background (shift+↑ to manage)
+
+⏺ 5 agents running in parallel across the ecosystem. I can see the
+  _RPI_STANDARDS CLAUDE.md renames are already landing. Waiting for all agents
+  to finish before validating and committing.
+
+⏺ Task Output af0c66b
+  ⎿  Task is still running…
+
+⏺ Task Output a185cc1
+  ⎿  Task is still running…
+
+⏺ All 5 agents are actively editing. Let me wait for the remaining ones to
+  finish.
+
+⏺ Task Output af0c66b
+  ⎿  Interrupted · What should Claude do instead?
+
+⏺ Task Output a705b69
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output a185cc1
+  ⎿  Interrupted · What should Claude do instead?
+
+⏺ Task Output a9300b0
+  ⎿  Interrupted · What should Claude do instead?
+
+⏺ Task Output a24a66d
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Agent "Rename ProDash in SENTINEL_TOOLS" completed
+
+⏺ Agent "Rename ProDash in _RPI_STANDARDS" completed
+
+⏺ _RPI_STANDARDS and SENTINEL_TOOLS are done and verified clean. Checking the
+  remaining 3 agents.
+
+⏺ Task Output af0c66b
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output a185cc1
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output a9300b0
+  ⎿  Read output (ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Rename in QUE-Medicare + MCP-Hub" was stopped
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Rename ProDash in PRODASH app" was stopped
+
+⏺ Two agents completed clean:
+  - _RPI_STANDARDS: 10 files, ~35 replacements, zero remaining PRODASH
+  - SENTINEL_TOOLS: 15 files, ~50 replacements, zero remaining ProDash or
+  Medicare Center
+
+  I see the other 3 agents got interrupted. Let me check their current status.
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Rename in RIIMO audit docs" was stopped
+
+⏺ Task Output(non-blocking) af0c66b
+  ⎿  Read output (ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Task Output(non-blocking) a185cc1
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output(non-blocking) a9300b0
+  ⎿  Read output (ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue
+
+❯ /compact 
+  ⎿  Error: Error during compaction: Error: Conversation too long. Press esc
+     twice to go up a few messages and try again.

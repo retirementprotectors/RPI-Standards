@@ -390,3 +390,6 @@ Before using new vendors that handle client data:
 |---------|------|---------|
 | v0.1 | Jan 25, 2026 | Initial skeleton |
 | v1.0 | Feb 13, 2026 | HIPAA status resolved (BAA signed), PHI training status updated (10/13 complete), version upgraded from draft to active |
+
+<!-- Promoted from MEMORY.md 2026-02-15 -->
+- New fields flow: RAPID_CORE schemas → RAPID_API SETUP → RAPID_IMPORT maps → watcher.js
