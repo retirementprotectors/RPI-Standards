@@ -23,7 +23,7 @@ ORG="retirementprotectors"
 # The local path includes the SuperProject folder.
 REPO_MAP=(
   # PRODASHX_TOOLS (B2C)
-  "ProDash:PRODASHX_TOOLS/PRODASHX"
+  "ProDashX:PRODASHX_TOOLS/PRODASHX"
   "QUE-Medicare:PRODASHX_TOOLS/QUE/QUE-Medicare"
 
   # RAPID_TOOLS (Shared Services / B2E)
@@ -48,7 +48,7 @@ REPO_MAP=(
 
 # Name mismatches (for reference):
 #   GitHub "RPI-Content-Manager" → local "C3" (renamed locally)
-#   GitHub "ProDash"             → local "PRODASHX" (casing normalized + renamed)
+#   GitHub "ProDashX"            → local "PRODASHX" (casing normalized)
 #   GitHub "RPI-Standards"       → local "_RPI_STANDARDS" (prefixed for sort)
 
 echo "=== RPI Repository Clone Script ==="
