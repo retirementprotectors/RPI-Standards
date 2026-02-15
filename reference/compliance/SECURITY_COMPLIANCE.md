@@ -1,7 +1,7 @@
 # RPI Security Compliance Framework
 
 > **Owner:** CEO (JDM) with operational support from Fractional CTO
-> **Last Updated:** 2026-02-04
+> **Last Updated:** 2026-02-15
 > **Review Frequency:** Quarterly
 
 ---
@@ -61,7 +61,7 @@ RPI applications run on Google Cloud infrastructure (via Google Apps Script and 
 | Item | Required State | Status | Verified Date |
 |------|---------------|--------|---------------|
 | No hardcoded credentials in code | All secrets in Script Properties | [~] | 2026-02-14 (known gap: CORE_Config.gs syncAllProperties pattern stores plaintext secrets in source — remediation planned) |
-| Apps deployed as "Organization only" | All internal apps restricted | [~] | 2026-02-14 (13 GAS web apps identified; 8 verified DOMAIN on 2026-02-13; see Part 7) |
+| Apps deployed as "Organization only" | All internal apps restricted | [x] | 2026-02-15 (13 GAS web apps: 12 DOMAIN verified, 1 approved exception RAPID_API; see Part 7) |
 | No alert()/confirm()/prompt() | Using custom modals | [x] | 2026-02-04 |
 | API endpoints authenticated | API key validation where needed | [x] | 2026-02-04 |
 | Git repos private | All RPI repos private on GitHub | [x] | 2026-02-04 |
@@ -91,7 +91,7 @@ The GAS editor UI and `appsscript.json` are **two different settings** that can 
 
 **Rule:** Always fix `appsscript.json` first. Always verify after deploy. Audits must check the source file, not just the GAS editor.
 
-**Projects with known disconnect (as of 2026-02-14):** RIIMO, RPI-Command-Center, DAVID-HUB
+**Projects with known disconnect (as of 2026-02-14):** ~~RIIMO, RPI-Command-Center, DAVID-HUB~~ — All 3 remediated via "Phase 0: Security hardening" commits. Verified 2026-02-15.
 
 ---
 
@@ -207,15 +207,15 @@ When an employee/contractor leaves RPI:
 | SENTINEL | DOMAIN | 2026-02-13 | All 21 deploys DOMAIN (19 stale ANYONE deploys updated to v381) |
 | SENTINEL v2 | DOMAIN | 2026-02-13 | All 2 deploys already DOMAIN — clean |
 | DEX | DOMAIN | 2026-02-13 | All 20 deploys DOMAIN (19 stale ANYONE deploys updated to v64) |
-| RIIMO | ANYONE_ANONYMOUS (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json has ANYONE_ANONYMOUS since initial commit. GAS editor UI showed DOMAIN but source file was wrong. |
+| RIIMO | DOMAIN | 2026-02-15 | Fixed — "Phase 0: Security hardening" commit `85854e0`. Source file + deployment verified. |
 | CAM | DOMAIN | 2026-02-13 | Fixed from ANYONE → DOMAIN (v51) |
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS → DOMAIN (v32). Was CRITICAL — no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 | RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook reception — approved exception. Document rationale. |
 | RAPID_IMPORT | DOMAIN | 2026-02-14 | Verified — appsscript.json has `"access": "DOMAIN"` in both webapp and executionApi |
-| RPI-Command-Center | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
-| QUE-Medicare | Not verified | 2026-02-14 | Needs source file audit |
-| DAVID-HUB | ANYONE (SOURCE) | 2026-02-14 | VIOLATION — appsscript.json not fixed |
+| RPI-Command-Center | DOMAIN | 2026-02-15 | Fixed — "Phase 0: Security hardening" commit `d265ac5`. Source file + deployment verified. |
+| QUE-Medicare | DOMAIN | 2026-02-15 | Verified — appsscript.json `"access": "DOMAIN"` confirmed. |
+| DAVID-HUB | DOMAIN | 2026-02-15 | Fixed — "Phase 0: Security hardening" commit `fcc5011`. Source file + deployment verified. |
 
 ### Q1 2026 Compliance Audit (2026-02-13)
 
@@ -287,6 +287,7 @@ When an employee/contractor leaves RPI:
 | 2026-02-13 | Part 2 checklist updated. Part 3 rewritten with automated triggers. Part 7/8 expanded. | Claude Code |
 | 2026-02-13 | API_Compliance.gs added to RAPID_API — quarterly/weekly/monthly automated compliance | Claude Code |
 | 2026-02-14 | Corrected app count (13 identified, 8 verified). Fixed RIIMO false-positive. Added source-code-vs-deployment section. Added 5 missing apps to tracker. | Claude Code |
+| 2026-02-15 | All 13 apps verified DOMAIN (12 compliant + 1 approved exception). RIIMO, RPI-Command-Center, DAVID-HUB remediated via Phase 0 commits. QUE-Medicare verified. | Claude Code |
 
 ---
 
