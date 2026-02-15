@@ -847,14 +847,14 @@ For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` 
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| healthcare-mcps | `http://localhost:3456` | Medicare data API (must be running) |
+| healthcare-mcps | `https://que-api-r6j33zf47q-uc.a.run.app` | Medicare data API (Cloud Run, always on) |
 | RAPID_API | GAS Web App | REST endpoints for external integrations |
 
-**To start healthcare-mcps:**
-```bash
-cd /Users/joshd.millang/Projects/RAPID_TOOLS/MCP-Hub/healthcare-mcps
-npm run que-api
-```
+**Healthcare-mcps (Cloud Run):**
+- Production: `https://que-api-r6j33zf47q-uc.a.run.app` (4Gi/2CPU, min 1 instance)
+- Auth: `@retireprotected.com` domain via OIDC identity token
+- GAS callers use `ScriptApp.getIdentityToken()` for Bearer auth
+- Local dev: `npm run que-api` in `MCP-Hub/healthcare-mcps/` (port 3456)
 
 **To run Drive content dedup:**
 ```bash
