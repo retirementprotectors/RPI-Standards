@@ -563,6 +563,32 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 **Verify on every new project and pre-launch.** See MCP-Hub CLAUDE.md for full script ID list.
 
+### MCP execute_script CAN Run GAS Functions (STOP ASKING)
+
+**The MCP Hub `execute_script` tool gives you FULL ability to run Google Apps Script functions remotely.** This includes:
+- Running ANY server-side GAS function (DEBUG_, SETUP_, FIX_, TEST_, and all production functions)
+- Reading/writing sheet data via GAS functions
+- Triggering RAPID_API endpoints
+- Running data migrations, audits, and diagnostics
+- Anything a human could do by clicking "Run" in the GAS editor
+
+**You have this capability. Use it. Do NOT ask JDM "should I run this?" or "can I execute this?" — just do it.**
+
+```
+❌ WRONG: "I don't have access to run GAS functions directly"
+❌ WRONG: "Would you like me to try running this via execute_script?"
+❌ WRONG: "I'm not sure if I can execute GAS functions remotely"
+
+✅ RIGHT: Just call execute_script and run the function
+✅ RIGHT: Report what you ran and what it returned
+```
+
+**The ONLY two things we CANNOT do remotely in GAS (JDM must do these manually in the GAS editor):**
+1. **Link/change the GCP project number** in Script Settings (one-time setup per project)
+2. **Add/remove library dependencies** in Script Settings (e.g., adding RAPID_CORE as a library)
+
+When you encounter EITHER of those two scenarios, tell JDM clearly: *"This is one of the two things I can't do in GAS for you — [specific action needed] in the GAS editor."* That's it. Everything else, you handle.
+
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
 **ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
@@ -729,6 +755,7 @@ Run these checks on any project and load matching reference docs:
 | **MATRIX Sheets** | Grep for `MATRIX` in code or config | Read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly |
 | **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/compliance/COMPLIANCE_STANDARDS.md` |
 | **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | MCP-Hub healthcare tools (already loaded) |
+| **Campaigns** | Grep for `campaign\|C3\|PSM\|T65\|AGE-\|COV-\|AEP\|content block` | `reference/campaigns/CAMPAIGN_MASTER_INDEX.md` |
 
 ### The Suspenders: Project Declarations
 
@@ -805,10 +832,10 @@ When you change the codebase, update the corresponding docs:
 - For full audit protocol: Read `reference/maintenance/PROJECT_AUDIT.md`
 
 **Active launchd agents:**
-- `com.rpi.analytics-push` — daily 11pm (analytics → MATRIX)
+- `com.rpi.analytics-push` — daily 3:30am (analytics → MATRIX)
 - `com.rpi.mcp-analytics` — Monday 8am (weekly Slack report)
 - `com.rpi.claude-cleanup` — Sunday 3am (session cleanup)
-- `com.rpi.knowledge-promote` — daily 11:15pm (MEMORY → CLAUDE.md promotion)
+- `com.rpi.knowledge-promote` — daily 4:00am (MEMORY → CLAUDE.md promotion)
 
 **When starting work on unfamiliar project:**
 - Read that project's CLAUDE.md first
