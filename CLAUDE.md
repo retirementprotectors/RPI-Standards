@@ -955,6 +955,12 @@ You report results to me
 
 ---
 
+## Default Behavior: Plan Mode
+
+**ALWAYS default to Plan Mode (EnterPlanMode) for non-trivial implementation tasks.** Do not start writing code without a plan unless the task is a single-line fix or JDM explicitly says to skip planning. This prevents wasted effort and ensures alignment before execution.
+
+---
+
 ## Session Protocol
 
 ### Starting
