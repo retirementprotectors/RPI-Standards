@@ -34,8 +34,15 @@ GLOBAL_CLAUDE_DIR="$HOME/.claude"
 GLOBAL_CLAUDE_FILE="$GLOBAL_CLAUDE_DIR/CLAUDE.md"
 MASTER_CLAUDE_FILE="$STANDARDS_ROOT/CLAUDE.md"
 
-# Create ~/.claude directory if it doesn't exist
+# Create ~/.claude directory and hooks subdirectory if they don't exist
 mkdir -p "$GLOBAL_CLAUDE_DIR"
+mkdir -p "$GLOBAL_CLAUDE_DIR/hooks"
+
+# Make all hook scripts executable
+if ls "$GLOBAL_CLAUDE_DIR/hooks/"*.sh 1>/dev/null 2>&1; then
+  chmod +x "$GLOBAL_CLAUDE_DIR/hooks/"*.sh
+  echo "✅ Hook scripts made executable"
+fi
 
 # Check if master CLAUDE.md exists
 if [ ! -f "$MASTER_CLAUDE_FILE" ]; then
@@ -68,6 +75,14 @@ fi
 
 RULE_COUNT=$(ls -1 "$HOOKIFY_DIR"/*.local.md 2>/dev/null | wc -l | tr -d ' ')
 echo "Found $RULE_COUNT hookify rules"
+echo ""
+echo "Tier 1 (code-enforced by ~/.claude/hooks/enforce.sh):"
+echo "  block-hardcoded-secrets, block-credentials-in-config, block-phi-in-logs,"
+echo "  block-anyone-anonymous-access, block-hardcoded-matrix-ids, block-alert-confirm-prompt"
+echo "Tier 2 (instruction-based via .local.md):"
+echo "  block-drive-url-external, block-forui-no-json-serialize, block-hardcoded-colors,"
+echo "  block-let-module-caching, warn-date-return-no-serialize, warn-missing-structured-response,"
+echo "  warn-modal-no-flexbox, warn-phi-in-error-message, warn-plain-person-select, warn-inline-pii-data"
 echo ""
 
 # All RPI project directories (relative to PROJECTS_ROOT)

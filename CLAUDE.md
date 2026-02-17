@@ -161,7 +161,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | "LFG" | Excited, ready to execute - match energy |
 | "SKODEN" | Let's go then - start working |
 | "TCO" | I've handled something manually, continue |
-| "Ship it" | Deploy to production |
+| "#SendIt" | Deploy to production |
 | Specific corrections | Fix exactly what I said, nothing more |
 
 **Be direct. Skip fluff. Show results, not process.**
@@ -228,8 +228,10 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 ## Code Standards (ALL Projects)
 
 ### Forbidden Patterns
+> Tier 1 rules below are **hook-enforced** by `~/.claude/hooks/enforce.sh` — violations are blocked at the tool level before code is written.
+
 ```javascript
-// ❌ NEVER USE
+// ❌ NEVER USE [Hook-enforced: block-alert-confirm-prompt]
 alert('...');
 confirm('...');
 prompt('...');
@@ -295,7 +297,8 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 
 ## PHI Handling Rules (CRITICAL)
 
-**RPI handles Protected Health Information. These rules are NON-NEGOTIABLE:**
+**RPI handles Protected Health Information. These rules are NON-NEGOTIABLE.**
+> PHI-in-logs is **hook-enforced** — `enforce.sh` blocks any Write/Edit containing PHI patterns in console.log/Logger.log calls.
 
 | Rule | Requirement |
 |------|-------------|
@@ -505,10 +508,10 @@ const state = zipToState(paddedZip);
 - [ ] Person-selection fields use Smart Lookup (not plain select/text)
 
 ### Self-Check (Before Every GAS Deploy)
-- [ ] No hardcoded credentials in code (use Script Properties)
-- [ ] Web app access set to "Anyone within Retirement Protectors INC"
-- [ ] `appsscript.json` contains `"access": "DOMAIN"` (source file, not just GAS editor UI)
-- [ ] No `alert()`, `confirm()`, `prompt()` calls
+- [ ] No hardcoded credentials in code (use Script Properties) **[Hook-enforced]**
+- [ ] Web app access set to "Anyone within Retirement Protectors INC" **[Hook-enforced]**
+- [ ] `appsscript.json` contains `"access": "DOMAIN"` (source file, not just GAS editor UI) **[Hook-enforced]**
+- [ ] No `alert()`, `confirm()`, `prompt()` calls **[Hook-enforced: WARN]**
 
 ---
 
@@ -903,7 +906,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 ## MATRIX Sheets
 
-**MATRIX IDs are managed by `RAPID_CORE.getMATRIX_ID()` — never hardcode them.**
+**MATRIX IDs are managed by `RAPID_CORE.getMATRIX_ID()` — never hardcode them.** **[Hook-enforced: block-hardcoded-matrix-ids]**
 
 For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` directly (TABLE_ROUTING constant).
 
@@ -1015,9 +1018,42 @@ You report results to me
 
 - **#RunningOurOwnRACE** - The mission
 - **#We'reWithDAVID** - B2B positioning
+- **#SendIt** - Deploy to production
 - **LFG** - Let's fucking go
 - **SKODEN** - Let's go then
 - **"We're Your People™"** - RPI positioning
+
+---
+
+## The Machine's Immune System (Hook Architecture)
+
+**Enforcement hierarchy:** Hooks (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
+
+### Hook Events (registered in `~/.claude/settings.json`)
+
+| Event | Script | What It Does |
+|-------|--------|--------------|
+| **UserPromptSubmit** | `intent-router.sh` | Routes JDM's intent signals (#SendIt, remember, audit, project names) to appropriate protocols |
+| **PreToolUse** | `enforce.sh` | Blocks secrets, credentials, PHI-in-logs, ANYONE_ANONYMOUS, hardcoded MATRIX IDs; warns on alert/confirm/prompt; scans outbound Slack/Gmail for PHI |
+| **PostToolUse** | `quality-gate.sh` | Reminds to VERIFY after clasp deploy; reminds to deploy after GAS git commit |
+| **Stop** | `session-end.sh` | Captures MEMORY.md diff, violation counts, session stats |
+
+### Tier 1 Rules (Code-Enforced via `enforce.sh` + `rules.json`)
+`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt` (WARN)
+
+### Tier 2 Rules (Instruction-Based via `.local.md` files)
+`block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
+
+### Closed Loop
+Sessions generate violations > `violation-log.jsonl` > `knowledge-promote.js` (4am) reads logs > Hot Rules/Projects surfaced > daily Slack DM report to JDM > CLAUDE.md adjusted > next session smarter
+
+### Intent Triggers (config-driven: `~/.claude/hooks/intent-triggers.json`)
+Memory routing, #SendIt deploy, maintenance checks, audit protocols, project detection, outbound PHI scan, status checks, catchup, emergency, cleanup, testing, revert, domain-specific context (CAM, C3, QUE, DAVID), architecture mode, meta-trigger creation
+
+### Emergency Escape Hatch
+- Quick disable one hook: `mv enforce.sh enforce.sh.disabled`
+- Full disable all: Remove `hooks` section from `~/.claude/settings.json`
+- Tier 2 `.local.md` rules work independently of hooks
 
 ---
 
