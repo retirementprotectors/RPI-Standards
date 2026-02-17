@@ -180,6 +180,20 @@ When asking JDM to run ANY function in the GAS editor, ALWAYS include ALL THREE:
 ```
 JDM has multiple GAS projects open. He needs Project + File + Function every time.
 
+### Session Continuity (MANDATORY)
+**When asking JDM to restart Claude Code** (for MCP changes, OAuth re-auth, config updates, etc.), ALWAYS tell him to export and resume:
+
+```
+✅ ALWAYS: "Run /export first, then quit and relaunch Claude Code"
+✅ ALWAYS: Tell JDM WHERE the export file landed so he can reference it in the new session
+
+❌ NEVER: Suggest "claude --continue" or "claude --resume" — these are UNRELIABLE and have caused context loss
+❌ NEVER: Just say "restart Claude Code" without telling JDM to /export first
+❌ NEVER: Let JDM lose session context on a restart
+```
+
+**The /export command saves a full conversation transcript to a file. On restart, JDM pastes or references that file to restore context. This is the ONLY reliable method.**
+
 ---
 
 ## The RPI Business
@@ -727,7 +741,6 @@ claude mcp remove <name> --scope user
 ### Reference Docs (Read When Needed)
 | Document | When to Read |
 |----------|--------------|
-| `reference/integrations/GHL_INTEGRATION.md` | Project uses GHL/GoHighLevel |
 | `reference/compliance/COMPLIANCE_STANDARDS.md` | Project handles PHI/PII |
 
 ---
@@ -754,7 +767,6 @@ Run these checks on any project and load matching reference docs:
 
 | Check | Detection Method | If Found → Read |
 |-------|------------------|-----------------|
-| **GHL Integration** | Grep for `gohighlevel\|GHL\|highlevel` in code | `reference/integrations/GHL_INTEGRATION.md` |
 | **MATRIX Sheets** | Grep for `MATRIX` in code or config | Read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly |
 | **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/compliance/COMPLIANCE_STANDARDS.md` |
 | **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | MCP-Hub healthcare tools (already loaded) |
@@ -767,7 +779,6 @@ Individual project CLAUDE.md files should declare required references:
 ```markdown
 ## Required References
 <!-- Claude: Read these from _RPI_STANDARDS at session start -->
-- integrations/GHL_INTEGRATION.md
 - compliance/COMPLIANCE_STANDARDS.md
 ```
 
@@ -780,8 +791,8 @@ When you see this section in a project's CLAUDE.md, read those files immediately
 3. **Report what you loaded:**
    ```
    📚 Reference docs loaded:
-   - GHL_INTEGRATION.md (declared in project CLAUDE.md)
    - COMPLIANCE_STANDARDS.md (detected: PHI patterns found)
+   - MATRIX_CONFIG.md (declared in project CLAUDE.md)
    ```
 4. **Then proceed with the task**
 
@@ -844,6 +855,33 @@ When you change the codebase, update the corresponding docs:
 - Read that project's CLAUDE.md first
 - Check `git status` before making any changes
 - Verify deployment IDs are documented
+
+### Claude Code Startup Hang Fix
+**If `claude` hangs on startup (blank screen, process running but no UI):**
+```bash
+# First try — nukes runtime cache (regenerates on launch):
+rm -rf ~/.claude-code && claude
+
+# If that doesn't work — nuclear option (preserves nothing):
+mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
+# Then selectively restore from ~/.claude-backup/
+```
+
+**Key facts:**
+- `~/.claude-code/` = runtime cache (safe to delete, regenerates)
+- `~/.claude/` = config + settings (must be preserved)
+- `settings.local.json` with ghost MCP refs causes "X MCP servers failed" but does NOT hang
+- `enabledPlugins` referencing unavailable plugins causes errors but does NOT hang
+- Corrupted runtime cache is the #1 cause of startup hangs
+
+**AIR vs PRO config differences:**
+| | PRO | AIR |
+|---|-----|-----|
+| Hooks | sync.sh (git pull/push) | None |
+| Plugins | frontend-design, context7 | None |
+| Local MCPs | 7 servers (rpi-workspace, etc.) | None |
+| Node | v23.10.0 (pinned) | v22.x (pinned) |
+| Cloud MCPs | All Anthropic-managed | All Anthropic-managed |
 
 ---
 
@@ -926,7 +964,7 @@ For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` 
 
 **RAPID_API Deployment Notes:**
 - PRODASH calls RAPID_API deployment `AKfycbyf9IAI3...` (Workspace), NOT `AKfycbwaCzn...` (Primary) — both must stay synced
-- `client_status` (from GHL) carries classification, NOT `client_classification`
+- `client_status` carries classification, NOT `client_classification`
 
 **Healthcare-mcps (Cloud Run):**
 - Production: `https://que-api-r6j33zf47q-uc.a.run.app` (4Gi/2CPU, min 1 instance)
@@ -1058,3 +1096,7 @@ Memory routing, #SendIt deploy, maintenance checks, audit protocols, project det
 ---
 
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
+- **Sheets Date normalization**: Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` in GAS gives locale format (NOT ISO). Use `normalizeDate_()`.
+- **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
+- **CoF** = Catholic Order of Foresters (life insurance carrier), NOT "Circle of Funds"
+- **launchd agents**: analytics-push (daily 3:30am), mcp-analytics (Mon 8am), claude-cleanup (Sun 3am), knowledge-promote (daily 4:00am)
