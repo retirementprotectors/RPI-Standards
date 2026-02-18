@@ -115,6 +115,19 @@ PROJECTS=(
 SUCCESS=0
 SKIPPED=0
 
+# Step 2a: Global ~/.claude/ hookify rules (always active regardless of CWD)
+echo "Setting up global hookify rules in ~/.claude/..."
+for rule in "$HOOKIFY_DIR"/hookify.*.local.md; do
+  if [ -f "$rule" ]; then
+    ln -sf "$rule" "$GLOBAL_CLAUDE_DIR/"
+  fi
+done
+GLOBAL_RULE_COUNT=$(ls -1 "$GLOBAL_CLAUDE_DIR"/hookify.*.local.md 2>/dev/null | wc -l | tr -d ' ')
+echo "✅ ~/.claude/ ($GLOBAL_RULE_COUNT global rules)"
+echo ""
+
+# Step 2b: Per-project .claude/ hookify rules
+echo "Setting up per-project hookify rules..."
 for project in "${PROJECTS[@]}"; do
   PROJECT_PATH="$PROJECTS_ROOT/$project"
   PROJECT_NAME=$(basename "$project")
