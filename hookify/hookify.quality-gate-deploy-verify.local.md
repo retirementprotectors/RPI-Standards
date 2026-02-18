@@ -2,22 +2,23 @@
 name: quality-gate-deploy-verify
 enabled: true
 event: bash
-action: warn
+action: block
 conditions:
   - field: command
     operator: regex_match
-    pattern: clasp\s+deploy
+    pattern: clasp\s+deploy\s+-
+  - field: command
+    operator: not_contains
+    pattern: clasp deployments
 ---
 
-**QUALITY GATE: Verify Deploy Version**
+**BLOCKED: Deploy without verification**
 
-You just ran `clasp deploy`. Now you MUST verify the deployment:
+You cannot run `clasp deploy` without chaining the verification step.
 
+Chain the verify command:
 ```bash
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deployments | grep "@[VERSION]"
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X" && NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deployments | grep "@[VERSION]"
 ```
 
-Confirm the @VERSION number matches what you just deployed.
-If it shows an OLD version number, the deploy FAILED — fix it before reporting success.
-
-This is non-negotiable. On 2026-02-14 we discovered RAPID_API was stuck at @33 while code was at v108 because nobody verified.
+On 2026-02-14, RAPID_API production was stuck at @33 while code was at v108 because nobody verified. This gate prevents that from ever happening again.

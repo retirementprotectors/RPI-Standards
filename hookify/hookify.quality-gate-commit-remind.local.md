@@ -2,21 +2,28 @@
 name: quality-gate-commit-remind
 enabled: true
 event: bash
-action: warn
+action: block
 conditions:
   - field: command
     operator: regex_match
-    pattern: git\s+commit.*\.(gs|html|json)
+    pattern: git\s+commit
+  - field: command
+    operator: not_contains
+    pattern: clasp push
+  - field: command
+    operator: regex_match
+    pattern: \.(gs|html|json)
 ---
 
-**QUALITY GATE: Commit + Deploy Together**
+**BLOCKED: GAS commit without deploy**
 
-You just committed GAS files (.gs/.html/.json). Remember the rule:
+You cannot commit GAS files (.gs/.html/.json) without deploying first.
 
 **Never commit without deploying. Never deploy without committing.**
 
-If you haven't already deployed, run the deploy sequence now:
+Run the full 6-step deploy sequence:
 1. `clasp push --force`
-2. `clasp version "vX.X"`
-3. `clasp deploy -i [ID] -V [VER] -d "vX.X"`
-4. VERIFY: `clasp deployments | grep "@[VERSION]"`
+2. `clasp version "vX.X - description"`
+3. `clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X"` (chained with `clasp deployments` verify)
+4. `git add -A && git commit -m "vX.X - description"`
+5. `git push`
