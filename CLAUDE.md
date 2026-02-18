@@ -929,8 +929,11 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 │   ├── RAPID_CORE/              # Core GAS library
 │   ├── RAPID_IMPORT/            # Data ingestion
 │   ├── RAPID_API/               # REST API
+│   ├── Marketing-Hub/           # Visual asset mgmt + design orchestration
 │   ├── MCP-Hub/                 # Intelligence + MCPs
 │   │   └── drive-tools/         # Drive content dedup + inventory
+│   ├── PDF_SERVICE/             # PDF generation + form filling
+│   └── The-Machine/             # System architecture visualization
 ├── SENTINEL_TOOLS/              # B2B Platform
 │   ├── DAVID-HUB/               # Entry calculators
 │   ├── sentinel/                # Main B2B app (legacy)
@@ -1100,3 +1103,7 @@ Memory routing, #SendIt deploy, maintenance checks, audit protocols, project det
 - **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
 - **CoF** = Catholic Order of Foresters (life insurance carrier), NOT "Circle of Funds"
 - **launchd agents**: analytics-push (daily 3:30am), mcp-analytics (Mon 8am), claude-cleanup (Sun 3am), knowledge-promote (daily 4:00am)
+- **Knowledge Machine v2**: section-aware AI insertion, temporal filter, compliance sweep (`--sweep-only`), reference doc routing
+- **CLIENT360 lazy-loads** accounts/activity tabs (not all at once)
+- **Date timezone day-shift bug (fixed 2026-02-15)**: `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when UTC time < offset. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
+- **execute_script can run ALL FIX_/DEBUG_/SETUP_ functions remotely** — no need to ask JDM to run from GAS editor. Use `rpi-workspace.execute_script` with the project's Script ID.
