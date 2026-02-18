@@ -1066,35 +1066,55 @@ You report results to me
 
 ---
 
-## The Machine's Immune System (Hook Architecture)
+## The Machine's Immune System (Hookify Plugin)
 
-**Enforcement hierarchy:** Hooks (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
+**Enforcement hierarchy:** Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
-### Hook Events (registered in `~/.claude/settings.json`)
+### How It Works
 
-| Event | Script | What It Does |
-|-------|--------|--------------|
-| **UserPromptSubmit** | `intent-router.sh` | Routes JDM's intent signals (#SendIt, remember, audit, project names) to appropriate protocols |
-| **PreToolUse** | `enforce.sh` | Blocks secrets, credentials, PHI-in-logs, ANYONE_ANONYMOUS, hardcoded MATRIX IDs; warns on alert/confirm/prompt; scans outbound Slack/Gmail for PHI |
-| **PostToolUse** | `quality-gate.sh` | Reminds to VERIFY after clasp deploy; reminds to deploy after GAS git commit |
-| **Stop** | `session-end.sh` | Captures MEMORY.md diff, violation counts, session stats |
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) is a Python-based enforcement engine that:
+- Reads `hookify.*.local.md` rule files from each project's `.claude/` directory
+- Evaluates rules against tool input using regex matching with LRU cache
+- **Blocks** (`action: block`) or **warns** (`action: warn`) based on rule matches
+- Registered via `enabledPlugins` in `~/.claude/settings.json`
 
-### Tier 1 Rules (Code-Enforced via `enforce.sh` + `rules.json`)
-`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt` (WARN)
+### Hook Events (auto-registered by hookify plugin)
 
-### Tier 2 Rules (Instruction-Based via `.local.md` files)
-`block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
+| Event | Handler | What It Does |
+|-------|---------|--------------|
+| **UserPromptSubmit** | `userpromptsubmit.py` | Matches intent patterns in user prompts (session-start, #SendIt, etc.) |
+| **PreToolUse** | `pretooluse.py` | Blocks/warns on file writes and bash commands BEFORE execution |
+| **PostToolUse** | `posttooluse.py` | Quality gates AFTER bash commands and file writes |
+| **Stop** | `stop.py` | Session-end processing |
 
-### Closed Loop
-Sessions generate violations > `violation-log.jsonl` > `knowledge-promote.js` (4am) reads logs > Hot Rules/Projects surfaced > daily Slack DM report to JDM > CLAUDE.md adjusted > next session smarter
+### Rule Types (all are `.local.md` files in `_RPI_STANDARDS/hookify/`)
 
-### Intent Triggers (config-driven: `~/.claude/hooks/intent-triggers.json`)
-Memory routing, #SendIt deploy, maintenance checks, audit protocols, project detection, outbound PHI scan, status checks, catchup, emergency, cleanup, testing, revert, domain-specific context (CAM, C3, QUE, DAVID), architecture mode, meta-trigger creation
+**Tier 1 — Block Rules** (`action: block`, `event: file`):
+`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`
+
+**Tier 2 — Warn Rules** (`action: warn`, `event: file`):
+`warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
+
+**Intent Rules** (`action: warn`, `event: prompt`):
+`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy)
+
+**Quality Gates** (`action: warn`, `event: bash`):
+`quality-gate-deploy-verify` (reminds to VERIFY @version after clasp deploy), `quality-gate-commit-remind` (reminds to deploy after GAS git commit)
+
+### Rule Propagation
+
+Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 projects via:
+```bash
+~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
+```
+
+### Closed Loop (Future)
+Sessions generate violations > violation logging > knowledge-promote.js (4am) > Slack DM report to JDM > CLAUDE.md adjusted > next session smarter
 
 ### Emergency Escape Hatch
-- Quick disable one hook: `mv enforce.sh enforce.sh.disabled`
-- Full disable all: Remove `hooks` section from `~/.claude/settings.json`
-- Tier 2 `.local.md` rules work independently of hooks
+- Disable hookify: Remove `"hookify@claude-plugins-official": true` from `~/.claude/settings.json`
+- Disable one rule: Set `enabled: false` in the rule's frontmatter, or delete the symlink
+- Rules only apply in projects where `.claude/hookify.*.local.md` symlinks exist
 
 ---
 

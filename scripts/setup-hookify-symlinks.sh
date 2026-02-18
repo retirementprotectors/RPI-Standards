@@ -76,13 +76,18 @@ fi
 RULE_COUNT=$(ls -1 "$HOOKIFY_DIR"/*.local.md 2>/dev/null | wc -l | tr -d ' ')
 echo "Found $RULE_COUNT hookify rules"
 echo ""
-echo "Tier 1 (code-enforced by ~/.claude/hooks/enforce.sh):"
+echo "Block Rules (action: block):"
 echo "  block-hardcoded-secrets, block-credentials-in-config, block-phi-in-logs,"
-echo "  block-anyone-anonymous-access, block-hardcoded-matrix-ids, block-alert-confirm-prompt"
-echo "Tier 2 (instruction-based via .local.md):"
+echo "  block-anyone-anonymous-access, block-hardcoded-matrix-ids, block-alert-confirm-prompt,"
 echo "  block-drive-url-external, block-forui-no-json-serialize, block-hardcoded-colors,"
-echo "  block-let-module-caching, warn-date-return-no-serialize, warn-missing-structured-response,"
+echo "  block-let-module-caching"
+echo "Warn Rules (action: warn):"
+echo "  warn-date-return-no-serialize, warn-missing-structured-response,"
 echo "  warn-modal-no-flexbox, warn-phi-in-error-message, warn-plain-person-select, warn-inline-pii-data"
+echo "Intent Rules (event: prompt):"
+echo "  intent-session-start, intent-sendit"
+echo "Quality Gates (event: bash):"
+echo "  quality-gate-deploy-verify, quality-gate-commit-remind"
 echo ""
 
 # All RPI project directories (relative to PROJECTS_ROOT)
