@@ -1127,3 +1127,8 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **CLIENT360 lazy-loads** accounts/activity tabs (not all at once)
 - **Date timezone day-shift bug (fixed 2026-02-15)**: `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when UTC time < offset. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
 - **execute_script can run ALL FIX_/DEBUG_/SETUP_ functions remotely** — no need to ask JDM to run from GAS editor. Use `rpi-workspace.execute_script` with the project's Script ID.
+- **After GCP project linking**: MUST `clasp push --force` to register `executionApi` — without this, execute_script returns 404 even though the project looks correctly configured
+- **OAuth scope changes: run `node reauth-scopes.js` DIRECTLY** — NEVER suggest restarting Claude Code for OAuth. The reauth script triggers a browser popup without killing the session. Context loss from restarts is unacceptable.
+- **RIA** = Registered Investment Advisor
+- **BD** = Broker Dealer
+- **DST Vision** = data aggregator for directly held mutual fund / variable annuity accounts
