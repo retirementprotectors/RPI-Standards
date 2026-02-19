@@ -197,6 +197,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 
 ---
 
+- **Automated reports (analytics, knowledge pipeline, etc.) go to JDM's DM: `U09BBHTN8F2`** — use user ID as Slack `channel` param for bot DMs.
 ## The RPI Business
 
 ### Mission
@@ -222,6 +223,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Jason Moran (JMDC) | Fractional CTO |
 - **Schwab** = RIA custodian (via Gradient RIA side)
 
+- Legacy Services → Leader: Aprille Trupiano
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
