@@ -167,6 +167,12 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 
 **Be direct. Skip fluff. Show results, not process.**
 
+**Slack channel rules:**
+- **#jdmceo (C09UNESEYMU) is JDM → Team ONLY** — NEVER send automated reports there. That channel is for JDM's announcements to the team.
+- **Automated reports** (analytics, knowledge pipeline, etc.) go to **JDM's DM: `U09BBHTN8F2`** — use user ID as Slack `channel` param for bot DMs.
+
+**Use Playwright for web walkthroughs** — when guiding JDM through web-based setup (dashboards, account config, DNS, etc.), use Playwright browser automation. JDM logs in, then Claude can see pages and guide/automate. Much faster than screenshot-and-respond loops.
+
 ### GAS Editor Instructions (MANDATORY)
 When asking JDM to run ANY function in the GAS editor, ALWAYS include ALL THREE:
 1. **The exact project name** (e.g., `RAPID_IMPORT`, `RAPID_API`, `RAPID_CORE`)
@@ -197,7 +203,6 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 
 ---
 
-- **Automated reports (analytics, knowledge pipeline, etc.) go to JDM's DM: `U09BBHTN8F2`** — use user ID as Slack `channel` param for bot DMs.
 ## The RPI Business
 
 ### Mission
@@ -219,17 +224,13 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Vinnie Vazquez | Sales Division |
 | Matt McCormick | B2B/DAVID Division |
 | Dr. Aprille Trupiano | CMO/Legacy Services |
-- **#jdmceo (C09UNESEYMU) is JDM → Team ONLY** — NEVER send automated reports there. That channel is for JDM's announcements to the team.
 | Jason Moran (JMDC) | Fractional CTO |
-- **Schwab** = RIA custodian (via Gradient RIA side)
 
-- Legacy Services → Leader: Aprille Trupiano
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
 
 ---
-- **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
 
 ## Industry Terminology
 
@@ -242,15 +243,20 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | MAPD | Medicare Advantage Prescription Drug |
 | AEP | Annual Enrollment Period |
 | NPI | National Provider Identifier |
+| DTCC | Depository Trust & Clearing Corporation — independent life/annuity data feeds |
+| EHR | Electronic Health Records (from providers) |
+| Signal | Transitioning IMO (life/annuity) — being replaced by Gradient |
+| Gradient | Incoming IMO (life/annuity) + BD relationship |
+| Schwab | RIA custodian (via Gradient RIA side) |
+| RBC | BD custodian (equivalent to Schwab on RIA side, via Gradient BD) |
+| Lead Connector | GHL's integrated communications platform (call recordings + texts) |
+| CoF | Catholic Order of Foresters (life insurance carrier) |
+| RIA | Registered Investment Advisor |
+| BD | Broker Dealer |
+| DST Vision | Data aggregator for directly held mutual fund / variable annuity accounts |
 
 ---
-- **DTCC** = Depository Trust & Clearing Corporation — independent life/annuity data feeds
-- **EHR** = Electronic Health Records (from providers)
-- **Signal** = transitioning IMO (life/annuity) — being replaced by Gradient
 
-- **Gradient** = incoming IMO (life/annuity) + BD relationship
-- **RBC** = BD custodian (equivalent to Schwab on RIA side, via Gradient BD)
-- **Lead Connector** = GHL's integrated communications platform (call recordings + texts)
 ## Code Standards (ALL Projects)
 
 ### Forbidden Patterns
@@ -318,6 +324,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 - [ ] No plain dropdowns or free text for known-entity person selection
 - [ ] Code follows existing patterns in the file
 - [ ] Hookify gotcha: `alert (` in comments triggers `block-alert-confirm-prompt` — use "notification" not "alert" before parens
+- [ ] Hookify gotcha: `quality-gate-commit-remind` checks bash command text for `.gs/.html/.json` — use `git add -A` instead of naming files with extensions. Run git ops **sequentially** (not parallel) to avoid cascade failures from hookify blocks.
 
 ---
 
@@ -523,7 +530,19 @@ const paddedZip = String(zip).padStart(5, '0');
 const state = zipToState(paddedZip);
 ```
 
-- **Hookify gotcha**: `quality-gate-commit-remind` checks bash command text for `.gs/.html/.json` — use `git add -A` instead of naming files with extensions. Run git ops **sequentially** (not parallel) to avoid cascade failures from hookify blocks.
+### 14. Sheets Dates + Timezone Shift
+**Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` gives locale format, NOT ISO.**
+
+```javascript
+// ❌ BROKEN - String(dateObj) gives "Mon Feb 15 2026..." not "2026-02-15"
+const dateStr = String(sheet.getRange(row, col).getValue());
+
+// ✅ FIXED - Use normalizeDate_() helper
+const dateStr = normalizeDate_(sheet.getRange(row, col).getValue());
+```
+
+**Timezone trap:** `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when `UTC time < offset`. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
+
 ### Self-Check (Before Every GAS Commit)
 - [ ] All `*ForUI()` functions use `JSON.parse(JSON.stringify())`
 - [ ] No Date objects passed to client without conversion
@@ -603,8 +622,6 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 Everything else — Claude executes directly via `execute_script` with `devMode: true`.
 
-- **Clasp** = code deployment (push/version/deploy). **execute_script** = running functions.
-- **execute_script runs ALL GAS functions remotely.** JDM's only manual GAS action: GCP project linking + library dependencies (one-time per project).
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
 **ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
@@ -675,7 +692,6 @@ For MCP development standards, directory structure, and OAuth setup: read `MCP-H
 **To verify what's loaded:** `claude mcp list`
 
 ### MCP Configuration (CRITICAL - Read This)
-- **AIR Machine config (post-fix)**: No hooks, no plugins, no settings.local.json, no local MCP servers. Clean Anthropic-managed MCPs only. Node pinned at v22.
 
 **MCPs are configured via CLI, NOT settings.json:**
 
@@ -696,6 +712,8 @@ claude mcp remove <name> --scope user
 **Config is stored in:** `~/.mcp.json` (NOT `~/.claude/settings.json`)
 
 **After adding/removing MCPs:** Restart Claude Code for changes to take effect.
+
+**OAuth scope changes:** Run `node ~/Projects/RAPID_TOOLS/MCP-Hub/reauth-scopes.js` DIRECTLY — NEVER suggest restarting Claude Code for OAuth. The reauth script triggers a browser popup without killing the session. Context loss from restarts is unacceptable.
 
 **STOP. USE THESE. Don't waste time looking for something else.**
 
@@ -905,6 +923,11 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 
 **Campaign Engine:** C3 → PRODASH, 60 campaigns, 661 templates, AEP Blackout Oct-Dec
 
+**GHL Integration (retained for M&A):**
+- **IMPORT_GHL.gs** (4,394 lines) + **API_GHL_Sync.gs** (1,661 lines) are RETAINED in RAPID_IMPORT/RAPID_API
+- Only the GHL *push* code was removed (C3 stubs, PRODASH UI refs) — RPI no longer pushes TO GHL
+- The *import/sync* code stays as a ready-made intake tool for GHL-based acquisitions via DAVID/SENTINEL
+
 **Dependency Chain:**
 ```
 RAPID_CORE ← Used by ALL GAS projects (library dependency)
@@ -946,7 +969,6 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 ```
 
 ---
-- **IMPORT_GHL.gs** (4,394 lines) + **API_GHL_Sync.gs** (1,661 lines) are RETAINED
 
 ## MATRIX Sheets
 
@@ -988,7 +1010,6 @@ npm run inventory      # Inventory only (no dedup)
 
 ---
 
-- Only the GHL *push* code was removed (C3 stubs, PRODASH UI refs) — RPI no longer pushes TO GHL
 ## What I Do NOT Do
 
 | Task | Who Does It |
@@ -1031,7 +1052,6 @@ You report results to me
 ---
 
 ## Default Behavior: Plan Mode
-- **Use Playwright for web walkthroughs** — when guiding JDM through web-based setup (dashboards, account config, DNS, etc.), use Playwright browser automation. JDM logs in, then Claude can see pages and guide/automate. Much faster than screenshot-and-respond loops.
 
 **ALWAYS default to Plan Mode (EnterPlanMode) for non-trivial implementation tasks.** Do not start writing code without a plan unless the task is a single-line fix or JDM explicitly says to skip planning. This prevents wasted effort and ensures alignment before execution.
 
@@ -1044,10 +1064,10 @@ You report results to me
 2. Read project CLAUDE.md (if exists in current directory)
 3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASHX_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
 4. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
-5. Begin work immediately
-6. Report completion, not progress
+5. **Hookify check** — verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into the project's `.claude/` directory. Compare counts, link any missing rules, report status.
+6. Begin work immediately
+7. Report completion, not progress
 
-- **Session-start hookify check (MANDATORY)**: When JDM says "session launch", "let's get started", "kick off a new project", or similar — IMMEDIATELY verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into the project's `.claude/` directory. Compare counts, link any missing rules, report status. This is part of session-start protocol, same as reading project CLAUDE.md and running Reference Detection.
 ### During Work
 - Don't narrate what you're doing
 - Don't ask "should I continue?"
@@ -1115,13 +1135,18 @@ Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 projects via
 ```
 
 ### Closed Loop (LIVE)
-- **Sync hooks on machines without git-initialized `~/.claude/`** cause "SessionStart:startup hook error" but do NOT hang
 Sessions generate violations > violation logging > knowledge-promote.js (4am) > Slack DM digest to JDM > compliance-history.json trend tracking > CLAUDE.md adjusted > next session smarter. Say "check the immune system" for a structured briefing.
 
 ### Emergency Escape Hatch
 - Disable hookify: Remove `"hookify@claude-plugins-official": true` from `~/.claude/settings.json`
 - Disable one rule: Set `enabled: false` in the rule's frontmatter, or delete the symlink
 - Rules only apply in projects where `.claude/hookify.*.local.md` symlinks exist
+
+---
+
+## Hall of Fame
+
+- **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
 
 ---
 
@@ -1134,17 +1159,4 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 ---
 
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
-- **Sheets Date normalization**: Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` in GAS gives locale format (NOT ISO). Use `normalizeDate_()`.
 - **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
-- **CoF** = Catholic Order of Foresters (life insurance carrier), NOT "Circle of Funds"
-- **launchd agents**: analytics-push (daily 3:30am), mcp-analytics (Mon 8am), claude-cleanup (Sun 3am), knowledge-promote (daily 4:00am)
-- **Knowledge Machine v2**: section-aware AI insertion, temporal filter, compliance sweep (`--sweep-only`), reference doc routing
-- **CLIENT360 lazy-loads** accounts/activity tabs (not all at once)
-- **Date timezone day-shift bug (fixed 2026-02-15)**: `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when UTC time < offset. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
-- **After GCP project linking**: MUST `clasp push --force` to register `executionApi` — without this, execute_script returns 404 even though the project looks correctly configured
-- **OAuth scope changes: run `node reauth-scopes.js` DIRECTLY** — NEVER suggest restarting Claude Code for OAuth. The reauth script triggers a browser popup without killing the session. Context loss from restarts is unacceptable.
-- **RIA** = Registered Investment Advisor
-- **BD** = Broker Dealer
-- **DST Vision** = data aggregator for directly held mutual fund / variable annuity accounts
-- **If `claude` hangs on startup (blank screen)**: First try `rm -rf ~/.claude-code && claude` — runtime cache corruption is the most common cause
-- **`~/.claude-code/`** = runtime cache (regenerates on launch). `~/.claude/` = config + settings (must be preserved).
