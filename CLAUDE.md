@@ -226,6 +226,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
 
 ---
+- **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
 
 ## Industry Terminology
 
@@ -668,6 +669,7 @@ For MCP development standards, directory structure, and OAuth setup: read `MCP-H
 **To verify what's loaded:** `claude mcp list`
 
 ### MCP Configuration (CRITICAL - Read This)
+- **AIR Machine config (post-fix)**: No hooks, no plugins, no settings.local.json, no local MCP servers. Clean Anthropic-managed MCPs only. Node pinned at v22.
 
 **MCPs are configured via CLI, NOT settings.json:**
 
@@ -1039,6 +1041,7 @@ You report results to me
 5. Begin work immediately
 6. Report completion, not progress
 
+- **Session-start hookify check (MANDATORY)**: When JDM says "session launch", "let's get started", "kick off a new project", or similar — IMMEDIATELY verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into the project's `.claude/` directory. Compare counts, link any missing rules, report status. This is part of session-start protocol, same as reading project CLAUDE.md and running Reference Detection.
 ### During Work
 - Don't narrate what you're doing
 - Don't ask "should I continue?"
@@ -1106,6 +1109,7 @@ Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 projects via
 ```
 
 ### Closed Loop (LIVE)
+- **Sync hooks on machines without git-initialized `~/.claude/`** cause "SessionStart:startup hook error" but do NOT hang
 Sessions generate violations > violation logging > knowledge-promote.js (4am) > Slack DM digest to JDM > compliance-history.json trend tracking > CLAUDE.md adjusted > next session smarter. Say "check the immune system" for a structured briefing.
 
 ### Emergency Escape Hatch

@@ -247,6 +247,7 @@ Pick one project each week and verify:
 ---
 
 ## Version History
+- **Universal Clipboard fix**: Toggle Handoff OFF on both machines, then back ON. `killall pboard` alone doesn't always work.
 
 | Version | Date | Changes |
 |---------|------|---------|
@@ -260,3 +261,4 @@ Pick one project each week and verify:
 
 *A healthy codebase is a productive codebase. 15 minutes weekly prevents hours of firefighting.*
 - **Email V2 schema**: Deployed — email_hash, email_priority, document_type_hint columns added
+- **Slack DMs as remote command relay**: Works when clipboard and SSH both fail. Channel ID: `D09BBHTPNRE`
