@@ -130,6 +130,7 @@ for repo in \
   ~/Projects/RAPID_TOOLS/MCP-Hub \
   ~/Projects/RAPID_TOOLS/PDF_SERVICE \
   ~/Projects/RAPID_TOOLS/RAPID_API \
+  ~/Projects/RAPID_TOOLS/RAPID_COMMS \
   ~/Projects/RAPID_TOOLS/RAPID_CORE \
   ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
   ~/Projects/RAPID_TOOLS/SPARK_WEBHOOK_PROXY \
@@ -165,7 +166,7 @@ Scan for forbidden patterns across all GAS web apps:
 for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
   ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
   ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
-  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_COMMS ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
   ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
   name=$(basename "$repo")
   # Scan .html and .gs files for forbidden UI calls
@@ -176,7 +177,7 @@ done
 for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
   ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
   ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
-  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
+  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_COMMS ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
   ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
   name=$(basename "$repo")
   grep -rn 'style=.*hex-color-pattern' "$repo"/*.html 2>/dev/null | head -3
@@ -275,6 +276,7 @@ Pick one project each week and verify:
 | RAPID_TOOLS/MCP-Hub | pass/warn | X ago | |
 | RAPID_TOOLS/PDF_SERVICE | pass/warn | X ago | |
 | RAPID_TOOLS/RAPID_API | pass/warn | X ago | |
+| RAPID_TOOLS/RAPID_COMMS | pass/warn | X ago | |
 | RAPID_TOOLS/RAPID_CORE | pass/warn | X ago | |
 | RAPID_TOOLS/RAPID_IMPORT | pass/warn | X ago | |
 | RAPID_TOOLS/RIIMO | pass/warn | X ago | |
@@ -468,6 +470,7 @@ git log --oneline -5
 | MCP-Hub | `RAPID_TOOLS/MCP-Hub` | -- | Pending |
 | PDF_SERVICE | `RAPID_TOOLS/PDF_SERVICE` | -- | Pending |
 | RAPID_API | `RAPID_TOOLS/RAPID_API` | 2026-02-04 | Compliant |
+| RAPID_COMMS | `RAPID_TOOLS/RAPID_COMMS` | -- | Pending |
 | RAPID_CORE | `RAPID_TOOLS/RAPID_CORE` | 2026-02-04 | Compliant |
 | RAPID_IMPORT | `RAPID_TOOLS/RAPID_IMPORT` | -- | Pending |
 | RIIMO | `RAPID_TOOLS/RIIMO` | -- | Pending |

@@ -171,6 +171,7 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS -> DOMAIN (v32). Was CRITICAL -- no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 | RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook reception -- approved exception. Document rationale. |
+| RAPID_COMMS | N/A (library) | 2026-02-19 | Standalone GAS library -- no web app deployment. executionApi DOMAIN only. |
 | RAPID_IMPORT | DOMAIN | 2026-02-14 | Verified -- appsscript.json has `"access": "DOMAIN"` in both webapp and executionApi |
 | RPI-Command-Center | DOMAIN | 2026-02-15 | Fixed -- "Phase 0: Security hardening" commit `d265ac5`. Source file + deployment verified. |
 | QUE-Medicare | DOMAIN | 2026-02-15 | Verified -- appsscript.json `"access": "DOMAIN"` confirmed. |

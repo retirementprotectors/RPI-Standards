@@ -866,6 +866,7 @@ When you change the codebase, update the corresponding docs:
 - For full audit protocol: Read `reference/os/MONITORING.md`
 
 **Active launchd agents:**
+- `com.rpi.document-watcher` — always-on (intake queue watcher, auto-restart on crash)
 - `com.rpi.analytics-push` — daily 3:30am (analytics → MATRIX)
 - `com.rpi.mcp-analytics` — Monday 8am (weekly Slack report)
 - `com.rpi.claude-cleanup` — Sunday 3am (session cleanup)
@@ -954,6 +955,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 │   ├── RAPID_CORE/              # Core GAS library
 │   ├── RAPID_IMPORT/            # Data ingestion
 │   ├── RAPID_API/               # REST API
+│   ├── RAPID_COMMS/             # Comms library (Twilio + SendGrid)
 │   ├── Marketing-Hub/           # Visual asset mgmt + design orchestration
 │   ├── MCP-Hub/                 # Intelligence + MCPs
 │   │   └── drive-tools/         # Drive content dedup + inventory
