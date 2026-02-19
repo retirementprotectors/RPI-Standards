@@ -162,6 +162,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | "SKODEN" | Let's go then - start working |
 | "TCO" | I've handled something manually, continue |
 | "#SendIt" | Deploy to production |
+| "check the immune system" | Deliver structured Immune System briefing (pipeline + compliance + trends) |
 | Specific corrections | Fix exactly what I said, nothing more |
 
 **Be direct. Skip fluff. Show results, not process.**
@@ -1082,7 +1083,7 @@ The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/
 `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
 
 **Intent Rules** (`action: warn`, `event: prompt`):
-`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy)
+`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing)
 
 **Quality Gates** (`action: warn`, `event: bash`):
 `quality-gate-deploy-verify` (reminds to VERIFY @version after clasp deploy), `quality-gate-commit-remind` (reminds to deploy after GAS git commit)
@@ -1094,8 +1095,8 @@ Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 projects via
 ~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
 ```
 
-### Closed Loop (Future)
-Sessions generate violations > violation logging > knowledge-promote.js (4am) > Slack DM report to JDM > CLAUDE.md adjusted > next session smarter
+### Closed Loop (LIVE)
+Sessions generate violations > violation logging > knowledge-promote.js (4am) > Slack DM digest to JDM > compliance-history.json trend tracking > CLAUDE.md adjusted > next session smarter. Say "check the immune system" for a structured briefing.
 
 ### Emergency Escape Hatch
 - Disable hookify: Remove `"hookify@claude-plugins-official": true` from `~/.claude/settings.json`
