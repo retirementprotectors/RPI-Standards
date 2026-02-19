@@ -580,31 +580,15 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 **Verify on every new project and pre-launch.** See MCP-Hub CLAUDE.md for full script ID list.
 
-### MCP execute_script CAN Run GAS Functions (STOP ASKING)
+### GAS Function Execution via execute_script
 
-**The MCP Hub `execute_script` tool gives you FULL ability to run Google Apps Script functions remotely.** This includes:
-- Running ANY server-side GAS function (DEBUG_, SETUP_, FIX_, TEST_, and all production functions)
-- Reading/writing sheet data via GAS functions
-- Triggering RAPID_API endpoints
-- Running data migrations, audits, and diagnostics
-- Anything a human could do by clicking "Run" in the GAS editor
+**`execute_script` runs ALL GAS functions remotely** — DEBUG_, SETUP_, FIX_, TEST_, and production functions. Session-start protocol runs `DEBUG_Ping` via execute_script to verify connectivity (see hookify `intent-session-start` rule).
 
-**You have this capability. Use it. Do NOT ask JDM "should I run this?" or "can I execute this?" — just do it.**
+**JDM's only manual GAS actions (one-time per project):**
+1. Link GCP project number in Script Settings
+2. Add/remove library dependencies in Script Settings
 
-```
-❌ WRONG: "I don't have access to run GAS functions directly"
-❌ WRONG: "Would you like me to try running this via execute_script?"
-❌ WRONG: "I'm not sure if I can execute GAS functions remotely"
-
-✅ RIGHT: Just call execute_script and run the function
-✅ RIGHT: Report what you ran and what it returned
-```
-
-**The ONLY two things we CANNOT do remotely in GAS (JDM must do these manually in the GAS editor):**
-1. **Link/change the GCP project number** in Script Settings (one-time setup per project)
-2. **Add/remove library dependencies** in Script Settings (e.g., adding RAPID_CORE as a library)
-
-When you encounter EITHER of those two scenarios, tell JDM clearly: *"This is one of the two things I can't do in GAS for you — [specific action needed] in the GAS editor."* That's it. Everything else, you handle.
+Everything else — Claude executes directly via `execute_script` with `devMode: true`.
 
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
@@ -731,12 +715,17 @@ claude mcp remove <name> --scope user
 ## New Project Setup
 
 ### Key Steps (Git FIRST!)
-1. **Git init + GitHub repo** - Before ANY GAS setup
-2. **Create project CLAUDE.md** - With rules baked in
-3. **Set up .clasp.json** - Script ID configuration
-4. **Create Code.gs with doGet()** - Entry point
-5. **JDM: First-time auth via GAS Editor UI** - One-time manual step
-6. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
+1. **Git init + GitHub repo** — Before ANY GAS setup
+2. **Create project CLAUDE.md** — With rules baked in, including `## Session URLs` section (GAS Editor + Frontend URLs)
+3. **Set up .clasp.json** — Script ID configuration
+4. **Create Code.gs with doGet()** — Entry point
+5. **Add DEBUG_Ping()** — Create `{PROJECT}_DevTools.gs` with standard ping function (see any existing project for template)
+6. **JDM: First-time auth via GAS Editor UI** — One-time manual step
+7. **JDM: Link GCP project `90741179392`** — In GAS editor Settings (one-time, enables execute_script)
+8. **`clasp push --force`** — Registers executionApi + pushes DEBUG_Ping
+9. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
+10. **Symlink hookify rules** — Run `~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`
+11. **Update tracking docs** — WEEKLY_HEALTH_CHECK.md, PROJECT_AUDIT.md, SECURITY_COMPLIANCE.md, clone-all-repos.sh, setup-hookify-symlinks.sh, CLAUDE.md Project Locations tree
 
 ### Reference Docs (Read When Needed)
 | Document | When to Read |
@@ -747,13 +736,10 @@ claude mcp remove <name> --scope user
 
 ## GAS Project Session Start
 
-**When starting work on ANY GAS project:**
-1. Check if `.clasp.json` exists (confirms it's a GAS project)
-2. Run `clasp login --status` to verify auth
-3. If auth expired/missing → Tell JDM: "Clasp auth expired. Please run `clasp login` in terminal."
-4. Wait for JDM to say "TCO" (Took Care Of) before proceeding
-
-**This prevents wasted work when clasp commands will fail.**
+**Handled by session-start protocol (hookify `intent-session-start` rule).** Key steps:
+1. Check `.clasp.json` exists (confirms GAS project, provides scriptId)
+2. Run `DEBUG_Ping` via `execute_script` to verify GAS connectivity
+3. Clasp auth only needed for deploy operations — check with `clasp login --status` before deploying
 
 ---
 
@@ -1118,6 +1104,14 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 
 ---
 
+## Session URLs
+<!-- Claude: Open these in browser at session start -->
+| Resource | URL |
+|----------|-----|
+| GitHub | https://github.com/retireprotected/_RPI_STANDARDS |
+
+---
+
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
 - **Sheets Date normalization**: Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` in GAS gives locale format (NOT ISO). Use `normalizeDate_()`.
 - **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
@@ -1126,7 +1120,6 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **Knowledge Machine v2**: section-aware AI insertion, temporal filter, compliance sweep (`--sweep-only`), reference doc routing
 - **CLIENT360 lazy-loads** accounts/activity tabs (not all at once)
 - **Date timezone day-shift bug (fixed 2026-02-15)**: `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when UTC time < offset. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
-- **execute_script can run ALL FIX_/DEBUG_/SETUP_ functions remotely** — no need to ask JDM to run from GAS editor. Use `rpi-workspace.execute_script` with the project's Script ID.
 - **After GCP project linking**: MUST `clasp push --force` to register `executionApi` — without this, execute_script returns 404 even though the project looks correctly configured
 - **OAuth scope changes: run `node reauth-scopes.js` DIRECTLY** — NEVER suggest restarting Claude Code for OAuth. The reauth script triggers a browser popup without killing the session. Context loss from restarts is unacceptable.
 - **RIA** = Registered Investment Advisor
