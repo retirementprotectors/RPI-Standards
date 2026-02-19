@@ -259,3 +259,4 @@ Pick one project each week and verify:
 ---
 
 *A healthy codebase is a productive codebase. 15 minutes weekly prevents hours of firefighting.*
+- **Email V2 schema**: Deployed — email_hash, email_priority, document_type_hint columns added

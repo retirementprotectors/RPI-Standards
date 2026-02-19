@@ -980,6 +980,7 @@ npm run inventory      # Inventory only (no dedup)
 
 ---
 
+- Only the GHL *push* code was removed (C3 stubs, PRODASH UI refs) — RPI no longer pushes TO GHL
 ## What I Do NOT Do
 
 | Task | Who Does It |
@@ -1022,6 +1023,7 @@ You report results to me
 ---
 
 ## Default Behavior: Plan Mode
+- **Use Playwright for web walkthroughs** — when guiding JDM through web-based setup (dashboards, account config, DNS, etc.), use Playwright browser automation. JDM logs in, then Claude can see pages and guide/automate. Much faster than screenshot-and-respond loops.
 
 **ALWAYS default to Plan Mode (EnterPlanMode) for non-trivial implementation tasks.** Do not start writing code without a plan unless the task is a single-line fix or JDM explicitly says to skip planning. This prevents wasted effort and ensures alignment before execution.
 
@@ -1134,3 +1136,5 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **RIA** = Registered Investment Advisor
 - **BD** = Broker Dealer
 - **DST Vision** = data aggregator for directly held mutual fund / variable annuity accounts
+- **If `claude` hangs on startup (blank screen)**: First try `rm -rf ~/.claude-code && claude` — runtime cache corruption is the most common cause
+- **`~/.claude-code/`** = runtime cache (regenerates on launch). `~/.claude/` = config + settings (must be preserved).
