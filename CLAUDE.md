@@ -811,7 +811,7 @@ When you see this section in a project's CLAUDE.md, read those files immediately
 3. **Report what you loaded:**
    ```
    📚 Reference docs loaded:
-   - COMPLIANCE_STANDARDS.md (detected: PHI patterns found)
+   - STANDARDS.md (detected: PHI patterns found)
    - MATRIX_CONFIG.md (declared in project CLAUDE.md)
    ```
 4. **Then proceed with the task**
