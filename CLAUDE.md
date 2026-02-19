@@ -218,6 +218,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Vinnie Vazquez | Sales Division |
 | Matt McCormick | B2B/DAVID Division |
 | Dr. Aprille Trupiano | CMO/Legacy Services |
+- **#jdmceo (C09UNESEYMU) is JDM → Team ONLY** — NEVER send automated reports there. That channel is for JDM's announcements to the team.
 | Jason Moran (JMDC) | Fractional CTO |
 - **Schwab** = RIA custodian (via Gradient RIA side)
 
@@ -520,6 +521,7 @@ const paddedZip = String(zip).padStart(5, '0');
 const state = zipToState(paddedZip);
 ```
 
+- **Hookify gotcha**: `quality-gate-commit-remind` checks bash command text for `.gs/.html/.json` — use `git add -A` instead of naming files with extensions. Run git ops **sequentially** (not parallel) to avoid cascade failures from hookify blocks.
 ### Self-Check (Before Every GAS Commit)
 - [ ] All `*ForUI()` functions use `JSON.parse(JSON.stringify())`
 - [ ] No Date objects passed to client without conversion
@@ -599,6 +601,8 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 Everything else — Claude executes directly via `execute_script` with `devMode: true`.
 
+- **Clasp** = code deployment (push/version/deploy). **execute_script** = running functions.
+- **execute_script runs ALL GAS functions remotely.** JDM's only manual GAS action: GCP project linking + library dependencies (one-time per project).
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
 **ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
