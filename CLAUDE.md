@@ -219,6 +219,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Matt McCormick | B2B/DAVID Division |
 | Dr. Aprille Trupiano | CMO/Legacy Services |
 | Jason Moran (JMDC) | Fractional CTO |
+- **Schwab** = RIA custodian (via Gradient RIA side)
 
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
@@ -239,7 +240,13 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | NPI | National Provider Identifier |
 
 ---
+- **DTCC** = Depository Trust & Clearing Corporation — independent life/annuity data feeds
+- **EHR** = Electronic Health Records (from providers)
+- **Signal** = transitioning IMO (life/annuity) — being replaced by Gradient
 
+- **Gradient** = incoming IMO (life/annuity) + BD relationship
+- **RBC** = BD custodian (equivalent to Schwab on RIA side, via Gradient BD)
+- **Lead Connector** = GHL's integrated communications platform (call recordings + texts)
 ## Code Standards (ALL Projects)
 
 ### Forbidden Patterns
@@ -931,6 +938,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 ```
 
 ---
+- **IMPORT_GHL.gs** (4,394 lines) + **API_GHL_Sync.gs** (1,661 lines) are RETAINED
 
 ## MATRIX Sheets
 
