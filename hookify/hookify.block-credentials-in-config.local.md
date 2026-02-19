@@ -39,4 +39,4 @@ const API_KEY = 'sk-abcdefghijklmnopqrst';
 const API_KEY = process.env.API_KEY;
 ```
 
-See: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
+See: `_RPI_STANDARDS/reference/os/POSTURE.md`

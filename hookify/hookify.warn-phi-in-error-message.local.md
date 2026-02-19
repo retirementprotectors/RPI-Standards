@@ -37,4 +37,4 @@ catch (error) {
 - Server-side only code (not returned to client)
 - Errors that definitely don't contain user data
 
-See: `_RPI_STANDARDS/reference/compliance/COMPLIANCE_STANDARDS.md`
+See: `_RPI_STANDARDS/reference/os/STANDARDS.md`

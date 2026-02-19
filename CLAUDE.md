@@ -342,7 +342,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 | **PHI Projects** | PRODASHX, QUE-Medicare, DEX, CAM - extra caution required |
 | **Admin Access** | Super Admins locked to Josh + John Behn only. OU `/RPI- Archived Users` = FINRA archiving. |
 
-**For full policy details:** Read `_RPI_STANDARDS/reference/compliance/PHI_POLICY.md`
+**For full policy details:** Read `_RPI_STANDARDS/reference/os/STANDARDS.md`
 
 ---
 
@@ -759,12 +759,12 @@ claude mcp remove <name> --scope user
 8. **`clasp push --force`** — Registers executionApi + pushes DEBUG_Ping
 9. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
 10. **Symlink hookify rules** — Run `~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`
-11. **Update tracking docs** — WEEKLY_HEALTH_CHECK.md, PROJECT_AUDIT.md, SECURITY_COMPLIANCE.md, clone-all-repos.sh, setup-hookify-symlinks.sh, CLAUDE.md Project Locations tree
+11. **Update tracking docs** — MONITORING.md, POSTURE.md, clone-all-repos.sh, setup-hookify-symlinks.sh, CLAUDE.md Project Locations tree
 
 ### Reference Docs (Read When Needed)
 | Document | When to Read |
 |----------|--------------|
-| `reference/compliance/COMPLIANCE_STANDARDS.md` | Project handles PHI/PII |
+| `reference/os/STANDARDS.md` | Project handles PHI/PII |
 
 ---
 
@@ -788,7 +788,7 @@ Run these checks on any project and load matching reference docs:
 | Check | Detection Method | If Found → Read |
 |-------|------------------|-----------------|
 | **MATRIX Sheets** | Grep for `MATRIX` in code or config | Read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly |
-| **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/compliance/COMPLIANCE_STANDARDS.md` |
+| **PHI/PII Handling** | Grep for `PHI\|PII\|HIPAA\|SSN\|ssn\|DOB\|dob\|medicare_id` | `reference/os/STANDARDS.md` |
 | **Healthcare APIs** | Grep for `healthcare-mcps\|npi\|medicare\|formulary` | MCP-Hub healthcare tools (already loaded) |
 | **Campaigns** | Grep for `campaign\|C3\|PSM\|T65\|AGE-\|COV-\|AEP\|content block` | `reference/campaigns/CAMPAIGN_MASTER_INDEX.md` |
 
@@ -799,7 +799,7 @@ Individual project CLAUDE.md files should declare required references:
 ```markdown
 ## Required References
 <!-- Claude: Read these from _RPI_STANDARDS at session start -->
-- compliance/COMPLIANCE_STANDARDS.md
+- os/STANDARDS.md
 ```
 
 When you see this section in a project's CLAUDE.md, read those files immediately.
@@ -830,13 +830,13 @@ When you change the codebase, update the corresponding docs:
 
 | When You...                    | Update These                                          |
 |-------------------------------|-------------------------------------------------------|
-| Add a new GAS project          | WEEKLY_HEALTH_CHECK.md (project list + scan loop)     |
-|                                | PROJECT_AUDIT.md (tracker table)                       |
-|                                | SECURITY_COMPLIANCE.md (verification table)            |
+| Add a new GAS project          | MONITORING.md (project list + scan loop)               |
+|                                | MONITORING.md (tracker table)                          |
+|                                | POSTURE.md (verification table)                        |
 |                                | clone-all-repos.sh + setup-hookify-symlinks.sh         |
 |                                | CLAUDE.md Project Locations tree                       |
-| Add a new GAS web app (webapp) | SECURITY_COMPLIANCE.md (add to verification table)     |
-| Complete a security audit      | SECURITY_COMPLIANCE.md (audit trail + dates)           |
+| Add a new GAS web app (webapp) | POSTURE.md (add to verification table)                 |
+| Complete a security audit      | POSTURE.md (audit trail + dates)                       |
 | Change deploy process          | CLAUDE.md ONLY — never reference docs                  |
 | Add a new MCP tool             | MCP-Hub/CLAUDE.md (directory listing)                  |
 | Change compliance rules        | CLAUDE.md = the rule. Reference doc = the procedure.   |
@@ -850,7 +850,7 @@ When you change the codebase, update the corresponding docs:
 **When JDM says "weekly check" or "health check":**
 - Check `git status` on active projects in ~/Projects/
 - Report: uncommitted changes, stale projects (2+ weeks untouched), any issues
-- For detailed checklist: Read `reference/maintenance/WEEKLY_HEALTH_CHECK.md`
+- For detailed checklist: Read `reference/os/MONITORING.md`
 
 **When JDM says "audit [project]":**
 - Verify: git initialized, CLAUDE.md exists, follows code standards
@@ -862,8 +862,8 @@ When you change the codebase, update the corresponding docs:
 - Check ALL GAS web apps for organization-only access
 - Verify no hardcoded credentials in code
 - Confirm Script Properties are used for secrets
-- Reference: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
-- For full audit protocol: Read `reference/maintenance/PROJECT_AUDIT.md`
+- Reference: `_RPI_STANDARDS/reference/os/POSTURE.md`
+- For full audit protocol: Read `reference/os/MONITORING.md`
 
 **Active launchd agents:**
 - `com.rpi.analytics-push` — daily 3:30am (analytics → MATRIX)
@@ -1092,28 +1092,27 @@ You report results to me
 
 ---
 
-## The Machine's Immune System (Hookify Plugin)
+## The Operating System
+
+The OS is the governance layer of The Machine. Full docs: `_RPI_STANDARDS/reference/os/`
+
+```
+The Machine (the business)
+  └── The Operating System (governance layer)
+        ├── Standards (os/STANDARDS.md)           ← what the rules ARE
+        ├── Posture (os/POSTURE.md)               ← who has access, what's verified
+        ├── The Immune System (os/IMMUNE_SYSTEM.md) ← enforcement + learning loop
+        ├── Monitoring (os/MONITORING.md)          ← watchdogs + health checks
+        └── Operations (os/OPERATIONS.md)         ← human processes + checklists
+```
 
 **Enforcement hierarchy:** Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
-### How It Works
+### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) is a Python-based enforcement engine that:
-- Reads `hookify.*.local.md` rule files from each project's `.claude/` directory
-- Evaluates rules against tool input using regex matching with LRU cache
-- **Blocks** (`action: block`) or **warns** (`action: warn`) based on rule matches
-- Registered via `enabledPlugins` in `~/.claude/settings.json`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 21 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-### Hook Events (auto-registered by hookify plugin)
-
-| Event | Handler | What It Does |
-|-------|---------|--------------|
-| **UserPromptSubmit** | `userpromptsubmit.py` | Matches intent patterns in user prompts (session-start, #SendIt, etc.) |
-| **PreToolUse** | `pretooluse.py` | Blocks/warns on file writes and bash commands BEFORE execution |
-| **PostToolUse** | `posttooluse.py` | Quality gates AFTER bash commands and file writes |
-| **Stop** | `stop.py` | Session-end processing |
-
-### Rule Types (all are `.local.md` files in `_RPI_STANDARDS/hookify/`)
+**Rule Types** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
 
 **Tier 1 — Block Rules** (`action: block`, `event: file`):
 `block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`
@@ -1124,8 +1123,8 @@ The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/
 **Intent Rules** (`action: warn`, `event: prompt`):
 `intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing)
 
-**Quality Gates** (`action: warn`, `event: bash`):
-`quality-gate-deploy-verify` (reminds to VERIFY @version after clasp deploy), `quality-gate-commit-remind` (reminds to deploy after GAS git commit)
+**Quality Gates** (`action: block`, `event: bash`):
+`quality-gate-deploy-verify` (blocks deploy without verify), `quality-gate-commit-remind` (blocks commit without deploy)
 
 ### Rule Propagation
 

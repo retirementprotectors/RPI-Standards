@@ -33,6 +33,6 @@ Change the access setting in `appsscript.json`:
 }
 ```
 
-**Exception:** RAPID_API uses `ANYONE_ANONYMOUS` intentionally for SPARK webhook reception. If this is an approved exception, document the rationale in `SECURITY_COMPLIANCE.md`.
+**Exception:** RAPID_API uses `ANYONE_ANONYMOUS` intentionally for SPARK webhook reception. If this is an approved exception, document the rationale in `POSTURE.md`.
 
-See: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
+See: `_RPI_STANDARDS/reference/os/POSTURE.md`

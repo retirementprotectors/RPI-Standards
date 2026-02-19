@@ -33,4 +33,4 @@ To set Script Properties:
 2. Add your secret as a property
 3. Reference via `PropertiesService.getScriptProperties().getProperty('NAME')`
 
-See: `_RPI_STANDARDS/reference/compliance/SECURITY_COMPLIANCE.md`
+See: `_RPI_STANDARDS/reference/os/POSTURE.md`
