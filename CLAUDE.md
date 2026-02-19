@@ -1153,7 +1153,7 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 <!-- Claude: Open these in browser at session start -->
 | Resource | URL |
 |----------|-----|
-| GitHub | https://github.com/retireprotected/_RPI_STANDARDS |
+| GitHub | https://github.com/retirementprotectors/RPI-Standards |
 
 ---
 
