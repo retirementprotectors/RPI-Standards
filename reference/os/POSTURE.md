@@ -171,11 +171,30 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | CEO-Dashboard | DOMAIN | 2026-02-13 | Fixed from ANYONE_ANONYMOUS -> DOMAIN (v32). Was CRITICAL -- no auth required. |
 | C3 | DOMAIN | 2026-02-13 | Already compliant (v127) |
 | RAPID_API | ANYONE_ANONYMOUS | 2026-02-14 | Intentional for SPARK webhook reception -- approved exception. Document rationale. |
-| RAPID_COMMS | N/A (library) | 2026-02-19 | Standalone GAS library -- no web app deployment. executionApi DOMAIN only. |
+| RAPID_COMMS | N/A (library) | 2026-02-19 | Standalone GAS library -- no web app deployment. executionApi DOMAIN only. Twilio SHAKEN/STIR approved. A2P 10DLC campaign pending. Toll-free SMS verification pending. |
 | RAPID_IMPORT | DOMAIN | 2026-02-14 | Verified -- appsscript.json has `"access": "DOMAIN"` in both webapp and executionApi |
 | RPI-Command-Center | DOMAIN | 2026-02-15 | Fixed -- "Phase 0: Security hardening" commit `d265ac5`. Source file + deployment verified. |
 | QUE-Medicare | DOMAIN | 2026-02-15 | Verified -- appsscript.json `"access": "DOMAIN"` confirmed. |
 | DAVID-HUB | DOMAIN | 2026-02-15 | Fixed -- "Phase 0: Security hardening" commit `fcc5011`. Source file + deployment verified. |
+
+### Twilio Compliance Posture (2026-02-19)
+
+| Registration | ID | Status | Date |
+|-------------|-----|--------|------|
+| SHAKEN/STIR (Voice) | BU7eec3e064ae2c8c5df6e62adca27610e | **Approved** | 2026-02-16 |
+| A2P Brand | BN1dab2dca942aaf25f01a72acf2457d11 | **Approved** | 2026-02-19 |
+| A2P Campaign (10DLC) | CM62449e61cacd4e8dadfdd0472705b101 | **Pending vetting** | 2026-02-19 |
+| Toll-Free SMS Verification | HH4ac6f9e2b149ebf1ece6bd250f1ad957 | **Pending review** | 2026-02-19 |
+| Messaging Service | MGf7c81d2233fdca246b45bc63079a6e55 | Active | 2026-02-19 |
+| Customer Profile | BU3d7b6cc9f05d41fee354c6af90a003b8 | Twilio-approved | 2026-02-16 |
+
+**Phone Numbers:**
+| Number | Type | Voice | SMS |
+|--------|------|-------|-----|
+| +18886208587 | Toll-free | LIVE (SHAKEN/STIR) | Pending (toll-free verification) |
+| +15155002308 | Local (515) | Available | Pending (A2P 10DLC) |
+
+**Check status:** Tell Claude "check A2P status" or "check SMS status" in any session.
 
 ### Q1 2026 Compliance Audit (2026-02-13)
 
