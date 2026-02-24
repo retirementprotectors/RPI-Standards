@@ -622,6 +622,7 @@ This enables the `execute_script` MCP tool to run GAS functions remotely. Withou
 
 Everything else — Claude executes directly via `execute_script` with `devMode: true`.
 
+- Clasp = code deployment (push/version/deploy). execute_script = running functions.
 ### 🔒 SECURITY: Organization-Only Access (MANDATORY)
 
 **ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
