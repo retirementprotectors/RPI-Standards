@@ -329,6 +329,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 ---
 
 ## PHI Handling Rules (CRITICAL)
+- This applies to ALL external-facing actions: SMS, email, calls, Slack messages to unknown IDs.
 
 **RPI handles Protected Health Information. These rules are NON-NEGOTIABLE.**
 > PHI-in-logs is **hook-enforced** — `enforce.sh` blocks any Write/Edit containing PHI patterns in console.log/Logger.log calls.
@@ -1012,6 +1013,7 @@ npm run inventory      # Inventory only (no dedup)
 ```
 
 ---
+- **Scanner dual-key indexing**: SERVICE_CENTERS + SALES_CENTERS index clients by BOTH `client_id` and `ghl_contact_id`
 
 ## What I Do NOT Do
 
@@ -1162,3 +1164,6 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
 - **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
+- **NEVER guess or fabricate phone numbers, emails, or contact info.** On 2026-02-25, fabricated a phone number for Shane Parmenter and sent an SMS to a random stranger from RPI's brand-new toll-free line. Could have triggered spam complaints and jeopardized the toll-free verification that was approved minutes earlier.
+- **If you don't have contact info, ASK.** Do not guess. Do not assume. Do not make up numbers.
+- **Pattern**: Every `ghl_contact_id || client_id` swapped to `client_id || ghl_contact_id`. GHL fallback retained for safety.
