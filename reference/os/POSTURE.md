@@ -123,6 +123,16 @@ The GAS editor UI and `appsscript.json` are **two different settings** that can 
 
 Super Admins locked to **Josh + John Behn only** (reduced from 5 to 2 as of Q1 2026 audit).
 
+### Organizational Unit (OU) Structure
+
+| OU | Purpose | Who Belongs Here |
+|----|---------|-----------------|
+| `/RPI- Archived Users` | FINRA email archiving via Global Relay | Active securities-licensed users (Josh, Nikki, Angelique) |
+| `/RPI- Non-Archived Users` | Active employees NOT under securities email archiving | All other active employees |
+| `/RPI- Offboarded` | Suspended/departed employees | Former employees, suspended accounts (NOT archived to Global Relay) |
+
+**Critical distinction:** `/RPI- Archived Users` is for FINRA compliance — Global Relay archives all email in this OU. Offboarded users go to `/RPI- Offboarded` so they are NOT included in FINRA archiving. The auto-offboard trigger (`API_Compliance.gs`) moves suspended users to `/RPI- Offboarded` automatically.
+
 ---
 
 ## Part 4: HIPAA Status
@@ -221,6 +231,20 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | nikki@ | Non-Archived -> Archived | Securities/FINRA email archiving compliance |
 | talan@ | / (root) -> Non-Archived | Proper OU placement |
 
+### OU Structure Fix (2026-03-02)
+
+**Issue:** `runAutoOffboard_()` was moving suspended users to `/RPI- Archived Users` (FINRA compliance OU), mixing departed employees with active securities-licensed users whose email must be archived by Global Relay.
+
+**Fix:** Created `/RPI- Offboarded` OU. Updated auto-offboard code to use new OU. Moved 5 suspended users:
+
+| User | From | To | Reason |
+|------|------|----|--------|
+| alex@ | /RPI- Archived Users | /RPI- Offboarded | Departed — should not be in FINRA archiving OU |
+| jmdconsulting@ | /RPI- Archived Users | /RPI- Offboarded | Departed — should not be in FINRA archiving OU |
+| allison@ | /RPI- Non-Archived Users | /RPI- Offboarded | Suspended — proper offboarded placement |
+| rpifax@ | /RPI- Non-Archived Users | /RPI- Offboarded | Suspended — proper offboarded placement |
+| christa@ | / (root) | /RPI- Offboarded | Suspended — proper offboarded placement |
+
 #### Super Admin Downgrades (3)
 
 | User | Before -> After |
@@ -281,6 +305,7 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | 2026-02-14 | Corrected app count (13 identified, 8 verified). Fixed RIIMO false-positive. Added source-code-vs-deployment section. | Claude Code |
 | 2026-02-15 | All 13 apps verified DOMAIN (12 compliant + 1 approved exception). RIIMO, RPI-Command-Center, DAVID-HUB remediated. QUE-Medicare verified. | Claude Code |
 | 2026-02-19 | Evolved from SECURITY_COMPLIANCE.md + imported access control from COMPLIANCE_STANDARDS.md | Claude Code |
+| 2026-03-02 | Created /RPI- Offboarded OU. Fixed auto-offboard to use correct OU. Moved 5 suspended users. Documented OU structure. | Claude Code |
 
 ---
 

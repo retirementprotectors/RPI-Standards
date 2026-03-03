@@ -341,7 +341,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 | **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
 | **Breach** | Report suspected breaches to JDM or John Behn immediately |
 | **PHI Projects** | PRODASHX, QUE-Medicare, DEX, CAM - extra caution required |
-| **Admin Access** | Super Admins locked to Josh + John Behn only. OU `/RPI- Archived Users` = FINRA archiving. |
+| **Admin Access** | Super Admins locked to Josh + John Behn only. OU `/RPI- Archived Users` = FINRA email archiving (active licensed users). OU `/RPI- Offboarded` = suspended/departed employees. |
 
 **For full policy details:** Read `_RPI_STANDARDS/reference/os/STANDARDS.md`
 
@@ -1167,3 +1167,4 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **NEVER guess or fabricate phone numbers, emails, or contact info.** On 2026-02-25, fabricated a phone number for Shane Parmenter and sent an SMS to a random stranger from RPI's brand-new toll-free line. Could have triggered spam complaints and jeopardized the toll-free verification that was approved minutes earlier.
 - **If you don't have contact info, ASK.** Do not guess. Do not assume. Do not make up numbers.
 - **Pattern**: Every `ghl_contact_id || client_id` swapped to `client_id || ghl_contact_id`. GHL fallback retained for safety.
+- **Root cause**: Sprenger BD/RIA accounts imported via Gradient with `client_id` only (no GHL ID) were invisible to lookups that checked `ghl_contact_id` first

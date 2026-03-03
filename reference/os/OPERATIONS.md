@@ -38,7 +38,14 @@ When an employee or contractor leaves RPI, the following must be completed **the
 
 **Responsible party:** COO (John Behn) or CEO (JDM).
 
-**Super Admin access is locked to Josh + John Behn only.** OU `/RPI- Archived Users` is used for FINRA archiving.
+**Super Admin access is locked to Josh + John Behn only.**
+
+**OU Structure:**
+- `/RPI- Archived Users` = FINRA email archiving via Global Relay (active securities-licensed users: Josh, Nikki, Angelique)
+- `/RPI- Non-Archived Users` = Active employees NOT under securities email archiving
+- `/RPI- Offboarded` = Suspended/departed employees (NOT archived to Global Relay)
+
+**On departure:** Move user to `/RPI- Offboarded` — do NOT move to `/RPI- Archived Users` (that OU is for FINRA compliance only).
 
 ---
 
