@@ -20,6 +20,7 @@ When the codebase changes, the corresponding docs must be updated. Claude is res
 | Change deploy process | CLAUDE.md ONLY — never reference docs |
 | Add a new MCP tool | MCP-Hub/CLAUDE.md (directory listing) |
 | Change compliance rules | CLAUDE.md = the rule. Reference doc = the procedure. |
+| Ship a production release | Create testing guide from `PRODUCTION_TESTING_TEMPLATE.md`, assign to tester, store on Shared Drive under release folder |
 
 ---
 
@@ -161,6 +162,45 @@ Enforcement applies to all workforce members, contractors, and any individual wi
 For the full new project setup checklist (11 steps including git init, CLAUDE.md creation, GCP linking, hookify symlinks, and tracking doc updates), see the **"New Project Setup"** section in `~/.claude/CLAUDE.md`.
 
 The documentation maintenance triggers in Part 1 of this document must be followed for every new project.
+
+---
+
+## Part 9: Production Testing
+
+Every production rollout — feature launch, schema change, data migration, UI update — gets a **Testing Guide** before it goes to the team.
+
+### Template
+
+`_RPI_STANDARDS/reference/os/PRODUCTION_TESTING_TEMPLATE.md`
+
+### Required Structure
+
+1. **Header** — Version, date, tester name, prepared by
+2. **Prerequisites** — What must be true before testing starts
+3. **Numbered Tests** — Each test has: Purpose, Where (nav path), Steps, Expected Results (checkboxes), Notes
+4. **Test Summary Table** — Pass/Fail grid for all tests
+5. **Issues Found Table** — #, Test, Description, Severity (BLOCKER/HIGH/MEDIUM/LOW)
+6. **Sign-Off** — Tester signature, date, overall result, rollout readiness
+
+### Format
+
+- Create as `.md` file on the Shared Drive (renders clean when opened)
+- Store in the release folder or the Shared Drive root (`0AFUXPgL0EWC6Uk9PVA`)
+- Reference: 6 testing guides from 2.15.26 + 2.16.26 Night Shift sessions (PRODASH v168, Marketing Hub, RIIMO v3.0, Comms Integration, Data Overhaul, Medicare v165)
+
+### When to Create
+
+| Release Type | Testing Guide Required? |
+|-------------|----------------------|
+| New UI feature | Yes — full interaction tests |
+| Schema change + data migration | Yes — spot-check records with exact expected values |
+| Bug fix (isolated) | No — unless it affects user-facing behavior |
+| Config/deploy-only change | No |
+
+### Assignment
+
+- Tester should be someone who did NOT build the feature (separation of concerns)
+- Default testers: Vinnie (Sales/ProDashX), Nikki (Service), Matt (DAVID/SENTINEL)
 
 ---
 

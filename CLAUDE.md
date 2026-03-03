@@ -842,6 +842,7 @@ When you change the codebase, update the corresponding docs:
 | Change deploy process          | CLAUDE.md ONLY — never reference docs                  |
 | Add a new MCP tool             | MCP-Hub/CLAUDE.md (directory listing)                  |
 | Change compliance rules        | CLAUDE.md = the rule. Reference doc = the procedure.   |
+| Ship a production release      | Create testing guide from `PRODUCTION_TESTING_TEMPLATE.md`, assign to tester, store on Shared Drive |
 
 **Rules live in CLAUDE.md. Procedures live in reference docs. Never duplicate rules into reference docs.**
 
