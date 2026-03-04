@@ -225,6 +225,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Matt McCormick | B2B/DAVID Division |
 | Dr. Aprille Trupiano | CMO/Legacy Services |
 | Jason Moran (JMDC) | Fractional CTO |
+- **Super Admins locked**: Josh + John Behn only.
 
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
@@ -1016,7 +1017,10 @@ npm run inventory      # Inventory only (no dedup)
 ---
 - **Scanner dual-key indexing**: SERVICE_CENTERS + SALES_CENTERS index clients by BOTH `client_id` and `ghl_contact_id`
 
+- `/RPI- Non-Archived Users` = Active employees NOT under securities email archiving
 ## What I Do NOT Do
+- `/RPI- Offboarded` = Suspended/departed employees (NOT archived to Global Relay)
+- `/RPI-Archived Users` = FINRA email archiving via Global Relay (active licensed users: Josh, Nikki, Angelique)
 
 | Task | Who Does It |
 |------|-------------|
