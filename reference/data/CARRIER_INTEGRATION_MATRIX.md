@@ -1,26 +1,38 @@
 # RPI Carrier Integration Matrix
 
-> Detailed per-carrier integration reference. For the single-glance cascade table, see `DATA_SOURCE_REGISTRY.md`.
+> Per-carrier reference cards with API endpoints, authentication methods, field mappings, and integration status.
 >
 > **Maintained by:** Claude Code GA
-> **Last updated:** 2026-02-16
+> **Last updated:** 2026-03-03
+> **Companion doc:** `DATA_SOURCE_REGISTRY.md` (the "what") -- this doc is the "how"
 
 ---
 
-## How to Use This Document
+## How to Read This Document
 
-Each carrier section contains:
-- **Overview**: Products, relationship, IMO intermediary
-- **Current Integration**: What we have today
-- **Available APIs**: What the carrier/aggregator offers
-- **Data Types**: What data we can get, by which method
-- **Field Mapping**: Key external field → MATRIX field mappings
-- **Setup Requirements**: What JDM needs to do to enable
-- **RAPID_IMPORT Module**: Which file handles this carrier
+Each carrier has a **reference card** with:
+
+| Section | Contents |
+|---------|----------|
+| **Overview** | Carrier name, products, IMO intermediary |
+| **Portals** | Agent portal URLs (for manual operations) |
+| **API Endpoints** | FHIR URLs, REST endpoints, auth methods -- sourced from codebase |
+| **MCP Tools** | Available rpi-healthcare MCP tools for this carrier |
+| **BoB Import Config** | Tab configuration from `IMPORT_BoBImport.gs` |
+| **Status** | Live / Planned / Not Started per data type |
+
+### IMO Transition Note
+
+RPI is transitioning life/annuity distribution from **Signal** to **Gradient**. Where noted:
+- **Signal** = current but being phased out
+- **Gradient** = incoming, onboarding in progress
+- **SPARK (Integrity)** = Medicare -- no change planned
 
 ---
 
 ## Medicare Carriers
+
+---
 
 ### Humana
 
@@ -28,69 +40,134 @@ Each carrier section contains:
 |-----------|-------|
 | **Products** | MAPD, PDP, D-SNP, MedSupp |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | vantage.humana.com |
-| **Current Status** | Automated (SPARK webhook) |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Automated (SPARK webhook + FHIR) |
 
-**Current Integration:**
-- SPARK webhook pushes contact/enrollment data → `API_Spark.gs` → MATRIX
-- SMM (Summary of Medicare Members) CSV import → `FIX_ImportHumanaSMM()` in `IMPORT_BoBImport.gs`
-- Commission via Stateable API
+#### Portals
 
-**Available APIs (via rpi-healthcare MCP):**
-- `humana_get_agent` — agent lookup
-- `humana_get_medicare_plans` — plan details
-- `humana_get_medsup_plans` / `humana_get_medsup_quotes` — MedSupp quoting
-- `humana_search_beneficiary_eligibility` — eligibility check
-- `humana_submit_medicare_enrollment` — enrollment submission
-- `humana_get_enrollment_status` — enrollment tracking
-- `humana_calculate_idv_rate` — IDV rate calculation
-- `humana_check_dsnp_eligibility` — D-SNP eligibility
+| Portal | URL | Purpose |
+|--------|-----|---------|
+| Vantage | `vantage.humana.com` | BoB reports, member lookup |
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Client demographics | SPARK webhook | Automated |
-| Account/enrollment | SPARK webhook | Automated |
-| Commission | Stateable API | Automated |
-| New business/pending | SPARK webhook | Automated |
-| Service/claims | Portal (manual) | Manual |
+#### API Endpoints (from `humana-fhir-tools.js`)
 
-**Module:** `API_Spark.gs` (webhook handler), `IMPORT_BoBImport.gs` (SMM bulk import)
+**Production:**
 
----
+| Endpoint | URL |
+|----------|-----|
+| Base API | `https://api.humana.com` |
+| FHIR API | `https://fhir.humana.com/api` |
+| OAuth Token | `https://api.humana.com/oauth/token` |
+| Patient Authorization | `https://fhir.humana.com/auth/authorize` |
+| Patient Token Exchange | `https://fhir.humana.com/auth/token` |
 
-### UHC/AARP
+**Sandbox:**
+
+| Endpoint | URL |
+|----------|-----|
+| Base API | `https://qa-api.humana.com` |
+| FHIR API | `https://sandbox-fhir.humana.com/api` |
+| OAuth Token | `https://qa-api.humana.com/oauth/token` |
+| Patient Authorization | `https://sandbox-fhir.humana.com/auth/authorize` |
+| Patient Token Exchange | `https://sandbox-fhir.humana.com/auth/token` |
+
+**Auth Method:** OAuth 2.0 (client credentials for agent API, authorization code for patient data)
+
+#### Provider Directory FHIR (from `provider-network-tools.js`)
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | MAPD, PDP, MedSupp |
+| Base URL | `https://fhir.humana.com/api` |
+| Auth | None (public per CMS mandate) |
+| Resources | Practitioner, PractitionerRole, Organization, Location, InsurancePlan |
+
+#### Available MCP Tools (rpi-healthcare)
+
+| Tool | Purpose |
+|------|---------|
+| `humana_get_agent` / `humana_get_agent_plans` / `humana_get_agent_all_plans` | Agent details and plan access |
+| `humana_get_agent_certifications` / `humana_get_agent_licenses` | Agent compliance |
+| `humana_get_medicare_plans` | Plan search by ZIP/county |
+| `humana_get_medsup_plans` / `humana_get_medsup_quotes` | MedSupp quoting with pricing |
+| `humana_get_idv_plans` / `humana_calculate_idv_rate` | Individual plan rates |
+| `humana_search_beneficiary_eligibility` | MBI lookup, LIS status, ESRD |
+| `humana_check_dsnp_eligibility` | Dual Special Needs eligibility |
+| `humana_submit_medicare_enrollment` / `humana_get_enrollment_status` | Enrollment submission + tracking |
+| `humana_submit_pharmacy_consent` | Pharmacy consent for enrollment |
+| `humana_save_drug_list` | Drug list for formulary comparison |
+| `humana_get_patient_auth_url` / `humana_exchange_patient_code` | Member FHIR consent flow |
+| `humana_fetch_patient_data` | Member clinical data (15 FHIR resource types) |
+| `humana_get_bam_report` / `humana_get_aped_report` | Book of Business + Agent Production reports |
+| `humana_get_osb_list` | Other Supplemental Benefits |
+| `humana_get_api_status` / `humana_test_connection` | API health checks |
+
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `Humana- BoB.JDM` | Humana | `_ACCOUNT_MEDICARE` | MbrFirstName, MbrLastName, Birth Date, Primary Phone, Email, Humana ID, Medicare No, Product Description, Effective Date, Addr1, City, State, Zip |
+
+| Import Function | Source | Purpose |
+|-----------------|--------|---------|
+| `FIX_ImportHumanaSMM()` | Humana SMM LOA Payments sheet | Q1-2026 BoB batch import |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client demographics | SPARK webhook | **Live** (Auto) |
+| Account/enrollment | SPARK webhook + Portal CSV | **Live** (Auto + Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+| New business/pending | SPARK webhook | **Live** (Auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
+| Patient FHIR Data | OAuth consent flow | **Live** (requires member auth) |
+| Enrollment API | Agent REST API (sandbox + production) | **Live** (Auto) |
+| Beneficiary Eligibility | Agent REST API | **Live** (Auto) |
+| Service/claims | Portal (manual) | **Manual** |
+
+---
+
+### UHC/AARP (United Healthcare)
+
+| Attribute | Value |
+|-----------|-------|
+| **Products** | MAPD, PDP, DSNP, MedSupp |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | uhcagent.com |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Semi-automated (CSV + SPARK) |
 
-**Current Integration:**
-- SPARK webhook for some data
-- LWD format CSV download from portal → `FIX_ImportBoBData()` in `IMPORT_BoBImport.gs`
-- Commission via Stateable API
+#### Portals
 
-**Available APIs:**
-- No public API for BoB data
-- SPARK webhook covers some enrollment events
+| Portal | URL | Purpose |
+|--------|-----|---------|
+| Agent Portal | `uhcagent.com` | BoB reports, member lookup |
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Client demographics | Portal CSV / SPARK | Semi-auto |
-| Account/enrollment | Portal CSV / SPARK | Semi-auto |
-| Commission | Stateable API | Automated |
-| New business/pending | Portal CSV | Semi-auto |
-| Service/claims | Portal (manual) | Manual |
+#### API Endpoints (from `provider-network-tools.js`)
 
-**Setup Requirements:**
-- Portal credentials already configured
-- Monthly CSV download (could be automated via Playwright if high-value)
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Provider Directory (Optum) | `https://sandbox-apigw.optum.com` | OAuth 2.0 client credentials |
 
-**Module:** `IMPORT_BoBImport.gs`
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `UHC BOB Sheet` | UHC | `_ACCOUNT_MEDICARE` | memberFirstName, memberLastName, dateOfBirth, memberPhone, product, planStatus, memberAddress/City/State/Zip (**NOTE: no policy number column**) |
+| `UHC- LWD 1.1.23` | UHC | `_ACCOUNT_MEDICARE` | Member Name (LAST, FIRST format), Policy Number, MedicareID, Plan Type, Original Effective Date, Prem Amount, Member State |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client demographics | Portal CSV + FIX_ function | **Live** (Semi-auto) |
+| Account/enrollment | Portal CSV + FIX_ function | **Live** (Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+| New business/pending | Portal CSV | **Live** (Semi-auto) |
+| Provider Directory | FHIR Provider Directory API (Optum) | **Live** (Auto) |
+| Patient FHIR Data | Not available | **Not Started** |
+| Service/claims | Portal (manual) | **Manual** |
+
+**Automation Path:** Monthly CSV download could be automated via Playwright if high-value.
 
 ---
 
@@ -98,36 +175,59 @@ Each carrier section contains:
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | MAPD, PDP, MedSupp |
+| **Products** | MAPD, PDP, DSNP, MedSupp |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | aetna.com |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Partially automated (FHIR API + CSV) |
 
-**Current Integration:**
-- CSV import via `FIX_ImportBoBData()` in `IMPORT_BoBImport.gs`
-- FHIR API available via rpi-healthcare MCP (partially integrated)
-- Commission via Stateable API
+#### Portals
 
-**Available APIs (via rpi-healthcare MCP):**
-- `aetna_search_practitioners` — provider search
-- `aetna_search_insurance_plans` — plan search
-- `aetna_search_organizations` — organization search
-- `aetna_get_provider_by_npi` — NPI lookup
-- `aetna_fetch_patient_data` — FHIR patient data (requires patient OAuth)
-- `aetna_build_prior_auth_bundle` — prior authorization
-- `aetna_submit_prior_auth` — submit prior auth
-- `aetna_inquire_prior_auth` — check prior auth status
+| Portal | URL | Purpose |
+|--------|-----|---------|
+| Producer World | `aetna.com` | BoB reports, commissions |
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Client demographics | FHIR API / CSV | Semi-auto |
-| Account/enrollment | FHIR API / CSV | Semi-auto |
-| Commission | Stateable API | Automated |
-| New business/pending | Portal (manual) | Manual |
-| Service/claims | FHIR API (patient auth required) | Partial |
+#### API Endpoints (from `aetna-fhir-tools.js` and `provider-network-tools.js`)
 
-**Module:** `IMPORT_BoBImport.gs`, rpi-healthcare MCP
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| FHIR Base (sandbox + production) | `https://apif1.aetna.com/fhir/v1` | OAuth 2.0 client credentials |
+| OAuth Token | `https://apif1.aetna.com/fhir/v1/fhirserver_auth/oauth2/token` | Client credentials |
+| Provider Directory | `https://apisb.aetna.com/fhir/v1/providerdirectory` | API key |
+
+#### Available MCP Tools (rpi-healthcare)
+
+| Tool | Purpose |
+|------|---------|
+| `aetna_search_practitioners` | Provider search (by NPI or name+ZIP) |
+| `aetna_search_organizations` | Organization search (requires ZIP) |
+| `aetna_get_provider_by_npi` | Provider lookup by NPI |
+| `aetna_search_insurance_plans` | Plan search by ZIP |
+| `aetna_submit_prior_auth` / `aetna_inquire_prior_auth` | Prior authorization (Da Vinci PAS) |
+| `aetna_build_prior_auth_bundle` | FHIR bundle builder for prior auth |
+| `aetna_get_patient_auth_url` / `aetna_exchange_patient_code` | Member FHIR consent flow |
+| `aetna_fetch_patient_data` | Member clinical data (15 FHIR resource types) |
+| `aetna_get_api_status` / `aetna_test_connection` | API health checks |
+
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `AETNA JDM LOA- MFGAN + MFGA` | Aetna | `_ACCOUNT_MEDICARE` | First Name, Last Name, Date of Birth, Phone Number, Member ID, Plan Name, Effective Date, Address, City, State, Zip |
+| `AETNA- MFG OVR` | Aetna | `_ACCOUNT_MEDICARE` | Same field set |
+| `AETNA- MFGA STR + OVR` | Aetna | `_ACCOUNT_MEDICARE` | Same field set |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client demographics | FHIR API + Portal CSV | **Live** (Auto + Semi-auto) |
+| Account/enrollment | FHIR API + Portal CSV | **Live** (Auto + Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+| New business/pending | Portal CSV | **Live** (Semi-auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
+| Patient FHIR Data | OAuth consent flow | **Live** (requires member auth) |
+| Prior Authorization | Da Vinci PAS FHIR | **Live** (Auto) |
+| Service/claims | Portal (manual) | **Manual** |
 
 ---
 
@@ -137,19 +237,23 @@ Each carrier section contains:
 |-----------|-------|
 | **Products** | MAPD, PDP |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | cigna.com |
-| **Current Status** | Not Started |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
 
-**Current Integration:** None. Commission only via Stateable.
+#### API Endpoints (from `provider-network-tools.js`)
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Client demographics | Not Started | — |
-| Account/enrollment | Not Started | — |
-| Commission | Stateable API | Automated |
-| New business/pending | Not Started | — |
-| Service/claims | Not Started | — |
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Provider Directory | `https://p-hi2.digitaledge.cigna.com/ProviderDirectory/v1` | None (public) |
+| Resources | Practitioner, PractitionerRole, Organization, Location, InsurancePlan, HealthcareService |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | -- | **Not Started** |
+| Commission | Stateable API | **Live** (Auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
 
 **Automation Path:** Follow `FIX_ImportBoBData()` pattern from existing carriers. Medium priority.
 
@@ -161,23 +265,57 @@ Each carrier section contains:
 |-----------|-------|
 | **Products** | MAPD, D-SNP |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | wellcare.com |
-| **Current Status** | Not Started |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Semi-automated (CSV) |
 
-**Current Integration:** None. Commission only via Stateable.
+#### API Endpoints (from `provider-network-tools.js`)
 
-**Automation Path:** Follow `FIX_ImportBoBData()` pattern. Medium priority.
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Provider Directory | `https://prod.api.centene.com/fhir/providerdirectory` | None (public) |
+| Resources | Practitioner, PractitionerRole, Organization, Location, Network, InsurancePlan |
+
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `Wellcare- BoB` | Wellcare | `_ACCOUNT_MEDICARE` | Member First Name, Member Last Name, Member DoB, Phone, Centene ID, MBI, Plan Name, Effective Date, Address, City, State, Zip |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal CSV + FIX_ function | **Live** (Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
 
 ---
 
-### Anthem BCBS
+### Anthem BCBS (Elevance Health)
 
 | Attribute | Value |
 |-----------|-------|
 | **Products** | MAPD, MedSupp |
 | **IMO** | SPARK (Integrity) |
-| **Portal** | anthem.com |
-| **Current Status** | Not Started |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
+
+#### API Endpoints (from `provider-network-tools.js`)
+
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Provider Directory | `https://totalview.healthos.elevancehealth.com/fhir` | None (public) |
+| Resources | Practitioner, PractitionerRole, Organization, Location |
+
+**Note:** BCBS endpoints vary by affiliate. The Elevance Health endpoint covers Anthem-branded plans.
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | -- | **Not Started** |
+| Commission | Stateable API | **Live** (Auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
 
 ---
 
@@ -185,14 +323,97 @@ Each carrier section contains:
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | MedSupp, Final Expense |
+| **Products** | MedSupp, Final Expense, Medicare Advantage |
 | **IMO** | Direct / SPARK |
-| **Portal** | mutualofomaha.com |
-| **Current Status** | Not Started |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | -- | **Not Started** |
+| Commission | Stateable API | **Live** (Auto) |
 
 ---
 
-## Life Insurance Carriers
+### Wellmark
+
+| Attribute | Value |
+|-----------|-------|
+| **Products** | Medicare Advantage (Iowa market) |
+| **IMO** | Direct |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Semi-automated (CSV) |
+
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `Wellmark- BoB` | Wellmark | `_ACCOUNT_MEDICARE` | Name (LAST, FIRST format), Date of Birth, Member Id, Plan Name, Status, Address, City, State, Zip |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal CSV + FIX_ function | **Live** (Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+
+---
+
+### Medico (via Wellable)
+
+| Attribute | Value |
+|-----------|-------|
+| **Products** | MedSupp |
+| **IMO** | Wellable |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Semi-automated (CSV) |
+
+#### BoB Import Configuration (from `IMPORT_BoBImport.gs`)
+
+| Tab Name | Default Carrier | Target Tab | Key Columns |
+|----------|----------------|------------|-------------|
+| `Wellable- BoB` | Medico | `_ACCOUNT_MEDICARE` | Insured (FIRST LAST format), Insured DOB, Policy Number, Plan Description, Premium, Status, Address, City, State, Zip |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal CSV + FIX_ function | **Live** (Semi-auto) |
+| Commission | Stateable API | **Live** (Auto) |
+
+---
+
+### Devoted Health
+
+| Attribute | Value |
+|-----------|-------|
+| **Products** | MAPD |
+| **IMO** | SPARK (Integrity) |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
+
+#### API Endpoints (from `provider-network-tools.js`)
+
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| Provider Directory | `https://fhir.devoted.com/fhir` | None (public) |
+| Resources | Practitioner, PractitionerRole, Organization, Location |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | -- | **Not Started** |
+| Commission | Stateable API | **Live** (Auto) |
+| Provider Directory | FHIR Provider Directory API | **Live** (Auto) |
+
+---
+
+## Life/Annuity Carriers
+
+---
 
 ### Catholic Order of Foresters (CoF)
 
@@ -200,26 +421,27 @@ Each carrier section contains:
 |-----------|-------|
 | **Products** | Whole Life, Term Life |
 | **IMO** | Direct (member organization) |
-| **Portal** | N/A (manual correspondence) |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Manual (XLSX annual) |
 
-**Current Integration:**
-- Annual XLSX inforce report → Python converter → `FIX_EnrichLifeFromCarrier()` / `FIX_ReclassifyAnnuitiesFromCarrier()` in `IMPORT_BoBEnrich_Archive.gs`
-- Member list CSV → `FIX_EnrichClientsFromCarrier()`
+#### Current Integration
+
+- Annual XLSX inforce report -> Python converter -> `FIX_ImportCoFMembers()` in `IMPORT_BoBImport.gs`
+- Historical enrichment via `FIX_EnrichLifeFromCarrier()` / `FIX_EnrichClientsFromCarrier()` in `IMPORT_BoBEnrich_Archive.gs` (executed Feb 2026)
 - Commission via Stateable API
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Client demographics | XLSX (annual) | Manual |
-| Account/policy | XLSX (annual) | Manual |
-| Commission | Stateable API | Automated |
-| New business | N/A | — |
-| Service | N/A | — |
+#### Integration Status
 
-**Phase 6 (CoF policy import):** BLOCKED on CoF response for additional data.
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client demographics | XLSX (annual request) | **Live** (Manual) |
+| Account/policy | XLSX (annual request) | **Live** (Manual) |
+| Commission | Stateable API | **Live** (Auto) |
+| New business | N/A | -- |
 
-**Module:** `IMPORT_BoBEnrich_Archive.gs` (executed), `IMPORT_BoBEnrich.gs` (helpers)
+**Phase 6 (CoF policy import):** BLOCKED on CoF response for additional data as of Feb 2026.
+
+**Module:** `IMPORT_BoBImport.gs` (`FIX_ImportCoFMembers()`), `IMPORT_BoBEnrich_Archive.gs` (historical)
 
 ---
 
@@ -227,10 +449,17 @@ Each carrier section contains:
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | Life |
-| **IMO** | Signal → Gradient |
-| **Portal** | TBD |
-| **Current Status** | Not Started |
+| **Products** | Life Insurance |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | -- | **Not Started** |
+| Commission | Stateable API | **Live** (Auto) |
 
 ---
 
@@ -239,13 +468,19 @@ Each carrier section contains:
 | Attribute | Value |
 |-----------|-------|
 | **Products** | IUL, FIA, MYGA |
-| **IMO** | Signal → Gradient |
-| **Portal** | northamericancompany.com |
-| **Current Status** | Not Started |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
 
-**Available APIs:** JDM confirms partner API access exists (private, not public). Requires Gradient relationship.
+**Available APIs:** Partner API access exists (private, requires Gradient relationship).
 
-**JDM Action:** Confirm partner API access through Gradient, provide docs.
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Partner API (via Gradient) | **Planned** |
+| Commission | Stateable API | **Live** (Auto) |
+| New business | Partner API (via Gradient) | **Planned** |
 
 ---
 
@@ -254,26 +489,39 @@ Each carrier section contains:
 | Attribute | Value |
 |-----------|-------|
 | **Products** | FIA, MYGA, Life |
-| **IMO** | Signal → Gradient |
-| **Portal** | midlandnational.com |
-| **Current Status** | Not Started |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
+| **Current Status** | Commission only |
 
 **Available APIs:** Same as North American (sister company under Sammons Financial).
 
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Partner API (via Gradient) | **Planned** |
+| Commission | Stateable API | **Live** (Auto) |
+| New business | Partner API (via Gradient) | **Planned** |
+
 ---
 
-## Annuity Carriers
-
-### Allianz
+### Allianz Life
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | FIA |
-| **IMO** | Signal → Gradient |
-| **Portal** | allianzlife.com |
+| **Products** | FIA, Life |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Portal only |
 
-**Available APIs:** Marketplace-only (no direct agent API found). Portal download + FIX_ function.
+**Available APIs:** Marketplace-only (no direct agent API). Portal download + FIX_ function is the path.
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal (manual) | **Live** (Manual) |
+| Commission | Stateable API | **Live** (Auto) |
 
 ---
 
@@ -282,11 +530,18 @@ Each carrier section contains:
 | Attribute | Value |
 |-----------|-------|
 | **Products** | FIA, MYGA |
-| **IMO** | Signal → Gradient |
-| **Portal** | american-equity.com |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Portal only |
 
 **Available APIs:** Portal-only. No public API.
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal (manual) | **Live** (Manual) |
+| Commission | Stateable API | **Live** (Auto) |
 
 ---
 
@@ -295,38 +550,45 @@ Each carrier section contains:
 | Attribute | Value |
 |-----------|-------|
 | **Products** | FIA, MYGA |
-| **IMO** | Signal → Gradient |
-| **Portal** | athene.com |
+| **IMO** | Signal -> Gradient |
+| **Commission Aggregator** | Stateable |
 | **Current Status** | Portal only |
 
 **Available APIs:** Marketplace-only (Apollo ecosystem). No direct agent API.
+
+#### Integration Status
+
+| Data Type | Method | Status |
+|-----------|--------|--------|
+| Client/Account Data | Portal (manual) | **Live** (Manual) |
+| Commission | Stateable API | **Live** (Auto) |
 
 ---
 
 ## BD/RIA Custodians
 
+---
+
 ### Schwab (Charles Schwab Advisor Services)
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | RIA custody (all securities) |
-| **Relationship** | Via Gradient RIA |
-| **Portal** | advisorservices.schwab.com |
+| **Relationship** | RIA custodian (via Gradient RIA side) |
+| **Account Types** | Managed accounts, mutual funds, ETFs |
+| **MATRIX Target** | `_ACCOUNT_BDRIA` |
+| **Priority** | **HIGH** |
 | **Current Status** | Not Started |
-| **Priority** | HIGH |
 
-**Available APIs:**
-- OpenView Gateway — daily account data feeds
-- 370+ integrations, well-documented developer program
-- OAuth-based authentication
+#### Integration Path
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Account positions | OpenView API | Planned |
-| Account balances | OpenView API | Planned |
-| Transaction history | OpenView API | Planned |
-| Client demographics | OpenView API | Planned |
+| Feature | Method | Status |
+|---------|--------|--------|
+| Daily Position Feed | Schwab OpenView Gateway | **Planned** |
+| Transaction Feed | Schwab OpenView Gateway | **Planned** |
+| Account Opening | Schwab OpenView Gateway | **Planned** |
+| Client Demographics | Schwab OpenView Gateway | **Planned** |
+
+**OpenView Gateway:** 370+ integrations, OAuth-based authentication, well-documented developer program.
 
 **Setup Requirements:**
 1. Enroll in Schwab Advisor Services developer program (through Gradient)
@@ -341,31 +603,19 @@ Each carrier section contains:
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | BD custody |
-| **Relationship** | Via Gradient BD |
-| **Portal** | rbccm.com |
+| **Relationship** | BD custodian (via Gradient BD side) |
+| **Account Types** | Brokerage accounts, securities |
+| **MATRIX Target** | `_ACCOUNT_BDRIA` |
+| **Priority** | **MEDIUM** |
 | **Current Status** | Not Started |
-| **Priority** | MEDIUM |
 
 **Available APIs:** API reportedly in development. Currently form-based data authorization.
 
-**JDM Action:** Check API availability timeline through Gradient.
+**Dependency:** Gradient BD onboarding must complete first.
 
 ---
 
-### DST Vision (SS&C Technologies)
-
-| Attribute | Value |
-|-----------|-------|
-| **Products** | Mutual fund / VA data aggregation |
-| **Relationship** | Via Gradient |
-| **Portal** | dstvision.com |
-| **Current Status** | Not Started |
-| **Priority** | MEDIUM |
-
-**Available APIs:** FanMail/Vision established feeds. Requires enrollment.
-
-**JDM Action:** Enroll through Gradient BD relationship.
+## Data Aggregators
 
 ---
 
@@ -373,24 +623,20 @@ Each carrier section contains:
 
 | Attribute | Value |
 |-----------|-------|
-| **Products** | Life/Annuity data feeds |
-| **Relationship** | Direct (industry utility) |
-| **Portal** | dtcc.com |
+| **Service** | Life/Annuity data feeds (industry utility) |
+| **Products** | Policy data, transactions, agent compensation across multiple carriers |
+| **MATRIX Target** | `_ACCOUNT_LIFE`, `_ACCOUNT_ANNUITY` |
+| **Priority** | **CRITICAL** |
 | **Current Status** | Not Started |
-| **Priority** | CRITICAL |
 
-**Available APIs:**
-- Full REST API launched December 2024
-- Webhook support for real-time events
-- Covers policy data, transactions, agent compensation across multiple carriers
+#### Available APIs
 
-**Data Types:**
-| Type | Method | Status |
-|------|--------|--------|
-| Policy data (life/annuity) | REST API | Planned |
-| Transactions | REST API | Planned |
-| Agent compensation | REST API | Planned |
-| Real-time events | Webhooks | Planned |
+| Feature | Method | Status |
+|---------|--------|--------|
+| Policy Data | REST API (launched Dec 2024) | **Planned** |
+| Transactions | REST API | **Planned** |
+| Agent Compensation | REST API | **Planned** |
+| Real-time Events | Webhooks | **Planned** |
 
 **Setup Requirements:**
 1. DTCC I&RS enrollment (industry membership)
@@ -401,20 +647,75 @@ Each carrier section contains:
 
 ---
 
+### DST Vision (SS&C Technologies)
+
+| Attribute | Value |
+|-----------|-------|
+| **Service** | Mutual fund / variable annuity data aggregation |
+| **Relationship** | Via Gradient |
+| **MATRIX Target** | `_ACCOUNT_BDRIA` |
+| **Priority** | **MEDIUM** |
+| **Current Status** | Not Started |
+
+**Available APIs:** FanMail/Vision established feeds. Requires enrollment via Gradient.
+
+---
+
+## Carrier FHIR Provider Directory Summary
+
+All Medicare Advantage plans are CMS-mandated to provide public FHIR Provider Directory APIs. Accessed via `provider-network-tools.js` in the rpi-healthcare MCP.
+
+| Carrier | FHIR Base URL | Auth | Status |
+|---------|--------------|------|--------|
+| Humana | `https://fhir.humana.com/api` | None (public) | **Live** |
+| Aetna | `https://apisb.aetna.com/fhir/v1/providerdirectory` | API key | **Live** |
+| UHC/Optum | `https://sandbox-apigw.optum.com` | OAuth 2.0 | **Live** |
+| Devoted | `https://fhir.devoted.com/fhir` | None (public) | **Live** |
+| Anthem/Elevance | `https://totalview.healthos.elevancehealth.com/fhir` | None (public) | **Live** |
+| Centene/Wellcare | `https://prod.api.centene.com/fhir/providerdirectory` | None (public) | **Live** |
+| Cigna | `https://p-hi2.digitaledge.cigna.com/ProviderDirectory/v1` | None (public) | **Live** |
+| BCBS | Varies by affiliate | Varies | **Varies** |
+
+### FHIR Resources by Carrier
+
+| Resource | Humana | Aetna | UHC | Devoted | Anthem | Centene | Cigna |
+|----------|--------|-------|-----|---------|--------|---------|-------|
+| Practitioner | Y | Y | Y | Y | Y | Y | Y |
+| PractitionerRole | Y | Y | Y | Y | Y | Y | Y |
+| Organization | Y | Y | Y | Y | Y | Y | Y |
+| Location | Y | Y | Y | Y | Y | Y | Y |
+| InsurancePlan | Y | Y | -- | -- | -- | Y | Y |
+| HealthcareService | -- | -- | -- | -- | -- | -- | Y |
+| OrgAffiliation | -- | Y | -- | -- | -- | -- | -- |
+
+---
+
+## STB (Stateable) Product Type Routing
+
+The STB tab in `IMPORT_BoBImport.gs` routes records by product type keyword to the correct MATRIX tab:
+
+| Product Type Keywords | Target Tab |
+|-----------------------|------------|
+| `mapd`, `ma`, `medicare advantage`, `medicare supplement`, `med supp`, `pdp`, `supplement`, `medicare` | `_ACCOUNT_MEDICARE` |
+| `annuity`, `fia`, `myga` | `_ACCOUNT_ANNUITY` |
+| `life`, `iul`, `term`, `whole life`, `ul` | `_ACCOUNT_LIFE` |
+
+---
+
 ## API Maturity Summary
 
-| Source | API Type | Maturity | Priority |
-|--------|----------|----------|----------|
-| DTCC I&RS | REST + Webhooks | Production (Dec 2024) | CRITICAL |
-| Schwab OpenView | REST (OAuth) | Mature (370+ integrations) | HIGH |
-| Aetna FHIR | FHIR v4 | Production | MEDIUM (partially done) |
-| Humana APIs | REST | Production (via rpi-healthcare MCP) | DONE |
-| Signal (Hexure) | SSO/Embedded | Legacy | LOW (transitioning out) |
-| Gradient (Luma) | TBD | New | MEDIUM |
-| DST Vision | Feed-based | Established | MEDIUM |
-| North American/Midland | Partner API | Private | MEDIUM |
-| RBC | TBD | In development | LOW |
-| American Equity/Athene | None | Portal only | LOW |
+| Source | API Type | Maturity | RPI Priority |
+|--------|----------|----------|--------------|
+| DTCC I&RS | REST + Webhooks | Production (Dec 2024) | **CRITICAL** |
+| Schwab OpenView | REST (OAuth) | Mature (370+ integrations) | **HIGH** |
+| Humana Agent/FHIR | REST + FHIR v4 | Production | **DONE** (via rpi-healthcare MCP) |
+| Aetna FHIR | FHIR v4 | Production | **DONE** (via rpi-healthcare MCP) |
+| Gradient (Luma) | TBD | New | **MEDIUM** |
+| DST Vision | Feed-based | Established | **MEDIUM** |
+| North American/Midland | Partner API | Private | **MEDIUM** |
+| Signal (Hexure) | SSO/Embedded | Legacy | **LOW** (transitioning out) |
+| RBC | TBD | In development | **LOW** |
+| American Equity/Athene | None | Portal only | **LOW** |
 
 ---
 
@@ -429,4 +730,16 @@ Each carrier section contains:
 
 ---
 
-*This document is updated when carrier integrations change. For the overall data landscape, see DATA_SOURCE_REGISTRY.md.*
+## Adding a New Carrier
+
+1. **Create reference card** in this document (copy an existing carrier section)
+2. **Update `DATA_SOURCE_REGISTRY.md`** -- add row to the carrier cascade table (Section 1)
+3. **Add BoB import config** to `IMPORT_BoBImport.gs` `BOB_TABS` array if CSV import is needed
+4. **Check FHIR Provider Directory** -- CMS mandates public FHIR for all MA carriers
+5. **Add carrier to `CARRIER_ENDPOINTS`** in `provider-network-tools.js` if FHIR endpoint is known
+6. **Verify Stateable coverage** -- confirm commission data flows through Stateable
+7. **Test with DryRun** -- always run `FIX_ImportBoBDataDryRun()` before live import
+
+---
+
+*This document is updated when carrier integrations change. For the overall data landscape, see `DATA_SOURCE_REGISTRY.md`.*
