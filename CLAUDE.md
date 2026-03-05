@@ -179,6 +179,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | "TCO" | I've handled something manually, continue |
 | "#SendIt" | Deploy to production |
 | "#LetsPlanIt" | Enter Plan Mode with HIGH thinking — architecture/planning phase |
+| "#LetsRockIt" | Plan approved — exit Plan Mode, switch to MEDIUM thinking, execute |
 | "check the immune system" | Deliver structured Immune System briefing (pipeline + compliance + trends) |
 | Specific corrections | Fix exactly what I said, nothing more |
 
@@ -968,6 +969,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 ├── _RPI_STANDARDS/              # Cross-suite standards
 ├── RAPID_TOOLS/                 # Shared services (B2E)
 │   ├── RPI-Command-Center/      # Leadership visibility
+│   ├── ATLAS/                   # Source of Truth Registry
 │   ├── CAM/                     # Commission accounting
 │   ├── DEX/                     # Document efficiency
 │   ├── C3/                      # Content/Campaign manager
@@ -1158,7 +1160,7 @@ The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/
 `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
 
 **Intent Rules** (`action: warn`, `event: prompt`):
-`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning)
+`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan)
 
 **Quality Gates** (`action: block`, `event: bash`):
 `quality-gate-deploy-verify` (blocks deploy without verify), `quality-gate-commit-remind` (blocks commit without deploy)
