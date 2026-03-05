@@ -21,6 +21,12 @@ You are entering Plan Mode. Plans require deep multi-step reasoning across files
 - Switch back to MEDIUM thinking (default)
 - Execution is mechanical — the plan already decided the *what*
 
+**MANDATORY: When presenting the plan for approval, end with this exact block:**
+```
+Ready for approval. When you say go, I switch to MEDIUM thinking and execute.
+```
+This ensures JDM sees confirmation that the thinking level shift is happening.
+
 **The rule:**
 | Phase | Thinking Level |
 |-------|---------------|
