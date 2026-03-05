@@ -6,7 +6,7 @@ action: warn
 conditions:
   - field: user_prompt
     operator: regex_match
-    pattern: (plan\s+(this|it|out|for)|build\s+a\s+plan|make\s+a\s+plan|let'?s\s+plan|need\s+a\s+plan|create\s+a\s+plan|EnterPlanMode|plan\s+mode)
+    pattern: (#LetsPlanIt|#letsplanit|plan\s+(this|it|out|for)|build\s+a\s+plan|make\s+a\s+plan|let'?s\s+plan|need\s+a\s+plan|create\s+a\s+plan|EnterPlanMode|plan\s+mode)
 ---
 
 **THINKING LEVEL: SWITCH TO HIGH**

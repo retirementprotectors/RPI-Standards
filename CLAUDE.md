@@ -178,6 +178,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | "SKODEN" | Let's go then - start working |
 | "TCO" | I've handled something manually, continue |
 | "#SendIt" | Deploy to production |
+| "#LetsPlanIt" | Enter Plan Mode with HIGH thinking — architecture/planning phase |
 | "check the immune system" | Deliver structured Immune System briefing (pipeline + compliance + trends) |
 | Specific corrections | Fix exactly what I said, nothing more |
 
