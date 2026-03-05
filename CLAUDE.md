@@ -20,6 +20,22 @@
 
 ---
 
+## Standard Definitions
+
+> **Use these terms precisely. They are not interchangeable.**
+
+| Term | Definition | Examples |
+|------|-----------|----------|
+| **Platform** | All projects in our repo. The entire ecosystem. "Across the Platform" = everything. | The Machine |
+| **Portals** | The main UIs — the three front doors for each channel. | RIIMO (Executive/Leadership), ProDash (B2C), SENTINEL (B2B) |
+| **Sections** | Groupings in the vertical nav menu of each Portal. | Sales Center, Service Center, Admin, etc. |
+| **Modules** | Exclusive, native features built into a Portal. Each typically maps to a `.gs` file in the GAS project. | Clients, Accounts, RMD Center, Beni Center (ProDash); Org Admin, Pipelines (RIIMO) |
+| **Apps** | External modules surfaced in a Portal Section. Can appear in multiple Portals. | Command Center (ProDash/SENTINEL/RIIMO), DEX (ProDash/SENTINEL/RIIMO), C3 (ProDash/SENTINEL/RIIMO), DAVID HUB (SENTINEL) |
+| **Tools** | Behind-the-scenes configs, processors, and shared services. No direct UI. | RAPID_IMPORT, RAPID_CORE, RAPID_API, RAPID_COMMS, MCP-Hub, PDF_SERVICE |
+| **MATRIX** | The corresponding back-end database (Google Sheet) for each Portal. | RAPID_MATRIX, PRODASH_MATRIX, SENTINEL_MATRIX |
+
+---
+
 ## The Golden Rules
 
 ### 1. Complete Solutions, Not Partial Fixes
@@ -1065,6 +1081,16 @@ You report results to me
 
 **ALWAYS default to Plan Mode (EnterPlanMode) for non-trivial implementation tasks.** Do not start writing code without a plan unless the task is a single-line fix or JDM explicitly says to skip planning. This prevents wasted effort and ensures alignment before execution.
 
+### Thinking Level Protocol (Automatic — JDM Should Never Think About This)
+
+| Phase | Thinking Level | When |
+|-------|---------------|------|
+| **Planning / Architecture** | **HIGH** | Entering Plan Mode, multi-project reasoning, "figure out why", dependency analysis, risk assessment |
+| **Execution / Building** | **MEDIUM** | Exiting Plan Mode, writing code from an approved plan, deploying, standard feature work |
+| **Quick fixes / Lookups** | **LOW** | Renaming, formatting, single-line fixes, factual lookups, running deploys already planned |
+
+**This is automatic.** Claude switches thinking levels based on the task phase. JDM never needs to toggle anything manually. **[Hook-enforced: intent-plan-mode]**
+
 ---
 
 ## Session Protocol
@@ -1131,7 +1157,7 @@ The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/
 `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
 
 **Intent Rules** (`action: warn`, `event: prompt`):
-`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing)
+`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning)
 
 **Quality Gates** (`action: block`, `event: bash`):
 `quality-gate-deploy-verify` (blocks deploy without verify), `quality-gate-commit-remind` (blocks commit without deploy)
