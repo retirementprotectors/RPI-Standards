@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPI Portal Standardization — Whiteboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+  :root {
+    /* Shared dark foundation */
+    --bg-deepest: #0a0a0f;
+    --bg-dark: #111118;
+    --bg-card: #1a1a24;
+    --bg-card-hover: #22222e;
+    --bg-surface: #2a2a36;
+    --border-subtle: rgba(255,255,255,0.06);
+    --border-medium: rgba(255,255,255,0.1);
+    --text-primary: #f0f0f5;
+    --text-secondary: #8888a0;
+    --text-muted: #55556a;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    /* Portal brand colors */
+    --prodashx-primary: #3d8a8f;
+    --prodashx-glow: rgba(61,138,143,0.15);
+    --prodashx-accent: #5bbfc5;
+
+    --sentinel-primary: #3CB371;
+    --sentinel-glow: rgba(60,179,113,0.15);
+    --sentinel-accent: #5dd99a;
+
+    --riimo-primary: #276749;
+    --riimo-glow: rgba(39,103,73,0.15);
+    --riimo-accent: #48bb78;
+
+    /* Shared accent colors */
+    --pipeline-color: #63b3ed;
+    --module-color: #a78bfa;
+    --app-color: #f6ad55;
+    --admin-color: #fc8181;
+    --connect-color: #68d391;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-deepest);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: auto;
+  }
+
+  /* ===== PAGE HEADER ===== */
+  .page-header {
+    padding: 32px 40px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .page-header h1 span { color: var(--text-muted); font-weight: 500; }
+  .page-header p { color: var(--text-secondary); font-size: 14px; }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex;
+    gap: 24px;
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* ===== SECTION LABELS ===== */
+  .section-label {
+    padding: 28px 40px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ===== THREE-PORTAL GRID ===== */
+  .portal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 0 40px 40px;
+    min-width: 1200px;
+  }
+
+  /* ===== PORTAL FRAME ===== */
+  .portal-frame {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .portal-frame.prodashx { --portal: var(--prodashx-primary); --portal-glow: var(--prodashx-glow); --portal-accent: var(--prodashx-accent); }
+  .portal-frame.sentinel { --portal: var(--sentinel-primary); --portal-glow: var(--sentinel-glow); --portal-accent: var(--sentinel-accent); }
+  .portal-frame.riimo    { --portal: var(--riimo-primary);    --portal-glow: var(--riimo-glow);    --portal-accent: var(--riimo-accent); }
+
+  /* Portal top bar (logo left, My RPI right) */
+  .portal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+    min-height: 52px;
+  }
+  .portal-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+  }
+  .portal-logo:hover { background: var(--portal-glow); }
+  .portal-logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--portal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+  }
+  .portal-logo-text {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--portal-accent);
+  }
+  .portal-logo-subtitle {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .portal-logo-click-hint {
+    font-size: 9px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+  }
+
+  /* My RPI in top-right */
+  .myrpi-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .myrpi-button:hover {
+    background: var(--portal-glow);
+    border-color: var(--portal);
+  }
+  .myrpi-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--portal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+  }
+  .myrpi-info {
+    text-align: right;
+  }
+  .myrpi-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .myrpi-role {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Portal body (sidebar + content) */
+  .portal-body {
+    display: flex;
+    flex: 1;
+    min-height: 520px;
+    position: relative;
+  }
+
+  /* ===== LEFT SIDEBAR ===== */
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    overflow-y: auto;
+  }
+
+  /* Sidebar section */
+  .sidebar-section {
+    margin: 2px 8px;
+  }
+
+  /* === ICON-FIRST COLLAPSE PATTERN === */
+  /* Collapsed: just the icon button, centered. Expanded: full section with title + items */
+
+  .sidebar-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.25s ease;
+    user-select: none;
+    overflow: hidden;
+  }
+  .sidebar-section-header:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+  }
+
+  /* The spinning icon button */
+  .section-icon-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .section-icon-btn .material-icons-outlined {
+    font-size: 20px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Collapsed state: icon is prominent, centered-ish, with glow */
+  .sidebar-section-header.collapsed .section-icon-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  .sidebar-section-header.collapsed:hover .section-icon-btn {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--border-medium);
+    transform: scale(1.08);
+  }
+
+  /* Expanded state: icon spins and settles with color glow */
+  .sidebar-section-header:not(.collapsed) .section-icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+  }
+
+  /* The spin animation on expand */
+  .section-icon-btn.spinning {
+    animation: iconSpin 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .section-icon-btn.spinning-back {
+    animation: iconSpinBack 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  @keyframes iconSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    40% { transform: rotate(200deg) scale(1.15); }
+    70% { transform: rotate(350deg) scale(1.05); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+  @keyframes iconSpinBack {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(-180deg) scale(0.9); }
+    100% { transform: rotate(-360deg) scale(1); }
+  }
+
+  /* Section title text (fades in/out) */
+  .section-title-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.3s ease 0.1s;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .sidebar-section-header.collapsed .section-title-text {
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.2s ease;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* Chevron */
+  .sidebar-section-header .chevron {
+    font-size: 16px;
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+    opacity: 1;
+  }
+  .sidebar-section-header.collapsed .chevron {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* Section items */
+  .sidebar-section-items {
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+    opacity: 1;
+  }
+  .sidebar-section-items.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+  }
+
+  /* Pipeline icon color */
+  .sidebar-section[data-type="pipeline"] .section-icon-btn .material-icons-outlined { color: var(--pipeline-color); }
+  .sidebar-section[data-type="pipeline"] .sidebar-section-header.collapsed .section-icon-btn {
+    background: rgba(99,179,237,0.08); border-color: rgba(99,179,237,0.15);
+  }
+  .sidebar-section[data-type="pipeline"] .sidebar-section-header.collapsed:hover .section-icon-btn {
+    background: rgba(99,179,237,0.15); box-shadow: 0 0 12px rgba(99,179,237,0.2);
+  }
+
+  /* Module icon color */
+  .sidebar-section[data-type="module"] .section-icon-btn .material-icons-outlined { color: var(--module-color); }
+  .sidebar-section[data-type="module"] .sidebar-section-header.collapsed .section-icon-btn {
+    background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.15);
+  }
+  .sidebar-section[data-type="module"] .sidebar-section-header.collapsed:hover .section-icon-btn {
+    background: rgba(167,139,250,0.15); box-shadow: 0 0 12px rgba(167,139,250,0.2);
+  }
+
+  /* App icon color */
+  .sidebar-section[data-type="app"] .section-icon-btn .material-icons-outlined { color: var(--app-color); }
+  .sidebar-section[data-type="app"] .sidebar-section-header.collapsed .section-icon-btn {
+    background: rgba(246,173,85,0.08); border-color: rgba(246,173,85,0.15);
+  }
+  .sidebar-section[data-type="app"] .sidebar-section-header.collapsed:hover .section-icon-btn {
+    background: rgba(246,173,85,0.15); box-shadow: 0 0 12px rgba(246,173,85,0.2);
+  }
+
+  /* Sidebar nav item */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px 7px 16px;
+    margin: 1px 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+  }
+  .nav-item:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-primary);
+  }
+  .nav-item.active {
+    background: var(--portal-glow);
+    color: var(--portal-accent);
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--portal);
+  }
+  .nav-item .material-icons-outlined {
+    font-size: 17px;
+    opacity: 0.7;
+  }
+  .nav-item.active .material-icons-outlined {
+    opacity: 1;
+    color: var(--portal);
+  }
+
+  /* Pipeline items - special color */
+  .nav-item.pipeline-item .material-icons-outlined { color: var(--pipeline-color); opacity: 0.8; }
+  .nav-item.pipeline-item:hover { background: rgba(99,179,237,0.08); }
+
+  /* Module items */
+  .nav-item.module-item .material-icons-outlined { color: var(--module-color); opacity: 0.8; }
+  .nav-item.module-item:hover { background: rgba(167,139,250,0.08); }
+
+  /* App items - special treatment */
+  .nav-item.app-item {
+    border: 1px dashed rgba(246,173,85,0.2);
+    background: rgba(246,173,85,0.04);
+    margin: 2px 0;
+  }
+  .nav-item.app-item .material-icons-outlined { color: var(--app-color); opacity: 0.9; }
+  .nav-item.app-item:hover { background: rgba(246,173,85,0.1); border-color: rgba(246,173,85,0.3); }
+  .app-badge {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--app-color);
+    background: rgba(246,173,85,0.12);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+  .external-icon {
+    font-size: 12px !important;
+    margin-left: auto;
+    color: var(--app-color) !important;
+    opacity: 0.5 !important;
+  }
+
+  /* Admin section - special */
+  .sidebar-section.admin-section {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .nav-item.admin-item {
+    background: linear-gradient(135deg, rgba(252,129,129,0.06), rgba(252,129,129,0.02));
+    border: 1px solid rgba(252,129,129,0.1);
+  }
+  .nav-item.admin-item .material-icons-outlined { color: var(--admin-color); }
+  .nav-item.admin-item:hover { background: rgba(252,129,129,0.1); }
+
+  /* Sidebar divider */
+  .sidebar-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 6px 16px;
+  }
+
+  /* ===== MAIN CONTENT AREA ===== */
+  .main-content {
+    flex: 1;
+    padding: 16px;
+    background: var(--bg-deepest);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Content placeholder cards */
+  .content-placeholder {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .content-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .content-title .material-icons-outlined {
+    color: var(--portal);
+    font-size: 20px;
+  }
+  .content-subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Placeholder blocks */
+  .placeholder-row {
+    display: flex;
+    gap: 10px;
+  }
+  .placeholder-block {
+    flex: 1;
+    height: 60px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ===== RPI CONNECT FAB ===== */
+  .rpi-connect-fab {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--connect-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(104,211,145,0.3);
+    transition: all 0.2s;
+    z-index: 10;
+  }
+  .rpi-connect-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 24px rgba(104,211,145,0.4);
+  }
+  .rpi-connect-fab .material-icons-outlined {
+    font-size: 22px;
+    color: var(--bg-deepest);
+  }
+  .fab-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fc8181;
+    font-size: 9px;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fab-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--connect-color);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== MY RPI DETAIL PANEL ===== */
+  .detail-section {
+    padding: 12px 40px 40px;
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    min-width: 1200px;
+  }
+  .detail-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .detail-card-header {
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-card-header .material-icons-outlined {
+    font-size: 18px;
+    color: var(--portal);
+  }
+
+  /* Tabs within detail cards */
+  .detail-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    overflow-x: auto;
+  }
+  .detail-tab {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .detail-tab:hover { color: var(--text-secondary); }
+  .detail-tab.active {
+    color: var(--portal-accent);
+    border-bottom-color: var(--portal);
+  }
+  .detail-tab .material-icons-outlined { font-size: 14px; }
+  .detail-tab.standard {
+    position: relative;
+  }
+  .detail-tab.standard::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--portal);
+  }
+  .detail-tab.portal-specific {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Tab content area */
+  .detail-content {
+    padding: 16px;
+    min-height: 140px;
+  }
+  .detail-content-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .detail-content-line .material-icons-outlined {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .detail-content-line.highlight {
+    color: var(--portal-accent);
+  }
+
+  /* Standard badge */
+  .standard-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(99,179,237,0.1);
+    color: #63b3ed;
+    border: 1px solid rgba(99,179,237,0.2);
+  }
+
+  .portal-specific-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(246,173,85,0.1);
+    color: var(--app-color);
+    border: 1px solid rgba(246,173,85,0.2);
+  }
+
+  /* ===== CALLOUT BOXES ===== */
+  .callout {
+    margin: 8px 40px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid;
+    font-size: 12px;
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .callout.rule {
+    background: rgba(99,179,237,0.05);
+    border-color: rgba(99,179,237,0.15);
+    color: var(--text-secondary);
+  }
+  .callout .material-icons-outlined {
+    font-size: 18px;
+    color: #63b3ed;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .callout strong { color: var(--text-primary); }
+
+  /* ===== MEETING CONFIG MOCKUP ===== */
+  .meeting-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .meeting-type-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+  }
+  .meeting-type-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .meeting-type-detail {
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .meeting-slot {
+    display: inline-flex;
+    padding: 2px 6px;
+    background: rgba(99,179,237,0.08);
+    border-radius: 3px;
+    font-size: 9px;
+    color: #63b3ed;
+    margin: 2px 2px 0 0;
+  }
+
+  /* ===== INTERACTIVE COLLAPSE ===== */
+  .sidebar-section-header.interactive { cursor: pointer; }
+  .sidebar-section-items { max-height: 500px; }
+
+  /* ===== ANNOTATIONS ===== */
+  .annotation {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--portal);
+    background: var(--portal-glow);
+    border: 1px solid var(--portal);
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg-surface); border-radius: 4px; }
+
+  /* ===== PIPELINE CHIPS ===== */
+  .pipeline-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .pipeline-chip {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pipeline-chip.blue { background: rgba(99,179,237,0.12); color: #63b3ed; }
+  .pipeline-chip.green { background: rgba(104,211,145,0.12); color: #68d391; }
+  .pipeline-chip.orange { background: rgba(246,173,85,0.12); color: #f6ad55; }
+
+  /* Permission matrix mini */
+  .perm-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 10px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .perm-row:last-child { border-bottom: none; }
+  .perm-name { flex: 1; }
+  .perm-check {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+  .perm-check.on { background: rgba(104,211,145,0.15); color: #68d391; }
+  .perm-check.off { background: rgba(255,255,255,0.03); color: var(--text-muted); }
+  .perm-header {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 14px;
+    text-align: center;
+  }
+
+  /* Toggle all sections button */
+  .toggle-all-btn {
+    position: fixed;
+    top: 16px;
+    right: 40px;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .toggle-all-btn:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Portal Standardization <span>/ Whiteboard</span></h1>
+  <p>Side-by-side layout spec for PRODASHX, SENTINEL, and RIIMO — dark mode, standardized structure</p>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--pipeline-color)"></div>Pipelines</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--module-color)"></div>Modules (native .gs)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--app-color)"></div>Apps (external window)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--admin-color)"></div>Admin</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--connect-color)"></div>RPI Connect (FAB)</div>
+  <div class="legend-item"><span class="standard-badge">STD</span> = Same across all portals</div>
+  <div class="legend-item"><span class="portal-specific-badge">PORTAL</span> = Portal-specific</div>
+</div>
+
+<button class="toggle-all-btn" onclick="toggleAllSections()">
+  <span class="material-icons-outlined" style="font-size:14px">unfold_less</span>
+  Collapse / Expand All
+</button>
+
+<!-- ========================================= -->
+<!-- SECTION 1: FULL PORTAL LAYOUT             -->
+<!-- ========================================= -->
+<div class="section-label">Full Portal Layout — Logo (Dashboard) | Left Nav | My RPI (Top Right) | RPI Connect (FAB)</div>
+
+<div class="callout rule">
+  <span class="material-icons-outlined">rule</span>
+  <div>
+    <strong>Standardization Rules:</strong><br>
+    Click portal logo = Dashboard (no dashboard button in nav)<br>
+    Pipelines section = FIRST in left nav (admin-configured per user)<br>
+    All sections default COLLAPSED, expand on click<br>
+    Modules = native .gs views (purple icons) | Apps = external GAS projects (orange, dashed border, open new window)<br>
+    Admin = always bottom of sidebar, gated by permissions<br>
+    My RPI = top-right avatar + name (NEVER in left nav)<br>
+    RPI Connect = FAB bottom-right (already standardized)
+  </div>
+</div>
+
+<div class="portal-grid" style="padding-top:16px">
+
+  <!-- ============ PRODASHX ============ -->
+  <div class="portal-frame prodashx">
+    <div class="portal-topbar">
+      <div class="portal-logo" title="Click to go to Dashboard">
+        <div class="portal-logo-icon">P</div>
+        <div>
+          <div class="portal-logo-text">PRODASHX</div>
+          <div class="portal-logo-subtitle">Client Portal</div>
+        </div>
+        <div class="portal-logo-click-hint">= Dashboard</div>
+      </div>
+      <div class="myrpi-button" title="My RPI (tabbed panel)">
+        <div class="myrpi-info">
+          <div class="myrpi-name">Vinnie V.</div>
+          <div class="myrpi-role">Sales Lead</div>
+        </div>
+        <div class="myrpi-avatar">VV</div>
+      </div>
+    </div>
+    <div class="portal-body">
+      <div class="sidebar">
+        <!-- PIPELINES (FIRST) -->
+        <div class="sidebar-section" data-type="pipeline">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">route</span></div>
+            <span class="section-title-text">Pipelines</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item pipeline-item active">
+              <span class="material-icons-outlined">explore</span>Discovery
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">foundation</span>Data Foundation
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">architecture</span>Case Building
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">handshake</span>Close
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- WORKSPACE SECTION -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">workspaces</span></div>
+            <span class="section-title-text">Workspace</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">contacts</span>Clients
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">account_balance</span>Accounts
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">forum</span>Comms Hub
+            </div>
+          </div>
+        </div>
+
+        <!-- SALES CENTERS -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">storefront</span></div>
+            <span class="section-title-text">Sales Centers</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">health_and_safety</span>Medicare
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">shield</span>Life
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">savings</span>Annuity
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">trending_up</span>Advisory
+            </div>
+          </div>
+        </div>
+
+        <!-- SERVICE CENTERS -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">support_agent</span></div>
+            <span class="section-title-text">Service Centers</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">event_repeat</span>RMD Center
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">family_restroom</span>Beni Center
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- APPS -->
+        <div class="sidebar-section" data-type="app">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">apps</span></div>
+            <span class="section-title-text">Apps</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">health_and_safety</span>QUE-Medicare
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">paid</span>CAM
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">campaign</span>C3
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN (bottom, flat button, no expand) -->
+        <div class="sidebar-section admin-section">
+          <div class="nav-item admin-item">
+            <span class="material-icons-outlined">admin_panel_settings</span>Admin
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="main-content">
+        <div class="content-placeholder">
+          <div class="content-title">
+            <span class="material-icons-outlined">dashboard</span>
+            Dashboard
+          </div>
+          <div class="content-subtitle">Click logo to return here from any view</div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">Priority Queue</div>
+            <div class="placeholder-block">Quick Actions</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">Activity Feed</div>
+            <div class="placeholder-block">Metrics</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block" style="flex:2">Pipeline Summary</div>
+            <div class="placeholder-block">Alerts</div>
+          </div>
+        </div>
+        <!-- RPI Connect FAB -->
+        <div class="rpi-connect-fab">
+          <span class="material-icons-outlined">chat</span>
+          <div class="fab-badge">3</div>
+          <div class="fab-label">RPI Connect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SENTINEL ============ -->
+  <div class="portal-frame sentinel">
+    <div class="portal-topbar">
+      <div class="portal-logo" title="Click to go to Dashboard">
+        <div class="portal-logo-icon">S</div>
+        <div>
+          <div class="portal-logo-text">SENTINEL</div>
+          <div class="portal-logo-subtitle">B2B Platform</div>
+        </div>
+        <div class="portal-logo-click-hint">= Dashboard</div>
+      </div>
+      <div class="myrpi-button" title="My RPI (tabbed panel)">
+        <div class="myrpi-info">
+          <div class="myrpi-name">Matt M.</div>
+          <div class="myrpi-role">B2B Lead</div>
+        </div>
+        <div class="myrpi-avatar">MM</div>
+      </div>
+    </div>
+    <div class="portal-body">
+      <div class="sidebar">
+        <!-- PIPELINES (FIRST) -->
+        <div class="sidebar-section" data-type="pipeline">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">route</span></div>
+            <span class="section-title-text">Pipelines</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item pipeline-item active">
+              <span class="material-icons-outlined">explore</span>Prospecting
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">handshake</span>Sales Process
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">sync</span>Transition
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- DEAL MANAGEMENT -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">business_center</span></div>
+            <span class="section-title-text">Deal Management</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">folder</span>All Deals
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">people</span>Producers
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYSIS -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">analytics</span></div>
+            <span class="section-title-text">Analysis</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">business</span>Business
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">calculate</span>MEC
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">trending_up</span>PRP
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">pie_chart</span>SPH
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKET INTELLIGENCE -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">insights</span></div>
+            <span class="section-title-text">Market Intel</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">person_search</span>Agent Search
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">apartment</span>Carrier Intel
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">compare_arrows</span>Cross-Reference
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- APPS -->
+        <div class="sidebar-section" data-type="app">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">apps</span></div>
+            <span class="section-title-text">Apps</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">hub</span>DAVID-HUB
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">paid</span>CAM
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">description</span>Proposal Maker
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN (bottom, flat button, no expand) -->
+        <div class="sidebar-section admin-section">
+          <div class="nav-item admin-item">
+            <span class="material-icons-outlined">admin_panel_settings</span>Admin
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="main-content">
+        <div class="content-placeholder">
+          <div class="content-title">
+            <span class="material-icons-outlined">dashboard</span>
+            Dashboard
+          </div>
+          <div class="content-subtitle">Click logo to return here from any view</div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">Active Deals</div>
+            <div class="placeholder-block">Revenue Forecast</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">Pipeline Health</div>
+            <div class="placeholder-block">Recent Activity</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block" style="flex:2">Transition Tracker</div>
+            <div class="placeholder-block">Alerts</div>
+          </div>
+        </div>
+        <div class="rpi-connect-fab">
+          <span class="material-icons-outlined">chat</span>
+          <div class="fab-badge">1</div>
+          <div class="fab-label">RPI Connect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RIIMO ============ -->
+  <div class="portal-frame riimo">
+    <div class="portal-topbar">
+      <div class="portal-logo" title="Click to go to Dashboard">
+        <div class="portal-logo-icon">R</div>
+        <div>
+          <div class="portal-logo-text">RIIMO</div>
+          <div class="portal-logo-subtitle">Operations Hub</div>
+        </div>
+        <div class="portal-logo-click-hint">= Dashboard</div>
+      </div>
+      <div class="myrpi-button" title="My RPI (tabbed panel)">
+        <div class="myrpi-info">
+          <div class="myrpi-name">John B.</div>
+          <div class="myrpi-role">COO</div>
+        </div>
+        <div class="myrpi-avatar">JB</div>
+      </div>
+    </div>
+    <div class="portal-body">
+      <div class="sidebar">
+        <!-- PIPELINES (FIRST) -->
+        <div class="sidebar-section" data-type="pipeline">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">route</span></div>
+            <span class="section-title-text">Pipelines</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">person_add</span>On-Boarding
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">person_remove</span>Off-Boarding
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">build</span>Tech Maintenance
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">storage</span>Data Maintenance
+            </div>
+            <div class="nav-item pipeline-item">
+              <span class="material-icons-outlined">security</span>Security
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- RAPID TOOLS -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">build_circle</span></div>
+            <span class="section-title-text">RAPID Tools</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">cloud_upload</span>RAPID Import
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">psychology</span>Platform Intel
+            </div>
+          </div>
+        </div>
+
+        <!-- TOOL SUITES -->
+        <div class="sidebar-section" data-type="module">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">category</span></div>
+            <span class="section-title-text">Tool Suites</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">monitor_heart</span>DAVID Tools
+            </div>
+            <div class="nav-item module-item">
+              <span class="material-icons-outlined">storefront</span>RPI Tools
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- APPS -->
+        <div class="sidebar-section" data-type="app">
+          <div class="sidebar-section-header interactive collapsed" onclick="toggleSection(this)">
+            <div class="section-icon-btn"><span class="material-icons-outlined">apps</span></div>
+            <span class="section-title-text">Apps</span>
+            <span class="material-icons-outlined chevron">expand_more</span>
+          </div>
+          <div class="sidebar-section-items collapsed">
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">paid</span>CAM
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">description</span>DEX
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">campaign</span>C3
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">speed</span>CEO Dashboard
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+            <div class="nav-item app-item">
+              <span class="material-icons-outlined">terminal</span>Command Center
+              <span class="material-icons-outlined external-icon">open_in_new</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN (bottom, flat button, no expand) -->
+        <div class="sidebar-section admin-section">
+          <div class="nav-item admin-item">
+            <span class="material-icons-outlined">admin_panel_settings</span>Admin
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="main-content">
+        <div class="content-placeholder">
+          <div class="content-title">
+            <span class="material-icons-outlined">dashboard</span>
+            Dashboard
+          </div>
+          <div class="content-subtitle">Click logo to return here from any view</div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">System Health</div>
+            <div class="placeholder-block">Queue Status</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block">Pipeline Progress</div>
+            <div class="placeholder-block">Team Activity</div>
+          </div>
+          <div class="placeholder-row">
+            <div class="placeholder-block" style="flex:2">RAPID Import Status</div>
+            <div class="placeholder-block">Alerts</div>
+          </div>
+        </div>
+        <div class="rpi-connect-fab">
+          <span class="material-icons-outlined">chat</span>
+          <div class="fab-badge">5</div>
+          <div class="fab-label">RPI Connect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 2: ADMIN PANEL (Tabbed)           -->
+<!-- ========================================= -->
+<div class="section-label">Admin Panel — First 3 Tabs IDENTICAL, Then Portal-Specific</div>
+
+<div class="callout rule">
+  <span class="material-icons-outlined">rule</span>
+  <div>
+    <strong>Admin Rules:</strong><br>
+    Tab 1: <strong>Team Management</strong> — Add/edit/deactivate users, assign levels, divisions, reports-to <span class="standard-badge">STD</span><br>
+    Tab 2: <strong>Pipeline Config</strong> — Which pipelines exist, who can see them, view/edit/add-delete perms <span class="standard-badge">STD</span><br>
+    Tab 3: <strong>Module Config</strong> — Per-module VIEW/EDIT/ADD permissions per user <span class="standard-badge">STD</span><br>
+    Tab 4+: Portal-specific tabs <span class="portal-specific-badge">PORTAL</span>
+  </div>
+</div>
+
+<div class="detail-section">
+  <div class="detail-grid">
+
+    <!-- PRODASHX ADMIN -->
+    <div class="detail-card prodashx" style="--portal:var(--prodashx-primary);--portal-accent:var(--prodashx-accent);--portal-glow:var(--prodashx-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">admin_panel_settings</span>
+        PRODASHX Admin
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard active"><span class="material-icons-outlined">group</span>Team Mgmt</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">route</span>Pipeline Config</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">extension</span>Module Config</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">campaign</span>C3 / BOB Matrix</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">account_tree</span>Org Structure</div>
+      </div>
+      <div class="detail-content">
+        <div style="margin-bottom:10px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Team Management (standard)</div>
+        <div class="perm-row" style="font-weight:600;color:var(--text-muted)">
+          <span class="perm-name">User</span>
+          <span class="perm-header">Level</span>
+          <span class="perm-header">Div</span>
+          <span class="perm-header">Act</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name">Vinnie V.</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px;background:rgba(167,139,250,0.12);color:#a78bfa">LEADER</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px">Sales</span>
+          <span class="perm-check on" style="font-size:9px">&#10003;</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name">Nikki G.</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px;background:rgba(167,139,250,0.12);color:#a78bfa">LEADER</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px">Service</span>
+          <span class="perm-check on" style="font-size:9px">&#10003;</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name">Agent Smith</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px;background:rgba(255,255,255,0.05);color:var(--text-muted)">USER</span>
+          <span class="perm-check" style="font-size:8px;width:auto;padding:0 4px">Sales</span>
+          <span class="perm-check on" style="font-size:9px">&#10003;</span>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:6px">
+          <div style="padding:5px 10px;background:var(--prodashx-glow);border:1px solid rgba(61,138,143,0.3);border-radius:5px;font-size:10px;font-weight:600;color:var(--prodashx-accent);cursor:pointer">+ Add User</div>
+          <div style="padding:5px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:5px;font-size:10px;color:var(--text-muted);cursor:pointer">Edit Selected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SENTINEL ADMIN -->
+    <div class="detail-card sentinel" style="--portal:var(--sentinel-primary);--portal-accent:var(--sentinel-accent);--portal-glow:var(--sentinel-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">admin_panel_settings</span>
+        SENTINEL Admin
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard active"><span class="material-icons-outlined">group</span>Team Mgmt</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">route</span>Pipeline Config</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">extension</span>Module Config</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">link</span>Integrations</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">storage</span>Database</div>
+      </div>
+      <div class="detail-content">
+        <div style="margin-bottom:10px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Pipeline Config (standard)</div>
+        <div class="perm-row" style="font-weight:600;color:var(--text-muted)">
+          <span class="perm-name">Pipeline</span>
+          <span class="perm-header">V</span>
+          <span class="perm-header">E</span>
+          <span class="perm-header">A</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--pipeline-color)">explore</span>Prospecting
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check off">-</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--pipeline-color)">handshake</span>Sales Process
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--pipeline-color)">sync</span>Transition
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check off">-</span>
+          <span class="perm-check off">-</span>
+        </div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text-muted)">V = View | E = Edit | A = Add/Delete</div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <div style="padding:5px 10px;background:var(--sentinel-glow);border:1px solid rgba(60,179,113,0.3);border-radius:5px;font-size:10px;font-weight:600;color:var(--sentinel-accent);cursor:pointer">+ Add Pipeline</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIIMO ADMIN -->
+    <div class="detail-card riimo" style="--portal:var(--riimo-primary);--portal-accent:var(--riimo-accent);--portal-glow:var(--riimo-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">admin_panel_settings</span>
+        RIIMO Admin
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard active"><span class="material-icons-outlined">group</span>Team Mgmt</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">route</span>Pipeline Config</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">extension</span>Module Config</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">person_add</span>On-Boarding</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">person_remove</span>Off-Boarding</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">work</span>Job Templates</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">checklist</span>Task Templates</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">error</span>Error Log</div>
+      </div>
+      <div class="detail-content">
+        <div style="margin-bottom:10px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Module Config (standard)</div>
+        <div class="perm-row" style="font-weight:600;color:var(--text-muted)">
+          <span class="perm-name">Module</span>
+          <span class="perm-header">V</span>
+          <span class="perm-header">E</span>
+          <span class="perm-header">A</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--module-color)">paid</span>CAM
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check off">-</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--module-color)">description</span>DEX
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check on">&#10003;</span>
+        </div>
+        <div class="perm-row">
+          <span class="perm-name" style="display:flex;align-items:center;gap:4px">
+            <span class="material-icons-outlined" style="font-size:12px;color:var(--module-color)">cloud_upload</span>RAPID Import
+          </span>
+          <span class="perm-check on">&#10003;</span>
+          <span class="perm-check off">-</span>
+          <span class="perm-check off">-</span>
+        </div>
+        <div style="margin-top:8px;font-size:9px;color:var(--text-muted)">V = View | E = Edit | A = Add/Delete</div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <div style="padding:5px 10px;background:var(--riimo-glow);border:1px solid rgba(39,103,73,0.3);border-radius:5px;font-size:10px;font-weight:600;color:var(--riimo-accent);cursor:pointer">Bulk Apply Template</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 3: MY RPI (Tabbed, Top-Right)     -->
+<!-- ========================================= -->
+<div class="section-label">My RPI — Top-Right Avatar Click, Tabbed Panel, Nearly Identical Across Portals</div>
+
+<div class="callout rule">
+  <span class="material-icons-outlined">rule</span>
+  <div>
+    <strong>My RPI Rules:</strong><br>
+    Location: Top-right, tied to avatar + name (NEVER in left nav)<br>
+    Standard tabs: <strong>Profile</strong> | <strong>MyDropZone</strong> | <strong>Meetings</strong> (NEW) | <strong>Permissions</strong> <span class="standard-badge">STD</span><br>
+    <strong>Meetings tab</strong> = Configure meeting types + availability (Mon 9,11,1,3,5 for Type X, etc.)<br>
+    Portal-specific tabs allowed after the standard ones <span class="portal-specific-badge">PORTAL</span>
+  </div>
+</div>
+
+<div class="detail-section">
+  <div class="detail-grid">
+
+    <!-- PRODASHX MY RPI -->
+    <div class="detail-card prodashx" style="--portal:var(--prodashx-primary);--portal-accent:var(--prodashx-accent);--portal-glow:var(--prodashx-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">person</span>
+        My RPI — PRODASHX
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard active"><span class="material-icons-outlined">badge</span>Profile</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">cloud_download</span>MyDropZone</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">event</span>Meetings</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">lock</span>Permissions</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">group</span>My Team</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">folder</span>Documents</div>
+      </div>
+      <div class="detail-content">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--prodashx-primary);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white">VV</div>
+          <div>
+            <div style="font-size:14px;font-weight:700">Vinnie Vazquez</div>
+            <div style="font-size:10px;color:var(--text-muted)">vinnie@retireprotected.com</div>
+            <div style="margin-top:3px"><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(167,139,250,0.12);color:#a78bfa">LEADER</span> <span style="font-size:9px;color:var(--text-muted)">Sales Division</span></div>
+          </div>
+        </div>
+        <div class="detail-content-line"><span class="material-icons-outlined">apartment</span>Division: Sales</div>
+        <div class="detail-content-line"><span class="material-icons-outlined">groups</span>Unit: Client Acquisition</div>
+        <div class="detail-content-line"><span class="material-icons-outlined">supervisor_account</span>Reports to: Josh Millang</div>
+      </div>
+    </div>
+
+    <!-- SENTINEL MY RPI -->
+    <div class="detail-card sentinel" style="--portal:var(--sentinel-primary);--portal-accent:var(--sentinel-accent);--portal-glow:var(--sentinel-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">person</span>
+        My RPI — SENTINEL
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard"><span class="material-icons-outlined">badge</span>Profile</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">cloud_download</span>MyDropZone</div>
+        <div class="detail-tab standard active"><span class="material-icons-outlined">event</span>Meetings</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">lock</span>Permissions</div>
+      </div>
+      <div class="detail-content">
+        <div style="margin-bottom:10px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Meeting Types + Availability (NEW)</div>
+        <div class="meeting-grid">
+          <div class="meeting-type-card">
+            <div class="meeting-type-name">Discovery Call</div>
+            <div class="meeting-type-detail">30 min | Virtual</div>
+            <div style="margin-top:6px">
+              <div class="meeting-slot">Mon 9a</div>
+              <div class="meeting-slot">Mon 11a</div>
+              <div class="meeting-slot">Mon 1p</div>
+              <div class="meeting-slot">Mon 3p</div>
+              <div class="meeting-slot">Wed 9a</div>
+              <div class="meeting-slot">Wed 11a</div>
+              <div class="meeting-slot">Fri 10a</div>
+            </div>
+          </div>
+          <div class="meeting-type-card">
+            <div class="meeting-type-name">Proposal Review</div>
+            <div class="meeting-type-detail">60 min | In-Person / Virtual</div>
+            <div style="margin-top:6px">
+              <div class="meeting-slot">Tue 10a</div>
+              <div class="meeting-slot">Tue 2p</div>
+              <div class="meeting-slot">Thu 10a</div>
+              <div class="meeting-slot">Thu 2p</div>
+            </div>
+          </div>
+          <div class="meeting-type-card">
+            <div class="meeting-type-name">Agent Intake</div>
+            <div class="meeting-type-detail">45 min | Virtual</div>
+            <div style="margin-top:6px">
+              <div class="meeting-slot">Mon 2p</div>
+              <div class="meeting-slot">Wed 2p</div>
+              <div class="meeting-slot">Fri 2p</div>
+            </div>
+          </div>
+          <div class="meeting-type-card" style="border-style:dashed;cursor:pointer">
+            <div class="meeting-type-name" style="color:var(--sentinel-accent)">+ Add Meeting Type</div>
+            <div class="meeting-type-detail">Define name, duration, location, and available slots</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIIMO MY RPI -->
+    <div class="detail-card riimo" style="--portal:var(--riimo-primary);--portal-accent:var(--riimo-accent);--portal-glow:var(--riimo-glow)">
+      <div class="detail-card-header">
+        <span class="material-icons-outlined">person</span>
+        My RPI — RIIMO
+      </div>
+      <div class="detail-tabs">
+        <div class="detail-tab standard"><span class="material-icons-outlined">badge</span>Profile</div>
+        <div class="detail-tab standard active"><span class="material-icons-outlined">cloud_download</span>MyDropZone</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">event</span>Meetings</div>
+        <div class="detail-tab standard"><span class="material-icons-outlined">lock</span>Permissions</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">checklist</span>Onboarding</div>
+        <div class="detail-tab portal-specific"><span class="material-icons-outlined">work</span>Job Desc</div>
+      </div>
+      <div class="detail-content">
+        <div style="margin-bottom:10px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">MyDropZone (standard)</div>
+        <div class="detail-content-line highlight">
+          <span class="material-icons-outlined" style="color:var(--riimo-accent)">videocam</span>
+          <strong>Meet Link:</strong>&nbsp;meet.google.com/abc-defg-hij
+          <span style="font-size:9px;margin-left:auto;padding:2px 6px;background:rgba(104,211,145,0.1);border-radius:3px;color:#68d391;cursor:pointer">Copy</span>
+          <span style="font-size:9px;padding:2px 6px;background:rgba(104,211,145,0.1);border-radius:3px;color:#68d391;cursor:pointer">QR</span>
+        </div>
+        <div class="detail-content-line">
+          <span class="material-icons-outlined">folder_open</span>
+          <strong>Intake Folder:</strong>&nbsp;drive.google.com/...
+          <span style="font-size:9px;margin-left:auto;padding:2px 6px;background:rgba(255,255,255,0.04);border-radius:3px;color:var(--text-muted);cursor:pointer">Copy</span>
+        </div>
+        <div class="detail-content-line">
+          <span class="material-icons-outlined">event</span>
+          <strong>Booking Page:</strong>&nbsp;calendar.app/...
+          <span style="font-size:9px;margin-left:auto;padding:2px 6px;background:rgba(255,255,255,0.04);border-radius:3px;color:var(--text-muted);cursor:pointer">Copy</span>
+        </div>
+        <div class="detail-content-line">
+          <span class="material-icons-outlined">calendar_today</span>
+          <strong>Internal Calendar:</strong>&nbsp;Link
+          <span style="font-size:9px;margin-left:auto;padding:2px 6px;background:rgba(255,255,255,0.04);border-radius:3px;color:var(--text-muted);cursor:pointer">Open</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 4: STRUCTURAL RULES SUMMARY       -->
+<!-- ========================================= -->
+<div class="section-label">Structural Rules — The Boom Boom Boom</div>
+
+<div style="padding:0 40px 60px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;min-width:1200px">
+
+  <div style="background:var(--bg-dark);border:1px solid var(--border-medium);border-radius:var(--radius-lg);padding:20px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span class="material-icons-outlined" style="color:var(--pipeline-color)">architecture</span>
+      Left Nav Order
+    </div>
+    <div style="font-size:12px;line-height:2;color:var(--text-secondary)">
+      <div><strong style="color:var(--text-primary)">1.</strong> <span style="color:var(--prodashx-accent)">Logo</span> (top-left, click = Dashboard)</div>
+      <div><strong style="color:var(--text-primary)">2.</strong> <span style="color:var(--pipeline-color)">Pipelines</span> (first section, collapsed)</div>
+      <div><strong style="color:var(--text-primary)">3.</strong> <span style="color:var(--module-color)">Sections + Modules</span> (collapsed, portal-specific)</div>
+      <div><strong style="color:var(--text-primary)">4.</strong> <span style="color:var(--app-color)">Apps</span> (dashed border, open_in_new icon)</div>
+      <div><strong style="color:var(--text-primary)">5.</strong> <span style="color:var(--admin-color)">Admin</span> (bottom, permission-gated)</div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg-dark);border:1px solid var(--border-medium);border-radius:var(--radius-lg);padding:20px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span class="material-icons-outlined" style="color:var(--admin-color)">tune</span>
+      Standard Admin Tabs
+    </div>
+    <div style="font-size:12px;line-height:2;color:var(--text-secondary)">
+      <div><strong style="color:var(--text-primary)">Tab 1:</strong> Team Management <span class="standard-badge">STD</span></div>
+      <div><strong style="color:var(--text-primary)">Tab 2:</strong> Pipeline Config <span class="standard-badge">STD</span></div>
+      <div><strong style="color:var(--text-primary)">Tab 3:</strong> Module Config <span class="standard-badge">STD</span></div>
+      <div style="color:var(--text-muted)">Tab 4+: Portal-specific <span class="portal-specific-badge">PORTAL</span></div>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:var(--text-muted);line-height:1.6">
+      RIIMO has 8 tabs total (5 portal-specific)<br>
+      PRODASHX has 5 tabs total (2 portal-specific)<br>
+      SENTINEL has 5 tabs total (2 portal-specific)
+    </div>
+  </div>
+
+  <div style="background:var(--bg-dark);border:1px solid var(--border-medium);border-radius:var(--radius-lg);padding:20px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span class="material-icons-outlined" style="color:var(--connect-color)">person</span>
+      Standard My RPI Tabs
+    </div>
+    <div style="font-size:12px;line-height:2;color:var(--text-secondary)">
+      <div><strong style="color:var(--text-primary)">Tab 1:</strong> Profile <span class="standard-badge">STD</span></div>
+      <div><strong style="color:var(--text-primary)">Tab 2:</strong> MyDropZone <span class="standard-badge">STD</span></div>
+      <div><strong style="color:var(--text-primary)">Tab 3:</strong> Meetings (NEW) <span class="standard-badge">STD</span></div>
+      <div><strong style="color:var(--text-primary)">Tab 4:</strong> Permissions <span class="standard-badge">STD</span></div>
+      <div style="color:var(--text-muted)">Tab 5+: Portal-specific <span class="portal-specific-badge">PORTAL</span></div>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:var(--text-muted);line-height:1.6">
+      Meeting types + availability slots = NEW build<br>
+      MyDropZone = Meet/Intake/Booking/Calendar links<br>
+      Permissions = read-only view of your module access
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSection(header) {
+    const items = header.nextElementSibling;
+    const iconBtn = header.querySelector('.section-icon-btn');
+    const isCollapsed = header.classList.contains('collapsed');
+
+    // Trigger spin animation
+    if (iconBtn) {
+      iconBtn.classList.remove('spinning', 'spinning-back');
+      // Force reflow to restart animation
+      void iconBtn.offsetWidth;
+      iconBtn.classList.add(isCollapsed ? 'spinning' : 'spinning-back');
+      // Clean up animation class after it finishes
+      setTimeout(() => {
+        iconBtn.classList.remove('spinning', 'spinning-back');
+      }, 500);
+    }
+
+    header.classList.toggle('collapsed');
+    items.classList.toggle('collapsed');
+  }
+
+  let allCollapsed = true;
+  function toggleAllSections() {
+    const headers = document.querySelectorAll('.sidebar-section-header.interactive');
+    headers.forEach((h, i) => {
+      const items = h.nextElementSibling;
+      const iconBtn = h.querySelector('.section-icon-btn');
+
+      // Stagger the animations for a cascade effect
+      setTimeout(() => {
+        if (iconBtn) {
+          iconBtn.classList.remove('spinning', 'spinning-back');
+          void iconBtn.offsetWidth;
+          iconBtn.classList.add(allCollapsed ? 'spinning' : 'spinning-back');
+          setTimeout(() => iconBtn.classList.remove('spinning', 'spinning-back'), 500);
+        }
+        if (allCollapsed) {
+          h.classList.remove('collapsed');
+          items.classList.remove('collapsed');
+        } else {
+          h.classList.add('collapsed');
+          items.classList.add('collapsed');
+        }
+      }, i * 60); // 60ms stagger between each section
+    });
+
+    // Flip state after all animations queued
+    setTimeout(() => { allCollapsed = !allCollapsed; }, headers.length * 60);
+  }
+</script>
+
+</body>
+</html>
