@@ -170,6 +170,28 @@ echo "  ⚠️  Skipped:    $SKIPPED projects (not found)"
 echo ""
 echo "All RPI standards and enforcement rules are now active."
 echo ""
+
+# ============================================
+# Step 3: Shell Extensions (tab titles, etc.)
+# ============================================
+echo "Setting up shell extensions..."
+SHELL_SCRIPT="$STANDARDS_ROOT/scripts/shell-tab-title.sh"
+SOURCE_LINE='[ -f "$HOME/Projects/_RPI_STANDARDS/scripts/shell-tab-title.sh" ] && source "$HOME/Projects/_RPI_STANDARDS/scripts/shell-tab-title.sh"'
+
+if [ -f "$SHELL_SCRIPT" ]; then
+  if grep -qF "shell-tab-title.sh" "$HOME/.zshrc" 2>/dev/null; then
+    echo "✅ Shell tab titles already in ~/.zshrc"
+  else
+    echo "" >> "$HOME/.zshrc"
+    echo "# RPI shell extensions (tab titles, etc.) — managed in _RPI_STANDARDS repo" >> "$HOME/.zshrc"
+    echo "$SOURCE_LINE" >> "$HOME/.zshrc"
+    echo "✅ Shell tab titles added to ~/.zshrc"
+  fi
+else
+  echo "⚠️  shell-tab-title.sh not found — skipped"
+fi
+echo ""
+
 echo "To edit:"
 echo "  - Standards: $MASTER_CLAUDE_FILE"
 echo "  - Rules:     $HOOKIFY_DIR/"

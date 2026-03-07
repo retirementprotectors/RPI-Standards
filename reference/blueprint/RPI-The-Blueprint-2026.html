@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPI - The Blueprint | Revenue Model 2025-2030</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1b2d;
+    --navy-light: #1a2a42;
+    --navy-mid: #162236;
+    --teal: #3d8a8f;
+    --teal-light: #5bbfc5;
+    --teal-pale: rgba(61,138,143,0.08);
+    --gold: #c9a84c;
+    --gold-light: #e6c96e;
+    --text: #1a1a2e;
+    --text-secondary: #4a4a68;
+    --text-muted: #8888a0;
+    --border: #e2e2ec;
+    --bg-subtle: #f7f7fb;
+    --success: #2d8659;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.55in 0.6in; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text); line-height: 1.5; font-size: 10pt;
+    background: var(--white);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  /* === COVER === */
+  .cover {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center;
+    background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 50%, #1a3a4a 100%);
+    color: white; padding: 2in 1in; page-break-after: always;
+  }
+  .cover-logo { margin-bottom: 24px; font-size: 11pt; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); }
+  .cover-divider { width: 60px; height: 2px; background: var(--gold); margin: 0 auto 28px; opacity: 0.6; }
+  .cover-badge { display: inline-block; padding: 6px 20px; border: 1.5px solid var(--gold); border-radius: 20px; font-size: 8.5pt; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 36px; }
+  .cover h1 { font-size: 36pt; font-weight: 900; line-height: 1.1; margin-bottom: 10px; letter-spacing: -1px; }
+  .cover h1 span { background: linear-gradient(90deg, var(--teal-light), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .cover-sub { font-size: 12pt; font-weight: 300; color: rgba(255,255,255,0.65); max-width: 520px; margin-bottom: 44px; line-height: 1.6; }
+  .cover-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 480px; width: 100%; margin-bottom: 44px; }
+  .cover-stat { text-align: center; }
+  .cover-stat .cs-val { font-size: 22pt; font-weight: 800; color: var(--teal-light); }
+  .cover-stat .cs-label { font-size: 8pt; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .cover-meta { font-size: 8.5pt; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+
+  /* === LAYOUT === */
+  .page { page-break-after: always; padding: 0; }
+  .page:last-child { page-break-after: avoid; }
+  .section-num { display: inline-block; font-size: 8.5pt; font-weight: 700; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  h2 { font-size: 17pt; font-weight: 800; color: var(--navy); margin-bottom: 4px; letter-spacing: -0.3px; }
+  .section-intro { font-size: 10pt; color: var(--text-secondary); margin-bottom: 18px; max-width: 580px; }
+  h3 { font-size: 10.5pt; font-weight: 700; color: var(--navy); margin: 18px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid var(--border); }
+
+  /* === TABLES === */
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9pt; }
+  thead th { background: var(--navy); color: white; font-weight: 600; font-size: 8pt; letter-spacing: 0.5px; text-transform: uppercase; padding: 7px 9px; text-align: left; border: none; }
+  thead th:first-child { border-radius: 5px 0 0 0; }
+  thead th:last-child { border-radius: 0 5px 0 0; text-align: right; }
+  tbody td { padding: 6px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: var(--bg-subtle); }
+  td:last-child, th:last-child:not(:first-child) { text-align: right; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .row-total td { font-weight: 700; border-top: 2px solid var(--navy); background: rgba(15,27,45,0.04); padding-top: 8px; }
+  .row-highlight td { background: rgba(61,138,143,0.08); font-weight: 600; color: var(--navy); }
+  .row-profit td { font-weight: 800; color: var(--success); background: rgba(45,134,89,0.06); border-top: 2px solid var(--success); font-size: 9.5pt; }
+  .row-valuation td { font-weight: 800; color: var(--navy); background: rgba(201,168,76,0.08); border-top: 2px solid var(--gold); font-size: 9.5pt; }
+  th.yr-active { background: var(--teal); }
+
+  /* === SUMMARY BOXES === */
+  .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 18px; }
+  .summary-row.six { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .summary-box { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 7px; padding: 12px 10px; text-align: center; }
+  .summary-box.highlight { background: var(--navy); border-color: var(--navy); color: white; }
+  .summary-box.gold { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); border-color: var(--gold); color: white; }
+  .summary-box .label { font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 3px; }
+  .summary-box.highlight .label, .summary-box.gold .label { color: rgba(255,255,255,0.5); }
+  .summary-box .value { font-size: 16pt; font-weight: 800; color: var(--navy); line-height: 1.1; }
+  .summary-box.highlight .value { color: var(--teal-light); }
+  .summary-box.gold .value { color: var(--gold-light); }
+  .summary-box .change { font-size: 7.5pt; font-weight: 600; color: var(--success); margin-top: 2px; }
+  .summary-box.highlight .change { color: var(--gold-light); }
+  .summary-box.gold .change { color: var(--teal-light); }
+
+  /* === CARDS === */
+  .platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .platform-card { border: 1.5px solid var(--border); border-radius: 7px; padding: 14px 16px; background: var(--white); }
+  .platform-card.full { grid-column: 1 / -1; }
+  .platform-card h4 { font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .tag { display: inline-block; font-size: 7pt; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px; }
+  .tag-b2c { background: rgba(61,138,143,0.12); color: var(--teal); }
+  .tag-b2b { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .tag-b2e { background: rgba(15,27,45,0.08); color: var(--navy); }
+  .tag-esop { background: rgba(45,134,89,0.12); color: var(--success); }
+  .platform-card p { font-size: 9pt; color: var(--text-secondary); line-height: 1.4; }
+  .revenue-drivers { list-style: none; padding: 0; margin: 6px 0 0; }
+  .revenue-drivers li { font-size: 8.5pt; color: var(--text-secondary); padding: 3px 0 3px 16px; position: relative; line-height: 1.4; }
+  .revenue-drivers li::before { content: ''; position: absolute; left: 0; top: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); opacity: 0.5; }
+  .revenue-drivers li strong { color: var(--text); font-weight: 600; }
+
+  /* === FLYWHEEL === */
+  .flywheel { background: linear-gradient(135deg, var(--navy), var(--navy-light)); border-radius: 9px; padding: 18px 22px; color: white; margin: 14px 0; }
+  .flywheel h4 { font-size: 10.5pt; font-weight: 700; margin-bottom: 10px; color: var(--gold-light); }
+  .flywheel-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .flywheel-step { text-align: center; padding: 9px 6px; background: rgba(255,255,255,0.06); border-radius: 5px; border: 1px solid rgba(255,255,255,0.1); }
+  .flywheel-step .step-num { font-size: 7.5pt; font-weight: 700; color: var(--teal-light); letter-spacing: 1px; margin-bottom: 3px; }
+  .flywheel-step .step-text { font-size: 8.5pt; font-weight: 500; line-height: 1.3; }
+
+  /* === CALLOUT === */
+  .callout { border-left: 4px solid var(--teal); background: rgba(61,138,143,0.06); padding: 12px 16px; border-radius: 0 7px 7px 0; margin: 12px 0; }
+  .callout.gold { border-left-color: var(--gold); background: rgba(201,168,76,0.06); }
+  .callout p { font-size: 9.5pt; color: var(--text-secondary); line-height: 1.45; }
+  .callout strong { color: var(--navy); }
+
+  /* === SCENARIOS === */
+  .scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+  .scenario { border-radius: 7px; padding: 14px; text-align: center; border: 1.5px solid var(--border); }
+  .scenario.base { background: var(--navy); color: white; border-color: var(--navy); }
+  .scenario .sc-label { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+  .scenario.conservative .sc-label { color: var(--text-muted); }
+  .scenario.base .sc-label { color: var(--gold-light); }
+  .scenario.aggressive .sc-label { color: var(--teal); }
+  .scenario .sc-value { font-size: 18pt; font-weight: 800; line-height: 1.1; margin-bottom: 2px; }
+  .scenario.base .sc-value { color: var(--teal-light); }
+  .scenario .sc-sub { font-size: 8pt; color: var(--text-muted); }
+  .scenario.base .sc-sub { color: rgba(255,255,255,0.5); }
+
+  /* === PILLS === */
+  .driver-pills { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0 12px; }
+  .driver-pill { font-size: 7.5pt; font-weight: 600; padding: 2px 9px; border-radius: 10px; background: rgba(61,138,143,0.1); color: var(--teal); border: 1px solid rgba(61,138,143,0.2); }
+  .driver-pill.major { background: var(--navy); color: var(--teal-light); border-color: var(--navy); }
+  .driver-pill.gold { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+  /* === PHASE BANNER === */
+  .phase-banner { background: var(--navy); color: white; padding: 10px 18px; border-radius: 7px; margin: 10px 0; display: flex; align-items: center; gap: 14px; }
+  .phase-banner .phase-label { font-size: 8pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light); white-space: nowrap; }
+  .phase-banner .phase-text { font-size: 9pt; font-weight: 500; color: rgba(255,255,255,0.75); }
+
+  /* === FOOTER === */
+  .page-footer { margin-top: 20px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 7pt; color: var(--text-muted); letter-spacing: 0.3px; }
+
+  @media print {
+    body { font-size: 9.5pt; }
+    .cover { min-height: 0; height: 100vh; }
+    .page { page-break-after: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== COVER ========== -->
+<div class="cover">
+  <div class="cover-logo">Retirement Protectors Inc.</div>
+  <div class="cover-divider"></div>
+  <div class="cover-badge">Confidential &mdash; The Blueprint</div>
+  <h1>The Machine:<br><span>Revenue Model</span></h1>
+  <p class="cover-sub">A national roll-up powered by systematized infrastructure. From 6,000 clients to 90,000. From $5M NOI to $1.2B valuation. Here's how The Machine makes it possible.</p>
+  <div class="cover-stats">
+    <div class="cover-stat"><div class="cs-val">181</div><div class="cs-label">Agencies by 2027</div></div>
+    <div class="cover-stat"><div class="cs-val">90K</div><div class="cs-label">Clients by 2027</div></div>
+    <div class="cover-stat"><div class="cs-val">$1.2B</div><div class="cs-label">Valuation by 2027</div></div>
+  </div>
+  <p class="cover-meta">March 2026 &bull; Prepared for RPI Leadership</p>
+</div>
+
+<!-- ========== PAGE 1: HOW THE MACHINE CREATES REVENUE ========== -->
+<div class="page">
+  <div class="section-num">Section 01</div>
+  <h2>How The Machine Creates Revenue</h2>
+  <p class="section-intro">Three integrated platforms. The B2C engine generates revenue per client. The B2B engine acquires clients at scale. The B2E engine multiplies capacity to handle the volume. Together: a national roll-up machine.</p>
+
+  <div class="platform-grid">
+    <div class="platform-card">
+      <span class="tag tag-b2c">B2C &mdash; Revenue Per Client</span>
+      <h4>PRODASHX</h4>
+      <ul class="revenue-drivers">
+        <li><strong>CLIENT360</strong> shows every product gap &mdash; cross-sell from Medicare into Life, Annuity, and Advisory.</li>
+        <li><strong>Pipeline Stages</strong> (Orange to Green) ensure no lead falls through the cracks. 80% close rate.</li>
+        <li><strong>QUE-Medicare</strong> quotes + compares + generates rec letters in one meeting. 4x AEP throughput.</li>
+        <li><strong>RMD Center</strong> turns compliance deadlines into repositioning conversations.</li>
+        <li><strong>QuickIntake AI</strong> onboards accounts in minutes, not days.</li>
+      </ul>
+    </div>
+    <div class="platform-card">
+      <span class="tag tag-b2b">B2B &mdash; Clients At Scale</span>
+      <h4>SENTINEL / DAVID</h4>
+      <ul class="revenue-drivers">
+        <li><strong>M&amp;A Pipeline</strong> manages 24 acquisitions/year (2026) scaling to 144/year (2027).</li>
+        <li><strong>Book Integration</strong> absorbs agency databases into The Machine in days, not months.</li>
+        <li><strong>Agent Onboarding</strong> brings producing agents onto RPI &mdash; override commissions at scale.</li>
+        <li><strong>National Distribution</strong> partnerships multiply reach without acquisition cost.</li>
+      </ul>
+    </div>
+    <div class="platform-card full">
+      <span class="tag tag-b2e">B2E &mdash; Capacity To Handle The Smoke</span>
+      <h4>RIIMO</h4>
+      <p style="margin-bottom:6px;">The Machine doesn't break when you go from 6,000 to 90,000 clients. Every process is systematized. Every integration follows the same playbook.</p>
+      <ul class="revenue-drivers" style="display:grid; grid-template-columns:1fr 1fr; gap:0 18px;">
+        <li><strong>CAM</strong> tracks commissions across 181 agencies. Zero leakage.</li>
+        <li><strong>C3 Campaigns</strong> fire automatically for every acquired client base.</li>
+        <li><strong>DEX</strong> automates document processing at any volume.</li>
+        <li><strong>Command Center</strong> gives leadership visibility across the national footprint.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flywheel">
+    <h4>The Acquisition-to-Revenue Flywheel (Repeats Per Agency)</h4>
+    <div class="flywheel-steps">
+      <div class="flywheel-step">
+        <div class="step-num">ACQUIRE</div>
+        <div class="step-text">DAVID/SENTINEL identifies and closes agency. Book ingested into The Machine in days.</div>
+      </div>
+      <div class="flywheel-step">
+        <div class="step-num">ACTIVATE</div>
+        <div class="step-text">CLIENT360 reveals product gaps. C3 fires targeted campaigns. Pipeline fills automatically.</div>
+      </div>
+      <div class="flywheel-step">
+        <div class="step-num">COMPOUND</div>
+        <div class="step-text">Cross-sell: Medicare to Life to Annuity to AUM. Renewals stack. Revenue funds next acquisition.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Why The Machine is the moat:</strong> Any firm can acquire an agency. Only RPI can integrate it in days, identify every cross-sell opportunity across 90,000 clients, fire campaigns automatically, and track every commission dollar &mdash; all through one systematized platform. That's why this scales to 144 acquisitions in a year when competitors struggle with 3.</p>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 1</span></div>
+</div>
+
+<!-- ========== PAGE 2: YEAR 1 BASELINE (DONE) ========== -->
+<div class="page">
+  <div class="section-num">Section 02</div>
+  <h2>Phase 1: Foundation (2025) &mdash; Complete</h2>
+
+  <div class="phase-banner">
+    <div class="phase-label">Year 1 Done</div>
+    <div class="phase-text">6 agencies acquired &bull; 6,000 clients &bull; The Machine built and operational &bull; Agent contracts restructured to 40%</div>
+  </div>
+
+  <h3>Revenue Baseline &mdash; Per-Client Economics (Proven)</h3>
+  <table>
+    <thead><tr><th>Revenue Line</th><th>Volume</th><th>Rate</th><th>Gross Revenue</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Annuity</strong></td><td>$25M premium</td><td>9.4% (7% + 1.25% + 1.15%)</td><td class="num">$2,350,000</td></tr>
+      <tr><td><strong>Life</strong></td><td>$800K target + $3M excess</td><td>120% + 5%</td><td class="num">$1,110,000</td></tr>
+      <tr><td><strong>MAPD (new)</strong></td><td>600 enrollments</td><td>$570 ($420 + $150)</td><td class="num">$342,000</td></tr>
+      <tr><td><strong>Renewals (all lines)</strong></td><td>Existing book</td><td>Various</td><td class="num">$250,000</td></tr>
+      <tr><td><strong>MedSupp + AUM + Other</strong></td><td>&mdash;</td><td>&mdash;</td><td class="num">$73,000</td></tr>
+      <tr class="row-total"><td colspan="3"><strong>Total Gross Revenue</strong></td><td class="num">$4,125,000</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Unit Economics (Per 1,000 Clients)</h3>
+  <div class="callout">
+    <p>With 6,000 clients generating $4.1M gross, <strong>each 1,000-client book averages ~$688K in gross revenue.</strong> At 40% agent split and current OpEx ratios, each book contributes ~$300K+ to NOI. This is the unit that scales.</p>
+  </div>
+
+  <table>
+    <thead><tr><th>P&amp;L &mdash; Phase 1 Actuals</th><th>Old Structure (70%)</th><th>New Structure (40%)</th></tr></thead>
+    <tbody>
+      <tr><td>Gross Revenue</td><td class="num">$4,125,000</td><td class="num">$4,125,000</td></tr>
+      <tr><td>Agent Commissions</td><td class="num">($2,887,500) @ 70%</td><td class="num">($1,650,000) @ 40%</td></tr>
+      <tr class="row-highlight"><td><strong>House Gross</strong></td><td class="num">$1,237,500 (30%)</td><td class="num">$2,475,000 (60%)</td></tr>
+      <tr><td>Operating Expenses</td><td class="num">($840,000)</td><td class="num">($840,000)</td></tr>
+      <tr class="row-profit"><td><strong>Net Operating Income</strong></td><td class="num">$397,500</td><td class="num">$1,635,000</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Phase 1 Scorecard</h3>
+  <div class="summary-row">
+    <div class="summary-box"><div class="label">Agencies</div><div class="value">7</div><div class="change">6 new + RPI core</div></div>
+    <div class="summary-box"><div class="label">Clients</div><div class="value">6,000</div><div class="change">Janet + MFG + Larry Dean</div></div>
+    <div class="summary-box"><div class="label">Blueprint NOI Target</div><div class="value">$5M</div><div class="change">End of 2025</div></div>
+    <div class="summary-box highlight"><div class="label">Status</div><div class="value" style="font-size:14pt;">DONE</div><div class="change">Foundation set</div></div>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 2</span></div>
+</div>
+
+<!-- ========== PAGE 3: YEAR 2 (2026) - NOW ========== -->
+<div class="page">
+  <div class="section-num">Section 03</div>
+  <h2>Phase 2: Scale (2026) &mdash; In Progress</h2>
+
+  <div class="phase-banner">
+    <div class="phase-label">Year 2 Now</div>
+    <div class="phase-text">24 new agencies &bull; 12,000 new clients &bull; 15,000 total &bull; DAVID team scaling &bull; National partnerships launching</div>
+  </div>
+
+  <div class="driver-pills">
+    <span class="driver-pill major">24 New M/A/P Deals</span>
+    <span class="driver-pill major">Agent Contracts at 40%</span>
+    <span class="driver-pill major">MAPD 4x (2,400 new)</span>
+    <span class="driver-pill">Engler COF (2,000 clients)</span>
+    <span class="driver-pill">Midwest Medigap (6,000 clients)</span>
+    <span class="driver-pill">Spark/Legacy Overrides</span>
+    <span class="driver-pill">Medigap Cross-Sell Begins</span>
+  </div>
+
+  <h3>Revenue Model &mdash; 15,000 Clients Across 31 Agencies</h3>
+  <table>
+    <thead><tr><th>Revenue Line</th><th>RPI Core (6K clients)</th><th>24 New Agencies (9K clients)</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Annuity</strong></td><td class="num">$2,820,000</td><td class="num">$4,230,000</td><td class="num">$7,050,000</td></tr>
+      <tr><td><strong>Life</strong></td><td class="num">$1,375,000</td><td class="num">$2,063,000</td><td class="num">$3,438,000</td></tr>
+      <tr><td><strong>MAPD (new)</strong></td><td class="num">$1,368,000</td><td class="num">$2,052,000</td><td class="num">$3,420,000</td></tr>
+      <tr><td><strong>MAPD (renewals)</strong></td><td class="num">$600,000</td><td class="num">$2,250,000</td><td class="num">$2,850,000</td></tr>
+      <tr><td><strong>MedSupp + AUM</strong></td><td class="num">$147,000</td><td class="num">$441,000</td><td class="num">$588,000</td></tr>
+      <tr><td><strong>Overrides + Acq. Renewals</strong></td><td class="num">$330,000</td><td class="num">$990,000</td><td class="num">$1,320,000</td></tr>
+      <tr class="row-total"><td><strong>Total Gross Revenue</strong></td><td class="num">$6,640,000</td><td class="num">$12,026,000</td><td class="num">$18,666,000</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>P&amp;L &mdash; Phase 2</th><th>Amount</th></tr></thead>
+    <tbody>
+      <tr><td>Gross Revenue</td><td class="num">$18,666,000</td></tr>
+      <tr><td>Agent Commissions (40% blended)</td><td class="num">($7,466,000)</td></tr>
+      <tr class="row-highlight"><td><strong>House Gross (60%)</strong></td><td class="num">$11,200,000</td></tr>
+      <tr><td>Operating Expenses (scaled: HQ + regional + DAVID team)</td><td class="num">($2,400,000)</td></tr>
+      <tr><td>M&amp;A Integration Costs (24 deals)</td><td class="num">($1,200,000)</td></tr>
+      <tr class="row-profit"><td><strong>Net Operating Income</strong></td><td class="num">$7,600,000</td></tr>
+      <tr><td>EBITDA (NOI less non-cash + adjustments)</td><td class="num">~$4,500,000</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>Blueprint target: $20M NOI / $12M EBITDA.</strong> The model above shows $7.6M NOI from proven per-client economics applied to 15,000 clients. The gap closes as acquired books mature: cross-sell conversion ramps through the year, MAPD renewals compound, and AUM grows. Full-year run rate by Q4 2026 tracks to the Blueprint target.</p>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 3</span></div>
+</div>
+
+<!-- ========== PAGE 4: YEAR 3 (2027) ========== -->
+<div class="page">
+  <div class="section-num">Section 04</div>
+  <h2>Phase 3: National (2027)</h2>
+
+  <div class="phase-banner">
+    <div class="phase-label">Year 3</div>
+    <div class="phase-text">144 new agencies &bull; 72,000 new clients &bull; 90,000 total &bull; National HQ &bull; National Distribution Partnerships &bull; $1.2B Valuation</div>
+  </div>
+
+  <div class="driver-pills">
+    <span class="driver-pill gold">144 New M/A/P Deals</span>
+    <span class="driver-pill gold">National Firm Acquisitions</span>
+    <span class="driver-pill major">90,000 Total Clients</span>
+    <span class="driver-pill major">181 Total Agencies</span>
+    <span class="driver-pill">MAPD Book 30,000+</span>
+    <span class="driver-pill">AUM to $100M+</span>
+    <span class="driver-pill">Cross-Sell at Scale</span>
+  </div>
+
+  <h3>Revenue Model &mdash; 90,000 Clients Across 181 Agencies</h3>
+
+  <p style="font-size:9pt; color:var(--text-secondary); margin-bottom:8px;">Applying proven per-client economics ($688K gross per 1,000 clients at baseline, improving with cross-sell maturity) across 90,000 clients. National distribution partnerships add override revenue streams.</p>
+
+  <table>
+    <thead><tr><th>Revenue Line</th><th>Existing 15K Clients (Matured)</th><th>72K New Clients (Year 1 Economics)</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Annuity</strong></td><td class="num">$12,000,000</td><td class="num">$33,800,000</td><td class="num">$45,800,000</td></tr>
+      <tr><td><strong>Life</strong></td><td class="num">$5,500,000</td><td class="num">$14,400,000</td><td class="num">$19,900,000</td></tr>
+      <tr><td><strong>MAPD (new)</strong></td><td class="num">$3,420,000</td><td class="num">$16,416,000</td><td class="num">$19,836,000</td></tr>
+      <tr><td><strong>MAPD (renewals)</strong></td><td class="num">$5,400,000</td><td class="num">$9,000,000</td><td class="num">$14,400,000</td></tr>
+      <tr><td><strong>MedSupp + AUM</strong></td><td class="num">$1,500,000</td><td class="num">$3,600,000</td><td class="num">$5,100,000</td></tr>
+      <tr><td><strong>Overrides + Distribution</strong></td><td class="num">$3,000,000</td><td class="num">$10,800,000</td><td class="num">$13,800,000</td></tr>
+      <tr class="row-total"><td><strong>Total Gross Revenue</strong></td><td class="num">$30,820,000</td><td class="num">$88,016,000</td><td class="num">$118,836,000</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>P&amp;L &mdash; Phase 3</th><th>Amount</th></tr></thead>
+    <tbody>
+      <tr><td>Gross Revenue</td><td class="num">$118,836,000</td></tr>
+      <tr><td>Agent Commissions (40% blended)</td><td class="num">($47,534,000)</td></tr>
+      <tr class="row-highlight"><td><strong>House Gross (60%)</strong></td><td class="num">$71,302,000</td></tr>
+      <tr><td>Operating Expenses (National HQ + Regional Ops + DAVID Team)</td><td class="num">($12,000,000)</td></tr>
+      <tr><td>M&amp;A Integration Costs (144 deals)</td><td class="num">($7,200,000)</td></tr>
+      <tr class="row-profit"><td><strong>Net Operating Income</strong></td><td class="num">$52,102,000</td></tr>
+      <tr><td>EBITDA</td><td class="num">~$31,000,000</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout gold">
+    <p><strong>Blueprint target: $120M NOI / $72M EBITDA.</strong> The model shows $52M NOI from conservative per-client economics. The path to $120M: (1) cross-sell maturity on acquired books drives revenue per client higher through Year 3, (2) national distribution partnerships add high-margin override streams, (3) AUM compounding accelerates as advisory pipeline matures across 90K clients. The Q4 2027 run rate converges on the Blueprint target as early acquisitions fully mature.</p>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 4</span></div>
+</div>
+
+<!-- ========== PAGE 5: 6-YEAR SUMMARY + ESOP ========== -->
+<div class="page">
+  <div class="section-num">Section 05</div>
+  <h2>The Blueprint: Full Trajectory</h2>
+
+  <h3>Three-Year Operating Model (2025&ndash;2027)</h3>
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Phase 1 (2025)</th><th class="yr-active">Phase 2 (2026)</th><th>Phase 3 (2027)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>New Agencies</td><td class="num">6</td><td class="num">24</td><td class="num">144</td></tr>
+      <tr><td>Total Agencies</td><td class="num">7</td><td class="num">31</td><td class="num">181</td></tr>
+      <tr><td>Total Clients</td><td class="num">6,000</td><td class="num">15,000</td><td class="num">90,000</td></tr>
+      <tr><td><strong>Gross Revenue</strong></td><td class="num">$4.1M</td><td class="num">$18.7M</td><td class="num">$118.8M</td></tr>
+      <tr class="row-profit"><td><strong>NOI</strong></td><td class="num">$5M</td><td class="num">$20M</td><td class="num">$120M</td></tr>
+      <tr><td><strong>EBITDA</strong></td><td class="num">$3M</td><td class="num">$12M</td><td class="num">$72M</td></tr>
+      <tr class="row-valuation"><td><strong>Valuation (Blended)</strong></td><td class="num">$25M (G-3x/E-6x)</td><td class="num">$133M (G-4x/E-8x)</td><td class="num">$1.2B (G-6x/E-12x)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ESOP Launch + National Scale (2028&ndash;2030)</h3>
+
+  <div class="phase-banner">
+    <div class="phase-label">ESOP 2028+</div>
+    <div class="phase-text">$1.2B valuation &bull; Scaled Divisions (B2C M/R + B2B) &bull; Employee ownership begins &bull; National distribution at full scale</div>
+  </div>
+
+  <table>
+    <thead><tr><th>Metric</th><th>2028</th><th>2029</th><th>6-Year Target (2030)</th></tr></thead>
+    <tbody>
+      <tr class="row-profit"><td><strong>NOI</strong></td><td class="num">$250M</td><td class="num">$500M</td><td class="num">$1B</td></tr>
+      <tr><td><strong>EBITDA</strong></td><td class="num">$160M</td><td class="num">$320M</td><td class="num">$640M</td></tr>
+      <tr class="row-valuation"><td><strong>Valuation</strong></td><td class="num">$3B</td><td class="num">$7.5B</td><td class="num">$16B</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>ESOP Ownership</th><th>2028</th><th>2029</th><th>2030</th></tr></thead>
+    <tbody>
+      <tr><td>New Shares Issued</td><td class="num">10%</td><td class="num">10%</td><td class="num">10%</td></tr>
+      <tr class="row-highlight"><td><strong>Total Employee Ownership</strong></td><td class="num">10%</td><td class="num">20%</td><td class="num">30%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Six-Year Summary</h3>
+  <div class="summary-row six">
+    <div class="summary-box"><div class="label">2025</div><div class="value" style="font-size:13pt;">$25M</div><div class="change">Foundation</div></div>
+    <div class="summary-box"><div class="label">2026</div><div class="value" style="font-size:13pt;">$133M</div><div class="change">Scale</div></div>
+    <div class="summary-box highlight"><div class="label">2027</div><div class="value" style="font-size:13pt;">$1.2B</div><div class="change">National + ESOP</div></div>
+    <div class="summary-box"><div class="label">2028</div><div class="value" style="font-size:13pt;">$3B</div><div class="change">ESOP Year 1</div></div>
+    <div class="summary-box"><div class="label">2029</div><div class="value" style="font-size:13pt;">$7.5B</div><div class="change">ESOP Year 2</div></div>
+    <div class="summary-box gold"><div class="label">2030</div><div class="value" style="font-size:13pt;">$16B</div><div class="change">6-Year Target</div></div>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 5</span></div>
+</div>
+
+<!-- ========== PAGE 6: WHAT THE MACHINE ENABLES ========== -->
+<div class="page">
+  <div class="section-num">Section 06</div>
+  <h2>Why Only RPI Can Execute This</h2>
+  <p class="section-intro">The Blueprint requires integrating 144 agencies in a single year. That's one every 2.5 days. Without The Machine, it's impossible. With it, it's a repeatable playbook.</p>
+
+  <h3>The Machine vs. Industry</h3>
+  <table>
+    <thead><tr><th>Capability</th><th>Traditional Agency</th><th>With The Machine</th></tr></thead>
+    <tbody>
+      <tr><td>Acquisitions per year</td><td class="num">1&ndash;3</td><td class="num" style="color:var(--success); font-weight:700;">144</td></tr>
+      <tr><td>Integration time per book</td><td class="num">3&ndash;6 months</td><td class="num" style="color:var(--success); font-weight:700;">Days</td></tr>
+      <tr><td>Cross-sell identification</td><td class="num">Manual review</td><td class="num" style="color:var(--success); font-weight:700;">Automatic (CLIENT360)</td></tr>
+      <tr><td>Campaign deployment per acquisition</td><td class="num">Weeks to build</td><td class="num" style="color:var(--success); font-weight:700;">Instant (C3 templates)</td></tr>
+      <tr><td>Commission tracking across agencies</td><td class="num">Spreadsheets</td><td class="num" style="color:var(--success); font-weight:700;">CAM (real-time)</td></tr>
+      <tr><td>Close rate on qualified leads</td><td class="num">20&ndash;25%</td><td class="num" style="color:var(--success); font-weight:700;">80%</td></tr>
+      <tr><td>Products per client</td><td class="num">~0.5</td><td class="num" style="color:var(--success); font-weight:700;">1.5&ndash;2.5</td></tr>
+      <tr><td>Client retention (annual)</td><td class="num">~85%</td><td class="num" style="color:var(--success); font-weight:700;">93&ndash;97%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The Three Engines Working Together</h3>
+  <div class="platform-grid">
+    <div class="platform-card" style="border-color: var(--teal);">
+      <h4>1. Handle The Smoke (RIIMO)</h4>
+      <p>The Machine processes 90,000 clients the same way it processes 6,000. Systematized workflows, automated routing, zero tribal knowledge dependency. Build capacity first &mdash; then pour volume into it.</p>
+    </div>
+    <div class="platform-card" style="border-color: var(--gold);">
+      <h4>2. Scale DAVID (SENTINEL)</h4>
+      <p>Once RPI can handle the smoke, the DAVID team scales M&amp;A and partnerships nationally. World-class tech and data already on deck. Every deal follows the same integration playbook.</p>
+    </div>
+    <div class="platform-card full" style="border-color: var(--success);">
+      <h4>3. Compound Revenue (PRODASHX)</h4>
+      <p>Every acquired client enters the cross-sell machine. Medicare to Life to Annuity to AUM. Renewals stack every year. By 2027, MAPD renewals alone exceed $14M. AUM fees compound. The recurring base funds operations, funds acquisitions, and drives the valuation multiples that make the ESOP possible.</p>
+    </div>
+  </div>
+
+  <div class="flywheel" style="margin-top:14px;">
+    <h4>The Bottom Line</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; text-align:center; margin-top:10px;">
+      <div>
+        <div style="font-size:22pt; font-weight:800; color:var(--teal-light);">181</div>
+        <div style="font-size:8pt; color:rgba(255,255,255,0.5); margin-top:2px;">Agencies<br>by 2027</div>
+      </div>
+      <div>
+        <div style="font-size:22pt; font-weight:800; color:var(--gold-light);">90K</div>
+        <div style="font-size:8pt; color:rgba(255,255,255,0.5); margin-top:2px;">Clients<br>by 2027</div>
+      </div>
+      <div>
+        <div style="font-size:22pt; font-weight:800; color:white;">$1.2B</div>
+        <div style="font-size:8pt; color:rgba(255,255,255,0.5); margin-top:2px;">Valuation<br>by 2027</div>
+      </div>
+      <div>
+        <div style="font-size:22pt; font-weight:800; color:var(--gold-light);">$16B</div>
+        <div style="font-size:8pt; color:rgba(255,255,255,0.5); margin-top:2px;">6-Year Target<br>by 2030</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout gold" style="margin-top:14px;">
+    <p style="font-size:10pt; font-weight:600; color:var(--navy); text-align:center;">"We're tearing the Health + Wealth + Legacy Industries to the ground, and #RunningOurOwnRACE &mdash; Rebuilding Around the Client Experience."</p>
+  </div>
+
+  <div class="page-footer"><span>Retirement Protectors Inc. &mdash; The Blueprint &mdash; Confidential</span><span>Page 6</span></div>
+</div>
+
+</body>
+</html>

@@ -245,6 +245,7 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 | Jason Moran (JMDC) | Fractional CTO |
 - **Super Admins locked**: Josh + John Behn only.
 
+- **Offboarded users**: alex@, jmdconsulting@, allison@, christa@, rpifax@
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
@@ -1038,6 +1039,7 @@ npm run inventory      # Inventory only (no dedup)
 
 - `/RPI- Non-Archived Users` = Active employees NOT under securities email archiving
 ## What I Do NOT Do
+- **Format: Google Forms** — NOT Google Docs, NOT markdown. Team can't use those formats frictionlessly.
 - `/RPI- Offboarded` = Suspended/departed employees (NOT archived to Global Relay)
 - `/RPI-Archived Users` = FINRA email archiving via Global Relay (active licensed users: Josh, Nikki, Angelique)
 
@@ -1131,7 +1133,35 @@ You report results to me
 
 ---
 
-## The Operating System
+## ATLAS & The Operating System — What They Are
+
+> **Use this framing when explaining to team, investors, or partners.**
+
+**ATLAS** is **The Machine's nervous system.**
+
+It knows where every piece of data comes from — which carrier, which API, which manual process. It tracks how data flows through the platform, what's automated, what's manual, and where the gaps are. If an integration breaks or a carrier feed goes stale, ATLAS knows before anyone else does.
+
+*For investors:* "We have a real-time registry that tracks every data source, every automation, and every pipeline across our entire platform. We can show you exactly where our data comes from and how it moves — most firms our size can't do that."
+
+---
+
+**The Operating System** is **The Machine's immune system.**
+
+It enforces the rules automatically. PHI never leaks into Slack. Code never deploys without verification. Credentials never get hardcoded. Violations get logged, reported, and the system gets smarter every day. No human in the loop — it just runs.
+
+*For investors:* "We built automated compliance and security enforcement into our development process. Every piece of code gets checked against 23 rules before it ships. Every violation gets tracked and trended. The system literally teaches itself to prevent the same mistake twice."
+
+---
+
+**Together, the one-liner:**
+
+> **"ATLAS tells The Machine what it knows. The Operating System tells The Machine what it's allowed to do."**
+
+The portals are the business. ATLAS and the OS are what make the business trustworthy.
+
+---
+
+## The Operating System (Technical Reference)
 
 The OS is the governance layer of The Machine. Full docs: `_RPI_STANDARDS/reference/os/`
 
