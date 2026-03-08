@@ -7,6 +7,9 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.claude/plans/.*\.md$
+  - field: tool
+    operator: equals
+    pattern: Write
   - field: content
     operator: not_contains
     pattern: Acceptance Criteria

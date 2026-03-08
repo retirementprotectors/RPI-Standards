@@ -1,6 +1,6 @@
 # Portal Overhaul — Working Plan
 
-> **Last updated**: 2026-03-08 (Phase 0.5 — Pipeline Enforcement Rules)
+> **Last updated**: 2026-03-08 (Phases 0.5 + 1 + 2 + 3 deployed — RIIMO v3.18 @92, SENTINEL v3.16 @42, PRODASHX v3.21 @221)
 > **Source**: JDM_Portal_Feedback_Inventory.md (137 items)
 > **Pipeline**: Intake → Planner → Executor → Auditor → JDM Review
 
