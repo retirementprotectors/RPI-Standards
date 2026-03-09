@@ -133,6 +133,17 @@ Super Admins locked to **Josh + John Behn only** (reduced from 5 to 2 as of Q1 2
 
 **Critical distinction:** `/RPI- Archived Users` is for FINRA compliance — Global Relay archives all email in this OU. Offboarded users go to `/RPI- Offboarded` so they are NOT included in FINRA archiving. The auto-offboard trigger (`API_Compliance.gs`) moves suspended users to `/RPI- Offboarded` automatically.
 
+### Google Groups (Organizational Email Addresses)
+
+These are the email addresses referenced on the retireprotected.com legal pages (Privacy Policy, Terms of Service, SMS Terms).
+
+| Group Email | Purpose | Owner | External Posting | Join Policy | Created |
+|-------------|---------|-------|-----------------|-------------|---------|
+| contact@retireprotected.com | General website inquiries and client communications | Josh | Enabled | Public join | 2026-03-08 |
+| compliance@retireprotected.com | Privacy rights requests, HIPAA compliance, and security concerns | Josh | Enabled | Invite-only | 2026-03-08 |
+
+**Monitoring:** Periodically verify these groups are receiving mail correctly (see MONITORING.md Section 2.4).
+
 ---
 
 ## Part 4: HIPAA Status
@@ -187,13 +198,27 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | QUE-Medicare | DOMAIN | 2026-02-15 | Verified -- appsscript.json `"access": "DOMAIN"` confirmed. |
 | DAVID-HUB | DOMAIN | 2026-02-15 | Fixed -- "Phase 0: Security hardening" commit `fcc5011`. Source file + deployment verified. |
 
+### Public Website Pages (retireprotected.com)
+
+Published legal/compliance pages — public-facing, no authentication required. Built from existing RPI compliance docs (Client Guide, PII/PHI Data Protection Policy, Security Compliance Framework).
+
+| Page | URL | WP Page ID | Published |
+|------|-----|------------|-----------|
+| Privacy Policy | https://retireprotected.com/privacy-policy/ | 639 | 2026-03-08 |
+| Terms of Service | https://retireprotected.com/terms-of-service/ | 640 | 2026-03-08 |
+| SMS Terms & Conditions | https://retireprotected.com/sms-terms/ | 641 | 2026-03-08 |
+
+**Purpose:** Required for A2P 10DLC campaign registration (CTA verification), toll-free SMS compliance, and general regulatory compliance. These URLs are referenced in the Twilio A2P campaign submission.
+
+**Monitoring:** Periodic availability checks (see MONITORING.md).
+
 ### Twilio Compliance Posture (2026-02-19)
 
 | Registration | ID | Status | Date |
 |-------------|-----|--------|------|
 | SHAKEN/STIR (Voice) | BU7eec3e064ae2c8c5df6e62adca27610e | **Approved** | 2026-02-16 |
 | A2P Brand | BN1dab2dca942aaf25f01a72acf2457d11 | **Approved** | 2026-02-19 |
-| A2P Campaign (10DLC) | CM62449e61cacd4e8dadfdd0472705b101 | **Pending vetting** | 2026-02-19 |
+| A2P Campaign (10DLC) | CM62449e61cacd4e8dadfdd0472705b101 | **REJECTED** — CTA verification failed, resubmission pending with new URLs | 2026-03-08 |
 | Toll-Free SMS Verification | HH4ac6f9e2b149ebf1ece6bd250f1ad957 | **Pending review** | 2026-02-19 |
 | Messaging Service | MGf7c81d2233fdca246b45bc63079a6e55 | Active | 2026-02-19 |
 | Customer Profile | BU3d7b6cc9f05d41fee354c6af90a003b8 | Twilio-approved | 2026-02-16 |
@@ -306,6 +331,8 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | 2026-02-15 | All 13 apps verified DOMAIN (12 compliant + 1 approved exception). RIIMO, RPI-Command-Center, DAVID-HUB remediated. QUE-Medicare verified. | Claude Code |
 | 2026-02-19 | Evolved from SECURITY_COMPLIANCE.md + imported access control from COMPLIANCE_STANDARDS.md | Claude Code |
 | 2026-03-02 | Created /RPI- Offboarded OU. Fixed auto-offboard to use correct OU. Moved 5 suspended users. Documented OU structure. | Claude Code |
+| 2026-03-08 | Added Public Website Pages section (Privacy Policy, ToS, SMS Terms). Updated A2P campaign status to REJECTED — CTA verification failed. | Claude Code |
+| 2026-03-08 | Added Google Groups section (contact@ and compliance@) — referenced on retireprotected.com legal pages. | Claude Code |
 
 ---
 

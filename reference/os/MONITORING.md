@@ -77,7 +77,30 @@ Three automated GAS triggers run in RAPID_API:
 | NewUserDetection | Detect new Workspace users, notify admin | Planned |
 | AutoOffboard | Auto-suspend users moved to Archived OU | Planned |
 
-### 2.4 Immune System (Real-Time)
+### 2.4 Public Website Legal Pages
+
+Three public-facing legal/compliance pages on retireprotected.com must remain accessible. These are referenced in A2P 10DLC campaign registration and toll-free SMS compliance.
+
+| Page | URL | WP Page ID | Check |
+|------|-----|------------|-------|
+| Privacy Policy | https://retireprotected.com/privacy-policy/ | 639 | HTTP 200 |
+| Terms of Service | https://retireprotected.com/terms-of-service/ | 640 | HTTP 200 |
+| SMS Terms & Conditions | https://retireprotected.com/sms-terms/ | 641 | HTTP 200 |
+
+**Frequency:** Monthly (manual or scripted `curl -sI <url> | head -1`). If any page returns non-200, investigate immediately — downtime affects A2P campaign compliance.
+
+**Google Groups (referenced on legal pages):**
+
+These groups are the contact addresses listed on the Privacy Policy, Terms of Service, and SMS Terms pages. If they stop receiving mail, privacy/compliance requests go unanswered.
+
+| Group | Purpose | Check |
+|-------|---------|-------|
+| contact@retireprotected.com | General inquiries, client communications | Send test email, verify delivery |
+| compliance@retireprotected.com | Privacy rights requests, HIPAA/security concerns | Send test email, verify delivery |
+
+**Frequency:** Quarterly (alongside the access permissions audit). Verify: (1) groups still exist in Google Admin, (2) external posting is still enabled, (3) a test email from an external address is delivered to group members.
+
+### 2.5 Immune System (Real-Time)
 
 The hookify plugin provides real-time code enforcement during every Claude Code session. It operates at tool-call level, blocking or warning before violations reach the codebase.
 
@@ -567,6 +590,8 @@ Extracted from COMPLIANCE_STANDARDS.md. Understanding what's logged helps identi
 | Version | Date | Changes |
 |---------|------|---------|
 | v1.0 | Feb 19, 2026 | Initial creation. Merged from WEEKLY_HEALTH_CHECK.md + PROJECT_AUDIT.md + extractions from COMPLIANCE_STANDARDS.md and SECURITY_COMPLIANCE.md |
+| v1.1 | Mar 8, 2026 | Added Section 2.4: Public Website Legal Pages monitoring (Privacy Policy, ToS, SMS Terms on retireprotected.com) |
+| v1.2 | Mar 8, 2026 | Added Google Groups monitoring (contact@ and compliance@) to Section 2.4 — quarterly delivery verification |
 
 ---
 
