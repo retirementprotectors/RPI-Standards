@@ -4,7 +4,7 @@
 
 > **Last updated:** 2026-03-09 — Build Session 1 complete (Phases 1-2 full + 3a + 3b-Medicare)
 > **Status:** IN PROGRESS — Foundation + Medicare import complete
-> **Plan file:** `~/.claude/plans/drifting-snuggling-crystal.md`
+> **Plan file:** `_RPI_STANDARDS/plans/drifting-snuggling-crystal.md`
 > **Origin session:** ATLAS audit Q&A → discovered fragmented data → bottom-up plan
 
 | Phase | Status | Started | Completed | Blocker | Notes |

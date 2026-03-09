@@ -33,7 +33,7 @@ Importing structured account data from Google Sheets and Drive files into `_ACCO
 
 **A. RPI+ProDash Life BoB (Google Sheet — PRIMARY)**
 - Sheet ID: `1AdyI3zekCuToEStRVv3lzuJx-cxP3LD5DfJovRtjXf0`
-- Fields: Policy #, Carrier, Product Name, Type, Issue Date, Status, Cash Value, Premium, DB Option, ACF Link
+- Fields: Policy #, Policy Owner, ACF Link, Carrier, Product Name, Type, Issue Date, Status, Book of Business, Market, Insured, As-Of Date, Cash Value, Data Source, Loan Principal, Dividend Option-1, Scheduled Premium, Premium Mode, Preferred Draft Date, ANNUALIZED Premium, DB Option, MEC, Underwriting Status, Dividend Option-2, NET Cash Surrender Value, Joint Owner
 - Read ALL rows. This is curated data with carrier + product already populated.
 - Import into `_ACCOUNT_LIFE` via the BoB import pattern.
 
@@ -41,7 +41,7 @@ Importing structured account data from Google Sheets and Drive files into `_ACCO
 - Sheet ID: `1Kz2sSAzq8oxeYxkWlnqbrZD7qhIntmHCBK0rguBR2OI`
 - Fields: Policy Number, Client Name, Carrier, Product, Issue Date, Advisor, Premium, Values
 - 96 records. Cross-reference with ProDash Life BoB to avoid duplicates.
-- NOTE: This may be the same data as the Signal Annuity export (same 96 records, same schema). Check the actual carrier/product values to determine if it's Life-specific or combined.
+- NOTE: CONFIRMED — Signal Life Export and Signal Annuity Export share identical schemas and both contain annuity carriers (NAC, Sentinel Security Life). These are likely a single combined Life+Annuity dataset. During import, inspect carrier/product values row-by-row to route to correct MATRIX tab.
 
 **C. Data Vault Life files (uploaded from local disk)**
 - Location: Data Vault `CARRIER_DATA/LIFE/` subfolders
@@ -62,7 +62,7 @@ Importing structured account data from Google Sheets and Drive files into `_ACCO
 
 **A. RPI+ProDash Annuity BoB (Google Sheet — PRIMARY)**
 - Sheet ID: `1gqQgclh0mIDFDJGJOnVn-lQhy-j1vCocNeWw8sndwPo`
-- Fields: Account #, Carrier, Type, Product, Issue Date, Status, Account Value, Surrender Value, Death Benefit, Income Benefit, ACF Link
+- Fields: Account #, Account Owner, ACF Link, Carrier, Type, Product Name, Issue Date, Status, Market, Book of Business, Tax Status, Payment Amount, Underwriting Status, Payment Mode, Account Value, Annuitant, MYGA Rate, Payment Frequency, Joint Owner, Surrender Value, MYGA Guarantee Period, Net Deposits, Return % (Cumulative), Return % (Annualized), Death Benefit, Income Benefit
 - Read ALL rows. Curated data.
 
 **B. BookOfBusiness_20250806 — NAC (Google Sheet)**
@@ -90,10 +90,12 @@ Importing structured account data from Google Sheets and Drive files into `_ACCO
 
 **A. Account/BoB Hub BD/RIA subfolders (pre-existing Drive — ONLY SOURCE)**
 - Parent: https://drive.google.com/drive/folders/1ieTiAd0h_d9wwpCecs98uE0_WznPLLoO
-- 15 subfolders: Schwab (Signal), Pershing/SIS (WFS), TDAI (Ameritas), NFS (Advisor Group), Curian/SEI, Brokerage-Pershing, 401k, ALTs, Mutual Funds, TAMP, Brookstone, Archer
+- 12 subfolders: Advisory-Schwab (SIGNAL), Advisory-Pershing/SIS (WFS), Advisory-TDAI (Ameritas), Brokerage-NFS (Advisor Group), Brokerage-Pershing (WFS), Direct-401k, Direct-ALTS.MULT (WFS), Direct-Mutual Funds.MULT, Direct-TAMP.Curian (SFS), Direct-TAMP.SEI (SFS), Christa-Schwab Statements, ARCHIVE-AIC.WFS.SFS Business
 - Key files: `!Archer-Accounts.xlsx`, `*Balances_Firm_BROOKSTONE...csv`, Schwab statements, Pershing SIS reports
 - Also: `ProDash Dowload- BD:RIA` (Google Sheet ID: `1wDfpqNhUnAomVuIi3io1XYcl0qKgk2JEwBTxpzFYNwA`)
+  - NOTE: GHL pipeline export — multi-account-per-row format (columns prefixed `1 - BD/RIA-*`, `2 - BD/RIA-*`, etc.). **Needs unpivoting** during preprocessing to normalize to one-account-per-row.
 - Also: `Profile_Firm_SIGNAL_ADVISORS_WEALTH_LLC...` (Google Sheet ID: `11VOanoznqNIEd48demNrOki9otUN4CMZfUgzgIJne-I`)
+  - NOTE: Report-style export — metadata in rows 1-2 ("104 Records exported", firm profile summary). **Data headers start on row 3+.** Needs row-offset handling during preprocessing.
 
 ---
 
@@ -128,13 +130,24 @@ For each source:
 
 ## MATRIX Tab Schemas (for reference)
 
-**_ACCOUNT_LIFE** key fields: `life_id`, `client_id`, `policy_number`, `carrier_name`, `parent_carrier`, `product_name`, `product_type`, `status`, `effective_date`, `face_amount`, `cash_value`, `premium`, `premium_mode`, `import_source`, `book_of_business`
+> **WARNING:** These are key fields only. The actual schemas have 50+ fields each.
+> **ALWAYS read `RAPID_CORE/CORE_Database.gs` TAB_SCHEMAS before building import functions.**
 
-**_ACCOUNT_ANNUITY** key fields: `annuity_id`, `client_id`, `policy_number`, `carrier_name`, `parent_carrier`, `product_name`, `product_type`, `status`, `effective_date`, `account_value`, `surrender_value`, `premium`, `tax_status`, `import_source`, `book_of_business`
+**_ACCOUNT_LIFE** key fields: `life_id`, `account_id`, `ghl_object_id`, `ghl_contact_id`, `client_id`, `policy_number`, `carrier_name`, `parent_carrier`, `naic_code`, `product_name`, `product_code`, `policy_type`, `status`, `issue_date`, `as_of_date`, `face_amount`, `cash_value`, `net_cash_surrender_value`, `scheduled_premium`, `annual_premium`, `premium_mode`, `premium_frequency`, `death_benefit_option`, `book_of_business`, `import_source`
+- NOTE: No `effective_date` — uses `issue_date` + `as_of_date` separately
+- NOTE: No single `premium` — uses `scheduled_premium`, `annual_premium`, `premium_mode`, `premium_frequency`
+- NOTE: No `product_type` — uses `product_code`
 
-**_ACCOUNT_BDRIA** key fields: `bdria_id`, `client_id`, `account_number`, `carrier_name`, `parent_carrier`, `product_name`, `product_type`, `status`, `account_value`, `custodian`, `import_source`, `book_of_business`
+**_ACCOUNT_ANNUITY** key fields: `annuity_id`, `account_id`, `ghl_object_id`, `ghl_contact_id`, `client_id`, `account_number`, `carrier_name`, `parent_carrier`, `naic_code`, `product_name`, `product_code`, `status`, `issue_date`, `maturity_date`, `as_of_date`, `surrender_period_end`, `account_value`, `surrender_value`, `net_deposits`, `tax_status`, `death_benefit`, `income_benefit_base`, `book_of_business`, `import_source`
+- NOTE: Uses `account_number`, NOT `policy_number`
+- NOTE: No `effective_date` — uses `issue_date`, `maturity_date`, `as_of_date`, `surrender_period_end`
+- NOTE: No `premium` field — annuities track `account_value`, `net_deposits` instead
+- NOTE: No `product_type` — uses `product_code`
 
-Read actual schemas from `RAPID_CORE/CORE_Database.gs` TAB_SCHEMAS before building import functions.
+**_ACCOUNT_BDRIA** key fields: `bdria_id`, `account_id`, `ghl_object_id`, `ghl_contact_id`, `client_id`, `account_number`, `custodian`, `bd_ria_firm`, `advisor_of_record`, `fund_family`, `account_type`, `status`, `opened_date`, `as_of_date`, `account_value`, `advisory_fee`, `book_of_business`, `import_source`
+- NOTE: BDRIA does NOT use `carrier_name`/`parent_carrier`/`product_name`/`product_type` — it uses `custodian`, `bd_ria_firm`, `fund_family` instead
+- NOTE: No `effective_date` — uses `opened_date` + `as_of_date`
+- NOTE: BDRIA schema is fundamentally different from Life/Annuity — it's brokerage/advisory, not insurance
 
 ---
 
