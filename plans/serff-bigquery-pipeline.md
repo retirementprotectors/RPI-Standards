@@ -1,22 +1,46 @@
 # SERFF Closed Block → BigQuery → PSM-RATE Pipeline
 
+> **Status: EXECUTED — 2026-03-09**
+> Built, tested, deployed. Waiting for next monthly data drop with Iowa carriers.
+
 ## Context
 
 RPI subscribes to CSG Actuarial's SERFF rate filing data — monthly drops covering Med Supp rates across 61 carriers, 48 states, 13 plan types (~1.18M rows). The data includes both **current rates** and **pending future rate actions** (25 carriers with increases effective Apr-Oct 2026). This is the engine that powers the proactive service model: detect upcoming rate increases BEFORE they hit clients, trigger the PSM-RATE campaign, convert rate anxiety into appointments.
 
-**What exists today:**
-- Rate action fields in `_ACCOUNT_MEDICARE` (4 fields, displayed in CLIENT360)
-- PSM-RATE campaign (25.MS Rate Action) with content blocks, targeting, and enrollment pipeline — fully built
-- Document intake for "Rate Action Notice" mail (HIGH priority, Claude Vision extraction)
-- Rate data CSVs sitting on JDM's desktop, never loaded into any system
+**What was built (2026-03-09):**
+- BigQuery dataset `SERFF_MedSupp` with 1.18M rows across 5 tables
+- Node.js CSV→BigQuery loader (`MCP-Hub/serff-loader/`) — reads from Shared Drive
+- GAS rate detection engine (`RAPID_IMPORT/IMPORT_RateDetection.gs`) — 19 functions
+- 90+ SERFF carrier aliases in RAPID_CORE + `_RATE_ACTIONS` schema
+- MCP OAuth extended with BigQuery scope (33 total)
 
-**What's missing:** The automated pipeline from raw SERFF data → BigQuery → client matching → field updates → campaign triggers.
-
-**Source data location:** `/Users/joshd.millang/Desktop/!AAA_Closed_Block/` (Supplement/ and Select/ subdirectories)
+**Source data location:** `SERFF_Rate_Data` folder on Shared Drive (inside Mail Intake)
+- Drive folder ID: `1PV5nwIuXzKiM6_QAW3zyESe5OE5LdtZQ`
+- JDM drops CSVs here → tells Claude "new SERFF drop" → pipeline runs
 
 **CSG API status:** Brien Welch (bwelch@csgactuarial.com) owes API key + SERFF data feed endpoints. As of Mar 8, the documented APIs on Apiary (https://csgapi.docs.apiary.io/) are quoting tools only — no SERFF data feed endpoints published yet. Build against CSV files now; API integration is a future enhancement when endpoints are available.
 
 **GCP Project:** `claude-mcp-484718` (same project as SENTINEL BigQuery CSG agent data)
+
+## Execution Notes (2026-03-09)
+
+**Versions deployed:** RAPID_CORE v1.17.0 (@97) | RAPID_IMPORT v3.31.1 (@192)
+
+**Bugs found and fixed during testing:**
+1. **Med Supp filter** — `core_product_type` used exact string match (`!== 'med_supp'`) instead of `indexOf('med supp')`. Real Med Supp records were being skipped; blank-type records leaked through.
+2. **Plan letter metadata** — `plan_letter` field contained parenthetical metadata like `"F (T65 <1.1.20)"`. Added normalization to strip everything after the letter during matching.
+3. **BigQuery free tier** — DML `DELETE` and streaming inserts not available. Switched to `WRITE_TRUNCATE` disposition on load jobs and NDJSON file loads for snapshots.
+
+**First dry run results:** 0 affected clients (correct). Only 2 carriers have rate increases (Royal Arcanum in DE/MD, Heartland National in IL). RPI has no active Med Supp clients with those carriers in those states.
+
+**Operational flow:**
+1. JDM drops CSVs in `SERFF_Rate_Data` on Shared Drive
+2. Claude runs `npm run serff:load` (downloads from Drive → BigQuery)
+3. Claude runs `FIX_DetectRateActionsDryRun()` → shows impact
+4. JDM reviews, says #SendIt
+5. Claude runs `FIX_DetectRateActions()` → updates fields, enrolls PSM-RATE, Slack summary
+
+**Next sprint:** Wire document watcher to auto-detect new CSVs in the Drive folder (eliminates manual "new SERFF drop" trigger).
 
 ---
 
