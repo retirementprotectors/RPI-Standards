@@ -863,6 +863,9 @@ When you change the codebase, update the corresponding docs:
 | Add a new MCP tool             | MCP-Hub/CLAUDE.md (directory listing)                  |
 | Change compliance rules        | CLAUDE.md = the rule. Reference doc = the procedure.   |
 | Ship a production release      | Create testing guide from `PRODUCTION_TESTING_TEMPLATE.md`, assign to tester, store on Shared Drive |
+| Complete a feature plan        | Consolidate stream into Platform Roadmap, archive original per `PLAN_LIFECYCLE.md` |
+| Create a new plan              | Check if Platform Roadmap exists for that project; if not, this plan may become the seed |
+| Ship a production release      | Update Platform Roadmap version history                |
 
 **Rules live in CLAUDE.md. Procedures live in reference docs. Never duplicate rules into reference docs.**
 
@@ -1106,8 +1109,9 @@ You report results to me
 3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASHX_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
 4. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
 5. **Hookify check** — verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into the project's `.claude/` directory. Compare counts, link any missing rules, report status.
-6. Begin work immediately
-7. Report completion, not progress
+6. **Stale plan check** — scan `~/.claude/plans/` for plans untouched 30+ days; flag for archive per `PLAN_LIFECYCLE.md`
+7. Begin work immediately
+8. Report completion, not progress
 
 ### During Work
 - Don't narrate what you're doing

@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rapid-import-platform-roadmap.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="rapidimport-platform-roadmap">RAPID_IMPORT Platform Roadmap</h1>
+<blockquote>
+<p>Consolidated from 6 individual plans + cross-platform Comms Intake items from wondrous-snuggling-phoenix.
+Last updated: 2026-03-03</p>
+</blockquote>
+<hr>
+<h2 id="version-history">Version History</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Milestone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 0</td>
+<td>Feb 2026</td>
+<td>RAPID_CORE normalizer expansion — <code>normalizeStatus()</code>, 12+ new CARRIER_ALIASES, date guard for day-of-week strings</td>
+</tr>
+<tr>
+<td>Phase 1</td>
+<td>Feb 2026</td>
+<td>Normalize all existing data — 6 PRODASH_MATRIX tabs run through <code>normalizeExistingData()</code> (~5,200 clients, ~11,150 accounts)</td>
+</tr>
+<tr>
+<td>Phase 2</td>
+<td>Feb 2026</td>
+<td>Targeted backfills — client_status backfill (~4,790 records), client state from ZIP (~885 records), Medicare garbage date cleanup</td>
+</tr>
+<tr>
+<td>Phase 3</td>
+<td>Feb 2026</td>
+<td>Orphan resolution — GHL orphan linker + general orphan cleanup + CoF-specific linking</td>
+</tr>
+<tr>
+<td>Phase 4</td>
+<td>Feb 2026</td>
+<td>Reconciliation pass — 270 client dupes merged (85+ auto, 70-84 manual review), 39 annuity dupes resolved via FK updates</td>
+</tr>
+<tr>
+<td>Phase 5</td>
+<td>Feb 2026</td>
+<td>CoF Enrichment P1 — 699 CoF contact records enriched (DOB, phone, address, Medicare number)</td>
+</tr>
+<tr>
+<td>Phase 7</td>
+<td>Feb 2026</td>
+<td>Final verification — <code>DEBUG_InventoryProdash()</code> confirmed 0 orphans, standardized carriers, clean statuses</td>
+</tr>
+<tr>
+<td>FK Migration</td>
+<td>Feb 24</td>
+<td>PRODASHX FK migration (v3.9 @191) — 4,649 clients normalized, 4,617 statuses cleaned, 270 client dupes merged, 39 annuity dupes resolved</td>
+</tr>
+<tr>
+<td>SPARK Pass 1-2</td>
+<td>Feb 2026</td>
+<td>SPARK enrichment — 486 SPARK Medicare accounts mapped + initial field enrichment from SPARK CSVs</td>
+</tr>
+<tr>
+<td>rpi-comms-mcp</td>
+<td>Feb 2026</td>
+<td>Twilio + SendGrid + Campaign engine live — 18 MCP tools operational</td>
+</tr>
+<tr>
+<td>Meet tools</td>
+<td>Feb 2026</td>
+<td>5 Google Meet tools added to rpi-workspace-mcp</td>
+</tr>
+<tr>
+<td>Stream 1</td>
+<td>Mar 3, 2026</td>
+<td>Compliance &amp; Security — ALL COMPLETE (SSN masking, confirmations, secrets, access all verified; SSN edit input fix v3.27.1 @184)</td>
+</tr>
+<tr>
+<td>Stream 2</td>
+<td>Mar 3, 2026</td>
+<td>Code Quality &amp; UX — ALL COMPLETE. Orphan pagination v3.29.0 @189. Hardcoded MATRIX ID removed v3.27.2 @185. Only 2C.2 (pin RAPID_CORE) pending JDM decision.</td>
+</tr>
+<tr>
+<td>Stream 8</td>
+<td>Mar 3, 2026</td>
+<td>Comms Intake — ACTIVATED. _COMMUNICATION_LOG tab created, schema expanded (28 cols), Twilio/SendGrid/Meet/Chat all verified, hourly trigger set.</td>
+</tr>
+<tr>
+<td>Stream 3</td>
+<td>Prior sessions</td>
+<td>Mail Approval Workflow — ALL COMPLETE (Slack per-doc links, footer link, MAIL channel routing, pending batch list)</td>
+</tr>
+<tr>
+<td>Stream 4</td>
+<td>Prior sessions</td>
+<td>SPARK Enrichment Pass 3 — ALL COMPLETE (6 schema fields, SETUP, enrichment executed, testing guide)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="stream-1-compliance--security">Stream 1: Compliance &amp; Security</h2>
+<p><strong>Status: COMPLETE</strong>
+<strong>Source plan:</strong> <code>shiny-whistling-lecun.md</code> (Phase 1)
+<strong>Completed:</strong> 2026-03-03</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td><strong>SSN masking in APPROVAL_UI.html</strong></td>
+<td>P0</td>
+<td>✅ Done (prior)</td>
+<td><code>formatDisplayValue()</code> at L756-764 masks to <code>***-**-XXXX</code></td>
+</tr>
+<tr>
+<td>1.2</td>
+<td><strong>SSN masking in RECONCILE_UI.html</strong></td>
+<td>P0</td>
+<td>✅ Done (prior)</td>
+<td><code>formatDisplayVal()</code> at L1008-1017 masks to <code>***-**-XXXX</code></td>
+</tr>
+<tr>
+<td>1.3</td>
+<td><strong>Confirmation dialog before Execute Writes</strong></td>
+<td>P0</td>
+<td>✅ Done (prior)</td>
+<td><code>executeBatch()</code> at L1541-1555 calls <code>showConfirmation()</code></td>
+</tr>
+<tr>
+<td>1.4</td>
+<td><strong>Confirmation dialogs in RECONCILE_UI.html</strong></td>
+<td>P0</td>
+<td>✅ Done (prior)</td>
+<td><code>doDeleteRecord()</code> L2029 + <code>autoMergeExecute()</code> L751 both use <code>showConfirmation()</code></td>
+</tr>
+<tr>
+<td>1.5</td>
+<td><strong>DEBUG_DumpScriptProperties secret exposure</strong></td>
+<td>P0</td>
+<td>✅ Done (prior)</td>
+<td>Sensitive key masking at IMPORT_CaseTasks.gs L714</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td><strong>appsscript.json source file audit</strong></td>
+<td>P0</td>
+<td>✅ Compliant</td>
+<td><code>&quot;access&quot;: &quot;DOMAIN&quot;</code> at L34 + L38</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td><strong>Security tracker update</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td>POSTURE.md L185: RAPID_IMPORT DOMAIN verified 2026-02-14</td>
+</tr>
+<tr>
+<td>NEW</td>
+<td><strong>SSN masking in edit input</strong></td>
+<td>P0</td>
+<td>✅ Done (v3.27.1)</td>
+<td>Edit input shows masked SSN, preserves original on save if unchanged</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="stream-2-code-quality--ux">Stream 2: Code Quality &amp; UX</h2>
+<p><strong>Status: OPEN</strong>
+<strong>Source plan:</strong> <code>shiny-whistling-lecun.md</code> (Phases 2-3)</p>
+<h3 id="2a-bug-fixes--code-quality-phase-2--complete">2A: Bug Fixes &amp; Code Quality (Phase 2) — COMPLETE</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2A.1</td>
+<td><strong>ZIP zero-pad fix</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td><code>normalizeZip()</code> L740-753 handles 4/5/8/9 digit. <code>validateZip()</code> L646-675 accepts 4-digit with warning.</td>
+</tr>
+<tr>
+<td>2A.2</td>
+<td><strong>DryRun for BoB import</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td><code>FIX_ImportBoBDataDryRun()</code> at L47. All major FIX_ functions have DryRun wrappers.</td>
+</tr>
+<tr>
+<td>2A.3</td>
+<td><strong>Home page &quot;Loading Status&quot;</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td><code>loadReconciliationStatus()</code> L2631 + <code>loadDriveHygieneStatus()</code> L2706 called on page load.</td>
+</tr>
+<tr>
+<td>2A.4</td>
+<td><strong>Queue depth on home page</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td><code>loadQueueDepths()</code> L2751 calls both intake + approval depth on load with badge rendering.</td>
+</tr>
+<tr>
+<td>2A.5</td>
+<td><strong>CLAUDE.md updates</strong></td>
+<td>P3</td>
+<td>✅ Done (v3.27.1)</td>
+<td>Version bumped, 27 files documented, 42 ForUI functions listed, deploy ID current.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2b-frontendbackend-gap-closure-phase-3--mostly-complete">2B: Frontend/Backend Gap Closure (Phase 3) — MOSTLY COMPLETE</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2B.1</td>
+<td><strong>Approval batch search</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td>Search input in APPROVAL_UI.html L365 + JS L491-524. Searches by name, batch ID, or source.</td>
+</tr>
+<tr>
+<td>2B.2</td>
+<td><strong>Bulk orphan linking</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td>Multi-select checkboxes + bulk link bar + confirmation. RECONCILE_UI.html L447, L1697-1768.</td>
+</tr>
+<tr>
+<td>2B.3</td>
+<td><strong>Orphan search pagination</strong></td>
+<td>P3</td>
+<td>✅ Done (v3.29.0)</td>
+<td>Load More button when 50+ results. Server offset pagination. Page size raised from 15 to 50.</td>
+</tr>
+<tr>
+<td>2B.4</td>
+<td><strong>Merge summary before execute</strong></td>
+<td>P3</td>
+<td>✅ Done (prior)</td>
+<td>Full modal with field-by-field preview, overwrite warnings. L473-489, L1930-1984.</td>
+</tr>
+<tr>
+<td>2B.5</td>
+<td><strong>Email inbox config link</strong></td>
+<td>P3</td>
+<td>✅ Done (prior)</td>
+<td>&quot;Configure Inboxes&quot; button opens RAPID_MATRIX directly + toast. Code.gs L2178-2179.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2c-maintainability-phase-5-from-shiny-whistling-lecun--mostly-complete">2C: Maintainability (Phase 5 from shiny-whistling-lecun) — MOSTLY COMPLETE</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2C.1</td>
+<td><strong>Archive executed FIX_ functions</strong></td>
+<td>P3</td>
+<td>✅ Done (prior)</td>
+<td><code>IMPORT_BoBEnrich_Archive.gs</code> (23,987 lines) split from active file (3,705 lines). <code>IMPORT_Approval.gs</code> still 21,881 lines — future trim candidate.</td>
+</tr>
+<tr>
+<td>2C.2</td>
+<td><strong>Pin RAPID_CORE library version</strong></td>
+<td>P3</td>
+<td>Pending JDM decision</td>
+<td><code>developmentMode: true</code> in appsscript.json L27. Pin = set to <code>false</code>.</td>
+</tr>
+<tr>
+<td>2C.3</td>
+<td><strong>callRapidAPI_ timeout</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td><code>muteHttpExceptions: true</code> + <code>timeout: 45000</code> at Code.gs L98-99. (Note: GAS ignores timeout param, 60s runtime limit applies.)</td>
+</tr>
+<tr>
+<td>2C.4</td>
+<td><strong>Consolidate redundant functions</strong></td>
+<td>P3</td>
+<td>✅ Partial (v3.27.2)</td>
+<td>Removed hardcoded MATRIX ID from <code>getMatrixSpreadsheet_Code_()</code>. <code>generateUUID</code> already delegates to RAPID_CORE. <code>getMatrixSpreadsheet_</code> still has 3 variants — future consolidation candidate.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Files:</strong> <code>RAPID_CORE/CORE_Normalize.gs</code>, <code>IMPORT_Validation.gs</code>, <code>Code.gs</code>, <code>APPROVAL_UI.html</code>, <code>RECONCILE_UI.html</code>, <code>IMPORT_Approval.gs</code>, <code>IMPORT_Archive.gs</code> (new)
+<strong>Dependencies:</strong> 2A.1 requires RAPID_CORE push first. 2C.1-2C.2 require JDM decisions on open questions Q1/Q2/Q4.
+<strong>Effort:</strong> ~8-10 hours total across 2-3 sessions.</p>
+<hr>
+<h2 id="stream-3-mail-approval-workflow">Stream 3: Mail Approval Workflow</h2>
+<p><strong>Status: COMPLETE</strong>
+<strong>Source plan:</strong> <code>dapper-rolling-glade.md</code>
+<strong>Completed:</strong> Prior sessions (verified 2026-03-03)</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td><strong>Slack per-doc links</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td>watcher.js L297-298: <code>&lt;${CONFIG.rapidImportUrl}?page=approval&amp;batch_id=${doc.batchId}\|📋 Review&gt;</code></td>
+</tr>
+<tr>
+<td>3.2</td>
+<td><strong>Footer &quot;Review All&quot; link</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td>watcher.js L319-320: <code>&lt;${CONFIG.rapidImportUrl}?page=training\|Review All in RAPID_IMPORT&gt;</code></td>
+</tr>
+<tr>
+<td>3.3</td>
+<td><strong>MAIL channel routing</strong></td>
+<td>P1</td>
+<td>✅ Done (prior)</td>
+<td>watcher.js L1715-1726 + L3684-3890: <code>routed_channel: isMail ? CONFIG.slackServiceChannel : null</code> at both call sites</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td><strong>Pending batch list on home page</strong></td>
+<td>P2</td>
+<td>✅ Done (prior)</td>
+<td>Server (IMPORT_Approval.gs L4714-4782) + HTML (Code.gs L2197) + client renderer (Code.gs L2769-2804)</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td><strong>Taxonomy verification for MAIL</strong></td>
+<td>P2</td>
+<td>✅ Verified (2026-03-03)</td>
+<td>36 MAIL entries active (12 Medicare + 24 Retirement). All with extraction hints, routing, priorities.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="stream-4-spark-enrichment-pass-3">Stream 4: SPARK Enrichment Pass 3</h2>
+<p><strong>Status: COMPLETE</strong>
+<strong>Source plan:</strong> <code>lucky-tumbling-beacon.md</code>
+<strong>Completed:</strong> Prior sessions (verified 2026-03-03, commit f525d1e)</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td><strong>RAPID_CORE schema changes</strong></td>
+<td>P1</td>
+<td>✅ Done</td>
+<td>5 fields in <code>_ACCOUNT_MEDICARE</code> (L540-543), <code>county_fips</code> in <code>_CLIENT_MASTER</code> (L323), <code>submitted_date</code> in FIELD_NORMALIZERS</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td><strong>SETUP_SparkSchemaColumns</strong></td>
+<td>P1</td>
+<td>✅ Done</td>
+<td>IMPORT_BoBImport.gs L4551</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><strong>Python data conversion</strong></td>
+<td>P1</td>
+<td>✅ Done</td>
+<td>551 account records + 9 client records generated</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td><strong>FIX_EnrichSparkAccounts3_</strong></td>
+<td>P1</td>
+<td>✅ Done + Executed</td>
+<td>IMPORT_BoBImport.gs L4590-5335, both DryRun and live run completed</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td><strong>Push + Execute sequence</strong></td>
+<td>P1</td>
+<td>✅ Done</td>
+<td>RAPID_CORE + RAPID_IMPORT pushed, SETUP + DryRun + Execute all ran</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="stream-5-data-quality-completion">Stream 5: Data Quality Completion</h2>
+<p><strong>Status: BLOCKED -- Phase 6 waiting on CoF response</strong>
+<strong>Source plan:</strong> <code>stateless-marinating-hopper.md</code> (Phase 6)</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td><strong>Python preprocessing</strong> — Convert CoF policy detail dataset to inline JS (same pattern as CoF member import). Key = <code>cof_member_id</code> or <code>policy_number</code>.</td>
+<td>P2</td>
+<td>BLOCKED</td>
+<td>Waiting for JDM to provide CoF policy detail dataset</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td><strong>FIX_EnrichCoFPolicyDetails_</strong> — New function in <code>IMPORT_BoBEnrich.gs</code>. Match by <code>policy_number</code> against <code>_ACCOUNT_LIFE</code> records. Fill: <code>product_type</code>, <code>product_name</code>, <code>policy_type</code>.</td>
+<td>P2</td>
+<td>BLOCKED</td>
+<td>Depends on 5.1</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td><strong>Annuity reclassification</strong> — Move policies to <code>_ACCOUNT_ANNUITY</code> if <code>product_type</code> resolves to annuity.</td>
+<td>P2</td>
+<td>BLOCKED</td>
+<td>Depends on 5.2</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td><strong>Post-enrichment normalization</strong> — Run <code>normalizeExistingData('_ACCOUNT_LIFE')</code> and <code>normalizeExistingData('_ACCOUNT_ANNUITY')</code> to normalize new values.</td>
+<td>P2</td>
+<td>BLOCKED</td>
+<td>Depends on 5.2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Files:</strong> <code>RAPID_IMPORT/IMPORT_BoBImport.gs</code>, <code>RAPID_IMPORT/IMPORT_BoBEnrich.gs</code>
+<strong>Dependencies:</strong> JDM must provide CoF policy detail dataset (response from Janet/CoF pending).
+<strong>Effort:</strong> ~3 hours once data arrives.</p>
+<p><strong>Context (completed phases):</strong></p>
+<ul>
+<li>Phases 0-5 + 7 are COMPLETE. 4,649 clients normalized, 4,617 statuses cleaned, 270 client dupes merged, 39 annuity dupes resolved via FK updates. CoF Enrichment P1 (699 contacts) complete. Final verification passed.</li>
+<li>Only Phase 6 (CoF policy detail import) remains.</li>
+</ul>
+<hr>
+<h2 id="stream-6-data-integration-overhaul">Stream 6: Data Integration Overhaul</h2>
+<p><strong>Status: OPEN -- documentation sprint can start now, code sprints depend on JDM vendor actions</strong>
+<strong>Source plan:</strong> <code>sparkling-nibbling-bird.md</code></p>
+<h3 id="6a-documentation-overhaul-sprint-1----no-code">6A: Documentation Overhaul (Sprint 1 -- No Code)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6A.1</td>
+<td><strong>Rebuild DATA_SOURCE_REGISTRY.md</strong> — Restructure from flat inventory into per-carrier integration cascade matrix. 10 new sections: Insurance Carriers, IMO Partners, BD/RIA Custodians, Commission Aggregators, Communication Channels, Healthcare Data (split quoting vs. imports), Agent/Producer Data, Validation Services, Document Intake, Internal Systems.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>~3 hrs documentation</td>
+</tr>
+<tr>
+<td>6A.2</td>
+<td><strong>Create CARRIER_INTEGRATION_MATRIX.md</strong> — Per-carrier reference with portal URLs, API endpoints, auth method, enrollment requirements, IMO intermediary. Carriers: Humana, UHC/AARP, Aetna, Cigna, Wellcare, Anthem BCBS, Mutual of Omaha (Medicare); CoF, ALIC, North American, Midland, Allianz, Athene (Life/Annuity); Schwab, RBC (BD/RIA).</td>
+<td>P2</td>
+<td>Not started</td>
+<td>New file in <code>_RPI_STANDARDS/reference/data/</code></td>
+</tr>
+<tr>
+<td>6A.3</td>
+<td><strong>Create CARRIER_INTEGRATION_TEMPLATE.md</strong> — Standard template for documenting each carrier integration.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Reusable pattern</td>
+</tr>
+<tr>
+<td>6A.4</td>
+<td><strong>Update RAPID_IMPORT CLAUDE.md</strong> — Add proposed Integration Management Dashboard section.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Documentation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6b-communication-archives--new-channels-sprint-2">6B: Communication Archives + New Channels (Sprint 2)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6B.1</td>
+<td><strong>Google Chat intake channel</strong> — New <code>syncGoogleChatMessages()</code> in <code>IMPORT_Comms.gs</code>. Call Google Chat API v1 via <code>UrlFetchApp.fetch()</code> + <code>ScriptApp.getOAuthToken()</code>. Dedup by <code>chat_message_name</code>. Log via <code>callRapidAPIComms_()</code> with <code>channel: 'chat'</code>, <code>provider: 'google_chat'</code>. Add to <code>syncAllCommunications()</code> orchestrator.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>JDM action: OAuth consent after <code>chat.messages.readonly</code> scope added to appsscript.json. Confirm which Chat spaces to monitor.</td>
+</tr>
+<tr>
+<td>6B.2</td>
+<td><strong>Jira recording archive import</strong> — New <code>FIX_ImportJiraRecordings()</code> / <code>FIX_ImportJiraRecordingsDryRun()</code>. Scan Drive folder recursively for recording files. Extract metadata. Match to <code>_CLIENT_MASTER</code> via <code>jira_key</code> or filename pattern. Log to <code>_COMMUNICATION_LOG</code> with <code>channel: 'recording'</code>, <code>provider: 'jira'</code>.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>JDM action: Provide Drive folder ID. Confirm naming pattern.</td>
+</tr>
+<tr>
+<td>6B.3</td>
+<td><strong>GHL legacy communication archive</strong> — New <code>FIX_ImportGHLCommHistory()</code> / DryRun. GHL API does NOT expose call recordings or SMS. Strategy: JDM exports CSV from GHL portal -&gt; Python preprocessing -&gt; inline JS FIX_ function. Match <code>ghl_contact_id</code> to <code>_CLIENT_MASTER</code> -&gt; get <code>client_id</code>. Log with <code>provider: 'ghl_legacy'</code>.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>JDM action: Export call recordings + SMS history from GHL portal before decommission.</td>
+</tr>
+<tr>
+<td>6B.4</td>
+<td><strong>Meet transcript cross-reference</strong> — Modify <code>syncMeetRecordings()</code> to cross-reference <code>meet_event_id</code> between <code>_COMMUNICATION_LOG</code> and <code>_INTAKE_QUEUE</code>.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Minor enhancement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6c-carrier-integration-framework-sprint-3">6C: Carrier Integration Framework (Sprint 3)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6C.1</td>
+<td><strong>DTCC I&amp;RS integration</strong> — New <code>IMPORT_DTCC.gs</code> with <code>SETUP_DTCCConfig()</code>, <code>TEST_DTCCConnection()</code>, <code>syncDTCCPolicies()</code>, <code>syncDTCCTransactions()</code>. New <code>API_DTCC.gs</code> in RAPID_API for webhook handler. Add <code>dtcc_policy_id</code> to RAPID_CORE account schemas. Full REST API + webhooks (launched Dec 2024).</td>
+<td>HIGH</td>
+<td>Not started</td>
+<td>JDM action: DTCC I&amp;RS enrollment, obtain API credentials</td>
+</tr>
+<tr>
+<td>6C.2</td>
+<td><strong>Schwab Advisor Services integration</strong> — New <code>IMPORT_Schwab.gs</code> with <code>SETUP_SchwabConfig()</code>, <code>TEST_SchwabConnection()</code>, <code>syncSchwabAccounts()</code>, <code>syncSchwabTransactions()</code>. 370+ integrations, daily data feeds.</td>
+<td>HIGH</td>
+<td>Not started</td>
+<td>JDM action: Enroll via Gradient, obtain OAuth credentials</td>
+</tr>
+<tr>
+<td>6C.3</td>
+<td><strong>Gradient IMO onboarding</strong> — New <code>IMPORT_Gradient.gs</code> with <code>SETUP_GradientConfig()</code>, <code>syncGradientProducerStatus()</code>, <code>syncGradientPolicies()</code>.</td>
+<td>MEDIUM</td>
+<td>Not started</td>
+<td>JDM action: Confirm timeline, obtain API docs</td>
+</tr>
+<tr>
+<td>6C.4</td>
+<td><strong>Blue Button (ID.me) integration</strong> — New <code>IMPORT_BlueButton.gs</code> with OAuth client registration, patient authorization consent URL, FHIR data fetch, mapping to <code>_CLIENT_MASTER</code>. Add <code>blue_button_subscriber_id</code> to <code>_CLIENT_MASTER</code> schema. Per-client authorization required (consent flow lives in PRODASHX).</td>
+<td>MEDIUM</td>
+<td>Not started</td>
+<td>JDM action: Register with CMS Blue Button developer sandbox</td>
+</tr>
+<tr>
+<td>6C.5</td>
+<td><strong>Stateable API enhancement</strong> — Add <code>fetchDirectCarrierCommissions(carrier, filters)</code> fallback function in <code>IMPORT_Revenue.gs</code> for when Stateable doesn't cover a source. Document per-IMO coverage.</td>
+<td>LOW</td>
+<td>Not started</td>
+<td>Fill gaps in commission coverage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6d-integration-dashboard-sprint-4">6D: Integration Dashboard (Sprint 4)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6D.1</td>
+<td><strong>Integration status dashboard</strong> — New <code>INTEGRATION_UI.html</code>, route <code>?page=integrations</code>. Card-based layout per source: Stateable, SPARK, Twilio, SendGrid, Google Chat, Google Meet, DTCC/Schwab (when ready). Color-coded: Green (on schedule), Yellow (overdue), Red (error).</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Depends on Sprint 2+3 functions</td>
+</tr>
+<tr>
+<td>6D.2</td>
+<td><strong>Data quality tools section</strong> — Buttons for normalization, backfill, dedup with DryRun preview. Live metrics: dupe count, orphan count, blank status count, last normalization date.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Surface existing backend capabilities</td>
+</tr>
+<tr>
+<td>6D.3</td>
+<td><strong>Communication history viewer</strong> — Browse all comms across channels in unified timeline view per client.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Depends on comms intake being populated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Files:</strong> <code>_RPI_STANDARDS/reference/data/DATA_SOURCE_REGISTRY.md</code>, <code>_RPI_STANDARDS/reference/data/CARRIER_INTEGRATION_MATRIX.md</code>, <code>RAPID_IMPORT/IMPORT_Comms.gs</code>, <code>RAPID_IMPORT/IMPORT_DTCC.gs</code> (new), <code>RAPID_IMPORT/IMPORT_Schwab.gs</code> (new), <code>RAPID_IMPORT/IMPORT_Gradient.gs</code> (new), <code>RAPID_IMPORT/IMPORT_BlueButton.gs</code> (new), <code>RAPID_API/API_DTCC.gs</code> (new), <code>RAPID_CORE/CORE_Database.gs</code> (schema additions), <code>RAPID_IMPORT/INTEGRATION_UI.html</code> (new), <code>RAPID_IMPORT/appsscript.json</code>
+<strong>Dependencies:</strong> 6A (docs) can start now. 6B depends on JDM OAuth consent + folder IDs + GHL export. 6C depends on JDM vendor enrollments. 6D depends on 6B+6C functions existing.</p>
+<p><strong>JDM Action Items (Stream 6):</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Sprint</th>
+<th>What JDM Needs to Do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Google Chat scope</td>
+<td>6B</td>
+<td>One-time OAuth consent after appsscript.json update</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Chat space list</td>
+<td>6B</td>
+<td>Tell which Chat spaces to monitor (all? specific?)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Jira recordings folder</td>
+<td>6B</td>
+<td>Provide Google Drive folder ID(s)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>GHL comm export</td>
+<td>6B</td>
+<td>Export call recordings + SMS from GHL portal (CSV)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>NACOLAH/Midland API</td>
+<td>6C</td>
+<td>Confirm partner API access, provide docs</td>
+</tr>
+<tr>
+<td>6</td>
+<td>DTCC enrollment</td>
+<td>6C</td>
+<td>Enroll with DTCC I&amp;RS, obtain credentials</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Schwab enrollment</td>
+<td>6C</td>
+<td>Enroll via Gradient, obtain OAuth credentials</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Gradient onboarding</td>
+<td>6C</td>
+<td>Confirm timeline, obtain API docs</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Blue Button registration</td>
+<td>6C</td>
+<td>Register with CMS developer sandbox</td>
+</tr>
+<tr>
+<td>10</td>
+<td>RBC API timeline</td>
+<td>6C</td>
+<td>Check availability through Gradient</td>
+</tr>
+<tr>
+<td>11</td>
+<td>DST Vision enrollment</td>
+<td>6C</td>
+<td>Enroll through Gradient BD relationship</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="stream-7-api-validation-architecture">Stream 7: API Validation Architecture</h2>
+<p><strong>Status: RESEARCH COMPLETE -- awaiting JDM decisions</strong>
+<strong>Source plans:</strong> <code>shiny-whistling-lecun.md</code> (Phase 4), <code>shiny-whistling-lecun-agent-a87c5fb.md</code> (vendor research)</p>
+<h3 id="architecture-decision-layered-model">Architecture Decision: Layered Model</h3>
+<pre class="hljs"><code><div>LAYER 1: Frontend HTML (ProDashX, Sentinel, RIIMO forms)
+  -- Google Places Autocomplete widget (client-side JS)
+
+LAYER 2: RAPID_CORE (shared GAS library)
+  -- New file: CORE_Validation_API.gs
+     - validateAddress_viaAPI(address)
+     - validatePhone_viaAPI(phone)
+     - validateEmail_viaAPI(email)
+     - enrichContact_viaAPI(name, phone, email, address)
+     - API keys in Script Properties (NOT in RAPID_CORE code)
+
+LAYER 3: RAPID_IMPORT (bulk orchestration)
+  -- New file: IMPORT_BulkValidation.gs
+     - FIX_BulkValidatePhones(dryRun)
+     - FIX_BulkValidateEmails(dryRun)
+     - FIX_BulkValidateAddresses(dryRun)
+     - Rate limiting, batching, result storage
+
+LAYER 4: MCP-Hub (future, lower priority)
+  -- validate_contact, enrich_contact tools
+</div></code></pre>
+<h3 id="vendor-selection-research-complete">Vendor Selection (Research Complete)</h3>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Recommended Vendor</th>
+<th>Cost (3,500 records)</th>
+<th>Monthly Ongoing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend address autocomplete</td>
+<td>Google Places Autocomplete</td>
+<td>FREE (within 10K/mo)</td>
+<td>FREE</td>
+</tr>
+<tr>
+<td>Address + phone + email validation</td>
+<td>WhitePages Pro</td>
+<td>Included in subscription</td>
+<td>Included</td>
+</tr>
+<tr>
+<td>CASS-certified address standardization</td>
+<td>Google Address Validation</td>
+<td>~$60 one-time</td>
+<td>~$2/mo</td>
+</tr>
+<tr>
+<td>Deep email hygiene</td>
+<td>NeverBounce</td>
+<td>~$28 one-time</td>
+<td>~$0.50-1.00/mo</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td><strong>~$88</strong></td>
+<td><strong>~$3/month</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="implementation-items">Implementation Items</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7.1</td>
+<td><strong>JDM confirms WhitePages Pro API access</strong> — Is it web portal only or does subscription include API key? Check account settings.</td>
+<td>P1</td>
+<td>Pending JDM</td>
+<td>Determines scope of 7.3</td>
+</tr>
+<tr>
+<td>7.2</td>
+<td><strong>Enable Google Places API + Maps JS API</strong> — In GCP project <code>90741179392</code>. Restrict API key to <code>*.googleusercontent.com</code> referrers + Places/Maps API only.</td>
+<td>P1</td>
+<td>Pending JDM</td>
+<td>One-time GCP console action</td>
+</tr>
+<tr>
+<td>7.3</td>
+<td><strong>Build CORE_Validation_API.gs in RAPID_CORE</strong> — WhitePages Pro wrappers: <code>validateAddress_viaAPI()</code>, <code>validatePhone_viaAPI()</code>, <code>validateEmail_viaAPI()</code>, <code>enrichContact_viaAPI()</code>. All return structured <code>{ success, data }</code>.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>Foundation for all validation</td>
+</tr>
+<tr>
+<td>7.4</td>
+<td><strong>Build IMPORT_BulkValidation.gs in RAPID_IMPORT</strong> — Batch runner with DryRun: <code>FIX_BulkValidatePhones(dryRun)</code>, <code>FIX_BulkValidateEmails(dryRun)</code>, <code>FIX_BulkValidateAddresses(dryRun)</code>. Rate limiting, batching, result storage.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>Clean existing 3,500 records</td>
+</tr>
+<tr>
+<td>7.5</td>
+<td><strong>Google Places Autocomplete in ProDashX + Sentinel</strong> — Add Maps JS library <code>&lt;script&gt;</code> tag to HTML templates. Attach <code>google.maps.places.Autocomplete</code> to address input fields. Handle <code>place_changed</code> event to populate structured address components.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>Frontend UX win, client-side only</td>
+</tr>
+<tr>
+<td>7.6</td>
+<td><strong>NeverBounce bulk email clean</strong> — Run one-time bulk validation on 3,500 email records (~$28).</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Catches what WhitePages misses</td>
+</tr>
+<tr>
+<td>7.7</td>
+<td><strong>Google Address Validation bulk clean</strong> — Run one-time CASS standardization (~$60). Only needed if RPI sends physical mail.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Optional based on mail needs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Files:</strong> <code>RAPID_CORE/CORE_Validation_API.gs</code> (new), <code>RAPID_IMPORT/IMPORT_BulkValidation.gs</code> (new), <code>PRODASHX/Index.html</code>, <code>sentinel-v2/</code> HTML templates
+<strong>Dependencies:</strong> 7.1-7.2 (JDM actions) must complete before code work. 7.3 must complete before 7.4.
+<strong>Effort:</strong> ~12-16 hours total. P1 JDM actions, then P2 code in 2-3 sessions.</p>
+<hr>
+<h2 id="stream-8-comms-intake-sync">Stream 8: Comms Intake Sync</h2>
+<p><strong>Status: OPEN -- rpi-comms-mcp and Meet tools already live, intake sync not yet built</strong>
+<strong>Source plan:</strong> <code>wondrous-snuggling-phoenix.md</code> (Sprint 9: RAPID_IMPORT Comms Intake)</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.1</td>
+<td><strong>syncTwilioMessages()</strong> — Pull Twilio SMS/call logs into <code>_COMMUNICATION_LOG</code>. Dedup by <code>twilio_sid</code>. Schedule as part of <code>syncAllCommunications()</code> hourly orchestrator.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>rpi-comms-mcp already has <code>comms_list_sms</code> + <code>comms_list_recordings</code> tools live</td>
+</tr>
+<tr>
+<td>8.2</td>
+<td><strong>syncSendGridActivity()</strong> — Pull SendGrid delivery/open/click/bounce events into <code>_COMMUNICATION_LOG</code>. Dedup by <code>sendgrid_message_id</code>.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>rpi-comms-mcp already has <code>comms_get_email_activity</code> tool live</td>
+</tr>
+<tr>
+<td>8.3</td>
+<td><strong>syncMeetRecordings()</strong> — Scan for new Google Meet recordings, create <code>_INTAKE_QUEUE</code> entries for transcription pipeline. Cross-reference <code>meet_event_id</code> between <code>_COMMUNICATION_LOG</code> and <code>_INTAKE_QUEUE</code>.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>rpi-workspace already has <code>meet_list_recordings</code> + <code>meet_get_transcript</code> tools live</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td><strong>importGHLContactsToNative()</strong> — One-time migration function to ensure all GHL contact data exists in MATRIX before GHL decommission. Verify <code>ghl_contact_id</code> mappings are complete.</td>
+<td>P2</td>
+<td>Not started</td>
+<td>Pre-GHL-cancellation safety net</td>
+</tr>
+<tr>
+<td>8.5</td>
+<td><strong>GHL elimination verification</strong> — After comms intake is live and GHL data migrated: grep all GAS projects for &quot;GHL&quot; -- zero matches except <code>ghl_contact_id</code> historical field. Cancel GHL subscription.</td>
+<td>P3</td>
+<td>Not started</td>
+<td>Final GHL decommission step</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Files:</strong> <code>RAPID_IMPORT/IMPORT_Comms.gs</code> (new or extend existing), <code>RAPID_IMPORT/appsscript.json</code> (scope additions)
+<strong>Dependencies:</strong> rpi-comms-mcp (DONE), Meet tools in rpi-workspace (DONE). GHL elimination (8.5) depends on all other items complete + JDM approval.
+<strong>Effort:</strong> ~4-5 hours for 8.1-8.3. 8.4 is ~2 hours. 8.5 is verification only.</p>
+<hr>
+<h2 id="recommended-execution-order">Recommended Execution Order</h2>
+<h3 id="phase-1-immediate-no-blockers-high-value--complete-%E2%9C%85">Phase 1: Immediate (No blockers, high value) — COMPLETE ✅</h3>
+<p><strong>Streams 1 + 3 + 4</strong> -- All verified complete as of 2026-03-03.</p>
+<ol>
+<li><s><strong>Stream 1: Compliance &amp; Security</strong></s> — ✅ All 7 original items + 1 new SSN edit fix (v3.27.1 @184)</li>
+<li><s><strong>Stream 3: Mail Approval Workflow</strong></s> — ✅ All items implemented in prior sessions</li>
+<li><s><strong>Stream 4: SPARK Enrichment Pass 3</strong></s> — ✅ All items implemented and executed in prior sessions</li>
+</ol>
+<h3 id="phase-2-code-quality-after-phase-1--complete-%E2%9C%85">Phase 2: Code Quality (After Phase 1) — COMPLETE ✅</h3>
+<p><strong>Streams 2A + 2B</strong> -- All verified complete except 2B.3 (P3 orphan pagination).</p>
+<ol start="4">
+<li><s><strong>Stream 2A: Bug Fixes</strong></s> — ✅ All 5 items already implemented in prior sessions</li>
+<li><s><strong>Stream 2B: Frontend Gaps</strong></s> — ✅ All 5 items done (orphan pagination added v3.29.0 @189)</li>
+</ol>
+<h3 id="phase-3-data-integration-docs-parallel-with-phase-2">Phase 3: Data Integration Docs (Parallel with Phase 2)</h3>
+<p><strong>Stream 6A</strong> -- Documentation sprint, no code, no blockers.</p>
+<ol start="6">
+<li><strong>Stream 6A: Documentation Overhaul</strong> -- DATA_SOURCE_REGISTRY.md rebuild, CARRIER_INTEGRATION_MATRIX.md. ~3 hours.</li>
+</ol>
+<h3 id="phase-4-comms-intake--validation-after-jdm-actions">Phase 4: Comms Intake + Validation (After JDM actions)</h3>
+<p><strong>Streams 7 + 8</strong> -- API validation + communication intake sync.</p>
+<ol start="7">
+<li><strong>Stream 8: Comms Intake Sync</strong> -- Twilio, SendGrid, Meet recording intake. Depends on existing MCP tools (already live). ~4-5 hours.</li>
+<li><strong>Stream 7: API Validation</strong> -- WhitePages Pro, Google Places, NeverBounce. Depends on JDM confirming API access + enabling GCP APIs. ~12-16 hours.</li>
+</ol>
+<h3 id="phase-5-carrier-integrations-jdm-vendor-enrollment-dependent">Phase 5: Carrier Integrations (JDM vendor enrollment dependent)</h3>
+<p><strong>Stream 6B-6D</strong> -- Communication archives, carrier APIs, integration dashboard.</p>
+<ol start="9">
+<li><strong>Stream 6B: Communication Archives</strong> -- Chat, Jira, GHL legacy. Depends on JDM OAuth + folder IDs + exports.</li>
+<li><strong>Stream 6C: Carrier Integration Framework</strong> -- DTCC, Schwab, Gradient, Blue Button. Depends on JDM vendor enrollments.</li>
+<li><strong>Stream 6D: Integration Dashboard</strong> -- UI for all integration sources. Depends on 6B + 6C.</li>
+</ol>
+<h3 id="phase-6-cleanup-when-ready">Phase 6: Cleanup (When ready)</h3>
+<p><strong>Streams 2C + 5</strong> -- Maintainability + blocked CoF data.</p>
+<ol start="12">
+<li><strong>Stream 2C: Maintainability</strong> -- Archive FIX_ functions, pin RAPID_CORE, consolidate redundancies. Depends on JDM decisions Q1/Q2/Q4.</li>
+<li><strong>Stream 5: CoF Policy Details</strong> -- Blocked on CoF response. Execute immediately when data arrives.</li>
+</ol>
+<hr>
+<h2 id="jdm-action-items-updated-2026-03-03">JDM Action Items (Updated 2026-03-03)</h2>
+<blockquote>
+<p>These are the ONLY things blocking forward progress. Everything else Claude handles.</p>
+</blockquote>
+<h3 id="do-now-5-minutes-each">Do Now (5 minutes each)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Action</th>
+<th>Why</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Visit Integration Dashboard</strong></td>
+<td>See all sync statuses</td>
+<td>Open RAPID_IMPORT URL + <code>?page=integrations</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Visit Comms Viewer</strong></td>
+<td>See communication history</td>
+<td>Open RAPID_IMPORT URL + <code>?page=comms</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Confirm Chat spaces</strong></td>
+<td>Currently syncing all 4 accessible spaces</td>
+<td>Tell Claude which to monitor, or &quot;all is fine&quot;</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Verify hygiene triggers</strong></td>
+<td>Auto phone/email validation may not be active</td>
+<td>In GAS editor: RAPID_IMPORT → IMPORT_BulkValidation.gs → run <code>SETUP_HygieneTriggers</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-this-week">Do This Week</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Action</th>
+<th>Why</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td><strong>Provide Jira recordings folder ID</strong></td>
+<td>One-time import of historical call recordings</td>
+<td>Find the Drive folder, tell Claude the folder ID</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Export GHL comm history</strong></td>
+<td>Archive SMS/call data before GHL decommission</td>
+<td>GHL portal → Export call recordings + SMS as CSV → upload to Drive → tell Claude the file ID</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Enable Google Places API</strong></td>
+<td>Free address autocomplete on ProDashX/Sentinel forms</td>
+<td>Go to console.cloud.google.com → project 90741179392 → APIs &amp; Services → Enable &quot;Places API&quot; + &quot;Maps JavaScript API&quot; → tell Claude &quot;TCO&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="do-this-month-vendor-enrollments">Do This Month (Vendor Enrollments)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Action</th>
+<th>Why</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td><strong>Enroll with DTCC I&amp;RS</strong></td>
+<td>Automated life/annuity policy + transaction data feeds</td>
+<td>Contact DTCC, enroll for I&amp;RS API access, get credentials</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Enroll Schwab via Gradient</strong></td>
+<td>Automated BD/RIA account + transaction feeds</td>
+<td>Ask Gradient for Schwab Advisor Services API enrollment</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Get Gradient API docs</strong></td>
+<td>Automated producer status + policy sync</td>
+<td>Confirm timeline with Gradient, get API documentation</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Register Blue Button</strong></td>
+<td>Client-authorized Medicare claims data via CMS</td>
+<td>Register at developer.cms.gov for Blue Button sandbox</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Check RBC API via Gradient</strong></td>
+<td>BD custodian data feeds</td>
+<td>Ask Gradient about RBC API availability</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>DST Vision enrollment</strong></td>
+<td>Mutual fund/variable annuity data aggregation</td>
+<td>Enroll through Gradient BD relationship</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nothing-needed-already-live">Nothing Needed (Already Live)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comms intake (Twilio/SendGrid/Meet/Chat)</td>
+<td>✅ Hourly sync running</td>
+<td><code>?page=comms</code></td>
+</tr>
+<tr>
+<td>Integration Dashboard</td>
+<td>✅ Live</td>
+<td><code>?page=integrations</code></td>
+</tr>
+<tr>
+<td>Approval batch search</td>
+<td>✅ Live</td>
+<td><code>?page=approval</code> (search bar)</td>
+</tr>
+<tr>
+<td>Pending batch list on home page</td>
+<td>✅ Live</td>
+<td>Home page</td>
+</tr>
+<tr>
+<td>Data validation (phone/email/address)</td>
+<td>✅ Quarterly + 4-hour pipeline</td>
+<td>Automated</td>
+</tr>
+<tr>
+<td>SSN masking (display + edit)</td>
+<td>✅ Live</td>
+<td>All approval/reconcile UIs</td>
+</tr>
+<tr>
+<td>All confirmation dialogs</td>
+<td>✅ Live</td>
+<td>Delete, merge, execute all guarded</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="open-questions-for-jdm">Open Questions for JDM</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Recommendation</th>
+<th>Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>Should BoB raw data dump files stay in git? (~13K lines inline in FIX_ functions)</td>
+<td><strong>Archive to Drive folder</strong>, remove from git. Git history preserves them. Cuts IMPORT_Approval.gs from 20K to 7K lines.</td>
+<td>Stream 2C.1</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>Should executed FIX_ functions be archived out of active code?</td>
+<td><strong>Yes</strong> -- move to <code>IMPORT_Archive.gs</code> (keep in project, just separate file).</td>
+<td>Stream 2C.1</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>Should RAPID_API boundary include operational tabs (_CASE_TASKS, _INTAKE_QUEUE)?</td>
+<td><strong>Yes</strong> -- RAPID_API should route ALL MATRIX writes for consistency.</td>
+<td>Architecture</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>Keep <code>developmentMode: true</code> on RAPID_CORE or pin to version?</td>
+<td><strong>Pin to version for production stability</strong>, use HEAD only during active RAPID_CORE dev.</td>
+<td>Stream 2C.2</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>Does WhitePages Pro subscription include API access (developer key)?</td>
+<td>Check account settings for API key. Portal-only vs API determines Phase 7 scope.</td>
+<td>Stream 7.1</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="source-plans-archived-reference">Source Plans (Archived Reference)</h2>
+<table>
+<thead>
+<tr>
+<th>Plan File</th>
+<th>Stream</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shiny-whistling-lecun.md</code></td>
+<td>Streams 1, 2, 7 (Phases 1-5)</td>
+<td>PARTIAL -- Phases 1-3 open, Phase 4 research complete</td>
+</tr>
+<tr>
+<td><code>shiny-whistling-lecun-agent-a87c5fb.md</code></td>
+<td>Stream 7 (vendor research)</td>
+<td>RESEARCH COMPLETE</td>
+</tr>
+<tr>
+<td><code>dapper-rolling-glade.md</code></td>
+<td>Stream 3 (mail workflow)</td>
+<td>OPEN</td>
+</tr>
+<tr>
+<td><code>lucky-tumbling-beacon.md</code></td>
+<td>Stream 4 (SPARK Pass 3)</td>
+<td>OPEN</td>
+</tr>
+<tr>
+<td><code>stateless-marinating-hopper.md</code></td>
+<td>Stream 5 (data quality)</td>
+<td>PARTIAL -- Phases 0-5+7 COMPLETE, Phase 6 BLOCKED on CoF</td>
+</tr>
+<tr>
+<td><code>sparkling-nibbling-bird.md</code></td>
+<td>Stream 6 (data integration)</td>
+<td>OPEN</td>
+</tr>
+<tr>
+<td><code>wondrous-snuggling-phoenix.md</code></td>
+<td>Stream 8 (comms intake)</td>
+<td>OPEN -- rpi-comms-mcp + Meet tools DONE, intake sync not started</td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>
