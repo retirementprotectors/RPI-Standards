@@ -922,14 +922,14 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 - `enabledPlugins` referencing unavailable plugins causes errors but does NOT hang
 - Corrupted runtime cache is the #1 cause of startup hangs
 
-**AIR vs PRO config differences:**
-| | PRO | AIR |
-|---|-----|-----|
-| Hooks | sync.sh (git pull/push) | None |
-| Plugins | frontend-design, context7 | None |
-| Local MCPs | 7 servers (rpi-workspace, etc.) | None |
-| Node | v23.10.0 (pinned) | v22.x (pinned) |
-| Cloud MCPs | All Anthropic-managed | All Anthropic-managed |
+**AIR vs PRO are now in full parity (verified 2026-03-10).** Both machines have:
+- All 8 hook scripts + sync.sh (auto-discovery, no hardcoded list)
+- 4 plugins (frontend-design, context7, playwright, hookify)
+- 9 local MCP servers + all Anthropic cloud MCPs
+- SessionStart health check (`machine-check-hook.sh`)
+- `machine-check.sh` for manual full report
+- PRO: Node v23.10.0 | AIR: Node v22.22.0
+- SSH access: PRO can manage AIR remotely (`joshd.millang@Joshs-MacBook-Air.local`)
 
 ---
 
