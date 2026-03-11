@@ -22,29 +22,32 @@ ORG="retirementprotectors"
 # Format: "GITHUB_REPO_NAME:LOCAL_PATH_RELATIVE_TO_PROJECTS"
 # The local path includes the SuperProject folder.
 REPO_MAP=(
-  # PRODASHX_TOOLS (B2C)
-  "ProDashX:PRODASHX_TOOLS/PRODASHX"
-  "QUE-Medicare:PRODASHX_TOOLS/QUE/QUE-Medicare"
+  # toMachina (THE PLATFORM — monorepo)
+  "toMachina:toMachina"
 
-  # RAPID_TOOLS (Shared Services / B2E)
-  "RPI-Content-Manager:RAPID_TOOLS/C3"
-  "CAM:RAPID_TOOLS/CAM"
-  "CEO-Dashboard:RAPID_TOOLS/CEO-Dashboard"
-  "DEX:RAPID_TOOLS/DEX"
-  "MCP-Hub:RAPID_TOOLS/MCP-Hub"
-  "PDF_SERVICE:RAPID_TOOLS/PDF_SERVICE"
-  "RAPID_API:RAPID_TOOLS/RAPID_API"
-  "RAPID_COMMS:RAPID_TOOLS/RAPID_COMMS"
-  "RAPID_CORE:RAPID_TOOLS/RAPID_CORE"
-  "RAPID_IMPORT:RAPID_TOOLS/RAPID_IMPORT"
-  "RIIMO:RAPID_TOOLS/RIIMO"
-  "RPI-Command-Center:RAPID_TOOLS/RPI-Command-Center"
-  "SPARK_WEBHOOK_PROXY:RAPID_TOOLS/SPARK_WEBHOOK_PROXY"
+  # GAS engines (maintenance mode)
+  "RAPID_CORE:gas/RAPID_CORE"
+  "RAPID_IMPORT:gas/RAPID_IMPORT"
+  "RAPID_COMMS:gas/RAPID_COMMS"
+  "RAPID_API:gas/RAPID_API"
+  "RPI-Content-Manager:gas/C3"
+  "CAM:gas/CAM"
+  "DEX:gas/DEX"
+  "ATLAS:gas/ATLAS"
 
-  # SENTINEL_TOOLS (B2B / DAVID)
-  "DAVID-HUB:SENTINEL_TOOLS/DAVID-HUB"
-  "sentinel:SENTINEL_TOOLS/sentinel"
-  "sentinel-v2:SENTINEL_TOOLS/sentinel-v2"
+  # Standalone services
+  "MCP-Hub:services/MCP-Hub"
+  "PDF_SERVICE:services/PDF_SERVICE"
+  "Marketing-Hub:services/Marketing-Hub"
+
+  # Archive (read-only, tagged pre-migration-archive)
+  "ProDashX:archive/PRODASHX"
+  "RIIMO:archive/RIIMO"
+  "sentinel-v2:archive/sentinel-v2"
+  "sentinel:archive/sentinel-v1"
+  "DAVID-HUB:archive/DAVID-HUB"
+  "CEO-Dashboard:archive/CEO-Dashboard"
+  "RPI-Command-Center:archive/RPI-Command-Center"
 )
 
 # Name mismatches (for reference):

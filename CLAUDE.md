@@ -29,7 +29,7 @@
 | **Platform** | All projects in our repo. The entire ecosystem. "Across the Platform" = everything. | The Machine |
 | **Portals** | The main UIs — the three front doors for each channel. | RIIMO (Executive/Leadership), ProDash (B2C), SENTINEL (B2B) |
 | **Sections** | Groupings in the vertical nav menu of each Portal. | Sales Center, Service Center, Admin, etc. |
-| **Modules** | Exclusive, native features built into a Portal. Each typically maps to a `.gs` file in the GAS project. | Clients, Accounts, RMD Center, Beni Center (ProDash); Org Admin, Pipelines (RIIMO) |
+| **Modules** | Exclusive, native features built into a Portal. In toMachina, each maps to a route group. | Clients, Accounts, RMD Center, Beni Center (ProDash); Org Admin, Pipelines (RIIMO) |
 | **Apps** | External modules surfaced in a Portal Section. Can appear in multiple Portals. | Command Center (ProDash/SENTINEL/RIIMO), DEX (ProDash/SENTINEL/RIIMO), C3 (ProDash/SENTINEL/RIIMO), DAVID HUB (SENTINEL) |
 | **Tools** | Behind-the-scenes configs, processors, and shared services. No direct UI. | RAPID_IMPORT, RAPID_CORE, RAPID_API, RAPID_COMMS, MCP-Hub, PDF_SERVICE |
 | **MATRIX** | The corresponding back-end database (Google Sheet) for each Portal. | RAPID_MATRIX, PRODASH_MATRIX, SENTINEL_MATRIX |
@@ -191,20 +191,6 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 
 **Use Playwright for web walkthroughs** — when guiding JDM through web-based setup (dashboards, account config, DNS, etc.), use Playwright browser automation. JDM logs in, then Claude can see pages and guide/automate. Much faster than screenshot-and-respond loops.
 
-### GAS Editor Instructions (MANDATORY)
-When asking JDM to run ANY function in the GAS editor, ALWAYS include ALL THREE:
-1. **The exact project name** (e.g., `RAPID_IMPORT`, `RAPID_API`, `RAPID_CORE`)
-2. **The exact file name** (e.g., `IMPORT_Approval.gs`)
-3. **The exact function name** (e.g., `DEBUG_TestSlackToken`)
-
-```
-❌ WRONG: "Run DEBUG_TestSlackToken in RAPID_IMPORT"
-❌ WRONG: "Run DEBUG_TestSlackToken in IMPORT_Approval.gs"
-✅ RIGHT: "In RAPID_IMPORT → IMPORT_Approval.gs → run DEBUG_TestSlackToken"
-✅ RIGHT: "Project: RAPID_IMPORT | File: IMPORT_Approval.gs | Run: DEBUG_TestSlackToken"
-```
-JDM has multiple GAS projects open. He needs Project + File + Function every time.
-
 ### Session Continuity (MANDATORY)
 **When asking JDM to restart Claude Code** (for MCP changes, OAuth re-auth, config updates, etc.), ALWAYS tell him to export and resume:
 
@@ -249,6 +235,36 @@ JDM has multiple GAS projects open. He needs Project + File + Function every tim
 ### Org Structure
 - **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
+
+---
+
+## toMachina Platform
+
+> **to** (Greek: "the") + **Machina** (Latin: "machine") = **The Machine**
+
+| Domain | Purpose |
+|--------|---------|
+| `prodash.tomachina.com` | B2C Portal (ProDash) |
+| `riimo.tomachina.com` | B2E Portal (RIIMO) |
+| `sentinel.tomachina.com` | B2B Portal (SENTINEL) |
+| `api.tomachina.com` | Unified REST API |
+
+**Stack:** Next.js 15, React 19, Tailwind v4, Firebase Auth, Firestore, Cloud Run, Turborepo
+**Repo:** `retirementprotectors/toMachina` (monorepo)
+**GCP Project:** `claude-mcp-484718`
+
+### Deploy
+Push to `main` → Firebase App Hosting auto-deploys all 3 portals. That's it.
+
+### Dev
+```bash
+cd ~/Projects/toMachina
+npm run dev        # All apps on ports 3001-3003
+npm run build      # Full monorepo build
+```
+
+### GAS Maintenance Mode
+GAS projects in `~/Projects/gas/` are in maintenance mode. Business logic is being ported to `packages/core/`. Use `clasp push` for rare maintenance deploys only. The bridge service (`services/bridge/`) syncs Firestore writes back to Sheets during transition.
 
 ---
 
@@ -367,301 +383,24 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 
 ---
 
-## GAS Gotchas (CRITICAL - Memorize These)
+## Deployment Rules
 
-### 1. Date Serialization Kills Data
-**Date objects become NULL when passed from server to client.**
+### toMachina (Primary)
+Push to `main` → auto-deploy via Firebase App Hosting. All 3 portals deploy automatically.
 
-```javascript
-// ❌ BROKEN - Date becomes null
-function getDataForUI() {
-  return { created: new Date(), name: 'Test' };  // created = null on client
-}
-
-// ✅ FIXED - Convert dates to ISO strings BEFORE returning
-function getDataForUI() {
-  const data = { created: new Date(), name: 'Test' };
-  return JSON.parse(JSON.stringify(data));  // Dates become ISO strings
-}
-```
-
-### 2. Server→Client Data Disappears
-**Apps Script's serialization doesn't handle complex objects.**
-
-```javascript
-// ❌ BROKEN - Data may disappear
-function getDataForUI() {
-  const result = MyModule.getData();
-  return result;
-}
-
-// ✅ FIXED - Force clean serialization
-function getDataForUI() {
-  const result = MyModule.getData();
-  return JSON.parse(JSON.stringify(result));
-}
-```
-**Apply `JSON.parse(JSON.stringify())` to ALL `*ForUI()` wrapper functions.**
-
-### 3. External Services Can't Access Drive Files
-**Google Drive URLs require auth that external services don't have.**
-
-```javascript
-// ❌ BROKEN - External service can't access
-const pdfUrl = 'https://drive.google.com/file/d/xxx/view';
-sendToExternalService({ url: pdfUrl });
-
-// ✅ FIXED - Fetch with Apps Script auth, send as base64
-function getPdfAsBase64(driveUrl) {
-  const fileId = extractFileId(driveUrl);
-  const file = DriveApp.getFileById(fileId);
-  const blob = file.getBlob();
-  return Utilities.base64Encode(blob.getBytes());
-}
-```
-
-### 4. 413 Payload Too Large
-**Serverless functions have 6-10MB limits. Batch large requests.**
-
-```javascript
-// ❌ BROKEN - All files at once
-function processAllFiles(files) {
-  return externalService.process({ files: files });
-}
-
-// ✅ FIXED - Batch processing
-function processAllFiles(files) {
-  const totalSize = files.reduce((sum, f) => sum + (f.base64?.length || 0), 0);
-  if (totalSize > 3 * 1024 * 1024) {
-    return files.map(file => externalService.process({ files: [file] }));
-  }
-  return externalService.process({ files: files });
-}
-```
-
-### 5. PDF Fields Not Filling
-**Field names must match EXACTLY - check for spaces, case, underscores.**
-
-```javascript
-// Debug function to list actual PDF field names
-function DEBUG_ListPdfFields(formId) {
-  const result = PdfService.analyze({ pdfUrl: form.gdrive_link });
-  Logger.log('=== Actual PDF Fields ===');
-  result.fields.forEach(f => Logger.log(f.name));
-  return result.fields;
-}
-```
-
-### 6. Modal Buttons Scroll Out of View
-**Use flexbox with scrollable body only.**
-
-```css
-/* ✅ CORRECT - Fixed header/footer, scrollable body */
-.modal-content {
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-  overflow: hidden;
-}
-.modal-header, .modal-footer { flex-shrink: 0; }
-.modal-body {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;  /* Required for flex scroll */
-}
-```
-
-### 7. Caching Variables Reset
-**Use `var` not `let` for module-level caching in GAS.**
-
-```javascript
-// ❌ BROKEN - let doesn't persist between calls
-let cachedData = null;
-
-// ✅ FIXED - var persists within execution context
-var cachedData = null;
-```
-
-### 8. DevTools Function Prefixes
-**Use these prefixes for utility functions:**
-
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `DEBUG_` | Diagnostic output | `DEBUG_ListAllSheets()` |
-| `FIX_` | One-time data repairs | `FIX_MigrateOldFormat()` |
-| `SETUP_` | Initial configuration | `SETUP_CreateTriggers()` |
-| `TEST_` | Validation functions | `TEST_ApiConnection()` |
-
-### 9. Complex State Without Schema Changes
-**Store JSON in existing text fields.**
-
-```javascript
-function saveDraft(packageId, wizardState) {
-  const notes = JSON.stringify({
-    _isDraftState: true,
-    wizardStep: wizardState.step,
-    preparedKit: wizardState.kit
-  });
-  sheet.getRange(row, NOTES_COL).setValue(notes);
-}
-```
-
-### 10. MATRIX Writes Go Through RAPID_API
-**RAPID_API is the single source of truth for all MATRIX writes.**
-
-```javascript
-// ❌ WRONG - Direct sheet writes (legacy pattern)
-sheet.appendRow([clientData...]);
-
-// ✅ CORRECT - Call RAPID_API
-const result = callRapidAPI_('import/client', 'POST', { client: clientData });
-```
-
-**For tab routing, read `RAPID_CORE/CORE_Database.gs` TABLE_ROUTING directly.**
-
-### 11. appsscript.json Controls Web App Access, Not the GAS Editor
-**`clasp push --force` deploys whatever's in appsscript.json.**
-
-If someone sets DOMAIN in the GAS editor but the source file says `ANYONE_ANONYMOUS`, the next `clasp push` silently reverts to `ANYONE_ANONYMOUS`.
-
-```
-Always fix the source file. Always verify after deploy.
-```
-
-### 12. Empty String indexOf Returns 0
-**`''.indexOf('')` returns 0 (truthy), not -1.**
-
-```javascript
-// ❌ BROKEN - Always matches, even on empty search
-if (value.indexOf(searchTerm) >= 0) { /* match */ }
-
-// ✅ FIXED - Guard empty strings first
-if (searchTerm && value.indexOf(searchTerm) >= 0) { /* match */ }
-```
-
-### 13. ZIP Code Zero-Padding
-**4-digit ZIP codes need a leading zero before deriving state.**
-
-```javascript
-// ❌ BROKEN - "7102" won't map to NJ
-const state = zipToState(zip);
-
-// ✅ FIXED - Pad to 5 digits first
-const paddedZip = String(zip).padStart(5, '0');
-const state = zipToState(paddedZip);
-```
-
-### 14. Sheets Dates + Timezone Shift
-**Sheets auto-converts "YYYY-MM-DD" to Date objects. `String(dateObj)` gives locale format, NOT ISO.**
-
-```javascript
-// ❌ BROKEN - String(dateObj) gives "Mon Feb 15 2026..." not "2026-02-15"
-const dateStr = String(sheet.getRange(row, col).getValue());
-
-// ✅ FIXED - Use normalizeDate_() helper
-const dateStr = normalizeDate_(sheet.getRange(row, col).getValue());
-```
-
-**Timezone trap:** `normalizeDate()` MUST use UTC getters (`getUTCFullYear/getUTCMonth/getUTCDate`) — NOT local getters. Sheets stores dates at midnight UTC; local getters in America/Chicago shift dates backward by 1 day when `UTC time < offset`. Also: extract date components directly from regex-matched strings (no `new Date()` intermediary).
-
-### Self-Check (Before Every GAS Commit)
-- [ ] All `*ForUI()` functions use `JSON.parse(JSON.stringify())`
-- [ ] No Date objects passed to client without conversion
-- [ ] External file access uses base64, not URLs
-- [ ] Large payloads are batched
-- [ ] Modal uses flexbox scroll pattern
-- [ ] Caching uses `var` not `let`
-- [ ] New MATRIX writes use RAPID_API (not direct sheet writes)
-- [ ] Person-selection fields use Smart Lookup (not plain select/text)
-
-### Self-Check (Before Every GAS Deploy)
-- [ ] No hardcoded credentials in code (use Script Properties) **[Hook-enforced]**
-- [ ] Web app access set to "Anyone within Retirement Protectors INC" **[Hook-enforced]**
-- [ ] `appsscript.json` contains `"access": "DOMAIN"` (source file, not just GAS editor UI) **[Hook-enforced]**
-- [ ] No `alert()`, `confirm()`, `prompt()` calls **[Hook-enforced: WARN]**
-
----
-
-## Deployment Rules (ALL GAS Projects)
-
-### Commit + Deploy Together
-**Never do one without the other.** Every change = git commit + GAS deploy.
-
-### The 6-Step Deploy (Memorize This)
+### GAS Projects (Maintenance Only)
+For rare GAS maintenance deploys:
 ```bash
-# Pre-flight (MUST PASS)
-git status && git remote -v
-
-# Deploy sequence
 NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp version "vX.X - description"
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X"
-git add -A && git commit -m "vX.X - description"
+git add -A && git commit -m "description"
 git push
-
-# VERIFY (MANDATORY — do NOT skip)
-NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deployments | grep "@[VERSION]"
-# Confirm the @VERSION number matches what you just deployed.
-# If it shows an OLD version number, the deploy FAILED — fix it before reporting success.
 ```
+GAS projects no longer need version/deploy steps unless the web app endpoint changes.
 
-### Deploy Report (Always Provide)
-```
-| Step | Result |
-|------|--------|
-| clasp push | ✅/❌ |
-| clasp version | ✅ vN |
-| clasp deploy | ✅/❌ |
-| **VERIFY: @version** | ✅ @N confirmed / ❌ MISMATCH |
-| git commit | ✅ [hash] |
-| git push | ✅/❌ |
-| Access: Org only | ✅/❌ |
-```
-
-**CRITICAL: The VERIFY step is non-negotiable.** On 2026-02-14 we discovered RAPID_API production deployments had been stuck at @33 while code was at v108 — because the deploy command used the wrong `-V` number and nobody verified afterward. The deploy "looked" successful but was running ancient code. VERIFY catches this.
-
-### GCP Project Linking (MANDATORY for MCP execute_script)
-
-**ALL RPI GAS projects MUST be linked to GCP project `90741179392` (`my-project-rpi-mdj-platform`).**
-
-This enables the `execute_script` MCP tool to run GAS functions remotely. Without it, execute_script returns 404/403.
-
-**One-time setup per project (in GAS editor):**
-1. Settings (gear icon) → Google Cloud Platform (GCP) Project → Change project → `90741179392`
-2. Add to `appsscript.json`: `"executionApi": { "access": "DOMAIN" }`
-3. `clasp push --force`
-
-**Verify on every new project and pre-launch.** See MCP-Hub CLAUDE.md for full script ID list.
-
-### GAS Function Execution via execute_script
-
-**`execute_script` runs ALL GAS functions remotely** — DEBUG_, SETUP_, FIX_, TEST_, and production functions. Session-start protocol runs `DEBUG_Ping` via execute_script to verify connectivity (see hookify `intent-session-start` rule).
-
-**JDM's only manual GAS actions (one-time per project):**
-1. Link GCP project number in Script Settings
-2. Add/remove library dependencies in Script Settings
-
-Everything else — Claude executes directly via `execute_script` with `devMode: true`.
-
-- Clasp = code deployment (push/version/deploy). execute_script = running functions.
-### 🔒 SECURITY: Organization-Only Access (MANDATORY)
-
-**ALL RPI GAS web apps MUST be deployed with access restricted to "Anyone within Retirement Protectors INC".**
-
-```
-❌ NEVER: "Anyone" or "Anyone with Google account"
-✅ ALWAYS: "Anyone within Retirement Protectors INC"
-```
-
-**When to verify:**
-- **New deployments:** Set access to organization-only during initial deploy
-- **Existing deployments:** Verify via Deploy → Manage Deployments → "Who has access"
-- **After ANY deploy:** Confirm the deploy report includes "Access: Org only ✅"
-
-**If you see "Anyone" access on an RPI internal app:**
-1. STOP and alert JDM immediately
-2. Do NOT proceed with other work until access is corrected
-3. Update via Deploy → Manage Deployments → Edit → Who has access → "Anyone within Retirement Protectors INC"
+### GAS Infrastructure (Reference)
+- **GCP Project:** `90741179392` (`my-project-rpi-mdj-platform`) — all GAS projects linked here
+- **execute_script:** runs GAS functions remotely with `devMode: true`
+- **Security:** All GAS web apps MUST use "Anyone within Retirement Protectors INC" access
 
 ---
 
@@ -706,7 +445,7 @@ Everything else — Claude executes directly via `execute_script` with `devMode:
    - Healthcare/Clinical tools → rpi-healthcare-mcp
    - If none fit → discuss with JDM before creating a new consolidated MCP
 
-Source code: ~/Projects/RAPID_TOOLS/MCP-Hub/rpi-{workspace,business,healthcare}-mcp/
+Source code: ~/Projects/services/MCP-Hub/rpi-{workspace,business,healthcare}-mcp/
 Pattern: Export { TOOLS, HANDLERS } from a new *-tools.js file, import in index.js
 For MCP development standards, directory structure, and OAuth setup: read `MCP-Hub/CLAUDE.md`
 ```
@@ -770,32 +509,24 @@ claude mcp remove <name> --scope user
 
 ## New Project Setup
 
-### Key Steps (Git FIRST!)
-1. **Git init + GitHub repo** — Before ANY GAS setup
-2. **Create project CLAUDE.md** — With rules baked in, including `## Session URLs` section (GAS Editor + Frontend URLs)
-3. **Set up .clasp.json** — Script ID configuration
-4. **Create Code.gs with doGet()** — Entry point
-5. **Add DEBUG_Ping()** — Create `{PROJECT}_DevTools.gs` with standard ping function (see any existing project for template)
-6. **JDM: First-time auth via GAS Editor UI** — One-time manual step
-7. **JDM: Link GCP project `90741179392`** — In GAS editor Settings (one-time, enables execute_script)
-8. **`clasp push --force`** — Registers executionApi + pushes DEBUG_Ping
-9. **🔒 First deploy: Set access to "Anyone within Retirement Protectors INC"**
-10. **Symlink hookify rules** — Run `~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`
-11. **Update tracking docs** — MONITORING.md, POSTURE.md, clone-all-repos.sh, setup-hookify-symlinks.sh, CLAUDE.md Project Locations tree
+### toMachina (new apps/packages)
+1. Create directory in `apps/` or `packages/` following Turborepo conventions
+2. Add `package.json` with workspace name (`@tomachina/app-name` or `@tomachina/pkg-name`)
+3. Create project CLAUDE.md with `## Session URLs` section
+4. Symlink hookify rules — Run `~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`
+5. Update CLAUDE.md Project Locations tree
+
+### GAS Projects (maintenance only — rarely needed)
+1. Git init + GitHub repo
+2. Set up `.clasp.json` + link GCP project `90741179392`
+3. JDM: First-time auth via GAS Editor UI (one-time)
+4. `clasp push --force`
+5. Symlink hookify rules
 
 ### Reference Docs (Read When Needed)
 | Document | When to Read |
 |----------|--------------|
 | `reference/os/STANDARDS.md` | Project handles PHI/PII |
-
----
-
-## GAS Project Session Start
-
-**Handled by session-start protocol (hookify `intent-session-start` rule).** Key steps:
-1. Check `.clasp.json` exists (confirms GAS project, provides scriptId)
-2. Run `DEBUG_Ping` via `execute_script` to verify GAS connectivity
-3. Clasp auth only needed for deploy operations — check with `clasp login --status` before deploying
 
 ---
 
@@ -971,31 +702,44 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 ```
 ~/Projects/
-├── _RPI_STANDARDS/              # Cross-suite standards
-├── RAPID_TOOLS/                 # Shared services (B2E)
-│   ├── RPI-Command-Center/      # Leadership visibility
-│   ├── ATLAS/                   # Source of Truth Registry
-│   ├── CAM/                     # Commission accounting
-│   ├── DEX/                     # Document efficiency
-│   ├── C3/                      # Content/Campaign manager
-│   ├── RIIMO/                   # Operations UI
-│   ├── CEO-Dashboard/           # Executive dashboard
-│   ├── RAPID_CORE/              # Core GAS library
-│   ├── RAPID_IMPORT/            # Data ingestion
-│   ├── RAPID_API/               # REST API
-│   ├── RAPID_COMMS/             # Comms library (Twilio + SendGrid)
-│   ├── Marketing-Hub/           # Visual asset mgmt + design orchestration
-│   ├── MCP-Hub/                 # Intelligence + MCPs
-│   │   └── drive-tools/         # Drive content dedup + inventory
-│   ├── PDF_SERVICE/             # PDF generation + form filling
-│   └── The-Machine/             # System architecture visualization
-├── SENTINEL_TOOLS/              # B2B Platform
-│   ├── DAVID-HUB/               # Entry calculators
-│   ├── sentinel/                # Main B2B app (legacy)
-│   └── sentinel-v2/             # Main B2B app (current)
-└── PRODASHX_TOOLS/              # B2C Platform
-    ├── PRODASHX/                # Client portal
-    └── QUE/QUE-Medicare/        # Medicare quoting
+├── _RPI_STANDARDS/              # Standards + governance
+├── toMachina/                   # THE PLATFORM (monorepo)
+│   ├── apps/
+│   │   ├── prodash/             # B2C → prodash.tomachina.com
+│   │   ├── riimo/               # B2E → riimo.tomachina.com
+│   │   └── sentinel/            # B2B → sentinel.tomachina.com
+│   ├── packages/
+│   │   ├── ui/                  # Shared React components
+│   │   ├── core/                # Business logic + normalizers
+│   │   ├── auth/                # Firebase Auth + entitlements
+│   │   └── db/                  # Typed Firestore client
+│   ├── services/
+│   │   ├── api/                 # Cloud Run REST API
+│   │   └── bridge/              # Dual-write Firestore + Sheets
+│   └── CLAUDE.md
+├── gas/                         # GAS engines (maintenance mode)
+│   ├── RAPID_CORE/
+│   ├── RAPID_FLOW/
+│   ├── RAPID_IMPORT/
+│   ├── RAPID_COMMS/
+│   ├── RAPID_API/
+│   ├── ATLAS/
+│   ├── CAM/
+│   ├── DEX/
+│   └── C3/
+├── services/                    # Standalone backend services
+│   ├── MCP-Hub/
+│   ├── PDF_SERVICE/
+│   ├── QUE-API/
+│   └── Marketing-Hub/
+└── archive/                     # Pre-toMachina (read-only)
+    ├── PRODASHX/
+    ├── RIIMO/
+    ├── sentinel-v2/
+    ├── sentinel-v1/
+    ├── DAVID-HUB/
+    ├── CEO-Dashboard/
+    └── RPI-Command-Center/
 ```
 
 ---
@@ -1056,9 +800,8 @@ npm run inventory      # Inventory only (no dedup)
 | Deployment | You (OPS phase) |
 
 **Exceptions** (I do manually):
-- `clasp login` when OAuth expires
-- First-time GAS deployment auth
 - Business decisions and approvals
+- `clasp login` when OAuth expires (GAS maintenance only)
 
 ---
 
@@ -1106,13 +849,14 @@ You report results to me
 
 ### Starting
 1. JDM gives task or context
-2. Read project CLAUDE.md (if exists in current directory)
-3. **Survey the ecosystem** — check the project's parent directory (e.g., `RAPID_TOOLS/`, `SENTINEL_TOOLS/`, `PRODASHX_TOOLS/`) to understand sibling projects, shared dependencies, and available infrastructure. Inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`). You need the full toolbox before you start swinging.
-4. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
-5. **Hookify check** — verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into the project's `.claude/` directory. Compare counts, link any missing rules, report status.
-6. **Stale plan check** — scan `~/.claude/plans/` for plans untouched 30+ days; flag for archive per `PLAN_LIFECYCLE.md`
-7. Begin work immediately
-8. Report completion, not progress
+2. Read project CLAUDE.md (toMachina/ or gas/ project)
+3. If toMachina: `npm run dev` to start dev server
+4. If GAS (maintenance): check `.clasp.json`, verify connectivity
+5. **Survey the ecosystem** — inventory loaded MCP tools (`ToolSearch` / `ListMcpResourcesTool`)
+6. **Run Reference Detection Protocol** (Belt & Suspenders) - report what docs you loaded
+7. **Hookify check** — verify hookify rules are symlinked
+8. Begin work immediately
+9. Report completion, not progress
 
 ### During Work
 - Don't narrate what you're doing
@@ -1224,10 +968,14 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 ---
 
 ## Session URLs
-<!-- Claude: Open these in browser at session start -->
 | Resource | URL |
 |----------|-----|
-| GitHub | https://github.com/retirementprotectors/RPI-Standards |
+| GitHub | https://github.com/retirementprotectors/toMachina |
+| ProDash | https://prodash.tomachina.com |
+| RIIMO | https://riimo.tomachina.com |
+| SENTINEL | https://sentinel.tomachina.com |
+| Firebase Console | https://console.firebase.google.com/project/claude-mcp-484718 |
+| GCP Console | https://console.cloud.google.com/home/dashboard?project=claude-mcp-484718 |
 
 ---
 
@@ -1237,3 +985,8 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **If you don't have contact info, ASK.** Do not guess. Do not assume. Do not make up numbers.
 - **Pattern**: Every `ghl_contact_id || client_id` swapped to `client_id || ghl_contact_id`. GHL fallback retained for safety.
 - **Root cause**: Sprenger BD/RIA accounts imported via Gradient with `client_id` only (no GHL ID) were invisible to lookups that checked `ghl_contact_id` first
+- **Template**: `_RPI_STANDARDS/reference/os/PRODUCTION_TESTING_TEMPLATE.md` (structure reference)
+- **Process**: `_RPI_STANDARDS/reference/os/OPERATIONS.md` Part 9
+- **Pattern**: Each test = section header (steps/expected in description) + checkbox verification + Pass/Fail/Blocked radio + notes paragraph field
+- **Shared Drive folder**: `0AFUXPgL0EWC6Uk9PVA` — all testing guides + forms live here
+- **Night Shift testing guides** (2.15.26 + 2.16.26) are the pattern source — 6 guides in TESTING PHASE subfolders
