@@ -70,11 +70,11 @@ if ! gh auth status &> /dev/null 2>&1; then
   exit 1
 fi
 
-# Create SuperProject folders
-echo "Creating SuperProject folders..."
-mkdir -p "${PROJECTS_DIR}/PRODASHX_TOOLS/QUE"
-mkdir -p "${PROJECTS_DIR}/RAPID_TOOLS"
-mkdir -p "${PROJECTS_DIR}/SENTINEL_TOOLS"
+# Create directory structure
+echo "Creating directory structure..."
+mkdir -p "${PROJECTS_DIR}/gas"
+mkdir -p "${PROJECTS_DIR}/services"
+mkdir -p "${PROJECTS_DIR}/archive"
 echo ""
 
 # Clone each repo
