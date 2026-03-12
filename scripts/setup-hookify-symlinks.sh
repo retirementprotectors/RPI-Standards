@@ -92,16 +92,10 @@ echo ""
 PROJECTS=(
   # toMachina monorepo (THE platform)
   "toMachina"
-  # GAS engines (maintenance mode)
+  # GAS engines (maintenance mode — only 3 remain)
   "gas/RAPID_CORE"
-  "gas/RAPID_FLOW"
   "gas/RAPID_IMPORT"
-  "gas/RAPID_COMMS"
-  "gas/RAPID_API"
-  "gas/ATLAS"
-  "gas/CAM"
   "gas/DEX"
-  "gas/C3"
   # Standalone services
   "services/MCP-Hub"
   "services/PDF_SERVICE"

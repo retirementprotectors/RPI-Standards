@@ -323,6 +323,8 @@ return { success: true, data: result };
 return { success: false, error: 'What went wrong' };
 ```
 
+- **`instanceof Date` fails across GAS execution scopes** — use duck-typing: `typeof rawDob.getUTCFullYear === 'function'`
+- **FormApp.create requires forms scope** — add `https://www.googleapis.com/auth/forms` to appsscript.json, JDM must authorize
 ### Smart Lookup Required (Person Selection Fields)
 
 **Any field that selects a person from a known data source MUST use the Smart Lookup component.**
@@ -433,6 +435,9 @@ GAS projects no longer need version/deploy steps unless the web app endpoint cha
 | **slack** | Slack messages/channels | `mcp__slack__*` tools |
 | **playwright** | Browser automation | `mcp__plugin_playwright_playwright__*` tools (plugin) |
 
+- **gdrive MCP search doesn't return file IDs** — use `listFolder` to browse, or search by exact title and list parent folder
+- **Shared Drives accessible via gdrive MCP** — `listFolder` works with Shared Drive folder IDs (e.g., `0AFUXPgL0EWC6Uk9PV`)
+- **gdrive MCP can't create HTML files** — only `.txt` and `.md`. Use `.md` on Shared Drive or Google Forms for interactive content
 ### Anthropic-Managed (cloud, auto-available)
 `claude.ai NPI Registry`, `claude.ai ICD-10 Codes`, `claude.ai CMS Coverage`, `claude.ai Slack`, `claude.ai Canva`, `claude.ai S&P Global`
 
@@ -625,15 +630,18 @@ When you change the codebase, update the corresponding docs:
 
 **Active launchd agents:**
 - `com.rpi.document-watcher` — always-on (intake queue watcher, auto-restart on crash)
-- `com.rpi.analytics-push` — daily 3:30am (analytics → MATRIX)
 - `com.rpi.mcp-analytics` — Monday 8am (weekly Slack report)
 - `com.rpi.claude-cleanup` — Sunday 3am (session cleanup)
 - `com.rpi.knowledge-promote` — daily 4:00am (MEMORY → CLAUDE.md promotion)
+
+**Disabled launchd agents:**
+- `com.rpi.analytics-push` — DISABLED Sprint 5 (replaced by BigQuery streaming Cloud Function)
 
 **When starting work on unfamiliar project:**
 - Read that project's CLAUDE.md first
 - Check `git status` before making any changes
 - Verify deployment IDs are documented
+- **Trigger creation requires GAS editor** — `ScriptApp.newTrigger().forForm()` can't run via execute_script
 
 ### Claude Code Startup Hang Fix
 **If `claude` hangs on startup (blank screen, process running but no UI):**
@@ -673,9 +681,9 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 | **PRODASHX** | B2C (RPI) | Direct client sales | PRODASHX, QUE-Medicare |
 
 **Shared Services (used by all):**
-- RAPID_CORE (GAS library)
-- RAPID_IMPORT (data ingestion)
-- RAPID_API (REST endpoints)
+- RAPID_CORE (GAS library — Sheets adapter for remaining GAS consumers)
+- RAPID_IMPORT (data ingestion — being ported to Cloud Run)
+- services/api (Cloud Run REST API — 30 route modules, replaces RAPID_API)
 - MCP-Hub (intelligence layer)
 
 **Sales Centers** = QUE modules surfaced as PRODASH views (Medicare, Life, Annuity, Advisory)
@@ -717,29 +725,29 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 │   │   ├── api/                 # Cloud Run REST API
 │   │   └── bridge/              # Dual-write Firestore + Sheets
 │   └── CLAUDE.md
-├── gas/                         # GAS engines (maintenance mode)
-│   ├── RAPID_CORE/
-│   ├── RAPID_FLOW/
-│   ├── RAPID_IMPORT/
-│   ├── RAPID_COMMS/
-│   ├── RAPID_API/
-│   ├── ATLAS/
-│   ├── CAM/
-│   ├── DEX/
-│   └── C3/
+├── gas/                         # GAS engines (3 remain — maintenance mode)
+│   ├── RAPID_CORE/              # Sheets adapter for remaining GAS consumers
+│   ├── RAPID_IMPORT/            # Data ingestion (being ported)
+│   └── DEX/                     # PDF/Drive ops (last GAS holdout)
 ├── services/                    # Standalone backend services
 │   ├── MCP-Hub/
 │   ├── PDF_SERVICE/
 │   ├── QUE-API/
 │   └── Marketing-Hub/
-└── archive/                     # Pre-toMachina (read-only)
+└── archive/                     # Pre-toMachina + retired engines (read-only)
     ├── PRODASHX/
     ├── RIIMO/
     ├── sentinel-v2/
     ├── sentinel-v1/
     ├── DAVID-HUB/
     ├── CEO-Dashboard/
-    └── RPI-Command-Center/
+    ├── RPI-Command-Center/
+    ├── RAPID_COMMS/             # Archived Sprint 5 — migrated to services/api/
+    ├── RAPID_FLOW/              # Archived Sprint 5 — migrated to services/api/
+    ├── RAPID_API/               # Archived Sprint 5 — replaced by services/api/
+    ├── C3/                      # Archived Sprint 5 — migrated to services/api/
+    ├── ATLAS/                   # Archived Sprint 5 — migrated to services/api/
+    └── CAM/                     # Archived Sprint 5 — migrated to services/api/
 ```
 
 ---
@@ -761,8 +769,9 @@ For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` 
 
 | Service | URL | Purpose |
 |---------|-----|---------|
+| toMachina API | `https://api.tomachina.com` | Unified REST API (Cloud Run, 30 routes, 1Gi/2CPU) |
 | healthcare-mcps | `https://que-api-r6j33zf47q-uc.a.run.app` | Medicare data API (Cloud Run, always on) |
-| RAPID_API | GAS Web App | REST endpoints for external integrations |
+| RAPID_API | GAS Web App (ARCHIVED) | Legacy REST endpoints — replaced by toMachina API |
 
 **RAPID_API Deployment Notes:**
 - PRODASH calls RAPID_API deployment `AKfycbyf9IAI3...` (Workspace), NOT `AKfycbwaCzn...` (Primary) — both must stay synced
