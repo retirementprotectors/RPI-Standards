@@ -999,3 +999,8 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - **Pattern**: Each test = section header (steps/expected in description) + checkbox verification + Pass/Fail/Blocked radio + notes paragraph field
 - **Shared Drive folder**: `0AFUXPgL0EWC6Uk9PVA` — all testing guides + forms live here
 - **Night Shift testing guides** (2.15.26 + 2.16.26) are the pattern source — 6 guides in TESTING PHASE subfolders
+- **Claude Code Shared Drive** (default for handoffs/work output): `0AFUXPgL0EWC6Uk9PVA`
+- Strategic Docs (RPI Meeting Recordings Shared Drive): `1hlFLU2O0W4IHJ-_dVCSUdUquWtKRi8xH`
+- All 3 portals deployed with standardized UI: RIIMO @86, SENTINEL @36, PRODASHX @216
+- PortalStandard.html = shared CSS design system (master in _RPI_STANDARDS/reference/portal/)
+- Meetings tab = NEW feature on all 3 portals (employee_profile JSON on _USER_HIERARCHY)
