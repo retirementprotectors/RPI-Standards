@@ -2,7 +2,7 @@
 name: intent-atlas-consult
 enabled: true
 event: prompt
-action: warn
+action: block
 conditions:
   - field: user_prompt
     operator: regex_match
