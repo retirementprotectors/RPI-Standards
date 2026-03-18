@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPI Blueprint | ESOP Compound Growth Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 30px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h3 {
+            color: #2E8B57;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2E8B57;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #2E8B57;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #228B22;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .class-legend {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .class-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .class-name {
+            font-weight: 600;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .timeline-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .year-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .year-btn:hover, .year-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2E8B57;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .esop-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .esop-table th,
+        .esop-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .esop-table th {
+            background: #2E8B57;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .esop-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .real-person {
+            background: #e8f5e8 !important;
+            font-weight: 600;
+        }
+        
+        .your-row {
+            background: #d4f4d4 !important;
+            font-weight: 700;
+            border: 2px solid #2E8B57;
+        }
+        
+        .placeholder-row {
+            color: #888;
+            font-style: italic;
+        }
+        
+        .w2-input {
+            width: 80px;
+            padding: 5px;
+            font-size: 0.9em;
+            text-align: right;
+        }
+        
+        .esop-input {
+            width: 100px;
+            padding: 8px;
+            font-size: 0.9em;
+            text-align: right;
+        }
+        
+        .class-1 { background: #FFD700 !important; } /* LEGENDS - Gold */
+        .class-2 { background: #C0C0C0 !important; } /* Veterans - Silver */
+        .class-3 { background: #CD7F32 !important; } /* Experienced - Bronze */
+        .class-4 { background: #E6E6FA !important; } /* Developing - Lavender */
+        .class-5 { background: #F0F8FF !important; } /* Rookie - Alice Blue */
+        .class-6 { background: #F8F8FF !important; } /* New - Ghost White */
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        .edit-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+        
+        .edit-btn:hover {
+            background: #0056b3;
+        }
+        
+        .compound-highlight {
+            background: #fffacd !important;
+            border: 2px solid #ffd700;
+        }
+        
+        .scaled-team-row {
+            background: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        @media (max-width: 1200px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .metrics {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 RPI Blueprint | ESOP Compound Growth Tracker</h1>
+            <p>Annual ESOP Contributions + Compound Share Growth + Dynamic Team Modeling</p>
+        </div>
+        
+        <div class="layout">
+            <div class="sidebar">
+                <!-- View Perspective -->
+                <div class="card">
+                    <h3>👁️ View Perspective</h3>
+                    <div class="form-group">
+                        <select id="viewPerspective" onchange="updatePerspective()">
+                            <option value="company">📊 Company Overview</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Annual ESOP Contributions -->
+                <div class="card">
+                    <h3>💰 Annual ESOP Contributions
+                        <button onclick="toggleTable('esop-contributions')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="esop-contributions-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div id="esop-contributions-content">
+                        <div class="form-group">
+                            <label>2025 ESOP ($)</label>
+                            <input type="number" id="esop2025" value="0" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2026 ESOP ($)</label>
+                            <input type="number" id="esop2026" value="0" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2027 ESOP ($)</label>
+                            <input type="number" id="esop2027" value="0" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2028 ESOP ($)</label>
+                            <input type="number" id="esop2028" value="0" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2029 ESOP ($)</label>
+                            <input type="number" id="esop2029" value="750000000" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2030 ESOP ($)</label>
+                            <input type="number" id="esop2030" value="1000000000" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2031 ESOP ($)</label>
+                            <input type="number" id="esop2031" value="1100000000" step="10000" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2032 ESOP ($)</label>
+                            <input type="number" id="esop2032" value="0" step="10000" onchange="calculateAllocations()">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="resetToDefaults()">Reset All Data</button>
+                    <button class="btn" onclick="loadRealTeam()" style="margin-top: 10px;">Load Real Team</button>
+                </div>
+                
+                <!-- ESOP Classes & Multipliers -->
+                <div class="card">
+                    <h3>⚙️ ESOP Classes & Multipliers</h3>
+                    
+                    <div class="class-legend">
+                        <h4 style="margin-bottom: 10px; color: #2E8B57;">Tenure Classes & Multipliers:</h4>
+                        <div class="class-item class-1">
+                            <span class="class-name">Class 1: LEGENDS (20+ years)</span>
+                            <span>5.0x</span>
+                        </div>
+                        <div class="class-item class-2">
+                            <span class="class-name">Class 2: Veterans (10+ years)</span>
+                            <span>3.0x</span>
+                        </div>
+                        <div class="class-item class-3">
+                            <span class="class-name">Class 3: Experienced (5-9 years)</span>
+                            <span>2.2x</span>
+                        </div>
+                        <div class="class-item class-4">
+                            <span class="class-name">Class 4: Developing (3-5 years)</span>
+                            <span>1.6x</span>
+                        </div>
+                        <div class="class-item class-5">
+                            <span class="class-name">Class 5: Rookie (1-3 years)</span>
+                            <span>1.2x</span>
+                        </div>
+                        <div class="class-item class-6">
+                            <span class="class-name">Class 6: New (0-1 year)</span>
+                            <span>1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- W2 Growth Rates -->
+                <div class="card">
+                    <h3>📊 W2 Growth Rates
+                        <button onclick="toggleTable('w2-growth')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="w2-growth-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div id="w2-growth-content">
+                        <div class="form-group">
+                            <label>Founding Team Annual Growth (%)</label>
+                            <input type="number" id="foundingGrowthRate" value="10" step="1" min="0" max="50" onchange="applyW2Growth()">
+                            <small style="color: #666; font-size: 0.8em;">Applied to: ARCH, VIN, and current employees</small>
+                        </div>
+                        <div class="form-group">
+                            <label>New Employees Growth (%)</label>
+                            <input type="number" id="newEmployeeGrowthRate" value="5" step="1" min="0" max="25" onchange="applyW2Growth()">
+                            <small style="color: #666; font-size: 0.8em;">Applied to employees hired after 2025</small>
+                        </div>
+                        <button class="btn" onclick="applyW2Growth()">Apply Growth Rates</button>
+                    </div>
+                </div>
+
+                <!-- Company Valuation Growth -->
+                <div class="card">
+                    <h3>📈 Company Valuation Growth
+                        <button onclick="toggleTable('valuation-growth')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="valuation-growth-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div id="valuation-growth-content">
+                        <div class="form-group">
+                            <label>2025 Valuation ($M)</label>
+                            <input type="number" id="val2025" value="25" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2026 Valuation ($M)</label>
+                            <input type="number" id="val2026" value="133" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2027 Valuation ($M)</label>
+                            <input type="number" id="val2027" value="1200" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2028 Valuation ($M)</label>
+                            <input type="number" id="val2028" value="3000" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2029 Valuation ($M)</label>
+                            <input type="number" id="val2029" value="7500" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2030 Valuation ($M)</label>
+                            <input type="number" id="val2030" value="10000" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2031 Valuation ($M)</label>
+                            <input type="number" id="val2031" value="11000" step="1" onchange="calculateAllocations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2032 Valuation ($M)</label>
+                            <input type="number" id="val2032" value="12000" step="1" onchange="calculateAllocations()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Real Person -->
+                <div class="card">
+                    <h3>👤 Add Real Person
+                        <button onclick="toggleTable('add-person')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="add-person-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div id="add-person-content">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="personName" placeholder="Enter full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <select id="personDept">
+                                <option value="Sales">Sales</option>
+                                <option value="Service">Service</option>
+                                <option value="Support">Support</option>
+                                <option value="Data">Data</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Role Level</label>
+                            <select id="personRole">
+                                <option value="COR">COR/AST/SPC</option>
+                                <option value="LDR">LDR/MGR/DIR</option>
+                                <option value="VP">VP/SVP/EVP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Effective Start Date</label>
+                            <input type="date" id="personStartDate" value="2022-01-01">
+                        </div>
+                        <div class="form-group">
+                            <label>Class Override (optional)</label>
+                            <select id="personClass">
+                                <option value="">Auto-calculate from tenure</option>
+                                <option value="1">Class 1: LEGENDS 20+ years (5.0x)</option>
+                                <option value="2">Class 2: Veterans 10+ years (3.0x)</option>
+                                <option value="3">Class 3: Experienced 5-9 years (2.2x)</option>
+                                <option value="4">Class 4: Developing 3-5 years (1.6x)</option>
+                                <option value="5">Class 5: Rookie 1-3 years (1.2x)</option>
+                                <option value="6">Class 6: New 0-1 year (1.0x)</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <label style="flex: 1;">
+                                <input type="checkbox" id="isYou" style="width: auto; margin-right: 5px;"> This is YOU
+                            </label>
+                        </div>
+                        <button class="btn" onclick="addRealPerson()" style="margin-top: 10px;">Add Real Person</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <!-- Timeline -->
+                <div class="timeline-controls">
+                    <button class="year-btn" data-year="2025">2025</button>
+                    <button class="year-btn" data-year="2026">2026</button>
+                    <button class="year-btn" data-year="2027">2027</button>
+                    <button class="year-btn active" data-year="2028">2028</button>
+                    <button class="year-btn" data-year="2029">2029</button>
+                    <button class="year-btn" data-year="2030">2030</button>
+                    <button class="year-btn" data-year="2031">2031</button>
+                    <button class="year-btn" data-year="2032">2032</button>
+                </div>
+                
+                <!-- Metrics -->
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="companyValuation">$3B</div>
+                        <div class="metric-label">Company Valuation</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="totalPayroll">$0</div>
+                        <div class="metric-label" id="payrollLabel">Total Payroll</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="totalEmployees">0</div>
+                        <div class="metric-label">Total Employees</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="esopContribution">$5M</div>
+                        <div class="metric-label" id="contributionLabel">Annual ESOP</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="selectedPersonAllocation">$0</div>
+                        <div class="metric-label" id="allocationLabel">Your Allocation</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="selectedPersonTotal">$0</div>
+                        <div class="metric-label" id="totalLabel">Your Total ESOP Value</div>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="charts">
+                    <div class="card">
+                        <h3>📊 ESOP Growth Timeline</h3>
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📈 Individual Compound Growth (Stacked by Year)</h3>
+                        <div class="chart-container">
+                            <canvas id="compoundChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ESOP Allocation Results -->
+                <div class="card">
+                    <h3>🎯 Compound ESOP Analysis - <span id="allocationYearLabel">2028</span> - Selected Perspective Only
+                        <button onclick="toggleTable('allocations')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="allocations-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div class="table-container" id="allocations-table">
+                        <table class="esop-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>W2 Amount</th>
+                                    <th>% of Payroll</th>
+                                    <th>Class</th>
+                                    <th>Multiplier</th>
+                                    <th>Weighted %</th>
+                                    <th id="allocationHeaderLabel">Annual Allocation</th>
+                                    <th>Growth Value</th>
+                                    <th>Total ESOP Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allocationsTableBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- W2 & ESOP Input Table -->
+                <div class="card">
+                    <h3>💰 Annual W2 & ESOP Tracking - Individual Employees - <span id="currentYearLabel">2028</span>
+                        <button onclick="toggleTable('w2-esop-tracking')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="w2-esop-tracking-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div class="table-container" id="w2-esop-tracking-table">
+                        <table class="esop-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Name</th>
+                                    <th rowspan="2">Dept</th>
+                                    <th rowspan="2">Role</th>
+                                    <th rowspan="2">Start Date</th>
+                                    <th rowspan="2">Tenure</th>
+                                    <th rowspan="2">Class</th>
+                                    <th colspan="8">Annual W2 Salaries</th>
+                                    <th rowspan="2">Actions</th>
+                                </tr>
+                                <tr>
+                                    <th>2025</th>
+                                    <th>2026</th>
+                                    <th>2027</th>
+                                    <th>2028</th>
+                                    <th>2029</th>
+                                    <th>2030</th>
+                                    <th>2031</th>
+                                    <th>2032</th>
+                                </tr>
+                            </thead>
+                            <tbody id="w2EsopTrackingBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- NEW: Scaled Teams Table -->
+                <div class="card">
+                    <h3>📈 Smart Scaled Teams (Auto-Generated) - <span id="scaledTeamsYearLabel">2028</span>
+                        <button onclick="toggleTable('scaled-teams')" style="float: right; padding: 5px 10px; background: #2E8B57; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            <span id="scaled-teams-toggle">Hide</span>
+                        </button>
+                    </h3>
+                    <div class="table-container" id="scaled-teams-table">
+                        <table class="esop-table">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Department</th>
+                                    <th>Start Year</th>
+                                    <th>Headcount</th>
+                                    <th>Avg Salary</th>
+                                    <th>Total Payroll</th>
+                                    <th>Class</th>
+                                    <th>ESOP Allocation</th>
+                                    <th>Per Person ESOP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scaledTeamsBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(value) {
+            if (value >= 1000000000) {
+                return '$' + (value / 1000000000).toFixed(1) + 'B';
+            } else if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+                return '$' + (value / 1000).toFixed(0) + 'K';
+            }
+            return '$' + Math.round(value).toLocaleString();
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('en-US', { 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
+
+        // Calculate tenure from start date
+        function calculateTenure(startDate, currentYear) {
+            const start = new Date(startDate);
+            const current = new Date(currentYear, 11, 31);
+            const years = (current - start) / (365.25 * 24 * 60 * 60 * 1000);
+            return Math.max(0, years);
+        }
+
+        // Get class from tenure
+        function getClassFromTenure(tenure, override = null) {
+            if (override) return parseInt(override);
+            
+            if (tenure >= 20) return 1; // LEGENDS (20+ years)
+            if (tenure >= 10) return 2; // Veterans (10+ years) 
+            if (tenure >= 5) return 3;  // Experienced (5-9 years)
+            if (tenure >= 3) return 4;  // Developing (3-5 years)
+            if (tenure >= 1) return 5;  // Rookie (1-3 years)
+            return 6; // New (0-1 year)
+        }
+
+        // Get multiplier from class  
+        function getMultiplierFromClass(classNum) {
+            const multipliers = { 1: 5.0, 2: 3.0, 3: 2.2, 4: 1.6, 5: 1.2, 6: 1.0 };
+            return multipliers[classNum] || 1.0;
+        }
+
+        // Get class name
+        function getClassName(classNum) {
+            const names = {
+                1: 'LEGENDS (20+)',
+                2: 'Veterans (10+)',
+                3: 'Experienced (5-9)', 
+                4: 'Developing (3-5)',
+                5: 'Rookie (1-3)',
+                6: 'New (0-1)'
+            };
+            return names[classNum] || 'Unknown';
+        }
+
+        // Apply W2 Growth Rates
+        function applyW2Growth() {
+            if (realPeople.length === 0) return;
+
+            const foundingGrowth = parseFloat(document.getElementById('foundingGrowthRate').value) / 100 || 0.10;
+            const newEmployeeGrowth = parseFloat(document.getElementById('newEmployeeGrowthRate').value) / 100 || 0.05;
+            
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            realPeople.forEach(person => {
+                // Skip founders (they get $0)
+                if (person.isFounder) return;
+                
+                // Get base salary (2025)
+                const baseSalary = person.w2Data[2025] || 0;
+                if (baseSalary === 0) return;
+                
+                // Determine if founding team member (hired before 2025)
+                const startYear = new Date(person.startDate).getFullYear();
+                const isFoundingEmployee = startYear < 2025;
+                const growthRate = isFoundingEmployee ? foundingGrowth : newEmployeeGrowth;
+                
+                // Apply compound growth year over year
+                for (let i = 0; i < years.length; i++) {
+                    const year = years[i];
+                    if (i === 0) {
+                        // Keep 2025 as base year
+                        continue;
+                    } else {
+                        // Apply compound growth
+                        const yearsOfGrowth = i; // 2026 = 1 year, 2027 = 2 years, etc.
+                        person.w2Data[year] = Math.round(baseSalary * Math.pow(1 + growthRate, yearsOfGrowth));
+                    }
+                }
+            });
+            
+            // Update display and recalculate
+            updateW2EsopTable();
+            calculateAllocations();
+        }
+
+        // Get annual ESOP contributions
+        function getAnnualEsopContributions() {
+            return {
+                2025: parseFloat(document.getElementById('esop2025').value) || 0,
+                2026: parseFloat(document.getElementById('esop2026').value) || 0,
+                2027: parseFloat(document.getElementById('esop2027').value) || 0,
+                2028: parseFloat(document.getElementById('esop2028').value) || 0,
+                2029: parseFloat(document.getElementById('esop2029').value) || 0,
+                2030: parseFloat(document.getElementById('esop2030').value) || 0,
+                2031: parseFloat(document.getElementById('esop2031').value) || 0,
+                2032: parseFloat(document.getElementById('esop2032').value) || 0
+            };
+        }
+
+        // Get company valuations
+        function getCompanyValuations() {
+            return {
+                2025: parseFloat(document.getElementById('val2025').value) * 1000000 || 0,
+                2026: parseFloat(document.getElementById('val2026').value) * 1000000 || 0,
+                2027: parseFloat(document.getElementById('val2027').value) * 1000000 || 0,
+                2028: parseFloat(document.getElementById('val2028').value) * 1000000 || 0,
+                2029: parseFloat(document.getElementById('val2029').value) * 1000000 || 0,
+                2030: parseFloat(document.getElementById('val2030').value) * 1000000 || 0,
+                2031: parseFloat(document.getElementById('val2031').value) * 1000000 || 0,
+                2032: parseFloat(document.getElementById('val2032').value) * 1000000 || 0
+            };
+        }
+
+        // Initialize with real team members (FOUNDERS EXCLUDED FROM ESOP!)
+        function initializeRealTeam() {
+            realPeople = [
+                // Mark founders/shareholders as excluded (get $0 W2 for ESOP purposes)
+                { 
+                    id: 1, 
+                    name: 'Josh D. Millang (JDM)', 
+                    department: 'Sales', 
+                    role: 'VP', 
+                    startDate: '2008-06-01', 
+                    classOverride: null, 
+                    isYou: true,
+                    isFounder: true, // Excluded from ESOP
+                    w2Data: {
+                        2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0, 2032: 0
+                    }
+                },
+                { 
+                    id: 2, 
+                    name: 'Joshua Archer (ARCH)', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2008-09-01', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 600000, 2026: 600000, 2027: 600000, 
+                        2028: 600000, 2029: 600000, 2030: 600000,
+                        2031: 600000, 2032: 600000
+                    }
+                },
+                { 
+                    id: 3, 
+                    name: 'Shane Parmenter (SHANER)', 
+                    department: 'Support', 
+                    role: 'VP', 
+                    startDate: '2009-12-31', 
+                    classOverride: null, 
+                    isYou: false,
+                    isFounder: true, // Excluded from ESOP
+                    w2Data: {
+                        2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0, 2032: 0
+                    }
+                },
+                { 
+                    id: 4, 
+                    name: 'Matt McCormick (MATTY)', 
+                    department: 'Support', 
+                    role: 'VP', 
+                    startDate: '2019-12-31', 
+                    classOverride: null, 
+                    isYou: false,
+                    isFounder: true, // Excluded from ESOP
+                    w2Data: {
+                        2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0, 2032: 0
+                    }
+                },
+                { 
+                    id: 5, 
+                    name: 'Vincent Vazquez (VIN)', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2020-12-31', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 180000, 2026: 180000, 2027: 180000, 
+                        2028: 180000, 2029: 180000, 2030: 180000,
+                        2031: 180000, 2032: 180000
+                    }
+                },
+                { 
+                    id: 6, 
+                    name: 'Alexander Haase (ALEX)', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2025-01-01', 
+                    classOverride: null, 
+                    isYou: false,
+                    isFounder: true, // Excluded from ESOP
+                    w2Data: {
+                        2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0, 2032: 0
+                    }
+                },
+                { 
+                    id: 7, 
+                    name: 'Aprille Trupiano (APRILLE)', 
+                    department: 'Support', 
+                    role: 'LDR', 
+                    startDate: '2025-06-30', 
+                    classOverride: null, 
+                    isYou: false,
+                    isFounder: true, // Excluded from ESOP
+                    w2Data: {
+                        2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0, 2030: 0, 2031: 0, 2032: 0
+                    }
+                },
+                // Additional Real Team Members
+                { 
+                    id: 8, 
+                    name: 'Angelique Bonilla', 
+                    department: 'Service', 
+                    role: 'COR', 
+                    startDate: '2025-05-01', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 42000, 2026: 42000, 2027: 42000, 
+                        2028: 42000, 2029: 42000, 2030: 42000,
+                        2031: 42000, 2032: 42000
+                    }
+                },
+                { 
+                    id: 9, 
+                    name: 'Lucas Dexter', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2024-06-03', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 120000, 2026: 120000, 2027: 120000, 
+                        2028: 120000, 2029: 120000, 2030: 120000,
+                        2031: 120000, 2032: 120000
+                    }
+                },
+                { 
+                    id: 10, 
+                    name: 'Constance Gray', 
+                    department: 'Service', 
+                    role: 'LDR', 
+                    startDate: '2025-06-23', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 120000, 2026: 120000, 2027: 120000, 
+                        2028: 120000, 2029: 120000, 2030: 120000,
+                        2031: 120000, 2032: 120000
+                    }
+                },
+                { 
+                    id: 11, 
+                    name: 'Christa Irwin', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2025-07-16', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 120000, 2026: 120000, 2027: 120000, 
+                        2028: 120000, 2029: 120000, 2030: 120000,
+                        2031: 120000, 2032: 120000
+                    }
+                },
+                { 
+                    id: 12, 
+                    name: 'Susan Kaelin', 
+                    department: 'Service', 
+                    role: 'COR', 
+                    startDate: '2025-07-14', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 42000, 2026: 42000, 2027: 42000, 
+                        2028: 42000, 2029: 42000, 2030: 42000,
+                        2031: 42000, 2032: 42000
+                    }
+                },
+                { 
+                    id: 13, 
+                    name: 'Robert Lacey', 
+                    department: 'Sales', 
+                    role: 'COR', 
+                    startDate: '2025-03-10', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 42000, 2026: 42000, 2027: 42000, 
+                        2028: 42000, 2029: 42000, 2030: 42000,
+                        2031: 42000, 2032: 42000
+                    }
+                },
+                { 
+                    id: 14, 
+                    name: 'John Legler', 
+                    department: 'Service', 
+                    role: 'COR', 
+                    startDate: '2025-07-15', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 42000, 2026: 42000, 2027: 42000, 
+                        2028: 42000, 2029: 42000, 2030: 42000,
+                        2031: 42000, 2032: 42000
+                    }
+                },
+                { 
+                    id: 15, 
+                    name: 'Megan Waiwaiole', 
+                    department: 'Support', 
+                    role: 'COR', 
+                    startDate: '2025-05-01', 
+                    classOverride: null, 
+                    isYou: false,
+                    w2Data: {
+                        2025: 42000, 2026: 42000, 2027: 42000, 
+                        2028: 42000, 2029: 42000, 2030: 42000,
+                        2031: 42000, 2032: 42000
+                    }
+                }
+            ];
+        }
+
+        // Smart Team Scaling Algorithm - FIXED TEAM NAMES AND PAYROLL
+        function generateScaledTeams() {
+            const companyValuations = getCompanyValuations();
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            // Valuation to Revenue Multiple Table (from your image)
+            const getRevenueFromValuation = (valuation) => {
+                if (valuation <= 2000000) return valuation / 3.0;
+                if (valuation <= 10000000) return valuation / 5.0;
+                if (valuation <= 100000000) return valuation / 6.5;
+                if (valuation <= 500000000) return valuation / 7.0;
+                if (valuation <= 2016000000) return valuation / 7.0;
+                return valuation / 7.5; // For $2B+ valuations
+            };
+            
+            // Revenue per Employee by Department (based on your payroll data)
+            const revenuePerEmployee = {
+                'Sales': 750000,     // High revenue generators
+                'Service': 350000,   // Customer service/retention
+                'Support': 400000,   // Operations support
+                'Data': 600000       // Technical/analytics
+            };
+            
+            // Department distribution percentages
+            const deptDistribution = {
+                'Sales': 0.45,       // 45% sales focus
+                'Service': 0.25,     // 25% service
+                'Support': 0.20,     // 20% support
+                'Data': 0.10         // 10% data/tech
+            };
+            
+            // Average salaries by department (from your actual data)
+            const avgSalaries = {
+                'Sales': 349000,     // Calculated from your real sales team
+                'Service': 77600,    // Adjusted based on service team mix
+                'Support': 194000,   // Calculated from your real support team
+                'Data': 120000       // Estimated for data roles
+            };
+            
+            scaledTeams = [];
+            
+            years.forEach(year => {
+                const valuation = companyValuations[year];
+                const impliedRevenue = getRevenueFromValuation(valuation);
+                
+                // Calculate total headcount needed
+                const avgRevenuePerEmployee = Object.keys(revenuePerEmployee).reduce((sum, dept) => {
+                    return sum + (revenuePerEmployee[dept] * deptDistribution[dept]);
+                }, 0);
+                
+                const totalHeadcount = Math.round(impliedRevenue / avgRevenuePerEmployee);
+                
+                // Skip if headcount is too small (rely on individual employees)
+                if (totalHeadcount < 50) return;
+                
+                // Generate department teams for this year
+                Object.keys(deptDistribution).forEach(dept => {
+                    const deptHeadcount = Math.round(totalHeadcount * deptDistribution[dept]);
+                    const avgSalary = avgSalaries[dept];
+                    const totalPayroll = deptHeadcount * avgSalary;
+                    
+                    if (deptHeadcount > 0) {
+                        const team = {
+                            id: `scaled_${dept.toLowerCase()}_${year}`,
+                            name: `${dept} Team ${year}`,
+                            department: dept,
+                            role: 'SCALED',
+                            startDate: `${year}-01-01`,
+                            classOverride: null,
+                            isYou: false,
+                            isScaled: true,
+                            headcount: deptHeadcount,
+                            avgSalary: avgSalary,
+                            w2Data: {}
+                        };
+                        
+                        // Set payroll for this year and future years properly
+                        for (let setYear = 2025; setYear <= 2032; setYear++) {
+                            if (setYear >= year) {
+                                team.w2Data[setYear] = totalPayroll;
+                            } else {
+                                team.w2Data[setYear] = 0; // No payroll before team starts
+                            }
+                        }
+                        
+                        scaledTeams.push(team);
+                    }
+                });
+            });
+        }
+
+        // Global state
+        let currentYear = 2028;
+        let currentPerspective = '1'; // Default to JDM
+        let realPeople = [];
+        let scaledTeams = []; // Scaled team aggregates
+        let growthChart, compoundChart;
+
+        // Initialize charts
+        function initCharts() {
+            // ESOP Growth timeline chart
+            const growthCtx = document.getElementById('growthChart').getContext('2d');
+            growthChart = new Chart(growthCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032'],
+                    datasets: [{
+                        label: 'Annual ESOP Contribution',
+                        data: [],
+                        backgroundColor: '#2E8B57',
+                        borderColor: '#228B22',
+                        borderWidth: 2
+                    }, {
+                        label: 'Company Valuation',
+                        data: [],
+                        type: 'line',
+                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                        borderColor: '#FFD700',
+                        borderWidth: 3,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            position: 'left',
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'ESOP Contribution'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Company Valuation'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Individual compound growth chart - FIXED to show stacked contributions by year
+            const compoundCtx = document.getElementById('compoundChart').getContext('2d');
+            compoundChart = new Chart(compoundCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032'],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calculate comprehensive ESOP allocations with compound growth + SCALED TEAMS
+        function calculateAllocations() {
+            if (realPeople.length === 0) return;
+
+            // Generate scaled teams based on company valuations
+            generateScaledTeams();
+
+            const esopContributions = getAnnualEsopContributions();
+            const companyValuations = getCompanyValuations();
+            
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            // Calculate allocations for each year (COMBINED: individual + scaled)
+            years.forEach(year => {
+                const annualContribution = esopContributions[year];
+                let totalPayroll = 0;
+                let totalWeightedShares = 0;
+
+                // Get active individual people for this year
+                const activeIndividuals = realPeople.filter(person => {
+                    const startYear = new Date(person.startDate).getFullYear();
+                    return startYear <= year;
+                });
+
+                // Get active scaled teams for this year
+                const activeScaledTeams = scaledTeams.filter(team => {
+                    const startYear = new Date(team.startDate).getFullYear();
+                    return startYear <= year;
+                });
+
+                // COMBINED active workforce (individuals + scaled teams)
+                const allActiveEmployees = [...activeIndividuals, ...activeScaledTeams];
+
+                // First pass: Calculate total payroll
+                allActiveEmployees.forEach(employee => {
+                    const w2Amount = employee.w2Data[year] || 0;
+                    totalPayroll += w2Amount;
+                });
+
+                // Second pass: Calculate weighted shares
+                allActiveEmployees.forEach(employee => {
+                    const w2Amount = employee.w2Data[year] || 0;
+                    const tenure = calculateTenure(employee.startDate, year);
+                    const employeeClass = getClassFromTenure(tenure, employee.classOverride);
+                    const multiplier = getMultiplierFromClass(employeeClass);
+                    
+                    if (w2Amount > 0 && totalPayroll > 0) {
+                        const baseShare = (w2Amount / totalPayroll) * 100;
+                        const weightedShare = baseShare * multiplier;
+                        totalWeightedShares += weightedShare;
+                    }
+                });
+
+                // Normalization factor to ensure total = 100%
+                const normalizationFactor = totalWeightedShares > 0 ? 100 / totalWeightedShares : 0;
+
+                // Third pass: Calculate final normalized allocations
+                allActiveEmployees.forEach(employee => {
+                    const w2Amount = employee.w2Data[year] || 0;
+                    const tenure = calculateTenure(employee.startDate, year);
+                    const employeeClass = getClassFromTenure(tenure, employee.classOverride);
+                    const multiplier = getMultiplierFromClass(employeeClass);
+
+                    if (w2Amount > 0 && totalPayroll > 0) {
+                        const baseShare = (w2Amount / totalPayroll) * 100;
+                        const weightedShare = baseShare * multiplier;
+                        const normalizedShare = weightedShare * normalizationFactor;
+                        const annualAllocation = (normalizedShare / 100) * annualContribution;
+
+                        // Store the allocation for this year
+                        if (!employee.annualAllocations) employee.annualAllocations = {};
+                        employee.annualAllocations[year] = annualAllocation;
+
+                        // Store yearly contributions for compound growth tracking
+                        if (!employee.yearlyContributions) employee.yearlyContributions = {};
+                        employee.yearlyContributions[year] = annualAllocation;
+                        
+                        // Store the normalized weighted share for display
+                        if (!employee.normalizedWeightedShares) employee.normalizedWeightedShares = {};
+                        employee.normalizedWeightedShares[year] = normalizedShare;
+                    } else {
+                        if (!employee.annualAllocations) employee.annualAllocations = {};
+                        employee.annualAllocations[year] = 0;
+                        if (!employee.yearlyContributions) employee.yearlyContributions = {};
+                        employee.yearlyContributions[year] = 0;
+                        if (!employee.normalizedWeightedShares) employee.normalizedWeightedShares = {};
+                        employee.normalizedWeightedShares[year] = 0;
+                    }
+                });
+            });
+
+            // Calculate compound growth for BOTH individual people AND scaled teams (ESOP EQUITY APPRECIATION)
+            const allEmployees = [...realPeople, ...scaledTeams];
+            allEmployees.forEach(employee => {
+                employee.compoundValue = {};
+                employee.totalEsopValue = {};
+                employee.contributionsByYear = {};
+                
+                years.forEach(year => {
+                    let compoundValue = 0;
+                    let totalValue = 0;
+                    employee.contributionsByYear[year] = {};
+
+                    // ESOP shares appreciate with company valuation (like equity ownership)
+                    for (let contributionYear = 2025; contributionYear <= year; contributionYear++) {
+                        const contribution = employee.yearlyContributions?.[contributionYear] || 0;
+                        if (contribution > 0) {
+                            // Calculate appreciation: (current valuation / grant valuation) × original allocation
+                            const grantValuation = companyValuations[contributionYear] || 1;
+                            const currentValuation = companyValuations[year] || 1;
+                            const growthFactor = currentValuation / grantValuation;
+                            const currentValue = contribution * growthFactor;
+                            
+                            employee.contributionsByYear[year][contributionYear] = currentValue;
+                            
+                            if (contributionYear < year) {
+                                compoundValue += currentValue;
+                            }
+                            totalValue += currentValue;
+                        }
+                    }
+                    
+                    employee.compoundValue[year] = compoundValue;
+                    employee.totalEsopValue[year] = totalValue;
+                });
+            });
+
+            // Update displays
+            updateMetrics();
+            updateCharts();
+            updateTables();
+            
+            // DEBUG: Check ESOP math for all years
+            years.forEach(year => debugESOPMath(year));
+        }
+
+        // DEBUG: Check if total allocations equal ESOP contributions
+        function debugESOPMath(year) {
+            const esopContribution = getAnnualEsopContributions()[year];
+            const activeIndividuals = realPeople.filter(person => {
+                const startYear = new Date(person.startDate).getFullYear();
+                return startYear <= year;
+            });
+            const activeScaledTeams = scaledTeams.filter(team => {
+                const startYear = new Date(team.startDate).getFullYear();
+                return startYear <= year;
+            });
+            const allActiveEmployees = [...activeIndividuals, ...activeScaledTeams];
+            
+            const totalAllocated = allActiveEmployees.reduce((sum, employee) => {
+                return sum + (employee.annualAllocations?.[year] || 0);
+            }, 0);
+            
+            console.log(`${year} DEBUG:`, {
+                esopContribution: esopContribution,
+                totalAllocated: totalAllocated,
+                difference: Math.abs(esopContribution - totalAllocated),
+                employees: allActiveEmployees.length
+            });
+            
+            // The difference should be near zero (within $1 due to rounding)
+            if (Math.abs(esopContribution - totalAllocated) > 1 && esopContribution > 0) {
+                console.error(`⚠️ ESOP MATH ERROR ${year}: Contribution=${esopContribution}, Allocated=${totalAllocated}`);
+            }
+        }
+
+        // Update metrics (COMBINED individual + scaled teams) - FIXED PAYROLL CALCULATION
+        function updateMetrics() {
+            const esopContributions = getAnnualEsopContributions();
+            const companyValuations = getCompanyValuations();
+            
+            // Get active individual people for current year
+            const activeIndividuals = realPeople.filter(person => {
+                const startYear = new Date(person.startDate).getFullYear();
+                return startYear <= currentYear;
+            });
+
+            // Get ALL active scaled teams for current year (all teams that have started by this year)
+            const activeScaledTeams = scaledTeams.filter(team => {
+                const startYear = new Date(team.startDate).getFullYear();
+                return startYear <= currentYear; // All teams that have started by this year
+            });
+
+            // Get scaled teams that start THIS YEAR for headcount (to avoid double counting)
+            const newScaledTeams = scaledTeams.filter(team => {
+                const startYear = new Date(team.startDate).getFullYear();
+                return startYear === currentYear;
+            });
+
+            let totalPayroll = 0;
+            let totalHeadcount = activeIndividuals.length; // Start with individual count
+            
+            // Add individual payroll
+            activeIndividuals.forEach(person => {
+                totalPayroll += person.w2Data[currentYear] || 0;
+            });
+
+            // Add ALL active scaled teams payroll (not just new ones)
+            activeScaledTeams.forEach(team => {
+                totalPayroll += team.w2Data[currentYear] || 0;
+            });
+
+            // Add headcount for new scaled teams only (to avoid double counting)
+            newScaledTeams.forEach(team => {
+                totalHeadcount += team.headcount;
+            });
+
+            document.getElementById('companyValuation').textContent = formatCurrency(companyValuations[currentYear]);
+            document.getElementById('totalPayroll').textContent = formatCurrency(totalPayroll);
+            document.getElementById('totalEmployees').textContent = totalHeadcount;
+            document.getElementById('esopContribution').textContent = formatCurrency(esopContributions[currentYear]);
+
+            // Update selected person allocation OR company totals
+            if (currentPerspective !== 'company') {
+                const selectedPerson = realPeople.find(p => p.id == currentPerspective);
+                if (selectedPerson) {
+                    const annualAllocation = selectedPerson.annualAllocations?.[currentYear] || 0;
+                    const totalValue = selectedPerson.totalEsopValue?.[currentYear] || 0;
+                    
+                    document.getElementById('selectedPersonAllocation').textContent = formatCurrency(annualAllocation);
+                    document.getElementById('selectedPersonTotal').textContent = formatCurrency(totalValue);
+                }
+                
+                // Update labels for individual view
+                document.getElementById('allocationLabel').textContent = 'Your Allocation';
+                document.getElementById('totalLabel').textContent = 'Your Total ESOP Value';
+            } else {
+                // Company Overview - Show company totals (ALL active employees across all years)
+                const allActiveForTotals = [...activeIndividuals, ...activeScaledTeams];
+                
+                const companyAnnualTotal = allActiveForTotals.reduce((sum, employee) => sum + (employee.annualAllocations?.[currentYear] || 0), 0);
+                const companyTotalValue = allActiveForTotals.reduce((sum, employee) => sum + (employee.totalEsopValue?.[currentYear] || 0), 0);
+                
+                document.getElementById('selectedPersonAllocation').textContent = formatCurrency(companyAnnualTotal);
+                document.getElementById('selectedPersonTotal').textContent = formatCurrency(companyTotalValue);
+                
+                // Update labels for company view
+                document.getElementById('allocationLabel').textContent = 'Company Total Allocation';
+                document.getElementById('totalLabel').textContent = 'Company Total ESOP Value';
+            }
+        }
+
+        // Update charts (COMBINED individual + scaled data)
+        function updateCharts() {
+            const esopContributions = getAnnualEsopContributions();
+            const companyValuations = getCompanyValuations();
+            const years = ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032'];
+
+            // Update growth chart
+            const esopData = years.map(year => esopContributions[year]);
+            const valuationData = years.map(year => companyValuations[year]);
+
+            growthChart.data.datasets[0].data = esopData;
+            growthChart.data.datasets[1].data = valuationData;
+            growthChart.update();
+
+            // Update compound chart - COMBINED data
+            const datasets = [];
+            const yearColors = {
+                2025: '#2E8B57', 2026: '#4682B4', 2027: '#DAA520', 2028: '#CD853F',
+                2029: '#B22222', 2030: '#8B4513', 2031: '#4B0082', 2032: '#2F4F4F'
+            };
+
+            if (currentPerspective !== 'company') {
+                const selectedPerson = realPeople.find(p => p.id == currentPerspective);
+                if (selectedPerson && selectedPerson.contributionsByYear) {
+                    // Create stacked dataset for each contribution year (individual person)
+                    for (let contributionYear = 2025; contributionYear <= 2032; contributionYear++) {
+                        const data = years.map(displayYear => {
+                            if (parseInt(displayYear) >= contributionYear) {
+                                return selectedPerson.contributionsByYear?.[displayYear]?.[contributionYear] || 0;
+                            }
+                            return 0;
+                        });
+                        
+                        // Only create dataset if there's some data
+                        if (data.some(val => val > 0)) {
+                            datasets.push({
+                                label: `${contributionYear} Contribution`,
+                                data: data,
+                                backgroundColor: yearColors[contributionYear],
+                                borderColor: yearColors[contributionYear],
+                                borderWidth: 1
+                            });
+                        }
+                    }
+                }
+            } else {
+                // Company Overview - Show COMBINED totals (individual + scaled)
+                const allEmployees = [...realPeople, ...scaledTeams];
+                const companyAnnualData = years.map(year => {
+                    return allEmployees.reduce((sum, employee) => sum + (employee.annualAllocations?.[year] || 0), 0);
+                });
+                datasets.push({
+                    label: 'Total Annual Allocations (All Employees)',
+                    data: companyAnnualData,
+                    backgroundColor: '#2E8B57',
+                    borderColor: '#2E8B57',
+                    borderWidth: 1
+                });
+            }
+
+            compoundChart.data.datasets = datasets;
+            compoundChart.update();
+        }
+
+        // Update tables (BOTH individual + scaled)
+        function updateTables() {
+            updateW2EsopTable();
+            updateScaledTeamsTable();
+            updateAllocationsTable();
+        }
+
+        // Update Scaled Teams table
+        function updateScaledTeamsTable() {
+            const tbody = document.getElementById('scaledTeamsBody');
+            tbody.innerHTML = '';
+
+            const activeScaledTeams = scaledTeams.filter(team => {
+                const startYear = new Date(team.startDate).getFullYear();
+                return startYear <= currentYear;
+            });
+
+            activeScaledTeams.forEach(team => {
+                const startYear = new Date(team.startDate).getFullYear();
+                const tenure = currentYear - startYear;
+                const teamClass = getClassFromTenure(tenure, team.classOverride);
+                const totalPayroll = team.w2Data[currentYear] || 0;
+                const annualAllocation = team.annualAllocations?.[currentYear] || 0;
+                const perPersonESOP = team.headcount > 0 ? annualAllocation / team.headcount : 0;
+                
+                const row = tbody.insertRow();
+                row.className = `class-${teamClass} scaled-team-row`;
+
+                row.innerHTML = `
+                    <td><strong>${team.name}</strong></td>
+                    <td>${team.department}</td>
+                    <td>${startYear}</td>
+                    <td><strong>${team.headcount} people</strong></td>
+                    <td>${formatCurrency(team.avgSalary)}</td>
+                    <td><strong>${formatCurrency(totalPayroll)}</strong></td>
+                    <td>Class ${teamClass}</td>
+                    <td><strong>${formatCurrency(annualAllocation)}</strong></td>
+                    <td>${formatCurrency(perPersonESOP)}</td>
+                `;
+            });
+            
+            // Update year label
+            document.getElementById('scaledTeamsYearLabel').textContent = currentYear;
+        }
+
+        // Update W2 & ESOP tracking table
+        function updateW2EsopTable() {
+            const tbody = document.getElementById('w2EsopTrackingBody');
+            tbody.innerHTML = '';
+
+            realPeople.forEach(person => {
+                const tenure = calculateTenure(person.startDate, currentYear);
+                const personClass = getClassFromTenure(tenure, person.classOverride);
+                
+                const row = tbody.insertRow();
+                let rowClass = `class-${personClass}`;
+                if (person.isYou) rowClass += ' your-row';
+                else if (person.isPlaceholder) rowClass += ' placeholder-row';
+                else rowClass += ' real-person';
+                row.className = rowClass;
+
+                const displayRole = person.role === 'COR' ? 'COR/AST/SPC' : 
+                                   person.role === 'LDR' ? 'LDR/MGR/DIR' : 
+                                   person.role === 'VP' ? 'VP/SVP/EVP' : person.role;
+
+                row.innerHTML = `
+                    <td>${person.name}${person.isYou ? ' <strong>(YOU)</strong>' : ''}</td>
+                    <td>${person.department}</td>
+                    <td>${displayRole}</td>
+                    <td>${formatDate(person.startDate)}</td>
+                    <td>${tenure.toFixed(1)} yr</td>
+                    <td>Class ${personClass}</td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2025] || 0}" onchange="updateW2(${person.id}, 2025, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2026] || 0}" onchange="updateW2(${person.id}, 2026, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2027] || 0}" onchange="updateW2(${person.id}, 2027, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2028] || 0}" onchange="updateW2(${person.id}, 2028, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2029] || 0}" onchange="updateW2(${person.id}, 2029, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2030] || 0}" onchange="updateW2(${person.id}, 2030, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2031] || 0}" onchange="updateW2(${person.id}, 2031, this.value)"></td>
+                    <td><input type="number" class="w2-input" value="${person.w2Data[2032] || 0}" onchange="updateW2(${person.id}, 2032, this.value)"></td>
+                    <td><button class="remove-btn" onclick="removePerson(${person.id})">Remove</button></td>
+                `;
+            });
+        }
+
+        // Update allocations table - ONLY SELECTED PERSPECTIVE as requested
+        function updateAllocationsTable() {
+            const tbody = document.getElementById('allocationsTableBody');
+            tbody.innerHTML = '';
+
+            // Get active people for current year
+            const activePeople = realPeople.filter(person => {
+                const startYear = new Date(person.startDate).getFullYear();
+                return startYear <= currentYear;
+            });
+
+            let displayPeople = [];
+            
+            if (currentPerspective === 'company') {
+                // Company view - show all people
+                displayPeople = [...activePeople].sort((a, b) => {
+                    const aTotal = a.totalEsopValue?.[currentYear] || 0;
+                    const bTotal = b.totalEsopValue?.[currentYear] || 0;
+                    return bTotal - aTotal;
+                });
+            } else {
+                // Individual view - show only selected person (as requested)
+                const selectedPerson = realPeople.find(p => p.id == currentPerspective);
+                if (selectedPerson && activePeople.includes(selectedPerson)) {
+                    displayPeople = [selectedPerson];
+                }
+            }
+
+            let totalPayroll = 0;
+            activePeople.forEach(person => {
+                totalPayroll += person.w2Data[currentYear] || 0;
+            });
+
+            displayPeople.forEach(person => {
+                const w2Amount = person.w2Data[currentYear] || 0;
+                if (w2Amount > 0) {
+                    const tenure = calculateTenure(person.startDate, currentYear);
+                    const personClass = getClassFromTenure(tenure, person.classOverride);
+                    const multiplier = getMultiplierFromClass(personClass);
+                    const baseShare = totalPayroll > 0 ? (w2Amount / totalPayroll) * 100 : 0;
+                    const weightedShare = baseShare * multiplier;
+                    
+                    const annualAllocation = person.annualAllocations?.[currentYear] || 0;
+                    const compoundValue = person.compoundValue?.[currentYear] || 0;
+                    const totalValue = person.totalEsopValue?.[currentYear] || 0;
+
+                    const row = tbody.insertRow();
+                    let rowClass = `class-${personClass}`;
+                    if (person.isYou) rowClass += ' your-row';
+                    else if (person.isPlaceholder) rowClass += ' placeholder-row';
+                    else rowClass += ' real-person';
+                    
+                    if (compoundValue > annualAllocation) {
+                        rowClass += ' compound-highlight';
+                    }
+                    
+                    row.className = rowClass;
+
+                    row.innerHTML = `
+                        <td>${person.name}${person.isYou ? ' <strong>(YOU)</strong>' : ''}</td>
+                        <td>${formatCurrency(w2Amount)}</td>
+                        <td>${baseShare.toFixed(2)}%</td>
+                        <td>Class ${personClass}</td>
+                        <td>${multiplier}x</td>
+                        <td>${(person.normalizedWeightedShares?.[currentYear] || 0).toFixed(2)}%</td>
+                        <td><strong>${formatCurrency(annualAllocation)}</strong></td>
+                        <td>${formatCurrency(compoundValue)}</td>
+                        <td><strong>${formatCurrency(totalValue)}</strong></td>
+                    `;
+                }
+            });
+        }
+
+        // Update W2 data with auto-populate
+        function updateW2(personId, year, value) {
+            const person = realPeople.find(p => p.id === personId);
+            if (person) {
+                const newValue = parseFloat(value) || 0;
+                person.w2Data[year] = newValue;
+                
+                // Auto-populate to future years if they're currently 0 or less than current value
+                const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+                const currentYearIndex = years.indexOf(year);
+                
+                if (currentYearIndex >= 0) {
+                    for (let i = currentYearIndex + 1; i < years.length; i++) {
+                        const futureYear = years[i];
+                        // Only auto-populate if future year is 0 or less than current value
+                        if (!person.w2Data[futureYear] || person.w2Data[futureYear] < newValue) {
+                            person.w2Data[futureYear] = newValue;
+                        }
+                    }
+                }
+                
+                // Update the display and recalculate
+                updateW2EsopTable();
+                calculateAllocations();
+            }
+        }
+
+        // Update perspective
+        function updatePerspective() {
+            currentPerspective = document.getElementById('viewPerspective').value;
+            calculateAllocations();
+        }
+
+        // Update perspective dropdown
+        function updatePerspectiveDropdown() {
+            const select = document.getElementById('viewPerspective');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="company">📊 Company Overview</option>';
+            
+            realPeople.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person.id;
+                option.textContent = person.name;
+                select.appendChild(option);
+            });
+            
+            if (realPeople.find(p => p.id == currentValue)) {
+                select.value = currentValue;
+                currentPerspective = currentValue;
+            } else if (realPeople.length > 0) {
+                // Default to first person (JDM)
+                currentPerspective = realPeople[0].id;
+                select.value = currentPerspective;
+            } else {
+                currentPerspective = 'company';
+                select.value = 'company';
+            }
+        }
+
+        // Add real person
+        function addRealPerson() {
+            const name = document.getElementById('personName').value.trim();
+            const dept = document.getElementById('personDept').value;
+            const role = document.getElementById('personRole').value;
+            const startDate = document.getElementById('personStartDate').value;
+            const classOverride = document.getElementById('personClass').value || null;
+            const isYou = document.getElementById('isYou').checked;
+            
+            if (!name || !startDate) {
+                alert('Please fill in name and start date');
+                return;
+            }
+            
+            if (isYou) {
+                realPeople.forEach(p => p.isYou = false);
+            }
+            
+            const newPerson = {
+                id: Date.now(),
+                name: name,
+                department: dept,
+                role: role,
+                startDate: startDate,
+                classOverride: classOverride,
+                isYou: isYou,
+                isPlaceholder: false,
+                w2Data: {
+                    2025: 0, 2026: 0, 2027: 0, 
+                    2028: 0, 2029: 0, 2030: 0,
+                    2031: 0, 2032: 0
+                }
+            };
+            
+            realPeople.push(newPerson);
+            
+            // Clear form
+            document.getElementById('personName').value = '';
+            document.getElementById('personStartDate').value = '2022-01-01';
+            document.getElementById('personClass').value = '';
+            document.getElementById('isYou').checked = false;
+            
+            updatePerspectiveDropdown();
+            calculateAllocations();
+        }
+
+        // Remove person
+        function removePerson(id) {
+            realPeople = realPeople.filter(p => p.id !== id);
+            updatePerspectiveDropdown();
+            calculateAllocations();
+        }
+
+        // Switch year
+        function switchYear() {
+            currentYear = parseInt(document.querySelector('.year-btn.active').dataset.year);
+            document.getElementById('currentYearLabel').textContent = currentYear;
+            document.getElementById('allocationYearLabel').textContent = currentYear;
+            
+            calculateAllocations();
+        }
+
+        // Reset to defaults
+        function resetToDefaults() {
+            realPeople = [];
+            updatePerspectiveDropdown();
+            calculateAllocations();
+        }
+        
+        // Load real team
+        function loadRealTeam() {
+            initializeRealTeam();
+            updatePerspectiveDropdown();
+            calculateAllocations();
+        }
+
+        // Toggle table function
+        window.toggleTable = function(tableId) {
+            let targetElement, toggle;
+            
+            if (tableId === 'add-person') {
+                targetElement = document.getElementById('add-person-content');
+                toggle = document.getElementById('add-person-toggle');
+            } else if (tableId === 'esop-contributions') {
+                targetElement = document.getElementById('esop-contributions-content');
+                toggle = document.getElementById('esop-contributions-toggle');
+            } else if (tableId === 'valuation-growth') {
+                targetElement = document.getElementById('valuation-growth-content');
+                toggle = document.getElementById('valuation-growth-toggle');
+            } else if (tableId === 'w2-growth') {
+                targetElement = document.getElementById('w2-growth-content');
+                toggle = document.getElementById('w2-growth-toggle');
+            } else if (tableId === 'scaled-teams') {
+                targetElement = document.getElementById('scaled-teams-table');
+                toggle = document.getElementById('scaled-teams-toggle');
+            } else {
+                targetElement = document.getElementById(tableId + '-table');
+                toggle = document.getElementById(tableId + '-toggle');
+            }
+            
+            if (targetElement && toggle) {
+                if (targetElement.style.display === 'none') {
+                    targetElement.style.display = 'block';
+                    toggle.textContent = 'Hide';
+                } else {
+                    targetElement.style.display = 'none';
+                    toggle.textContent = 'Show';
+                }
+            }
+        };
+
+        // Event listeners
+        document.querySelectorAll('.year-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentYear = parseInt(btn.dataset.year);
+                document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                switchYear();
+            });
+        });
+
+        // Initialize
+        initCharts();
+        loadRealTeam();
+        generateScaledTeams();
+        applyW2Growth(); // Apply default growth rates
+        calculateAllocations();
+    </script>
+</body>
+</html>

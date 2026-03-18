@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Review Meeting — {{CLIENT_NAMES}}</title>
+<!--
+  RPI Client Review Meeting Template
+  ===================================
+  Created: 2026-03-16
+  Source: Sibenaller & Hansman review (Archer, Carroll IA)
+  Process: CASEWORK-PROCESS-CLIENT-REVIEW-MEETING.md
+
+  USAGE:
+  1. Copy this file to ~/Desktop/[ClientName]-Review-Meeting.html
+  2. Replace all {{VARIABLE}} placeholders with real data
+  3. Add/remove asset table rows as needed
+  4. Add/remove opportunity boxes as needed (green/yellow/blue)
+  5. Add/remove checklist items as needed
+  6. Open in browser → Print → Save as PDF
+
+  VARIABLES (search & replace):
+  {{CLIENT_NAMES}}        - "FirstA LastA & FirstB LastB" (or single client)
+  {{MEETING_DATE}}        - "March 17, 2026"
+  {{AGENT_NAME}}          - "Archer"
+  {{LOCATION}}            - "1908 Quint Ave, Carroll, IA 51401"
+  {{NET_WORTH}}           - "$2.14M"
+  {{INVESTABLE}}          - "$1.18M"
+  {{LIQUID}}              - "$450K"
+  {{ANNUAL_INCOME}}       - "$90,937"
+  {{ANNUAL_EXPENSES}}     - "$68,202"
+  {{DISPOSABLE}}          - "$22,734"
+
+  Per-client cards, asset tables, income rows, opportunity boxes,
+  and checklist items are structural — add/remove blocks as needed.
+
+  DESIGN SYSTEM:
+  - Navy: #1a3a5c (headers, accents, text emphasis)
+  - Table header bg: #e8edf2
+  - Highlight row: #f0f6ff
+  - Opportunity green: border #2a7d4f, bg #f4faf6
+  - Opportunity yellow: border #c49000, bg #fef9ee
+  - Opportunity blue: border #2563b3, bg #f0f6ff
+  - Print: Letter, 0.5in/0.6in margins
+-->
+<style>
+  @page {
+    size: letter;
+    margin: 0.5in 0.6in;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 10pt;
+    color: #1a1a1a;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #1a3a5c;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .header-left h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1a3a5c;
+    letter-spacing: -0.3px;
+  }
+  .header-left .subtitle {
+    font-size: 10pt;
+    color: #555;
+    margin-top: 2px;
+  }
+  .header-right {
+    text-align: right;
+    font-size: 9pt;
+    color: #555;
+    line-height: 1.5;
+  }
+  .header-right strong { color: #1a3a5c; }
+  .brand {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a3a5c;
+    letter-spacing: 1px;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 14px;
+    break-inside: avoid;
+  }
+  .section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #fff;
+    background: #1a3a5c;
+    padding: 4px 10px;
+    margin-bottom: 6px;
+    border-radius: 2px;
+  }
+
+  /* TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+  th {
+    background: #e8edf2;
+    color: #1a3a5c;
+    font-weight: 700;
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 1.5px solid #1a3a5c;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 3px 6px;
+    border-bottom: 0.5px solid #ddd;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  .highlight-row td { background: #f0f6ff; }
+  .total-row { background: #1a3a5c; color: #fff; font-weight: 700; }
+  .total-row td { color: #fff; border-bottom: none; }
+  .flag-row td { background: #fef9ee; }
+
+  /* TWO COLUMN LAYOUT */
+  .two-col {
+    display: flex;
+    gap: 16px;
+  }
+  .two-col > div { flex: 1; }
+
+  /* CARDS */
+  .card {
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    break-inside: avoid;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 9.5pt;
+    color: #1a3a5c;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 3px;
+  }
+  .card p, .card li {
+    font-size: 9pt;
+    margin-bottom: 2px;
+  }
+
+  /* KEY-VALUE PAIRS */
+  .kv { display: flex; gap: 4px; margin-bottom: 1px; }
+  .kv .k { font-weight: 600; color: #444; min-width: 80px; }
+  .kv .v { color: #1a1a1a; }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #d0d7de;
+  }
+  .summary-item {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    border-right: 1px solid #d0d7de;
+  }
+  .summary-item:last-child { border-right: none; }
+  .summary-item .label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    font-weight: 600;
+  }
+  .summary-item .value {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1a3a5c;
+  }
+  .summary-item .value.green { color: #1a7a3a; }
+
+  /* OPPORTUNITY BOXES */
+  .opp-box {
+    border-left: 3px solid #2a7d4f;
+    background: #f4faf6;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    break-inside: avoid;
+    border-radius: 0 4px 4px 0;
+  }
+  .opp-box.yellow {
+    border-left-color: #c49000;
+    background: #fef9ee;
+  }
+  .opp-box.blue {
+    border-left-color: #2563b3;
+    background: #f0f6ff;
+  }
+  .opp-title {
+    font-weight: 700;
+    font-size: 9.5pt;
+    color: #1a3a5c;
+    margin-bottom: 3px;
+  }
+  .opp-box p, .opp-box li { font-size: 8.5pt; line-height: 1.35; }
+  .opp-box ul { padding-left: 14px; margin-top: 2px; }
+  .talk-track {
+    font-style: italic;
+    color: #2a6b3f;
+    margin-top: 3px;
+    font-size: 8.5pt;
+  }
+  .opp-box.yellow .talk-track { color: #8a6500; }
+  .opp-box.blue .talk-track { color: #1d4f8a; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    padding: 3px 0 3px 20px;
+    position: relative;
+    font-size: 9pt;
+    border-bottom: 0.5px dotted #ccc;
+  }
+  .checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid #888;
+    border-radius: 2px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+
+  /* NOTES AREA */
+  .notes-area {
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    min-height: 80px;
+    padding: 6px;
+    margin-top: 4px;
+  }
+  .notes-lines {
+    border-bottom: 0.5px dotted #ccc;
+    height: 18px;
+  }
+
+  /* PAGE BREAKS */
+  .page-break { page-break-before: always; }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: #999;
+  }
+
+  @media print {
+    body { font-size: 9.5pt; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PAGE 1 — CLIENT SNAPSHOT + ASSETS
+     ============================================================ -->
+<div class="header">
+  <div class="header-left">
+    <h1>Client Review Meeting</h1>
+    <div class="subtitle">{{CLIENT_NAMES}}</div>
+  </div>
+  <div class="header-right">
+    <div class="brand">RETIREMENT PROTECTORS</div>
+    <strong>Date:</strong> {{MEETING_DATE}}<br>
+    <strong>Agent:</strong> {{AGENT_NAME}}<br>
+    <strong>Location:</strong> {{LOCATION}}
+  </div>
+</div>
+
+<!-- SUMMARY BAR — 6 household-level metrics -->
+<div class="summary-bar">
+  <div class="summary-item">
+    <div class="label">Net Worth</div>
+    <div class="value">{{NET_WORTH}}</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Investable</div>
+    <div class="value">{{INVESTABLE}}</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Liquid (CDs/Bank)</div>
+    <div class="value">{{LIQUID}}</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Annual Income</div>
+    <div class="value green">{{ANNUAL_INCOME}}</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Annual Expenses</div>
+    <div class="value">{{ANNUAL_EXPENSES}}</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Disposable</div>
+    <div class="value green">{{DISPOSABLE}}</div>
+  </div>
+</div>
+
+<!-- CLIENT INFO — duplicate .card blocks for each person in household -->
+<div class="section">
+  <div class="section-title">Client Information</div>
+  <div class="two-col">
+    <!-- CLIENT A -->
+    <div class="card">
+      <div class="card-title">{{CLIENT_A_NAME}}</div>
+      <div class="kv"><span class="k">Age / DOB:</span><span class="v">{{CLIENT_A_AGE}} — {{CLIENT_A_DOB}}</span></div>
+      <div class="kv"><span class="k">Phone:</span><span class="v">{{CLIENT_A_PHONE}}</span></div>
+      <div class="kv"><span class="k">Email:</span><span class="v">{{CLIENT_A_EMAIL}}</span></div>
+      <div class="kv"><span class="k">Medicare #:</span><span class="v">{{CLIENT_A_MEDICARE}}</span></div>
+      <div class="kv"><span class="k">Tax Status:</span><span class="v">{{CLIENT_A_TAX}}</span></div>
+    </div>
+    <!-- CLIENT B (remove this block for single-client meetings) -->
+    <div class="card">
+      <div class="card-title">{{CLIENT_B_NAME}}</div>
+      <div class="kv"><span class="k">Age / DOB:</span><span class="v">{{CLIENT_B_AGE}} — {{CLIENT_B_DOB}}</span></div>
+      <div class="kv"><span class="k">Phone:</span><span class="v">{{CLIENT_B_PHONE}}</span></div>
+      <div class="kv"><span class="k">Email:</span><span class="v">{{CLIENT_B_EMAIL}}</span></div>
+      <div class="kv"><span class="k">Medicare #:</span><span class="v">{{CLIENT_B_MEDICARE}}</span></div>
+      <div class="kv"><span class="k">Employment:</span><span class="v">{{CLIENT_B_EMPLOYMENT}}</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT A ASSETS — add/remove <tr> rows as needed -->
+<div class="section">
+  <div class="section-title">{{CLIENT_A_NAME}}'s Accounts</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Carrier</th>
+        <th>Product</th>
+        <th>Account #</th>
+        <th>Value</th>
+        <th>Key Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- MAJOR ACCOUNTS: use class="highlight-row" -->
+      <tr class="highlight-row">
+        <td><strong>FIA (IRA)</strong></td>
+        <td>{{CARRIER}}</td>
+        <td>{{PRODUCT}}</td>
+        <td>{{ACCOUNT_NUM}}</td>
+        <td><strong>{{AV}}</strong><br><span style="font-size:8pt;color:#666">SV: {{SV}}</span></td>
+        <td>{{DETAILS}}</td>
+      </tr>
+      <!-- MINOR ACCOUNTS: no highlight -->
+      <tr>
+        <td>Med Supp</td>
+        <td>{{CARRIER}}</td>
+        <td>Plan G</td>
+        <td>{{ACCOUNT_NUM}}</td>
+        <td>—</td>
+        <td>{{DETAILS}}</td>
+      </tr>
+      <!-- ADD MORE ROWS AS NEEDED -->
+    </tbody>
+  </table>
+</div>
+
+<!-- CLIENT B ASSETS (remove entire section for single-client meetings) -->
+<div class="section">
+  <div class="section-title">{{CLIENT_B_NAME}}'s Accounts</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Carrier / Source</th>
+        <th>Product</th>
+        <th>Account #</th>
+        <th>Value</th>
+        <th>Key Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight-row">
+        <td><strong>{{TYPE}}</strong></td>
+        <td>{{CARRIER}}</td>
+        <td>{{PRODUCT}}</td>
+        <td>{{ACCOUNT_NUM}}</td>
+        <td><strong>{{VALUE}}</strong></td>
+        <td>{{DETAILS}}</td>
+      </tr>
+      <!-- ADD MORE ROWS AS NEEDED -->
+    </tbody>
+  </table>
+</div>
+
+<!-- INCOME SUMMARY -->
+<div class="section">
+  <div class="section-title">Household Income Summary</div>
+  <table>
+    <thead>
+      <tr><th>Source</th><th>Payor</th><th>Owner</th><th>Tax Type</th><th>Annual Amount</th><th>Net</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{SOURCE}}</td>
+        <td>{{PAYOR}}</td>
+        <td>{{OWNER}}</td>
+        <td>{{TAX_TYPE}}</td>
+        <td>{{AMOUNT}}</td>
+        <td>{{NET}}</td>
+      </tr>
+      <!-- FLAG ROW: for items needing confirmation -->
+      <tr class="flag-row">
+        <td>Social Security</td>
+        <td>US Treasury</td>
+        <td>{{CLIENT_NAME}}</td>
+        <td>Provisional</td>
+        <td style="color:#c44;">$0 — CONFIRM</td>
+        <td>—</td>
+      </tr>
+      <!-- TOTAL ROW -->
+      <tr class="total-row">
+        <td colspan="4">TOTAL HOUSEHOLD</td>
+        <td>{{TOTAL_INCOME}}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================
+     PAGE 2 — OPPORTUNITIES & DISCUSSION POINTS
+     ============================================================ -->
+<div class="page-break"></div>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Opportunities & Discussion Points</h1>
+    <div class="subtitle">{{CLIENT_NAMES}} — {{MEETING_DATE}}</div>
+  </div>
+  <div class="header-right">
+    <div class="brand">RETIREMENT PROTECTORS</div>
+  </div>
+</div>
+
+<!--
+  OPPORTUNITY BOXES
+  =================
+  Three color variants:
+
+  YELLOW (class="opp-box yellow") — Confirm first / needs investigation
+  GREEN  (class="opp-box")        — Clear win / actionable
+  BLUE   (class="opp-box blue")   — Educational / long-term
+
+  Each box has:
+  - .opp-title   — Bold heading with number
+  - <p>          — Context paragraph
+  - <ul><li>     — Bullet points
+  - .talk-track  — Italic talk track for the advisor
+-->
+
+<!-- EXAMPLE: Yellow (confirm first) -->
+<div class="opp-box yellow">
+  <div class="opp-title">1. {{OPPORTUNITY_TITLE}}</div>
+  <p>{{CONTEXT_PARAGRAPH}}</p>
+  <ul>
+    <li>{{BULLET_1}}</li>
+    <li>{{BULLET_2}}</li>
+  </ul>
+  <div class="talk-track">"{{TALK_TRACK}}"</div>
+</div>
+
+<!-- EXAMPLE: Green (actionable) -->
+<div class="opp-box">
+  <div class="opp-title">2. {{OPPORTUNITY_TITLE}}</div>
+  <p>{{CONTEXT_PARAGRAPH}}</p>
+  <ul>
+    <li>{{BULLET_1}}</li>
+    <li>{{BULLET_2}}</li>
+    <li>{{BULLET_3}}</li>
+  </ul>
+  <div class="talk-track">"{{TALK_TRACK}}"</div>
+</div>
+
+<!-- EXAMPLE: Blue (educational) -->
+<div class="opp-box blue">
+  <div class="opp-title">3. {{OPPORTUNITY_TITLE}}</div>
+  <p>{{CONTEXT_PARAGRAPH}}</p>
+  <ul>
+    <li>{{BULLET_1}}</li>
+    <li>{{BULLET_2}}</li>
+  </ul>
+  <div class="talk-track">"{{TALK_TRACK}}"</div>
+</div>
+
+<!-- ADD MORE OPPORTUNITY BOXES AS NEEDED -->
+
+
+<!-- ============================================================
+     PAGE 3 — HOUSEKEEPING & MEETING NOTES
+     ============================================================ -->
+<div class="page-break"></div>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Housekeeping & Meeting Notes</h1>
+    <div class="subtitle">{{CLIENT_NAMES}} — {{MEETING_DATE}}</div>
+  </div>
+  <div class="header-right">
+    <div class="brand">RETIREMENT PROTECTORS</div>
+  </div>
+</div>
+
+<!-- CONFIRMATION CHECKLIST — add/remove <li> items as needed -->
+<div class="section">
+  <div class="section-title">Items to Confirm</div>
+  <ul class="checklist">
+    <li>{{CHECKLIST_ITEM_1}}</li>
+    <li>{{CHECKLIST_ITEM_2}}</li>
+    <li>{{CHECKLIST_ITEM_3}}</li>
+    <li>{{CHECKLIST_ITEM_4}}</li>
+    <li>{{CHECKLIST_ITEM_5}}</li>
+    <!-- ADD MORE AS NEEDED -->
+  </ul>
+</div>
+
+<!-- MEETING FLOW -->
+<div class="section">
+  <div class="section-title">Suggested Meeting Flow</div>
+  <table>
+    <thead>
+      <tr><th style="width:30px">#</th><th style="width:160px">Phase</th><th>What to Do</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Open Warm</td><td>"We're here to make sure everything is working for you and nothing's been missed."</td></tr>
+      <tr><td><strong>2</strong></td><td>Walk the Full Picture</td><td>Show them what they own — asset tables on Page 1. Most clients have never seen it all in one place.</td></tr>
+      <tr><td><strong>3</strong></td><td>Confirm the Unknowns</td><td>Work through the checklist above. Get answers, take notes.</td></tr>
+      <tr><td><strong>4</strong></td><td>Educate on Opportunities</td><td>Walk through the top 2-3 opportunities from Page 2. Use the talk tracks.</td></tr>
+      <tr><td><strong>5</strong></td><td>Medicare Quick-Check</td><td>Premiums competitive? Drug coverage solid? Any gaps?</td></tr>
+      <tr><td><strong>6</strong></td><td>Close with Next Steps</td><td>Anything they want to change? Concerns? Schedule follow-up if needed.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- NOTES -->
+<div class="section">
+  <div class="section-title">Meeting Notes</div>
+  <div class="notes-area">
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+  </div>
+</div>
+
+<!-- NEXT STEPS -->
+<div class="section">
+  <div class="section-title">Next Steps & Follow-Up</div>
+  <div class="notes-area">
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+    <div class="notes-lines"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Retirement Protectors, Inc. — Confidential Client Review</span>
+  <span>Prepared for {{AGENT_NAME}} — {{PREPARED_DATE}}</span>
+</div>
+
+</body>
+</html>

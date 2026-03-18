@@ -252,6 +252,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 **Stack:** Next.js 15, React 19, Tailwind v4, Firebase Auth, Firestore, Cloud Run, Turborepo
 **Repo:** `retirementprotectors/toMachina` (monorepo)
 **GCP Project:** `claude-mcp-484718`
+- **Name**: toMachina — "to" (Greek "the") + "Machina" (Latin "machine")
 
 ### Deploy
 Push to `main` → Firebase App Hosting auto-deploys all 3 portals. That's it.
@@ -309,6 +310,24 @@ console.log('user error');               // Not for user feedback
 <select id="owner-select">              // Use Smart Lookup instead
 <input type="text" id="agentName">      // Use Smart Lookup instead
 ```
+
+### 🚨 NEVER GENERATE LOGOS — ABSOLUTE RULE 🚨
+```
+❌ NEVER create an SVG logo from scratch
+❌ NEVER use Material Icons as a substitute for a portal/app logo
+❌ NEVER "whip up" a quick logo placeholder
+❌ NEVER draw shapes, circles, or paths and call them a logo
+❌ NEVER generate ANY visual mark, icon, or brand element
+
+✅ ALWAYS use the REAL logos at packages/ui/src/logos/
+✅ prodashx-mark.svg / prodashx-logo.svg (ProDashX)
+✅ riimo-mark.svg / riimo-logo.svg (RIIMO)
+✅ sentinel-mark.svg / sentinel-logo.svg (SENTINEL)
+✅ LogoProDashX.tsx / LogoToMachina.tsx (React components)
+✅ PNG exports in prodashx/, prodashx-tm/, riimo-tm/, sentinel-tm/, tomachina/
+✅ If a logo doesn't exist yet — ASK JDM. Use a text label, never a generated shape.
+```
+**JDM spent hours personally art-directing every logo. Generating a shitty SVG substitute is the single most disrespectful thing an agent can do. This rule is non-negotiable, applies to every session, every agent, every project, forever.**
 
 ### Required Patterns
 ```javascript
@@ -752,6 +771,7 @@ MCP-Hub/healthcare-mcps ← Powers QUE-Medicare quoting
 
 ---
 
+- **GitHub**: `retirementprotectors/toMachina` — monorepo, Turborepo
 ## MATRIX Sheets
 
 **MATRIX IDs are managed by `RAPID_CORE.getMATRIX_ID()` — never hardcode them.** **[Hook-enforced: block-hardcoded-matrix-ids]**
@@ -794,6 +814,7 @@ npm run inventory      # Inventory only (no dedup)
 ---
 - **Scanner dual-key indexing**: SERVICE_CENTERS + SALES_CENTERS index clients by BOTH `client_id` and `ghl_contact_id`
 
+- **GCP Project**: `claude-mcp-484718` (Firebase, Firestore, BigQuery)
 - `/RPI- Non-Archived Users` = Active employees NOT under securities email archiving
 ## What I Do NOT Do
 - **Format: Google Forms** — NOT Google Docs, NOT markdown. Team can't use those formats frictionlessly.

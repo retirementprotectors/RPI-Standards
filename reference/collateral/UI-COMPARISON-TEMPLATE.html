@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProDashX UI Comparison — GAS vs toMachina</title>
+<style>
+  :root {
+    --navy: #1a3158;
+    --blue: #4a7ab5;
+    --green: #40bc58;
+    --red: #e74c3c;
+    --gold: #f39c12;
+    --bg: #0f1923;
+    --card: #1a2632;
+    --border: #2a3a4a;
+    --text: #e8eaed;
+    --muted: #8899aa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+  .header {
+    background: var(--navy);
+    padding: 24px 40px;
+    border-bottom: 3px solid var(--blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 { font-size: 24px; font-weight: 800; }
+  .header h1 span { color: var(--blue); }
+  .header .subtitle { color: var(--muted); font-size: 14px; }
+
+  .nav {
+    background: var(--card);
+    padding: 12px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .nav a:hover, .nav a.active {
+    background: var(--blue);
+    color: white;
+  }
+  .nav .section-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 12px;
+    align-self: center;
+  }
+
+  .comparison {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px 40px;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .page-route {
+    font-size: 13px;
+    color: var(--blue);
+    font-family: monospace;
+    margin-bottom: 20px;
+  }
+
+  .screenshots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .screenshot-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .screenshot-card .label {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .screenshot-card.gas .label {
+    background: rgba(74, 122, 181, 0.15);
+    color: var(--blue);
+  }
+  .screenshot-card.tm .label {
+    background: rgba(64, 188, 88, 0.15);
+    color: var(--green);
+  }
+  .screenshot-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .analysis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .analysis-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .analysis-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .analysis-card.gas h3 { color: var(--blue); }
+  .analysis-card.tm h3 { color: var(--green); }
+  .analysis-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .analysis-card li {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-left: 16px;
+    position: relative;
+  }
+  .analysis-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .analysis-card.gas li::before { background: var(--blue); }
+  .analysis-card.tm li::before { background: var(--green); }
+
+  .verdict {
+    background: var(--card);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 48px;
+  }
+  .verdict h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .verdict table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .verdict th, .verdict td {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .verdict th {
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+  }
+  .verdict td { color: var(--text); }
+  .winner-gas { color: var(--blue) !important; font-weight: 700; }
+  .winner-tm { color: var(--green) !important; font-weight: 700; }
+  .winner-tie { color: var(--gold) !important; font-weight: 700; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>ProDashX <span>UI Comparison</span></h1>
+    <div class="subtitle">GAS Original vs toMachina — Page by Page Audit</div>
+  </div>
+  <div class="subtitle">Sprint 7 Planning — 2026-03-12</div>
+</div>
+
+<div class="nav">
+  <span class="section-label">Workspace</span>
+  <a href="#clients" class="active">Clients</a>
+  <a href="#accounts">Accounts</a>
+  <a href="#mycases">My Cases</a>
+  <a href="#reports">Report Orders</a>
+  <span class="section-label">Sales</span>
+  <a href="#medicare">Medicare</a>
+  <a href="#life">Life</a>
+  <a href="#annuity">Annuity</a>
+  <a href="#advisory">Advisory</a>
+  <span class="section-label">Service</span>
+  <a href="#rmd">RMD Center</a>
+  <a href="#beni">Beni Center</a>
+</div>
+
+<div class="comparison">
+
+  <!-- ==================== CLIENTS ==================== -->
+  <div id="clients">
+    <div class="page-title">Clients / Contacts</div>
+    <div class="page-route">/clients — Primary workspace view</div>
+
+    <div class="screenshots">
+      <div class="screenshot-card gas">
+        <div class="label">GAS Original (ProDashX)</div>
+        <img src="gas-clients.png" alt="GAS Clients">
+      </div>
+      <div class="screenshot-card tm">
+        <div class="label">toMachina (Current)</div>
+        <img src="tm-clients.png" alt="toMachina Clients">
+      </div>
+    </div>
+
+    <div class="analysis">
+      <div class="analysis-card gas">
+        <h3>GAS Original — What It Does Well</h3>
+        <ul>
+          <li>5 specific power filters (Status, Books, Agents, Accounts, ACF) with colored dropdowns — more filtering granularity</li>
+          <li>Clients/Accounts tab toggle at top of sidebar — fast context switching</li>
+          <li>Quick Intake floating panel with PDF drop + text paste — immediate data entry</li>
+          <li>Sidebar search scoped to clients only</li>
+          <li>ACF column in data table — compliance visibility at a glance</li>
+          <li>Colored filter dropdowns (teal/blue fills) give visual weight to active filters</li>
+        </ul>
+      </div>
+      <div class="analysis-card tm">
+        <h3>toMachina — What It Does Well</h3>
+        <ul>
+          <li>Real data loaded (5,018 clients) — functional and connected to Firestore</li>
+          <li>Global search in top bar — unified search across clients, accounts, agents</li>
+          <li>Portal switcher dropdown — can jump between ProDashX/RIIMO/SENTINEL</li>
+          <li>Notification bell + user profile in top bar — modern SaaS layout</li>
+          <li>+ Add Client button prominent — clear primary action</li>
+          <li>Location column — geographic context at a glance</li>
+          <li>Avatar initials with colored backgrounds — visual identity per contact</li>
+          <li>Cleaner typography and spacing — less cramped</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <h3>Verdict — Element by Element</h3>
+      <table>
+        <tr><th>Element</th><th>GAS</th><th>toMachina</th><th>Winner</th></tr>
+        <tr><td>Filter bar</td><td>5 specific filters with color</td><td>2 generic filters, muted</td><td class="winner-gas">GAS — bring back power filters</td></tr>
+        <tr><td>Sidebar tabs</td><td>Clients/Accounts toggle</td><td>No toggle</td><td class="winner-gas">GAS — add tab toggle back</td></tr>
+        <tr><td>Quick Intake</td><td>Floating panel, PDF drop</td><td>Not present</td><td class="winner-gas">GAS — this was a killer feature</td></tr>
+        <tr><td>Search</td><td>Sidebar-scoped</td><td>Global top bar</td><td class="winner-tm">toMachina — unified is better</td></tr>
+        <tr><td>Top bar</td><td>Just title + avatar</td><td>Logo + switcher + search + notifs</td><td class="winner-tm">toMachina — modern SaaS standard</td></tr>
+        <tr><td>Data table</td><td>Empty (no data connection)</td><td>5,018 real clients</td><td class="winner-tm">toMachina — actually works</td></tr>
+        <tr><td>Visual density</td><td>Tighter, more info per pixel</td><td>More whitespace</td><td class="winner-tie">Preference — GAS was denser, toMachina is cleaner</td></tr>
+        <tr><td>Add Client</td><td>Not visible</td><td>Prominent button</td><td class="winner-tm">toMachina — clear CTA</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ==================== PLACEHOLDER FOR MORE PAGES ==================== -->
+  <div id="accounts" style="padding: 40px 0; text-align: center; color: var(--muted);">
+    <h2 style="margin-bottom: 8px;">More pages coming...</h2>
+    <p>Navigate through the GAS sidebar to capture: Accounts, My Cases, Report Orders, Medicare, Life, Annuity, Advisory, RMD Center, Beni Center</p>
+  </div>
+
+</div>
+
+</body>
+</html>

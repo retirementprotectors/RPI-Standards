@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPI Blueprint | Equity Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            width: auto;
+        }
+        
+        .transaction-note {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+        
+        .annual-section {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .annual-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .annual-year {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .annual-total {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .stakeholder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stakeholder-info h4 {
+            margin-bottom: 3px;
+            color: #667eea;
+            font-size: 1em;
+        }
+        
+        .stakeholder-info small {
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .add-form {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+        }
+        
+        .form-row-full {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .timeline-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .year-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .year-btn:hover, .year-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .cash-positive {
+            color: #28a745 !important;
+        }
+        
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .equity-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .equity-table th,
+        .equity-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .equity-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .equity-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .cash-highlight {
+            background: #d4edda !important;
+            font-weight: 600;
+        }
+        
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .hide-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        
+        .hide-btn:hover {
+            background: #5a6268;
+        }
+        
+        .collapsed-content {
+            display: none;
+        }
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .metrics {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+            
+            .form-row-full {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 RPI Blueprint | Equity Calculator</h1>
+            <p>Strategic equity modeling with annual stakeholder additions</p>
+        </div>
+        
+        <div class="layout">
+            <div class="sidebar">
+                <!-- Company Valuation Settings -->
+                <div class="card">
+                    <div class="collapsible-header" onclick="toggleSection('valuations')">
+                        <h3>🏢 Company Valuations (EOY)</h3>
+                        <button class="hide-btn" id="valuations-toggle">Hide</button>
+                    </div>
+                    <div id="valuations-content">
+                        <div class="form-group">
+                            <label>2025 EOY Value ($M)</label>
+                            <input type="number" id="val2025" value="25" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2026 EOY Value ($M)</label>
+                            <input type="number" id="val2026" value="133" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2027 EOY Value ($M)</label>
+                            <input type="number" id="val2027" value="1200" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2028 EOY Value ($M)</label>
+                            <input type="number" id="val2028" value="3000" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2029 EOY Value ($M)</label>
+                            <input type="number" id="val2029" value="7500" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2030 EOY Value ($M)</label>
+                            <input type="number" id="val2030" value="10000" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2031 EOY Value ($M)</label>
+                            <input type="number" id="val2031" value="11000" step="1" onchange="updateValuations()">
+                        </div>
+                        <div class="form-group">
+                            <label>2032 EOY Value ($M)</label>
+                            <input type="number" id="val2032" value="12000" step="1" onchange="updateValuations()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Annual stakeholder additions -->
+                <div class="card">
+                    <div class="collapsible-header" onclick="toggleSection('annual')">
+                        <h3>👥 Annual Stakeholder Additions</h3>
+                        <button class="hide-btn" id="annual-toggle">Hide</button>
+                    </div>
+                    <div id="annual-content">
+                        <div id="annualSections">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-secondary" onclick="resetToDefaults()">Reset to Start</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <!-- Timeline -->
+                <div class="timeline-controls">
+                    <button class="year-btn active" data-year="2025">2025</button>
+                    <button class="year-btn" data-year="2026">2026</button>
+                    <button class="year-btn" data-year="2027">2027</button>
+                    <button class="year-btn" data-year="2028">2028</button>
+                    <button class="year-btn" data-year="2029">2029</button>
+                    <button class="year-btn" data-year="2030">2030</button>
+                    <button class="year-btn" data-year="2031">2031</button>
+                    <button class="year-btn" data-year="2032">2032</button>
+                </div>
+                
+                <!-- Metrics -->
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="companyValue">$25M</div>
+                        <div class="metric-label">Company Value</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="yourOwnership">100%</div>
+                        <div class="metric-label" id="ownershipLabel">Your Ownership</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="yourEquityValue">$25M</div>
+                        <div class="metric-label" id="equityLabel">Your Equity Value</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="currentCash">$0</div>
+                        <div class="metric-label" id="currentCashLabel">Current Period Cash</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="cumulativeCash">$0</div>
+                        <div class="metric-label" id="cumulativeCashLabel">Total Cash Received</div>
+                    </div>
+                </div>
+                
+                <!-- View Perspective moved here -->
+                <div style="margin: 20px 0; text-align: center;">
+                    <div style="background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 10px; display: inline-block;">
+                        <label style="margin-bottom: 8px; color: #666; font-size: 0.9em; display: block;">View Perspective:</label>
+                        <select id="perspectiveSelect" onchange="updatePerspective()" style="padding: 8px; border-radius: 5px; border: 2px solid #e1e5e9; font-size: 1em; min-width: 200px;">
+                            <option value="founder">You (Founder)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="charts">
+                    <div class="card">
+                        <div class="collapsible-header" onclick="toggleSection('ownership')">
+                            <h3>📊 Ownership Distribution</h3>
+                            <button class="hide-btn" id="ownership-toggle">Hide</button>
+                        </div>
+                        <div id="ownership-content">
+                            <div class="chart-container">
+                                <canvas id="ownershipChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="collapsible-header" onclick="toggleSection('cashflow')">
+                            <h3>💰 Cash Flow Timeline</h3>
+                            <button class="hide-btn" id="cashflow-toggle">Hide</button>
+                        </div>
+                        <div id="cashflow-content">
+                            <div class="chart-container">
+                                <canvas id="cashFlowChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Table -->
+                <div class="card">
+                    <div class="collapsible-header" onclick="toggleSection('table')">
+                        <h3>📋 Complete Analysis (End-of-Year Values)</h3>
+                        <button class="hide-btn" id="table-toggle">Hide</button>
+                    </div>
+                    <div id="table-content">
+                        <div class="table-container">
+                            <table class="equity-table">
+                                <thead>
+                                    <tr>
+                                        <th>Stakeholder</th>
+                                        <th>2025 EOY</th>
+                                        <th>2026 EOY</th>
+                                        <th>2027 EOY</th>
+                                        <th>2028 EOY</th>
+                                        <th>2029 EOY</th>
+                                        <th>2030 EOY</th>
+                                        <th>2031 EOY</th>
+                                        <th>2032 EOY</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equityTableBody">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(value) {
+            if (value >= 1000000000) {
+                return '$' + (value / 1000000000).toFixed(1) + 'B';
+            } else if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(0) + 'M';
+            } else if (value >= 1000) {
+                return '$' + (value / 1000).toFixed(0) + 'K';
+            }
+            return '$' + Math.round(value).toLocaleString();
+        }
+
+        // Toggle section visibility
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const toggle = document.getElementById(sectionId + '-toggle');
+            
+            if (content.classList.contains('collapsed-content')) {
+                content.classList.remove('collapsed-content');
+                toggle.textContent = 'Hide';
+            } else {
+                content.classList.add('collapsed-content');
+                toggle.textContent = 'Show';
+            }
+        }
+
+        // Global state
+        let annualGrants = {
+            2025: [],
+            2026: [
+                { name: 'AM3', percent: 2.5, type: 'employee', vestingYears: 3 },
+                { name: 'Shaner', percent: 2.5, type: 'employee', vestingYears: 3 },
+                { name: 'Matty', percent: 5.0, type: 'employee', vestingYears: 3 },
+                { name: 'Alex', percent: 5.0, type: 'employee', vestingYears: 3 },
+                { name: 'Behner', percent: 2.5, type: 'employee', vestingYears: 3 },
+                { name: 'Aprille', percent: 2.5, type: 'employee', vestingYears: 3 },
+                { name: 'JMDC', percent: 7.5, type: 'employee', vestingYears: 3 },
+                { name: 'D+Z', percent: 2.5, type: 'employee', vestingYears: 3 }
+            ],
+            2027: [],
+            2028: [],
+            2029: [
+                { name: '2029 ESOP Sale', percent: 10.0, type: 'esop', vestingYears: 0 }
+            ],
+            2030: [
+                { name: '2030 ESOP Sale', percent: 10.0, type: 'esop', vestingYears: 0 }
+            ],
+            2031: [
+                { name: '2031 ESOP Sale', percent: 10.0, type: 'esop', vestingYears: 0 }
+            ],
+            2032: [
+                { name: '2032 IPO/LBO', percent: 13.0, type: 'ipo', vestingYears: 0 }
+            ]
+        };
+
+        let shareholders = [];
+        let cashEvents = [];
+        let currentYear = 2025;
+        let currentPerspective = 'founder';
+        let ownershipChart, cashFlowChart;
+
+        // Get company valuations from inputs
+        function getCompanyValues() {
+            return {
+                2025: parseFloat(document.getElementById('val2025').value) * 1000000,
+                2026: parseFloat(document.getElementById('val2026').value) * 1000000,
+                2027: parseFloat(document.getElementById('val2027').value) * 1000000,
+                2028: parseFloat(document.getElementById('val2028').value) * 1000000,
+                2029: parseFloat(document.getElementById('val2029').value) * 1000000,
+                2030: parseFloat(document.getElementById('val2030').value) * 1000000,
+                2031: parseFloat(document.getElementById('val2031').value) * 1000000,
+                2032: parseFloat(document.getElementById('val2032').value) * 1000000
+            };
+        }
+
+        // Update valuations when inputs change
+        function updateValuations() {
+            updateDisplay();
+        }
+
+        // Update perspective
+        function updatePerspective() {
+            currentPerspective = document.getElementById('perspectiveSelect').value;
+            updateDisplay();
+        }
+
+        // Calculate shareholders from annual grants
+        function calculateShareholders() {
+            shareholders = [
+                {
+                    id: 'founder',
+                    name: 'You (Founder)',
+                    type: 'employee',
+                    percent: 100,
+                    grantYear: 2025,
+                    vestingYears: 0
+                }
+            ];
+
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            for (const year of years) {
+                const grants = annualGrants[year];
+                if (grants.length === 0) continue;
+
+                // Calculate total annual grants by type
+                const employeeGrants = grants.filter(g => g.type === 'employee');
+                const esopGrants = grants.filter(g => g.type === 'esop');
+                const ipoGrants = grants.filter(g => g.type === 'ipo');
+
+                const totalEmployeePercent = employeeGrants.reduce((sum, g) => sum + g.percent, 0);
+                const totalEsopPercent = esopGrants.reduce((sum, g) => sum + g.percent, 0);
+                const totalIpoPercent = ipoGrants.reduce((sum, g) => sum + g.percent, 0);
+
+                // Apply dilution for employee grants
+                if (totalEmployeePercent > 0) {
+                    const dilutionFactor = (100 - totalEmployeePercent) / 100;
+                    shareholders.forEach(s => {
+                        if (s.type === 'employee') {
+                            s.percent = s.percent * dilutionFactor;
+                        }
+                    });
+                }
+
+                // Apply dilution for ESOP grants (only dilutes employees)
+                if (totalEsopPercent > 0) {
+                    const dilutionFactor = (100 - totalEsopPercent) / 100;
+                    shareholders.forEach(s => {
+                        if (s.type === 'employee') {
+                            s.percent = s.percent * dilutionFactor;
+                        }
+                    });
+                }
+
+                // Apply dilution for IPO/LBO grants (dilutes everyone)
+                if (totalIpoPercent > 0) {
+                    const dilutionFactor = (100 - totalIpoPercent) / 100;
+                    shareholders.forEach(s => {
+                        s.percent = s.percent * dilutionFactor;
+                    });
+                }
+
+                // Add new shareholders
+                grants.forEach(grant => {
+                    shareholders.push({
+                        id: 'shareholder_' + Date.now() + '_' + Math.random(),
+                        name: grant.name,
+                        type: grant.type,
+                        percent: grant.percent,
+                        grantYear: year,
+                        vestingYears: grant.vestingYears || 0
+                    });
+                });
+            }
+        }
+
+        // Calculate vested percentage
+        function getVestedPercent(shareholder, year) {
+            if (shareholder.vestingYears === 0 || shareholder.type !== 'employee') {
+                return shareholder.percent;
+            }
+            
+            const yearsElapsed = year - shareholder.grantYear;
+            if (yearsElapsed < 0) return 0;
+            if (yearsElapsed >= shareholder.vestingYears) return shareholder.percent;
+            
+            return (shareholder.percent / shareholder.vestingYears) * yearsElapsed;
+        }
+
+        // Calculate cash events
+        function calculateCashEvents() {
+            cashEvents = [];
+            const companyValues = getCompanyValues();
+            
+            shareholders.forEach(shareholder => {
+                if (shareholder.type === 'esop' || shareholder.type === 'ipo') {
+                    const transactionYear = shareholder.grantYear;
+                    const companyValue = companyValues[transactionYear];
+                    const percentSold = shareholder.percent;
+                    
+                    let existing = [];
+                    
+                    if (shareholder.type === 'esop') {
+                        // ESOP: Only existing EMPLOYEES get cash (internal transfer)
+                        existing = shareholders.filter(s => 
+                            s.grantYear < transactionYear && s.type === 'employee'
+                        );
+                    } else if (shareholder.type === 'ipo') {
+                        // IPO/LBO: ALL existing shareholders get cash (external sale)
+                        existing = shareholders.filter(s => 
+                            s.grantYear < transactionYear
+                        );
+                    }
+                    
+                    // Calculate total ownership before transaction
+                    let totalOwnership = 0;
+                    existing.forEach(s => {
+                        totalOwnership += getVestedPercent(s, transactionYear);
+                    });
+                    
+                    // Create cash events for existing shareholders
+                    existing.forEach(s => {
+                        const ownership = getVestedPercent(s, transactionYear);
+                        const ownershipRatio = totalOwnership > 0 ? ownership / totalOwnership : 0;
+                        const cash = (companyValue * percentSold / 100) * ownershipRatio;
+                        
+                        if (cash > 0) {
+                            cashEvents.push({
+                                year: transactionYear,
+                                shareholderId: s.id,
+                                amount: cash,
+                                type: shareholder.type,
+                                name: shareholder.name
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Calculate structure for all years
+        function calculateStructure() {
+            const companyValues = getCompanyValues();
+            const structure = {};
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            years.forEach(year => {
+                structure[year] = {
+                    companyValue: companyValues[year],
+                    shareholders: {},
+                    cashFlows: {}
+                };
+                
+                // Start fresh each year - calculate cumulative dilution from all previous years
+                let founderPercent = 100;
+                let allShareholders = [];
+                
+                // Add founder
+                allShareholders.push({
+                    id: 'founder',
+                    name: 'You (Founder)',
+                    type: 'employee',
+                    percent: 100,
+                    grantYear: 2025,
+                    vestingYears: 0
+                });
+                
+                // Apply dilution from all years up to and including current year
+                for (let dilutionYear = 2025; dilutionYear <= year; dilutionYear++) {
+                    const yearGrants = annualGrants[dilutionYear];
+                    
+                    if (yearGrants.length > 0) {
+                        // Calculate total dilution by type
+                        const employeeGrants = yearGrants.filter(g => g.type === 'employee');
+                        const esopGrants = yearGrants.filter(g => g.type === 'esop');
+                        const ipoGrants = yearGrants.filter(g => g.type === 'ipo');
+                        
+                        const totalEmployeePercent = employeeGrants.reduce((sum, g) => sum + g.percent, 0);
+                        const totalEsopPercent = esopGrants.reduce((sum, g) => sum + g.percent, 0);
+                        const totalIpoPercent = ipoGrants.reduce((sum, g) => sum + g.percent, 0);
+                        
+                        // Apply employee dilution (only to existing employees)
+                        if (totalEmployeePercent > 0) {
+                            const dilutionFactor = (100 - totalEmployeePercent) / 100;
+                            allShareholders.forEach(s => {
+                                if (s.type === 'employee' && s.grantYear < dilutionYear) {
+                                    s.percent = s.percent * dilutionFactor;
+                                }
+                            });
+                        }
+                        
+                        // Apply ESOP dilution (only to existing employees)
+                        if (totalEsopPercent > 0) {
+                            const dilutionFactor = (100 - totalEsopPercent) / 100;
+                            allShareholders.forEach(s => {
+                                if (s.type === 'employee' && s.grantYear < dilutionYear) {
+                                    s.percent = s.percent * dilutionFactor;
+                                }
+                            });
+                        }
+                        
+                        // Apply IPO/LBO dilution (to everyone existing before this grant)
+                        if (totalIpoPercent > 0) {
+                            const dilutionFactor = (100 - totalIpoPercent) / 100;
+                            allShareholders.forEach(s => {
+                                if (s.grantYear < dilutionYear) {
+                                    s.percent = s.percent * dilutionFactor;
+                                }
+                            });
+                        }
+                        
+                        // Add new shareholders from this grant year
+                        yearGrants.forEach((grant, index) => {
+                            allShareholders.push({
+                                id: `${grant.name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')}_${dilutionYear}`,
+                                name: grant.name,
+                                type: grant.type,
+                                percent: grant.percent,
+                                grantYear: dilutionYear,
+                                vestingYears: grant.vestingYears || 0
+                            });
+                        });
+                    }
+                }
+                
+                // Calculate final ownership for display (with vesting)
+                allShareholders.forEach(shareholder => {
+                    if (shareholder.grantYear <= year) {
+                        let finalPercent = shareholder.percent;
+                        
+                        // Apply vesting for employees
+                        if (shareholder.type === 'employee' && shareholder.vestingYears > 0) {
+                            // Calculate years elapsed from grant year (BOY) to current year (EOY)
+                            // If granted BOY 2026, by EOY 2026 they have completed 1 full year
+                            const yearsElapsed = year - shareholder.grantYear + 1;
+                            if (yearsElapsed <= 0) {
+                                finalPercent = 0;
+                            } else if (yearsElapsed >= shareholder.vestingYears) {
+                                finalPercent = shareholder.percent;
+                            } else {
+                                finalPercent = (shareholder.percent / shareholder.vestingYears) * yearsElapsed;
+                            }
+                        }
+                        
+                        structure[year].shareholders[shareholder.id] = {
+                            name: shareholder.name,
+                            type: shareholder.type,
+                            percent: finalPercent,
+                            value: (finalPercent / 100) * companyValues[year]
+                        };
+                    }
+                });
+                
+                // Calculate cash flows for this year
+                const yearGrants = annualGrants[year];
+                allShareholders.forEach(shareholder => {
+                    structure[year].cashFlows[shareholder.id] = 0;
+                });
+                
+                yearGrants.forEach(grant => {
+                    if (grant.type === 'esop' || grant.type === 'ipo') {
+                        const percentSold = grant.percent;
+                        // BOY transactions use PRIOR year's valuation
+                        const priorYear = year - 1;
+                        const transactionValue = priorYear >= 2025 ? companyValues[priorYear] : companyValues[year];
+                        
+                        // Find existing shareholders eligible for cash
+                        let eligible = [];
+                        if (grant.type === 'esop') {
+                            // ESOP: Only existing employees get cash
+                            eligible = allShareholders.filter(s => 
+                                s.grantYear < year && s.type === 'employee'
+                            );
+                        } else if (grant.type === 'ipo') {
+                            // IPO: All existing shareholders get cash
+                            eligible = allShareholders.filter(s => 
+                                s.grantYear < year
+                            );
+                        }
+                        
+                        // Calculate total vested ownership of eligible shareholders
+                        let totalOwnership = 0;
+                        eligible.forEach(s => {
+                            let vestedPercent = s.percent;
+                            if (s.type === 'employee' && s.vestingYears > 0) {
+                                // BOY grants, EOY analysis - add 1 to years elapsed
+                                const yearsElapsed = year - s.grantYear + 1;
+                                if (yearsElapsed <= 0) {
+                                    vestedPercent = 0;
+                                } else if (yearsElapsed >= s.vestingYears) {
+                                    vestedPercent = s.percent;
+                                } else {
+                                    vestedPercent = (s.percent / s.vestingYears) * yearsElapsed;
+                                }
+                            }
+                            totalOwnership += vestedPercent;
+                        });
+                        
+                        // Distribute cash proportionally
+                        eligible.forEach(s => {
+                            let vestedPercent = s.percent;
+                            if (s.type === 'employee' && s.vestingYears > 0) {
+                                // BOY grants, EOY analysis - add 1 to years elapsed
+                                const yearsElapsed = year - s.grantYear + 1;
+                                if (yearsElapsed <= 0) {
+                                    vestedPercent = 0;
+                                } else if (yearsElapsed >= s.vestingYears) {
+                                    vestedPercent = s.percent;
+                                } else {
+                                    vestedPercent = (s.percent / s.vestingYears) * yearsElapsed;
+                                }
+                            }
+                            const ownershipRatio = totalOwnership > 0 ? vestedPercent / totalOwnership : 0;
+                            const cash = (transactionValue * percentSold / 100) * ownershipRatio;
+                            
+                            structure[year].cashFlows[s.id] += cash;
+                        });
+                    }
+                });
+            });
+            
+            // Update global shareholders array for perspective dropdown
+            shareholders = [];
+            // Get all unique shareholders across all years with consistent IDs
+            const allUniqueIds = new Set();
+            Object.values(structure).forEach(yearData => {
+                Object.keys(yearData.shareholders).forEach(id => {
+                    allUniqueIds.add(id);
+                });
+            });
+            
+            allUniqueIds.forEach(id => {
+                // Find the shareholder definition from any year
+                for (const yearData of Object.values(structure)) {
+                    if (yearData.shareholders[id]) {
+                        const shareholder = yearData.shareholders[id];
+                        // Determine grant year from the ID or default to 2025 for founder
+                        let grantYear = 2025;
+                        if (id.includes('_2026')) grantYear = 2026;
+                        else if (id.includes('_2027')) grantYear = 2027;
+                        else if (id.includes('_2028')) grantYear = 2028;
+                        else if (id.includes('_2029')) grantYear = 2029;
+                        else if (id.includes('_2030')) grantYear = 2030;
+                        else if (id.includes('_2031')) grantYear = 2031;
+                        else if (id.includes('_2032')) grantYear = 2032;
+                        
+                        shareholders.push({
+                            id: id,
+                            name: shareholder.name,
+                            type: shareholder.type,
+                            percent: shareholder.percent,
+                            grantYear: grantYear,
+                            vestingYears: 0
+                        });
+                        break;
+                    }
+                }
+            });
+            
+            return structure;
+        }
+
+        // Add stakeholder to annual grants
+        function addStakeholder(year) {
+            const name = document.getElementById(`name_${year}`).value.trim();
+            const percent = parseFloat(document.getElementById(`percent_${year}`).value);
+            const type = document.getElementById(`type_${year}`).value;
+            const vesting = parseInt(document.getElementById(`vesting_${year}`).value) || 0;
+            
+            if (!name || !percent || percent <= 0) {
+                alert('Please enter a valid name and percentage');
+                return;
+            }
+            
+            annualGrants[year].push({
+                name: name,
+                percent: percent,
+                type: type,
+                vestingYears: type === 'employee' ? vesting : 0
+            });
+            
+            // Clear form
+            document.getElementById(`name_${year}`).value = '';
+            document.getElementById(`percent_${year}`).value = '';
+            document.getElementById(`vesting_${year}`).value = '3';
+            
+            updateAnnualSections();
+            updatePerspectiveDropdown();
+            updateDisplay();
+        }
+
+        // Remove stakeholder from annual grants
+        function removeStakeholder(year, index) {
+            annualGrants[year].splice(index, 1);
+            updateAnnualSections();
+            updatePerspectiveDropdown();
+            updateDisplay();
+        }
+
+        // Update annual sections UI
+        function updateAnnualSections() {
+            const container = document.getElementById('annualSections');
+            container.innerHTML = '';
+            
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            years.forEach(year => {
+                const section = document.createElement('div');
+                section.className = 'annual-section';
+                
+                const grants = annualGrants[year];
+                const totalPercent = grants.reduce((sum, g) => sum + g.percent, 0);
+                
+                section.innerHTML = `
+                    <div class="annual-header">
+                        <span class="annual-year">📅 ${year} Annual Grants</span>
+                        <span class="annual-total">Total: ${totalPercent.toFixed(1)}%</span>
+                    </div>
+                    
+                    <div id="grants_${year}">
+                        ${grants.map((grant, index) => {
+                            let icon = '👤';
+                            if (grant.type === 'esop') icon = '💼';
+                            if (grant.type === 'ipo') icon = '🏛️';
+                            
+                            let description = `${grant.percent}%`;
+                            if (grant.type === 'employee' && grant.vestingYears > 0) {
+                                description += ` • ${grant.vestingYears}y vest`;
+                            } else if (grant.type === 'esop') {
+                                description += ' • ESOP Purchase';
+                            } else if (grant.type === 'ipo') {
+                                description += ' • Exit Event';
+                            }
+                            
+                            return `
+                                <div class="stakeholder-item">
+                                    <div class="stakeholder-info">
+                                        <h4>${icon} ${grant.name}</h4>
+                                        <small>${description}</small>
+                                    </div>
+                                    <button class="delete-btn" onclick="removeStakeholder(${year}, ${index})">×</button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div class="add-form">
+                        <div class="form-row">
+                            <input type="text" id="name_${year}" placeholder="Name" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <input type="number" id="percent_${year}" placeholder="%" step="0.1" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <select id="type_${year}" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updateTypeForm(${year})">
+                                <option value="employee">👤 Employee</option>
+                                <option value="esop">💼 ESOP</option>
+                                <option value="ipo">🏛️ IPO/LBO</option>
+                            </select>
+                        </div>
+                        <div class="form-row-full" id="vesting_row_${year}">
+                            <label style="font-size: 0.9em; color: #666;">Vesting Years (BOY Grant → EOY Vesting):</label>
+                            <input type="number" id="vesting_${year}" value="3" min="0" max="5" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div id="transaction_note_${year}" class="transaction-note" style="display: none;">
+                            💰 This creates a <strong>cash event</strong> for existing shareholders (BOY transaction)
+                        </div>
+                        <button class="btn btn-small" onclick="addStakeholder(${year})">+ Add to ${year}</button>
+                    </div>
+                `;
+                
+                container.appendChild(section);
+            });
+        }
+
+        // Update type form
+        function updateTypeForm(year) {
+            const type = document.getElementById(`type_${year}`).value;
+            const vestingRow = document.getElementById(`vesting_row_${year}`);
+            const note = document.getElementById(`transaction_note_${year}`);
+            
+            if (type === 'employee') {
+                vestingRow.style.display = 'grid';
+                note.style.display = 'none';
+            } else {
+                vestingRow.style.display = 'none';
+                note.style.display = 'block';
+            }
+        }
+
+        // Update perspective dropdown
+        function updatePerspectiveDropdown() {
+            calculateShareholders();
+            
+            const select = document.getElementById('perspectiveSelect');
+            const currentValue = select.value;
+            select.innerHTML = '';
+            
+            // Add individual shareholders using the CLEAN IDs from the structure
+            const structure = calculateStructure();
+            const sampleYear = 2032; // Use final year to get all shareholders
+            
+            Object.keys(structure[sampleYear].shareholders).forEach(cleanId => {
+                const shareholder = structure[sampleYear].shareholders[cleanId];
+                const option = document.createElement('option');
+                option.value = cleanId; // Use the clean ID from structure
+                option.textContent = shareholder.name;
+                select.appendChild(option);
+            });
+            
+            // Add ESOP TOTAL if there are any ESOP shareholders
+            const hasEsop = Object.values(structure[sampleYear].shareholders).some(s => s.type === 'esop');
+            if (hasEsop) {
+                const option = document.createElement('option');
+                option.value = 'esop_total';
+                option.textContent = '💼 ESOP TOTAL (All ESOP Combined)';
+                select.appendChild(option);
+            }
+            
+            // Restore selection if still exists, otherwise default to founder
+            if (select.querySelector(`option[value="${currentValue}"]`)) {
+                select.value = currentValue;
+                currentPerspective = currentValue;
+            } else {
+                currentPerspective = 'founder';
+                select.value = 'founder';
+            }
+        }
+
+        // Reset to defaults
+        function resetToDefaults() {
+            annualGrants = {
+                2025: [],
+                2026: [],
+                2027: [],
+                2028: [],
+                2029: [],
+                2030: [],
+                2031: [],
+                2032: []
+            };
+            currentPerspective = 'founder';
+            updateAnnualSections();
+            updatePerspectiveDropdown();
+            updateDisplay();
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Ownership chart
+            const ownershipCtx = document.getElementById('ownershipChart').getContext('2d');
+            ownershipChart = new Chart(ownershipCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#667eea', '#f093fb', '#4facfe', '#43e97b',
+                            '#fa709a', '#fee140', '#a8edea', '#d299c2'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            // Cash flow chart
+            const cashCtx = document.getElementById('cashFlowChart').getContext('2d');
+            cashFlowChart = new Chart(cashCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032'],
+                    datasets: [
+                        {
+                            label: 'ESOP Cash',
+                            data: [],
+                            backgroundColor: '#4facfe'
+                        },
+                        {
+                            label: 'IPO/LBO Cash',
+                            data: [],
+                            backgroundColor: '#43e97b'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value * 1000000);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update display
+        function updateDisplay(year = currentYear) {
+            currentYear = year;
+            const structure = calculateStructure();
+            const data = structure[year];
+            
+            let currentShareholder;
+            let shareholderName;
+            let isFounder = false;
+            let isEsopTotal = false;
+            
+            if (currentPerspective === 'esop_total') {
+                // Calculate combined ESOP data
+                isEsopTotal = true;
+                shareholderName = 'ESOP TOTAL';
+                
+                // Sum all ESOP percentages and values
+                let totalEsopPercent = 0;
+                let totalEsopValue = 0;
+                
+                Object.keys(data.shareholders).forEach(id => {
+                    const shareholder = data.shareholders[id];
+                    if (shareholder.type === 'esop') {
+                        totalEsopPercent += shareholder.percent;
+                        totalEsopValue += shareholder.value;
+                    }
+                });
+                
+                currentShareholder = {
+                    percent: totalEsopPercent,
+                    value: totalEsopValue
+                };
+            } else {
+                currentShareholder = data.shareholders[currentPerspective];
+                shareholderName = shareholders.find(s => s.id === currentPerspective)?.name || 'Selected Person';
+                isFounder = currentPerspective === 'founder';
+            }
+            
+            // Update labels based on perspective
+            if (isEsopTotal) {
+                document.getElementById('ownershipLabel').textContent = 'ESOP Total Ownership';
+                document.getElementById('equityLabel').textContent = 'ESOP Total Equity Value';
+                document.getElementById('currentCashLabel').textContent = 'ESOP Current Period Cash';
+                document.getElementById('cumulativeCashLabel').textContent = 'ESOP Total Cash Received';
+            } else {
+                document.getElementById('ownershipLabel').textContent = isFounder ? 'Your Ownership' : `${shareholderName}'s Ownership`;
+                document.getElementById('equityLabel').textContent = isFounder ? 'Your Equity Value' : `${shareholderName}'s Equity Value`;
+                document.getElementById('currentCashLabel').textContent = isFounder ? 'Your Current Period Cash' : `${shareholderName}'s Current Period Cash`;
+                document.getElementById('cumulativeCashLabel').textContent = isFounder ? 'Your Total Cash Received' : `${shareholderName}'s Total Cash Received`;
+            }
+            
+            // Update metrics
+            document.getElementById('companyValue').textContent = formatCurrency(data.companyValue);
+            document.getElementById('yourOwnership').textContent = `${(currentShareholder?.percent || 0).toFixed(1)}%`;
+            document.getElementById('yourEquityValue').textContent = formatCurrency(currentShareholder?.value || 0);
+            
+            // Calculate cash for current perspective
+            let currentCash = 0;
+            let totalCash = 0;
+            
+            if (isEsopTotal) {
+                // Sum cash for all ESOP shareholders
+                const esopIds = shareholders.filter(s => s.type === 'esop').map(s => s.id);
+                
+                // Current period cash
+                esopIds.forEach(id => {
+                    currentCash += data.cashFlows[id] || 0;
+                });
+                
+                // Cumulative cash
+                for (let y = 2025; y <= year; y++) {
+                    esopIds.forEach(id => {
+                        totalCash += structure[y].cashFlows[id] || 0;
+                    });
+                }
+            } else {
+                currentCash = data.cashFlows[currentPerspective] || 0;
+                for (let y = 2025; y <= year; y++) {
+                    totalCash += structure[y].cashFlows[currentPerspective] || 0;
+                }
+            }
+            
+            document.getElementById('currentCash').textContent = formatCurrency(currentCash);
+            document.getElementById('currentCash').className = 
+                `metric-value ${currentCash > 0 ? 'cash-positive' : ''}`;
+            
+            document.getElementById('cumulativeCash').textContent = formatCurrency(totalCash);
+            document.getElementById('cumulativeCash').className = 
+                `metric-value ${totalCash > 0 ? 'cash-positive' : ''}`;
+            
+            // Update ownership chart - consolidate ESOP and use better colors
+            const labels = [];
+            const chartData = [];
+            const colors = [
+                '#667eea', // You (Founder) - blue
+                '#28a745', // ESOP TOTAL - green
+                '#dc3545', // IPO/LBO - red
+                '#fd7e14', // Orange
+                '#6610f2', // Purple  
+                '#20c997', // Teal
+                '#e83e8c', // Pink
+                '#6c757d', // Gray
+                '#17a2b8', // Cyan
+                '#ffc107'  // Yellow
+            ];
+            
+            // Add founder first
+            const founderData = data.shareholders['founder'];
+            if (founderData && founderData.percent > 0) {
+                labels.push(founderData.name);
+                chartData.push(founderData.percent);
+            }
+            
+            // Add consolidated ESOP
+            let totalEsopPercent = 0;
+            Object.keys(data.shareholders).forEach(id => {
+                const shareholder = data.shareholders[id];
+                if (shareholder.type === 'esop') {
+                    totalEsopPercent += shareholder.percent;
+                }
+            });
+            if (totalEsopPercent > 0) {
+                labels.push('💼 ESOP TOTAL');
+                chartData.push(totalEsopPercent);
+            }
+            
+            // Add individual employees (not ESOP or IPO)
+            Object.keys(data.shareholders).forEach(id => {
+                const shareholder = data.shareholders[id];
+                if (shareholder.type === 'employee' && id !== 'founder' && shareholder.percent > 0) {
+                    labels.push(shareholder.name);
+                    chartData.push(shareholder.percent);
+                }
+            });
+            
+            // Add IPO/LBO
+            Object.keys(data.shareholders).forEach(id => {
+                const shareholder = data.shareholders[id];
+                if (shareholder.type === 'ipo' && shareholder.percent > 0) {
+                    labels.push(shareholder.name + ' 🏛️');
+                    chartData.push(shareholder.percent);
+                }
+            });
+            
+            ownershipChart.data.labels = labels;
+            ownershipChart.data.datasets[0].data = chartData;
+            ownershipChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
+            ownershipChart.update();
+            
+            // Update cash flow chart - DEBUG and fix
+            const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032];
+            
+            console.log('Current perspective:', currentPerspective);
+            console.log('All shareholders:', shareholders.map(s => s.id));
+            console.log('Available cash flow keys for 2029:', Object.keys(structure[2029].cashFlows));
+            console.log('Structure cash flows for current perspective:', structure[2029].cashFlows[currentPerspective]);
+            console.log('Full cash flows for 2029:', structure[2029].cashFlows);
+            
+            let esopCash = [];
+            let ipoCash = [];
+            
+            // Simple approach - just get the cash flows directly
+            years.forEach(year => {
+                let yearEsopCash = 0;
+                let yearIpoCash = 0;
+                
+                if (isEsopTotal) {
+                    // Sum cash for all ESOP shareholders
+                    const esopIds = shareholders.filter(s => s.type === 'esop').map(s => s.id);
+                    esopIds.forEach(id => {
+                        const cash = structure[year].cashFlows[id] || 0;
+                        // All ESOP cash goes to esopCash
+                        yearEsopCash += cash;
+                    });
+                } else {
+                    // Individual perspective - get their total cash and split by transaction type
+                    const totalCash = structure[year].cashFlows[currentPerspective] || 0;
+                    
+                    // Check what type of transaction happened this year
+                    const yearGrants = annualGrants[year] || [];
+                    const hasEsop = yearGrants.some(g => g.type === 'esop');
+                    const hasIpo = yearGrants.some(g => g.type === 'ipo');
+                    
+                    if (hasEsop && !hasIpo) {
+                        yearEsopCash = totalCash;
+                    } else if (hasIpo && !hasEsop) {
+                        yearIpoCash = totalCash;
+                    } else if (hasEsop && hasIpo) {
+                        // Both types - split somehow or assign to one
+                        yearIpoCash = totalCash; // IPO typically larger
+                    }
+                }
+                
+                esopCash.push(yearEsopCash / 1000000); // Convert to millions
+                ipoCash.push(yearIpoCash / 1000000);
+            });
+            
+            console.log('ESOP Cash data:', esopCash);
+            console.log('IPO Cash data:', ipoCash);
+            
+            cashFlowChart.data.datasets[0].data = esopCash;
+            cashFlowChart.data.datasets[1].data = ipoCash;
+            cashFlowChart.update();
+            
+            // Update table
+            updateTable(structure);
+            
+            // Update active year button
+            document.querySelectorAll('.year-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-year="${year}"]`).classList.add('active');
+        }
+
+        // Update table - only show selected perspective row
+        function updateTable(structure) {
+            const tbody = document.getElementById('equityTableBody');
+            tbody.innerHTML = '';
+            
+            // Find the selected shareholder or ESOP TOTAL
+            let selectedShareholder = null;
+            let selectedName = '';
+            
+            if (currentPerspective === 'esop_total') {
+                selectedName = '💼 ESOP TOTAL';
+            } else {
+                selectedShareholder = shareholders.find(s => s.id === currentPerspective);
+                selectedName = selectedShareholder?.name || 'Selected Person';
+            }
+            
+            // Add header row
+            const headerRow = tbody.insertRow();
+            headerRow.style.backgroundColor = '#667eea';
+            headerRow.style.color = 'white';
+            headerRow.innerHTML = `
+                <td><strong>Selected View: ${selectedName}</strong></td>
+                <td><strong>2025</strong></td>
+                <td><strong>2026</strong></td>
+                <td><strong>2027</strong></td>
+                <td><strong>2028</strong></td>
+                <td><strong>2029</strong></td>
+                <td><strong>2030</strong></td>
+                <td><strong>2031</strong></td>
+                <td><strong>2032</strong></td>
+            `;
+            
+            // Add ownership row
+            const ownershipRow = tbody.insertRow();
+            if (currentPerspective === 'esop_total') {
+                ownershipRow.innerHTML = `
+                    <td><strong>💼 ESOP Ownership</strong></td>
+                    ${[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032].map(year => {
+                        let totalEsopPercent = 0;
+                        let totalEsopValue = 0;
+                        
+                        Object.keys(structure[year].shareholders).forEach(id => {
+                            const shareholder = structure[year].shareholders[id];
+                            if (shareholder.type === 'esop') {
+                                totalEsopPercent += shareholder.percent;
+                                totalEsopValue += shareholder.value;
+                            }
+                        });
+                        
+                        return `<td>${totalEsopPercent > 0 ? 
+                            `${totalEsopPercent.toFixed(1)}%<br>${formatCurrency(totalEsopValue)}` : 
+                            '0%<br>$0'
+                        }</td>`;
+                    }).join('')}
+                `;
+            } else {
+                ownershipRow.innerHTML = `
+                    <td><strong>Ownership & Value</strong></td>
+                    ${[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032].map(year => {
+                        const data = structure[year].shareholders[currentPerspective];
+                        return `<td>${data ? 
+                            `${data.percent.toFixed(1)}%<br>${formatCurrency(data.value)}` : 
+                            '0%<br>$0'
+                        }</td>`;
+                    }).join('')}
+                `;
+            }
+            
+            // Add cash flow row
+            const cashRow = tbody.insertRow();
+            cashRow.className = 'cash-highlight';
+            cashRow.innerHTML = `
+                <td><strong>Cash Received</strong></td>
+                ${[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032].map(year => {
+                    let cash = 0;
+                    
+                    if (currentPerspective === 'esop_total') {
+                        // Sum cash for all ESOP shareholders
+                        const esopIds = shareholders.filter(s => s.type === 'esop').map(s => s.id);
+                        esopIds.forEach(id => {
+                            cash += structure[year].cashFlows[id] || 0;
+                        });
+                    } else {
+                        cash = structure[year].cashFlows[currentPerspective] || 0;
+                    }
+                    
+                    return `<td class="cash-highlight">${formatCurrency(cash)}</td>`;
+                }).join('')}
+            `;
+        }
+
+        // Event listeners
+        document.querySelectorAll('.year-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateDisplay(parseInt(btn.dataset.year));
+            });
+        });
+
+        // Initialize
+        initCharts();
+        updateAnnualSections();
+        updatePerspectiveDropdown();
+        updateDisplay();
+    </script>
+</body>
+</html>

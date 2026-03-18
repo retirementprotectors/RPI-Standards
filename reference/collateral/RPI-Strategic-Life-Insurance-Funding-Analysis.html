@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic Comparison — Stephen & Joyce Mineart</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3158;
+    --navy-dark: #0f1d30;
+    --rpi-blue: #4a7ab5;
+    --pale-blue: #e5ecf6;
+    --pale-blue-soft: #edf2f8;
+    --charcoal: #5a6270;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border: #e2e5ea;
+    --bg-light: #f8f9fa;
+    --gold: #c5a55a;
+    --gold-light: #d4bb7a;
+    --white: #ffffff;
+    --green: #16a34a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.5in 0.6in; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 11pt; line-height: 1.5;
+    color: var(--text-primary); background: var(--white);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  .page { page-break-after: always; position: relative; }
+  .page:last-child { page-break-after: avoid; }
+
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 9.5in; text-align: center; padding: 1in 0.5in; }
+  .cover-shield { width: 1.1in; margin-bottom: 0.25in; }
+  .cover-brand { font-size: 14pt; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--navy); margin-bottom: 0.12in; }
+  .cover-tagline { font-size: 9pt; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--rpi-blue); margin-bottom: 0.5in; }
+  .cover-line { width: 3in; height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold)); margin: 0 auto 0.5in; border-radius: 2px; }
+  .cover h1 { font-size: 30pt; font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 0.15in; }
+  .cover h2 { font-size: 15pt; font-weight: 400; color: var(--text-muted); margin-bottom: 0.6in; }
+  .cover-client { font-size: 18pt; font-weight: 700; color: var(--navy); margin-bottom: 0.08in; }
+  .cover-detail { font-size: 11pt; color: var(--text-muted); font-weight: 400; }
+  .cover-footer { position: absolute; bottom: 0.5in; left: 0; right: 0; text-align: center; }
+  .cover-footer-line { width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--rpi-blue), var(--gold), transparent); margin-bottom: 0.2in; }
+  .cover-advisor { font-size: 10pt; color: var(--text-muted); }
+  .cover-advisor strong { color: var(--navy); font-weight: 700; }
+
+  .page-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.12in; border-bottom: 2px solid var(--navy); margin-bottom: 0.25in; }
+  .page-header-left { display: flex; align-items: center; gap: 8px; }
+  .page-header-shield { height: 22px; }
+  .page-header-brand { font-size: 9pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rpi-blue); }
+  .page-header-title { font-size: 9pt; font-weight: 500; color: var(--text-muted); }
+
+  .section-title { font-size: 20pt; font-weight: 800; color: var(--navy); margin-bottom: 0.08in; }
+  .section-divider { height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold), transparent); border-radius: 2px; margin-bottom: 0.25in; }
+  .subsection-title { font-size: 14pt; font-weight: 800; color: var(--navy); margin-bottom: 0.08in; margin-top: 0.2in; }
+  .body-text { font-size: 11pt; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0.15in; }
+  .emphasis-text { font-size: 12pt; font-weight: 600; color: var(--navy); line-height: 1.55; }
+
+  .info-banner { background: var(--pale-blue); border-radius: 8px; padding: 0.2in 0.25in; margin-bottom: 0.2in; }
+  .info-banner-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.15in; }
+  .info-item-label { font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--rpi-blue); margin-bottom: 2px; }
+  .info-item-value { font-size: 11pt; font-weight: 700; color: var(--navy); }
+
+  .comparison-table { width: 100%; border-collapse: collapse; margin-bottom: 0.2in; font-size: 10pt; }
+  .comparison-table thead th { background: var(--navy); color: var(--white); padding: 8px 10px; text-align: center; font-weight: 700; font-size: 9.5pt; }
+  .comparison-table thead th:first-child { text-align: left; border-radius: 6px 0 0 0; }
+  .comparison-table thead th:last-child { border-radius: 0 6px 0 0; }
+  .comparison-table thead th.recommended { background: var(--rpi-blue); }
+  .comparison-table tbody td { padding: 7px 10px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10pt; }
+  .comparison-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-secondary); }
+  .comparison-table tbody tr:nth-child(even) { background: var(--bg-light); }
+  .comparison-table tbody tr.highlight-row { background: var(--pale-blue-soft); }
+  .comparison-table tbody tr.highlight-row td { font-weight: 700; color: var(--navy); border-bottom: 2px solid var(--rpi-blue); }
+  .comparison-table .col-rec { background: rgba(74, 122, 181, 0.06); }
+  .badge-rec { display: inline-block; background: var(--gold); color: var(--navy-dark); font-size: 7pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+
+  .callout { background: var(--navy); color: var(--white); border-radius: 8px; padding: 0.22in 0.28in; margin-bottom: 0.2in; }
+  .callout-gold { border-left: 4px solid var(--gold); }
+  .callout h3 { font-size: 12pt; font-weight: 800; color: var(--gold); margin-bottom: 5px; }
+  .callout p { font-size: 10.5pt; font-weight: 400; line-height: 1.55; color: rgba(255,255,255,0.92); }
+
+  .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.15in; margin-bottom: 0.2in; }
+  .metric-card { border: 2px solid var(--border); border-radius: 8px; padding: 0.15in 0.18in; text-align: center; }
+  .metric-card.primary { border-color: var(--rpi-blue); background: var(--pale-blue-soft); }
+  .metric-card.gold { border-color: var(--gold); background: #faf6ed; }
+  .metric-card.green-card { border-color: var(--green); background: #f0fdf4; }
+  .metric-card .metric-value { font-size: 20pt; font-weight: 800; color: var(--navy); line-height: 1.1; }
+  .metric-card .metric-label { font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 4px; }
+
+  .flow-row { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; margin-bottom: 0.15in; }
+  .flow-box { border-radius: 8px; padding: 0.12in 0.15in; text-align: center; }
+  .flow-box.source { background: var(--pale-blue); border: 2px solid var(--rpi-blue); }
+  .flow-box.action { background: var(--navy); color: var(--white); }
+  .flow-box.result { background: #f0fdf4; border: 2px solid var(--green); }
+  .flow-box .flow-amount { font-size: 15pt; font-weight: 800; }
+  .flow-box .flow-label { font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .flow-arrow { font-size: 18pt; color: var(--rpi-blue); text-align: center; padding: 0 6px; }
+
+  .footnotes { margin-top: 0.25in; padding-top: 0.1in; border-top: 1px solid var(--border); }
+  .footnotes p { font-size: 7.5pt; color: var(--text-muted); line-height: 1.4; margin-bottom: 2px; }
+
+  .text-navy { color: var(--navy); }
+  .text-blue { color: var(--rpi-blue); }
+  .text-gold { color: var(--gold); }
+  .text-green { color: var(--green); }
+  .text-center { text-align: center; }
+  .mt-sm { margin-top: 0.1in; }
+  .mb-sm { margin-bottom: 0.1in; }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1: COVER ═══════════════ -->
+<div class="page cover">
+  <img src="rpi-shield.png" alt="RPI" class="cover-shield">
+  <div class="cover-brand">Retirement Protectors</div>
+  <div class="cover-tagline">We're Your People&trade;</div>
+  <div class="cover-line"></div>
+  <h1>Strategic Life Insurance<br>Funding Analysis</h1>
+  <h2>Nassau GMIB &rarr; John Hancock Survivorship IUL</h2>
+  <div style="margin: 0.5in 0;">
+    <div class="cover-client">Stephen &amp; Joyce Mineart</div>
+    <div class="cover-detail">Updated March 17, 2026</div>
+  </div>
+  <div style="margin-top: 0.4in;">
+    <div style="display: inline-block; background: var(--pale-blue); border-radius: 8px; padding: 0.15in 0.35in;">
+      <div style="font-size: 9pt; font-weight: 600; color: var(--rpi-blue); text-transform: uppercase; letter-spacing: 1px;">Policy Status</div>
+      <div style="font-size: 14pt; font-weight: 800; color: var(--navy); margin-top: 2px;">Underwriting Approved &mdash; Ready to Fund</div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-footer-line"></div>
+    <div class="cover-advisor">
+      Presented by <strong>Josh Archer</strong> &nbsp;|&nbsp; Retirement Protectors, Inc.<br>
+      6750 Westown Parkway, Suite 200-382 &nbsp;|&nbsp; West Des Moines, IA 50266 &nbsp;|&nbsp; 515-992-5000
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 2: THE OPPORTUNITY + ROLL-UP ═══════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <img src="rpi-shield.png" alt="RPI" class="page-header-shield">
+      <div class="page-header-brand">Retirement Protectors</div>
+    </div>
+    <div class="page-header-title">Strategic Funding Analysis &mdash; Mineart</div>
+  </div>
+
+  <div class="section-title">The Opportunity</div>
+  <div class="section-divider"></div>
+
+  <p class="body-text">
+    Your Nassau Income Accelerator annuity includes an <strong>Income Horizon: Early</strong> rider with a
+    powerful guaranteed roll-up feature. This rider has <strong>not yet been activated</strong> &mdash; and with
+    inheritance funds now available to bridge the first year, this creates a significant strategic advantage.
+  </p>
+
+  <div class="info-banner">
+    <div class="info-banner-grid">
+      <div>
+        <div class="info-item-label">Current Benefit Base</div>
+        <div class="info-item-value">$1,990,296</div>
+      </div>
+      <div>
+        <div class="info-item-label">Contract Number</div>
+        <div class="info-item-value">28253487</div>
+      </div>
+      <div>
+        <div class="info-item-label">Tax Status</div>
+        <div class="info-item-value">IRA &mdash; 100% Taxable</div>
+      </div>
+      <div>
+        <div class="info-item-label">Annual Roll-Up Rate</div>
+        <div class="info-item-value" style="color: var(--green);">10% Guaranteed</div>
+      </div>
+      <div>
+        <div class="info-item-label">Contract Anniversary</div>
+        <div class="info-item-value">October 2</div>
+      </div>
+      <div>
+        <div class="info-item-label">Roll-Up Period</div>
+        <div class="info-item-value">10 Years (to 2035)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection-title">How the Roll-Up Works</div>
+  <p class="body-text">
+    Every year you <strong>don't</strong> activate the income rider, the guaranteed benefit base increases by
+    <strong>10%</strong> on the contract anniversary. This is <em>guaranteed by Nassau regardless of market
+    performance</em>. Once you activate, the roll-up stops permanently. A higher benefit base means a higher
+    guaranteed payment &mdash; every year, for the rest of both your lives.
+  </p>
+
+  <div class="callout callout-gold">
+    <h3>What One Year of Deferral Does</h3>
+    <p>
+      <strong>Activate now</strong> (Joyce age 70, payout rate 6.58%):
+      $1,990,296 &times; 6.58% = <strong>$130,961/year for life</strong>
+    </p>
+    <p style="margin-top: 6px;">
+      <strong>Wait one year</strong> (Joyce age 71, payout rate 6.63%):
+      $2,189,325 &times; 6.63% = <strong>$145,152/year for life</strong>
+    </p>
+    <p style="margin-top: 8px; font-size: 12pt; font-weight: 700; color: var(--gold);">
+      +$14,191/year &mdash; guaranteed, for life, for both of you.
+    </p>
+  </div>
+
+  <div class="subsection-title">The Key Insight</div>
+  <p class="body-text">
+    With inheritance funds available, you can pay the first year&rsquo;s John Hancock premium out of pocket
+    &mdash; <strong>without touching the Nassau contract at all</strong>. No GMIB withdrawal in Year 1 means
+    no taxes owed, and the benefit base rolls up a guaranteed 10% on October 2, 2026. Starting in Year 2,
+    the higher GMIB creates three distinct funding strategies &mdash; each with different tradeoffs.
+  </p>
+
+  <div class="footnotes">
+    <p>Benefit base, roll-up rates, and payout percentages per Nassau Income Accelerator contract #28253487, Income Horizon: Early rider (Spousal GLWB), rider specification pages. Roll-up rate of 10% is guaranteed for the 10-year roll-up period. Payout percentages based on attained age of youngest covered person (Joyce Mineart) per the Annual Benefit Amount Percentage Table. Roll-up ceases upon rider activation (Rider Exercise Date).</p>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 3: THREE OPTIONS ═══════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <img src="rpi-shield.png" alt="RPI" class="page-header-shield">
+      <div class="page-header-brand">Retirement Protectors</div>
+    </div>
+    <div class="page-header-title">Strategic Funding Analysis &mdash; Mineart</div>
+  </div>
+
+  <div class="section-title">Three Strategies &mdash; One Goal</div>
+  <div class="section-divider"></div>
+
+  <p class="body-text">
+    All three options fund the same John Hancock Protection Survivorship IUL.
+    The difference is <strong>when</strong> you activate the Nassau income and <strong>how</strong> the taxes are handled.
+    Options B and C both use inheritance to bridge Year 1 and capture the 10% roll-up.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width: 30%"></th>
+        <th>Option A<br><span style="font-weight: 400; font-size: 8pt;">Start GMIB Now</span></th>
+        <th class="recommended">Option B <span class="badge-rec">Recommended</span><br><span style="font-weight: 400; font-size: 8pt;">Wait 1 Year &mdash; Net of Taxes</span></th>
+        <th>Option C<br><span style="font-weight: 400; font-size: 8pt;">Wait 1 Year &mdash; Full GMIB</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Strategy</td>
+        <td>Activate GMIB immediately</td>
+        <td class="col-rec">Defer 1 year, taxes from GMIB</td>
+        <td>Defer 1 year, taxes from reserves</td>
+      </tr>
+      <tr>
+        <td>Year 1 Premium Source</td>
+        <td>Nassau GMIB</td>
+        <td class="col-rec">Inheritance</td>
+        <td>Inheritance</td>
+      </tr>
+      <tr>
+        <td>Year 1 Taxes Owed</td>
+        <td>~$29,600</td>
+        <td class="col-rec"><strong>$0</strong> (no withdrawal)</td>
+        <td><strong>$0</strong> (no withdrawal)</td>
+      </tr>
+      <tr style="background: var(--bg-light);">
+        <td>GMIB After Roll-Up (Yr 2+)</td>
+        <td>$130,961/yr <span style="font-size: 8pt; color: var(--text-muted);">(no roll-up)</span></td>
+        <td class="col-rec"><strong>$145,152/yr</strong></td>
+        <td><strong>$145,152/yr</strong></td>
+      </tr>
+      <tr>
+        <td>Annual Premium to JH</td>
+        <td><strong>$131,000</strong></td>
+        <td class="col-rec"><strong>$120,000</strong></td>
+        <td><strong>$145,000</strong></td>
+      </tr>
+      <tr>
+        <td>Taxes Covered by GMIB?</td>
+        <td>No &mdash; bank reserves</td>
+        <td class="col-rec"><strong>Mostly</strong> ($25,152 of $32,966)</td>
+        <td>No &mdash; bank reserves</td>
+      </tr>
+      <tr>
+        <td>Annual Out-of-Pocket (Yr 2+)</td>
+        <td><strong>~$29,600</strong></td>
+        <td class="col-rec"><strong>~$5,000&ndash;$7,000</strong></td>
+        <td><strong>~$32,966</strong></td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Tax-Free Death Benefit</td>
+        <td><strong>$6,579,631</strong></td>
+        <td class="col-rec"><strong>$6,000,000</strong></td>
+        <td><strong>$7,307,164</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-gold">
+    <h3>Why Option B?</h3>
+    <p>
+      By waiting one year and letting the GMIB roll up to <strong>$145,152</strong>, the net-of-taxes amount
+      (<strong>~$120,000</strong>) covers the premium for <strong>$6,000,000 in tax-free death benefit</strong> &mdash;
+      with the GMIB surplus covering most of your federal taxes. <strong>Iowa does not tax retirement income
+      distributions</strong>, so your annual out-of-pocket is just <strong>$5,000&ndash;$7,000</strong> depending on
+      your bracket &mdash; 22% or 24%. The GMIB essentially <strong>self-funds</strong> the policy.
+    </p>
+  </div>
+
+  <div class="subsection-title">How the Money Flows &mdash; Option B (Year 2+)</div>
+
+  <div class="flow-row">
+    <div class="flow-box source">
+      <div class="flow-amount text-navy">$145,152</div>
+      <div class="flow-label text-blue">Rolled-Up GMIB</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box action">
+      <div class="flow-amount" style="color: var(--gold);">$120,000</div>
+      <div class="flow-label" style="color: var(--gold-light);">JH Premium &rarr; $6M DB</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box result">
+      <div class="flow-amount text-green">$25,152</div>
+      <div class="flow-label" style="color: var(--green);">Toward Taxes</div>
+    </div>
+  </div>
+
+  <p class="body-text" style="text-align: center; font-style: italic; color: var(--text-muted); font-size: 9.5pt;">
+    Remaining tax of ~$5,000&ndash;$7,000/yr depending on bracket (22% or 24%). Iowa: $0 (retirement income exempt).
+  </p>
+
+  <div class="metric-row">
+    <div class="metric-card gold">
+      <div class="metric-value" style="color: var(--gold); font-size: 16pt;">$5&ndash;7K<span style="font-size: 11pt;">/yr</span></div>
+      <div class="metric-label">Option B: Annual OOP</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value text-navy" style="font-size: 18pt;">$29,600<span style="font-size: 11pt;">/yr</span></div>
+      <div class="metric-label">Option A: Annual OOP</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value text-navy" style="font-size: 18pt;">$32,966<span style="font-size: 11pt;">/yr</span></div>
+      <div class="metric-label">Option C: Annual OOP</div>
+    </div>
+  </div>
+
+  <div class="footnotes">
+    <p>Tax estimates assume federal income tax only (22-24% MFJ blended on GMIB, ~22.7% effective). Iowa does not tax retirement income distributions (IRA, pension, annuity). Post-retirement base income estimated at ~$145,000/yr (pensions + Social Security). Option B premium of $120,000 per existing JH illustration for $6,000,000 face amount. Option C per JH illustration at $145,000 premium, $7,307,164 face. All options assume JH Protection Survivorship IUL (22PSIUL), 6.69% segment growth rate.</p>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 4: THE MATH ═══════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <img src="rpi-shield.png" alt="RPI" class="page-header-shield">
+      <div class="page-header-brand">Retirement Protectors</div>
+    </div>
+    <div class="page-header-title">Strategic Funding Analysis &mdash; Mineart</div>
+  </div>
+
+  <div class="section-title">The Math &mdash; Lifetime Comparison</div>
+  <div class="section-divider"></div>
+
+  <p class="body-text">
+    The inheritance creates a one-time opportunity to permanently reduce your annual costs.
+    Here&rsquo;s what each strategy costs over your joint life expectancy of 24 years.
+  </p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="text-align: left;">Lifetime Cost (24 Years)</th>
+        <th>Option A<br><span style="font-weight: 400; font-size: 8pt;">Start Now</span></th>
+        <th class="recommended">Option B<br><span style="font-weight: 400; font-size: 8pt;">Wait + Net Taxes</span></th>
+        <th>Option C<br><span style="font-weight: 400; font-size: 8pt;">Wait + Full GMIB</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Year 1 Out-of-Pocket</td>
+        <td>$29,600 (taxes)</td>
+        <td class="col-rec">$120,000 (inheritance)</td>
+        <td>$145,000 (inheritance)</td>
+      </tr>
+      <tr>
+        <td>Years 2&ndash;24 Annual OOP</td>
+        <td>$29,600/yr</td>
+        <td class="col-rec"><strong>$5,000&ndash;$7,000/yr</strong></td>
+        <td>$32,966/yr</td>
+      </tr>
+      <tr>
+        <td>Years 2&ndash;24 Total (23 yrs)</td>
+        <td>$680,800</td>
+        <td class="col-rec"><strong>$115,000&ndash;$161,000</strong></td>
+        <td>$758,218</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Total Lifetime Out-of-Pocket</td>
+        <td><strong>$710,400</strong></td>
+        <td class="col-rec"><strong>$234,488&ndash;$280,488</strong></td>
+        <td><strong>$903,218</strong></td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Tax-Free Death Benefit</td>
+        <td>$6,579,631</td>
+        <td class="col-rec"><strong>$6,000,000</strong></td>
+        <td><strong>$7,307,164</strong></td>
+      </tr>
+      <tr>
+        <td>Cost per $1M of Death Benefit</td>
+        <td>$107,956</td>
+        <td class="col-rec"><strong>$39,081&ndash;$46,748</strong></td>
+        <td><strong>$123,607</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-gold">
+    <h3>The Bottom Line</h3>
+    <p>
+      Option B delivers <strong>$6 million in tax-free death benefit</strong> at less than half the lifetime
+      cost of Option A. Because <strong>Iowa does not tax retirement income distributions</strong>, the only
+      tax is federal &mdash; and the GMIB surplus covers most of it. Your annual cost is
+      <strong>$5,000&ndash;$7,000</strong> depending on your bracket. This is the
+      highest-efficiency use of both the annuity and the inherited funds.
+    </p>
+  </div>
+
+  <div class="subsection-title" style="margin-top: 0.15in;">Why the IRA Makes This Even More Compelling</div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.15in; margin-bottom: 0.15in;">
+    <div style="background: var(--pale-blue-soft); border-left: 4px solid var(--rpi-blue); border-radius: 0 8px 8px 0; padding: 0.15in 0.2in;">
+      <div style="font-size: 10pt; font-weight: 800; color: var(--navy); margin-bottom: 4px;">If You Keep the Money in the IRA</div>
+      <ul style="font-size: 9.5pt; color: var(--text-secondary); padding-left: 16px; line-height: 1.5;">
+        <li>Growth is tax-<em>deferred</em>, not tax-free</li>
+        <li>Heirs pay <strong>income tax</strong> on every dollar inherited</li>
+        <li>Must be distributed within 10 years (SECURE Act)</li>
+        <li>Subject to market risk, fees, and sequence risk</li>
+      </ul>
+    </div>
+    <div style="background: #f0fdf4; border-left: 4px solid var(--green); border-radius: 0 8px 8px 0; padding: 0.15in 0.2in;">
+      <div style="font-size: 10pt; font-weight: 800; color: var(--navy); margin-bottom: 4px;">If You Fund the Life Insurance</div>
+      <ul style="font-size: 9.5pt; color: var(--text-secondary); padding-left: 16px; line-height: 1.5;">
+        <li>Death benefit is <strong>100% income tax-free</strong></li>
+        <li>Heirs receive full amount immediately</li>
+        <li>No 10-year distribution requirement</li>
+        <li>Death benefit protected for life when managed annually</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="subsection-title">The Final Numbers &mdash; Option B</div>
+
+  <div class="metric-row">
+    <div class="metric-card gold">
+      <div class="metric-value" style="color: var(--gold);">$5&ndash;7K<span style="font-size: 11pt;">/yr</span></div>
+      <div class="metric-label">Your Annual Cost (Year 2+)</div>
+    </div>
+    <div class="metric-card primary">
+      <div class="metric-value text-blue">$6,000,000</div>
+      <div class="metric-label">Tax-Free to Your Family</div>
+    </div>
+    <div class="metric-card green-card">
+      <div class="metric-value text-green">$145,152<span style="font-size: 11pt;">/yr</span></div>
+      <div class="metric-label">Your Guaranteed GMIB for Life</div>
+    </div>
+  </div>
+
+  <p class="emphasis-text text-center">
+    $6 million in tax-free legacy protection. $5&ndash;7K a year. The GMIB does the rest.
+  </p>
+
+  <div class="footnotes">
+    <p>Lifetime calculations assume joint life expectancy of 24 years. Option B annual OOP range: ~$5,000 (22% bracket) to ~$7,000 (24% bracket). Iowa does not tax retirement income distributions (IRA, pension, annuity) — federal tax only. Roll-up rate of 10% guaranteed per Nassau contract rider specifications. Consult your tax advisor for your specific situation.</p>
+    <p style="margin-top: 3px;">Life insurance death benefits are generally income tax-free under IRC &sect;101(a). Estate tax treatment depends on ownership structure and applicable exemptions. Consult your estate planning attorney.</p>
+  </div>
+</div>
+
+</body>
+</html>
