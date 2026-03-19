@@ -69,7 +69,7 @@ Add `casework` key alongside existing `discovery_kit` and `report_order`:
     "entered_yellow": "2026-02-24",
     "product_lines": ["medicare", "annuity"],
     "notes": [
-      { "id": "uuid", "date": "2026-02-24T10:30:00Z", "author": "vinnie@retireprotected.com", "text": "Client prefers FIA over MYGA" }
+      { "id": "uuid", "date": "2026-02-24T10:30:00Z", "author": "vince@retireprotected.com", "text": "Client prefers FIA over MYGA" }
     ]
   }
 }
@@ -201,7 +201,7 @@ Yellow Stage
 
 **Header Bar:**
 ```
-← Back to My Cases    SMITH, JOHN    Agent: Vinnie V.    [← Blue] [Green →]
+← Back to My Cases    SMITH, JOHN    Agent: Vince V.    [← Blue] [Green →]
 ```
 
 **Product Line Readiness Strip:**

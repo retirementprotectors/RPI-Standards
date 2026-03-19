@@ -113,7 +113,7 @@ Update controls, hookify rules, and CLAUDE.md to prevent recurrence. Conduct a p
 
 | Completed | Outstanding |
 |-----------|-------------|
-| Susan Kaelin, Bob Lacy, Vinnie Vazquez, Josh Archer, Aprille Trupiano, Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn | Shane Parmenter (CFO), Matt McCormick (B2B) |
+| Susan Kaelin, Bob Lacy, Vince Vazquez, Josh Archer, Aprille Trupiano, Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn | Shane Parmenter (CFO), Matt McCormick (B2B) |
 
 ---
 
@@ -200,7 +200,7 @@ Every production rollout — feature launch, schema change, data migration, UI u
 ### Assignment
 
 - Tester should be someone who did NOT build the feature (separation of concerns)
-- Default testers: Vinnie (Sales/ProDashX), Nikki (Service), Matt (DAVID/SENTINEL)
+- Default testers: Vince (Sales/ProDashX), Nikki (Service), Matt (DAVID/SENTINEL)
 
 ---
 

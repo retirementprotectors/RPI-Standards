@@ -328,7 +328,7 @@ PSM-ANN-SUR/LIQ <--> AGE-73/75
 
 | Team | Primary Campaigns | Busy Season |
 |------|-------------------|-------------|
-| **Sales (Vinnie)** | T65 (new enrollment), COV (cross-sell), AGE (milestone conversion) | Year-round, peaks Sep--Dec |
+| **Sales (Vince)** | T65 (new enrollment), COV (cross-sell), AGE (milestone conversion) | Year-round, peaks Sep--Dec |
 | **Service (Nikki)** | PSM (existing client management), PSM-OEP (benefit checks) | Sep--Mar (AEP + OEP cycle) |
 | **Legacy (Aprille)** | PSM-LIFE, COV-LTC, COV-LIAM, COV-LOVE, COV-DI | Sep (LIAM), Nov (LTC), Feb (LOVE), May (DI) |
 

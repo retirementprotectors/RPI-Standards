@@ -184,7 +184,7 @@ These are unique to each portal and stay as separate page files:
 | Decision | When | Options |
 |----------|------|---------|
 | **Sprint 1 priority** | Before next session | Data first? Or UI first? (Recommend: data first — builders need clean data to build good UI) |
-| **Team rollout timeline** | Business decision | When do Vinnie/Nikki/Matt start using toMachina? That drives UI polish urgency. |
+| **Team rollout timeline** | Business decision | When do Vince/Nikki/Matt start using toMachina? That drives UI polish urgency. |
 | **RAPID_IMPORT cutover** | When API is deployed + tested | Approve the URL swap from GAS Web App to Cloud Run |
 | **GAS engine migration** | Only when needed | Don't proactively move engines that work. Move them when business needs demand it. |
 | **CSG API integration** | When Medicare quoting is priority | Wire CSG into the Medicare Sales Center — this is new revenue capability |

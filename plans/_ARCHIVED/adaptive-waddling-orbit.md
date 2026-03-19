@@ -35,7 +35,7 @@ Create `_RPI_STANDARDS/reference/os/PLAN_LIFECYCLE.md` with the following struct
 | Shared Drive / Roadmaps | Exported snapshots of roadmaps (Google Docs format, shareable with team) | JDM, team, investors |
 | Shared Drive / Session Handoffs | End-of-session context exports | Next Claude Code session |
 | Shared Drive / Build Plans | Detailed build specs (shareable format) | JDM, team |
-| Shared Drive / Testing Guides | Production testing docs | Testers (Vinnie, Nikki, Matt) |
+| Shared Drive / Testing Guides | Production testing docs | Testers (Vince, Nikki, Matt) |
 | Shared Drive / Reference Docs | Compliance, checklists, delegation guides | Team reference |
 
 ### Lifecycle Stages

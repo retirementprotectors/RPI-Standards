@@ -159,7 +159,7 @@ No pillar works alone. Standards without enforcement is just a wish list. Enforc
 ### If you're on the Service Team (Nikki's division)
 Client records you pull up in PRODASH are automatically cleaned — names properly capitalized, phones formatted, carriers spelled correctly. When you search for "Aetna" you get all Aetna records, not just the ones that happened to be spelled right. The data you see is the data you can trust.
 
-### If you're on the Sales Team (Vinnie's division)
+### If you're on the Sales Team (Vince's division)
 When you enter a new client or policy, the system normalizes it on the way in. You don't need to worry about whether you typed "United Healthcare" or "UHC" or "AARP/UHC" — the normalizer maps it to the canonical name. Less data entry friction, cleaner CRM.
 
 ### If you're on the B2B/DAVID Team (Matt's division)

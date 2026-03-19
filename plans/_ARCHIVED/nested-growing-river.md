@@ -31,9 +31,9 @@ New columns added to the RIGHT of existing columns (no index shift):
 | User | Field | Current | Fix To |
 |------|-------|---------|--------|
 | Nikki | hierarchy_level | UNIT | DIVISION |
-| Vinnie | hierarchy_level | UNIT | DIVISION |
+| Vince | hierarchy_level | UNIT | DIVISION |
 | Aprille | hierarchy_level | UNIT | DIVISION |
-| Vinnie | role_template_id | readonly | admin |
+| Vince | role_template_id | readonly | admin |
 | Matt | role_template_id | readonly | admin |
 | Susan | role_template_id | sales | service |
 
@@ -52,7 +52,7 @@ All units currently blank. Populate with division leaders.
 
 ### Step 1.5: Populate `employee_profile` enrichments
 
-Add `roadmap_doc_id` and `team_folders` from MCP-Hub's hardcoded data for Matt, Nikki, Vinnie, Jason, Aprille.
+Add `roadmap_doc_id` and `team_folders` from MCP-Hub's hardcoded data for Matt, Nikki, Vince, Jason, Aprille.
 
 **Method:** All via gdrive MCP sheet writes. No code deploys needed.
 
@@ -183,7 +183,7 @@ Add a lightweight public-facing page served by RIIMO's `doGet()` with a `?book=E
 - Displays: person name, photo, booking type cards (name + duration)
 - Each card opens Google Calendar pre-filled event URL with duration + meet link + person as attendee
 - Clean, mobile-friendly design — this is the link team members share with clients/prospects
-- URL format: `RIIMO_URL?book=vince@retireprotected.com` or `RIIMO_URL?book=Vinnie` (resolved via aliases)
+- URL format: `RIIMO_URL?book=vince@retireprotected.com` or `RIIMO_URL?book=Vince` (resolved via aliases)
 
 ### Step 6.2: Booking link in MyDropZone
 Each user's MyDropZone section shows their booking page URL with a copy button.

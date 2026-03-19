@@ -147,7 +147,7 @@ No subsystem works alone. A rule without enforcement is just a suggestion. Enfor
 ### If you're on the Service Team (Nikki's division)
 You handle PHI daily. Standards defines exactly how to handle it — storage, display, transmission. The rules haven't changed, they're just easier to find now.
 
-### If you're on the Sales Team (Vinnie's division)
+### If you're on the Sales Team (Vince's division)
 When prospects or clients ask about security, Posture has scripted answers ready. "Are you HIPAA compliant?" "Do you encrypt data?" "Can you sign a BAA?" — all answered.
 
 ### If you're on the B2B/DAVID Team (Matt's division)

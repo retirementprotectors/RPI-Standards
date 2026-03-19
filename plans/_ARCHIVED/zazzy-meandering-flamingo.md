@@ -8,11 +8,11 @@ Operation Virus Kill unified all org data into _USER_HIERARCHY. Calendar booking
 
 ## Architecture Decision
 
-**WordPress** at `retireprotected.com/book/vinnie/` — not a GAS web app.
+**WordPress** at `retireprotected.com/book/vince/` — not a GAS web app.
 
 Why:
 - RIIMO and RAPID_API are org-only — clients can't access them
-- `retireprotected.com/book/vinnie` is business-card-ready; `script.google.com/macros/s/AKfycb...` is not
+- `retireprotected.com/book/vince` is business-card-ready; `script.google.com/macros/s/AKfycb...` is not
 - Zero PHI exposure risk — WordPress is isolated from MATRIX
 - WordPress MCP tools already available
 - No new GAS project to maintain
@@ -25,7 +25,7 @@ _USER_HIERARCHY.employee_profile (source of truth)
     ↓
 WordPress pages (static HTML, synced on demand)
     ↓
-Client visits retireprotected.com/book/vinnie
+Client visits retireprotected.com/book/vince
     ↓ clicks "Discovery Call (60 min)"
     ↓
 Google Calendar opens with pre-filled event
@@ -53,7 +53,7 @@ Data is baked into each WordPress page as HTML. No live API calls needed. When b
 - Page content = self-contained HTML + inline CSS + inline JS
 - Template renders: name, job_title, booking type cards, Google Calendar link generator
 - Mobile-responsive, RPI-branded (inline styles — Elementor CSS won't compile via REST API)
-- Google Calendar link format: `https://calendar.google.com/calendar/r/eventedit?text=Discovery+Call+with+Vinnie&dates=START/END&location=MEET_LINK&add=AGENT_EMAIL`
+- Google Calendar link format: `https://calendar.google.com/calendar/r/eventedit?text=Discovery+Call+with+Vince&dates=START/END&location=MEET_LINK&add=AGENT_EMAIL`
 - Calendar link JS: user picks a date/time slot, or just "Book Now" generates a link for tomorrow (MVP)
 
 ### Step 4: Update RIIMO MyDropZone — booking URL display
@@ -122,7 +122,7 @@ This avoids WordPress credentials in GAS Script Properties and keeps the sync si
 
 ## Verification
 
-1. Visit `retireprotected.com/book/vinnie/` on phone — see booking cards
-2. Click "Book Now" on Discovery Call — Google Calendar opens with 60-min event, meet link, vinnie@ as attendee
+1. Visit `retireprotected.com/book/vince/` on phone — see booking cards
+2. Click "Book Now" on Discovery Call — Google Calendar opens with 60-min event, meet link, vince@ as attendee
 3. In RIIMO MyDropZone — see booking URL, copy it, open it
 4. Change a booking type in MyRPI — ask Claude to sync — WordPress page updates

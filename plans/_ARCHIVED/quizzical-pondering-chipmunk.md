@@ -49,7 +49,7 @@ Knowledge flows UP (sessions -> memory -> CLAUDE.md). Rules flow DOWN (CLAUDE.md
 | Trigger | Full Workflow Injected |
 |---------|----------------------|
 | **"session launch"** / **"let's get started"** / **"kick off"** | 1. Review the [project] CLAUDE.md + code/docs. 2. Cleanup recommendations. 3. SOAP analysis (Subjective/Objective/Assessment/Plan) of most valuable next steps with reasoning. 4. Copy plan to Google Doc in default Drive folder (1FwTJ3Id2X88wK20N9g_J3idTI9PL0Zw7). |
-| **"post-deployment"** / **"debrief"** / **"wrap it up"** | 1. Review deployment report, make corrections. 2. Full debrief: what we did, where, why, implications, benefits, next steps. 3. Create 3 docs in designated Drive folder (18pzEZmjUVovFGeL4QGX4B8Zrr-p9TU5H): (a) Detailed debrief + what's next, (b) Delegation Guide per team member (Vinnie=Sales ALL, Lucas+Lacy=Medicare, Shaner/Matty/Alex/Arch=Retirement), (c) Testing Guide per format. 4. Confirm documents are available. |
+| **"post-deployment"** / **"debrief"** / **"wrap it up"** | 1. Review deployment report, make corrections. 2. Full debrief: what we did, where, why, implications, benefits, next steps. 3. Create 3 docs in designated Drive folder (18pzEZmjUVovFGeL4QGX4B8Zrr-p9TU5H): (a) Detailed debrief + what's next, (b) Delegation Guide per team member (Vince=Sales ALL, Lucas+Lacy=Medicare, Shaner/Matt/Alex/Arch=Retirement), (c) Testing Guide per format. 4. Confirm documents are available. |
 
 #### TIER 1: Single-Purpose Triggers (inject one directive)
 

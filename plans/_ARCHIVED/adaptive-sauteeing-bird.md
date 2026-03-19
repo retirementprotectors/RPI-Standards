@@ -81,7 +81,7 @@ Josh Millang    → U09BBHTN8F2
 John Behn       → U09JBHUQ9S9  (always CC'd)
 Matt McCormick  → U086YDNC7BK
 Nikki Gray      → U08TQVC90DA
-Vinnie Vazquez  → U07KXAF8EF4
+Vince Vazquez   → U07KXAF8EF4
 Jason Moran     → U08AGC03HT9
 Aprille Trupiano → U092U7FCCDT
 ```
@@ -112,11 +112,11 @@ Aprille Trupiano → U092U7FCCDT
 ```
 Matt McCormick  → Matt McCormick roadmap
 Nikki Gray      → Nikki Gray roadmap
-Vinnie Vazquez  → Vinnie Vazquez roadmap
+Vince Vazquez   → Vince Vazquez roadmap
 Jason Moran     → Jason Moran roadmap
 Aprille Trupiano → Aprille Trupiano roadmap
 ```
-Fuzzy matching: Vince/Vinnie, Dr. Aprille/Aprille
+Fuzzy matching: Vince (canonical: Vince), Dr. Aprille/Aprille
 
 ### Backend (Modify: Code.gs ~5 lines)
 - Hook `CC_AutoRoute.routeMeetingToRoadmaps()` into `uiSaveMeetingAnalysis()` post-save (try/catch, non-blocking)
@@ -291,7 +291,7 @@ Phase 4 (scorecard placeholder) can run in parallel with anything.
 | `uiSaveMeetingAnalysis()` becomes slow with sync + Slack + route | All downstream calls wrapped in try/catch (non-blocking). Save completes first. Refactor to async queue if needed. |
 | Slack rate limits (20 msgs/min) | Typical meeting = 2-5 DMs + 1 channel post. Well within limits. Weekly digest batches with 1s delays. |
 | Action item dedup on re-save | Composite key: source_meeting_id + normalized action text. Re-saves update, not duplicate. |
-| Owner name mismatch across systems | Exact match against SLACK_TEAM_MAP + ROADMAP_OWNER_MAP. Fuzzy fallback for Vince/Vinnie, Dr. Aprille/Aprille. |
+| Owner name mismatch across systems | Exact match against SLACK_TEAM_MAP + ROADMAP_OWNER_MAP. Fuzzy fallback for Vince (canonical: Vince), Dr. Aprille/Aprille. |
 | Recording watcher false positives | Check file MIME type + creation timestamp. Only process recordings with associated transcript docs. |
 
 ---

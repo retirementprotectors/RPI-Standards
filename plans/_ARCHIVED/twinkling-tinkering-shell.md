@@ -16,7 +16,7 @@ RIIMO v1.8.2 has solid scaffolding but 9 fake metric functions, dead code, bugs,
 | JDM (josh@retireprotected.com) | OWNER (0) | All |
 | John Behn (john@retireprotected.com) | EXECUTIVE (1) | All |
 | Matt McCormick | LEADER (2) | DAVID Tools + RAPID Tools |
-| Vinnie Vazquez | LEADER (2) | RPI Tools + RAPID Tools |
+| Vince Vazquez | LEADER (2) | RPI Tools + RAPID Tools |
 | Nikki Gray | LEADER (2) | RPI Tools + RAPID Tools |
 | Dr. Aprille Trupiano | LEADER (2) | RPI Tools + RAPID Tools |
 | Shane Parmenter | NOT in RIIMO | N/A |

@@ -225,7 +225,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | John Behn | COO/Integrator |
 | Shane Parmenter | CFO |
 | Nikki Gray | Service Division |
-| Vinnie Vazquez | Sales Division |
+| Vince Vazquez | Sales Division |
 | Matt McCormick | B2B/DAVID Division |
 | Dr. Aprille Trupiano | CMO/Legacy Services |
 | Jason Moran (JMDC) | Fractional CTO |
@@ -233,7 +233,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 
 - **Offboarded users**: alex@, jmdconsulting@, allison@, christa@, rpifax@
 ### Org Structure
-- **3 Divisions:** Sales (Vinnie), Service (Nikki), Legacy (Aprille)
+- **3 Divisions:** Sales (Vince), Service (Nikki), Legacy (Aprille)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
 
 ---
