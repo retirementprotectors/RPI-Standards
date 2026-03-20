@@ -250,7 +250,9 @@ document.addEventListener('click', function(e) {
 
 ---
 
-## JavaScript — ES5 Version (RIIMO, legacy GAS apps)
+## JavaScript — ES5 Version (LEGACY — GAS apps only, not for toMachina)
+
+> **Note:** toMachina uses React components with type-ahead search patterns. This ES5 section is retained for the 3 remaining GAS engines only. For toMachina, see `packages/ui/` component patterns.
 
 Same logic, but uses `var`, `function(){}`, string concatenation, and `for` loops instead of ES6 features. See RIIMO/Index.html for the canonical ES5 implementation.
 

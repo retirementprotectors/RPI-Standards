@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-03-19):** This document references pre-toMachina architecture (MATRIX tabs, GAS functions). Data governance is now managed by ATLAS in Firestore (`services/api/src/routes/atlas.ts`). Retained for historical reference only.
+
 # RPI Carrier Integration Matrix
 
 > Per-carrier reference cards with API endpoints, authentication methods, field mappings, and integration status.

@@ -40,7 +40,7 @@
 1. **Logo** (top-left) - click = Dashboard. NO Dashboard item in nav.
 2. **Pipelines** - FIRST section, collapsed by default. Blue icons.
 3. **Module Sections** - Portal-specific groupings. Purple icons. Collapsed by default.
-4. **Apps** - External GAS projects. Orange icons, dashed border, `open_in_new` icon. Collapsed by default.
+4. **Apps** - Standalone branded modules (Pipeline Studio, ATLAS, etc.). Own brand identity in every portal. Some legacy apps were external GAS projects.
 5. **Admin** - Pinned to bottom. Red icon. Flat button (no collapse). Permission-gated.
 
 ### Visual Rules
@@ -133,7 +133,7 @@ Stored in `employee_profile` JSON on `_USER_HIERARCHY`:
 
 ## Shared CSS Delivery
 - Master file: `_RPI_STANDARDS/reference/portal/PortalStandard.html`
-- Copied into each GAS project root (GAS has no cross-project includes)
+- Shared via packages/ui in the toMachina monorepo. Legacy GAS projects copied the file.
 - Include via: `<?!= include('PortalStandard') ?>`
 - Each portal overrides `--portal`, `--portal-glow`, `--portal-accent` on `:root`
 

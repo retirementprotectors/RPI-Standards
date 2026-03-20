@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-03-19):** This document references pre-toMachina architecture (MATRIX tabs, GAS functions). Data governance is now managed by ATLAS in Firestore (`services/api/src/routes/atlas.ts`). Retained for historical reference only.
+
 # The Data Operating System — Team Guide
 
 > **What it is, why it matters, and what you need to know.**

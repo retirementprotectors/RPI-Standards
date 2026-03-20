@@ -14,8 +14,8 @@ When the codebase changes, the corresponding docs must be updated. Claude is res
 
 | When You... | Update These |
 |---|---|
-| Add a new GAS project | MONITORING.md (project list + scan loop), POSTURE.md (verification table), `clone-all-repos.sh` + `setup-hookify-symlinks.sh`, CLAUDE.md Project Locations tree |
-| Add a new GAS web app (webapp) | POSTURE.md (add to verification table) |
+| Add a new GAS project (rare — maintenance mode) | MONITORING.md (project list + scan loop), POSTURE.md (verification table), `clone-all-repos.sh` + `setup-hookify-symlinks.sh`, CLAUDE.md Project Locations tree |
+| Add a new GAS web app (rare — maintenance mode) | POSTURE.md (add to verification table) |
 | Complete a security audit | POSTURE.md (audit trail + dates) |
 | Change deploy process | CLAUDE.md ONLY — never reference docs |
 | Add a new MCP tool | MCP-Hub/CLAUDE.md (directory listing) |

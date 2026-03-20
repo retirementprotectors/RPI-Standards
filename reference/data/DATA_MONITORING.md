@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-03-19):** This document references pre-toMachina architecture (MATRIX tabs, GAS functions). Data governance is now managed by ATLAS in Firestore (`services/api/src/routes/atlas.ts`). Retained for historical reference only.
+
 # DATA_MONITORING — Watchdogs & Health Checks
 
 > Pillar 4 of the Data Operating System. Defines how we detect data quality drift and maintain visibility.

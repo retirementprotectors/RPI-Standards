@@ -10,14 +10,14 @@
 ### Before you write a single function, build a single preprocessor, or touch a single file:
 
 **1. Read ATLAS `_SOURCE_REGISTRY` + Gap Analysis**
-Run via execute_script on ATLAS (scriptId: `1dLLKTyOIOSN8W3X6oxn57FwbMHNCKDrI4HMdGojMRGfYAZpSNPHknUU_`).
-- Call `getRegistryForUI({})` with `devMode: true` — full source registry (100+ entries)
-- Call `getGapAnalysisForUI({"group_by":"gap_status"})` — RED/YELLOW/GREEN breakdown for prioritization
+Query via toMachina API at `services/api/src/routes/atlas.ts` or directly in Firestore.
+- Call `GET /api/atlas/sources` via portal proxy — full source registry (100+ entries)
+- Call `GET /api/atlas/analytics?group_by=gap_status` — RED/YELLOW/GREEN breakdown for prioritization
 This gives you every carrier × product × domain with gap status, current method, target method, and automation %.
 **Use this to understand what data sources exist BEFORE browsing Drive folders.**
 
 **2. Read ATLAS `_TOOL_REGISTRY`**
-Call `getToolRegistryForUI({})` with `devMode: true`.
+Call `GET /api/atlas/tools` via portal proxy.
 **WARNING:** This returns ~107K characters. If it exceeds token limits, read the output file it saves to disk.
 This gives you ~150 registered pipeline tools across 6 categories:
 - **INTAKE_QUEUING** — scanners, processors (use these, don't build new ones)

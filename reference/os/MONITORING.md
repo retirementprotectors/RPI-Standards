@@ -177,22 +177,22 @@ Scan for forbidden patterns across all GAS web apps:
 
 ```bash
 # Forbidden function calls (actual calls only, excluding variable names/comments)
-for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
-  ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
-  ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
-  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_COMMS ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
-  ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
+for repo in ~/Projects/toMachina ~/Projects/toMachina \
+  ~/Projects/archive/C3 ~/Projects/archive/CAM ~/Projects/archive/CEO-Dashboard \
+  ~/Projects/gas/DEX ~/Projects/archive/RIIMO ~/Projects/archive/RPI-Command-Center \
+  ~/Projects/archive/RAPID_API ~/Projects/archive/RAPID_COMMS ~/Projects/gas/RAPID_CORE ~/Projects/gas/RAPID_IMPORT \
+  ~/Projects/archive/sentinel-v1 ~/Projects/archive/sentinel-v2 ~/Projects/archive/DAVID-HUB; do
   name=$(basename "$repo")
   # Scan .html and .gs files for forbidden UI calls
   grep -rn 'showConfirm\|showToast\|showAlert' "$repo"/*.html "$repo"/*.gs 2>/dev/null | head -3
 done
 
 # Hardcoded inline colors
-for repo in ~/Projects/PRODASHX_TOOLS/PRODASHX ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
-  ~/Projects/RAPID_TOOLS/C3 ~/Projects/RAPID_TOOLS/CAM ~/Projects/RAPID_TOOLS/CEO-Dashboard \
-  ~/Projects/RAPID_TOOLS/DEX ~/Projects/RAPID_TOOLS/RIIMO ~/Projects/RAPID_TOOLS/RPI-Command-Center \
-  ~/Projects/RAPID_TOOLS/RAPID_API ~/Projects/RAPID_TOOLS/RAPID_COMMS ~/Projects/RAPID_TOOLS/RAPID_CORE ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
-  ~/Projects/SENTINEL_TOOLS/sentinel ~/Projects/SENTINEL_TOOLS/sentinel-v2 ~/Projects/SENTINEL_TOOLS/DAVID-HUB; do
+for repo in ~/Projects/toMachina ~/Projects/toMachina \
+  ~/Projects/archive/C3 ~/Projects/archive/CAM ~/Projects/archive/CEO-Dashboard \
+  ~/Projects/gas/DEX ~/Projects/archive/RIIMO ~/Projects/archive/RPI-Command-Center \
+  ~/Projects/archive/RAPID_API ~/Projects/archive/RAPID_COMMS ~/Projects/gas/RAPID_CORE ~/Projects/gas/RAPID_IMPORT \
+  ~/Projects/archive/sentinel-v1 ~/Projects/archive/sentinel-v2 ~/Projects/archive/DAVID-HUB; do
   name=$(basename "$repo")
   grep -rn 'style=.*hex-color-pattern' "$repo"/*.html 2>/dev/null | head -3
 done
@@ -281,23 +281,23 @@ Pick one project each week and verify:
 | Project | Status | Last Commit | Notes |
 |---------|--------|-------------|-------|
 | _RPI_STANDARDS | pass/warn | X ago | |
-| PRODASHX_TOOLS/PRODASHX | pass/warn | X ago | |
-| PRODASHX_TOOLS/QUE/QUE-Medicare | pass/warn | X ago | |
-| RAPID_TOOLS/C3 | pass/warn | X ago | |
-| RAPID_TOOLS/CAM | pass/warn | X ago | |
-| RAPID_TOOLS/CEO-Dashboard | pass/warn | X ago | |
-| RAPID_TOOLS/DEX | pass/warn | X ago | |
-| RAPID_TOOLS/MCP-Hub | pass/warn | X ago | |
-| RAPID_TOOLS/PDF_SERVICE | pass/warn | X ago | |
-| RAPID_TOOLS/RAPID_API | pass/warn | X ago | |
-| RAPID_TOOLS/RAPID_COMMS | pass/warn | X ago | |
-| RAPID_TOOLS/RAPID_CORE | pass/warn | X ago | |
-| RAPID_TOOLS/RAPID_IMPORT | pass/warn | X ago | |
-| RAPID_TOOLS/RIIMO | pass/warn | X ago | |
-| RAPID_TOOLS/RPI-Command-Center | pass/warn | X ago | |
-| SENTINEL_TOOLS/DAVID-HUB | pass/warn | X ago | |
-| SENTINEL_TOOLS/sentinel | pass/warn | X ago | |
-| SENTINEL_TOOLS/sentinel-v2 | pass/warn | X ago | |
+| toMachina | pass/warn | X ago | |
+| toMachina (QUE is a module) | pass/warn | X ago | |
+| gas/ or archive/C3 | pass/warn | X ago | |
+| gas/ or archive/CAM | pass/warn | X ago | |
+| gas/ or archive/CEO-Dashboard | pass/warn | X ago | |
+| gas/ or archive/DEX | pass/warn | X ago | |
+| gas/ or archive/MCP-Hub | pass/warn | X ago | |
+| gas/ or archive/PDF_SERVICE | pass/warn | X ago | |
+| gas/ or archive/RAPID_API | pass/warn | X ago | |
+| gas/ or archive/RAPID_COMMS | pass/warn | X ago | |
+| gas/ or archive/RAPID_CORE | pass/warn | X ago | |
+| gas/ or archive/RAPID_IMPORT | pass/warn | X ago | |
+| gas/ or archive/RIIMO | pass/warn | X ago | |
+| gas/ or archive/RPI-Command-Center | pass/warn | X ago | |
+| archive/DAVID-HUB | pass/warn | X ago | |
+| archive/sentinel | pass/warn | X ago | |
+| archive/sentinel-v2 | pass/warn | X ago | |
 
 ### Code Quality
 - [ ] No new forbidden pattern violations
@@ -475,24 +475,24 @@ git log --oneline -5
 | Project | Path | Last Audit | Status |
 |---------|------|------------|--------|
 | _RPI_STANDARDS | `_RPI_STANDARDS` | 2026-02-13 | Compliant |
-| PRODASHX | `PRODASHX_TOOLS/PRODASHX` | 2026-02-04 | Compliant |
-| QUE-Medicare | `PRODASHX_TOOLS/QUE/QUE-Medicare` | -- | Pending |
-| C3 | `RAPID_TOOLS/C3` | 2026-02-04 | Compliant |
-| CAM | `RAPID_TOOLS/CAM` | 2026-02-04 | Compliant |
-| CEO-Dashboard | `RAPID_TOOLS/CEO-Dashboard` | -- | Pending |
-| DEX | `RAPID_TOOLS/DEX` | -- | Pending |
-| MCP-Hub | `RAPID_TOOLS/MCP-Hub` | -- | Pending |
-| PDF_SERVICE | `RAPID_TOOLS/PDF_SERVICE` | -- | Pending |
-| RAPID_API | `RAPID_TOOLS/RAPID_API` | 2026-02-04 | Compliant |
-| RAPID_COMMS | `RAPID_TOOLS/RAPID_COMMS` | -- | Pending |
-| RAPID_CORE | `RAPID_TOOLS/RAPID_CORE` | 2026-02-04 | Compliant |
-| RAPID_IMPORT | `RAPID_TOOLS/RAPID_IMPORT` | -- | Pending |
-| RIIMO | `RAPID_TOOLS/RIIMO` | -- | Pending |
-| RPI-Command-Center | `RAPID_TOOLS/RPI-Command-Center` | -- | Pending |
-| DAVID-HUB | `SENTINEL_TOOLS/DAVID-HUB` | 2026-02-04 | Compliant |
-| sentinel | `SENTINEL_TOOLS/sentinel` | 2026-02-04 | Compliant |
-| sentinel-v2 | `SENTINEL_TOOLS/sentinel-v2` | -- | Pending |
-| SPARK_WEBHOOK_PROXY | `RAPID_TOOLS/SPARK_WEBHOOK_PROXY` | -- | Pending |
+| PRODASHX | `toMachina` | 2026-02-04 | Compliant |
+| QUE-Medicare | `toMachina (QUE is a module)` | -- | Pending |
+| C3 | `gas/ or archive/C3` | 2026-02-04 | Compliant |
+| CAM | `gas/ or archive/CAM` | 2026-02-04 | Compliant |
+| CEO-Dashboard | `gas/ or archive/CEO-Dashboard` | -- | Pending |
+| DEX | `gas/ or archive/DEX` | -- | Pending |
+| MCP-Hub | `gas/ or archive/MCP-Hub` | -- | Pending |
+| PDF_SERVICE | `gas/ or archive/PDF_SERVICE` | -- | Pending |
+| RAPID_API | `gas/ or archive/RAPID_API` | 2026-02-04 | Compliant |
+| RAPID_COMMS | `gas/ or archive/RAPID_COMMS` | -- | Pending |
+| RAPID_CORE | `gas/ or archive/RAPID_CORE` | 2026-02-04 | Compliant |
+| RAPID_IMPORT | `gas/ or archive/RAPID_IMPORT` | -- | Pending |
+| RIIMO | `gas/ or archive/RIIMO` | -- | Pending |
+| RPI-Command-Center | `gas/ or archive/RPI-Command-Center` | -- | Pending |
+| DAVID-HUB | `archive/DAVID-HUB` | 2026-02-04 | Compliant |
+| sentinel | `archive/sentinel` | 2026-02-04 | Compliant |
+| sentinel-v2 | `archive/sentinel-v2` | -- | Pending |
+| SPARK_WEBHOOK_PROXY | `gas/ or archive/SPARK_WEBHOOK_PROXY` | -- | Pending |
 
 ### Batch Audit Tips
 

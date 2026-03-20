@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-03-19):** This document references pre-toMachina architecture (MATRIX tabs, GAS functions). Data governance is now managed by ATLAS in Firestore (`services/api/src/routes/atlas.ts`). Retained for historical reference only.
+
 # DATA_STANDARDS -- Field Registry, Canonical Values & Correction Log
 
 > Pillar 1 of the Data Operating System. Defines what the rules ARE for data quality across all MATRIX tabs.

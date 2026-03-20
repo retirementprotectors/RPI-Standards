@@ -1,3 +1,5 @@
+> **DEPRECATED (2026-03-19):** This document references pre-toMachina architecture (MATRIX tabs, GAS functions). Data governance is now managed by ATLAS in Firestore (`services/api/src/routes/atlas.ts`). Retained for historical reference only.
+
 # DATA_OPERATIONS — Playbooks & Procedures
 
 > Pillar 5 of the Data Operating System. Step-by-step operational playbooks for data management.

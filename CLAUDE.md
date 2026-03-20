@@ -960,25 +960,25 @@ The Machine (the business)
 
 ### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 22 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 34 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-**Rule Types** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
+**34 rules** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
 
-**Tier 1 — Block Rules** (`action: block`, `event: file`):
-`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`
+**Tier 1 — Block Rules (16 rules):**
+`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `quality-gate-plan-format`
 
-**Tier 2 — Warn Rules** (`action: warn`, `event: file`):
+**Tier 2 — Warn Rules (6 rules):**
 `warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
 
-**Intent Rules** (`action: warn`, `event: prompt`):
-`intent-session-start` (triggers session protocol), `intent-sendit` (triggers 6-step deploy), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work)
+**Intent Rules (6 rules):**
+`intent-session-start` (triggers session protocol), `intent-sendit` (triggers toMachina deploy protocol), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work)
 
-**Quality Gates** (`action: block`, `event: bash`):
-`quality-gate-deploy-verify` (blocks deploy without verify), `quality-gate-commit-remind` (blocks commit without deploy)
+**Quality Gates (6 rules):**
+`quality-gate-deploy-verify` (warns before git push), `quality-gate-commit-remind` (warns before git commit), `quality-gate-build-verify` (blocks type-check as sufficient — requires npm run build), `quality-gate-done-without-evidence` (blocks reporting complete without git status + build proof), `quality-gate-phase-complete` (blocks phase complete without evidence), `quality-gate-audit-verify` (activates audit protocol)
 
 ### Rule Propagation
 
-Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 projects via:
+Rules live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` global via:
 ```bash
 ~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
 ```

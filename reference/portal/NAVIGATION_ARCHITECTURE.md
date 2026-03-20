@@ -67,7 +67,7 @@ Each portal defines its own click handler that:
 3. Loads the corresponding view into `.main-content`
 
 ### App Items
-App nav-items open a new browser window/tab to the external GAS web app URL.
+App nav-items are React modules rendered within the portal. Some legacy apps may still open external URLs.
 
 ### Logo Click
 Calls `showDashboard()` (or equivalent) to load the dashboard view.
