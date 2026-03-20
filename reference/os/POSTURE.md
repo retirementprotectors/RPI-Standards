@@ -50,7 +50,7 @@
 | Less secure app access | OFF | [ ] | |
 | Third-party app access | Restricted to approved apps | [x] | 2026-02-13 |
 | External sharing (Drive) | Restricted or warn | [ ] | |
-| Email authentication (SPF/DKIM/DMARC) | Configured | [ ] | |
+| Email authentication (SPF/DKIM/DMARC) | Configured | [x] | 2026-03-19 |
 | Mobile device management | Basic or higher | [x] | 2026-02-13 |
 | Admin roles | Principle of least privilege | [x] | 2026-02-13 |
 | BAA with Google | Signed (if handling PHI) | [x] | 2026-02-04 |

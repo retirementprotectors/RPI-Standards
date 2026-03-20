@@ -29,7 +29,7 @@ This gives you ~150 registered pipeline tools across 6 categories:
 **If a tool exists for what you're about to build, USE IT.**
 
 **3. Read ATLAS Wire Definitions**
-Call `getWiresByProductLineForUI()` with `devMode: true`.
+Call `GET /api/atlas/wires` via portal proxy.
 These show the exact pipeline path from source → intake → extraction → approval → MATRIX → frontend for 10+ data flows. **Follow the wires. Do not invent pipeline paths.**
 
 **4. Read the ACCOUNT UPLOAD MASTER**
@@ -115,4 +115,4 @@ A: That's a RED gap where the target is API integration but no connection exists
 
 ---
 
-*ATLAS project: `~/Projects/RAPID_TOOLS/ATLAS/` | Script ID: `1dLLKTyOIOSN8W3X6oxn57FwbMHNCKDrI4HMdGojMRGfYAZpSNPHknUU_`*
+*ATLAS project: `~/Projects/archive/ATLAS/ (ARCHIVED — registries now in Firestore)` | Script ID: `1dLLKTyOIOSN8W3X6oxn57FwbMHNCKDrI4HMdGojMRGfYAZpSNPHknUU_`*

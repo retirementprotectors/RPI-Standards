@@ -134,11 +134,11 @@ Stored in `employee_profile` JSON on `_USER_HIERARCHY`:
 ## Shared CSS Delivery
 - Master file: `_RPI_STANDARDS/reference/portal/PortalStandard.html`
 - Shared via packages/ui in the toMachina monorepo. Legacy GAS projects copied the file.
-- Include via: `<?!= include('PortalStandard') ?>`
+- Include via: `Imported via packages/ui barrel (legacy GAS used <?!= include() ?>)`
 - Each portal overrides `--portal`, `--portal-glow`, `--portal-accent` on `:root`
 
 ## Module vs App Classification
 | Type | Definition | Visual Treatment |
 |------|-----------|-----------------|
-| **Module** | Native `.gs` file in the portal project | Purple icon, solid background |
-| **App** | Separate GAS project with its own backend/frontend | Orange icon, dashed border, `open_in_new` icon, opens new window |
+| **Module** | React module in packages/ui, portal-branded via CSS variables | Purple icon, solid background |
+| **App** | Standalone branded React module in packages/ui with own identity | Orange icon, dashed border, `open_in_new` icon, opens new window |

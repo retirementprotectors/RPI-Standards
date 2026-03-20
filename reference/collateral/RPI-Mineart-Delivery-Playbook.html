@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delivery Playbook — Mineart — Josh Archer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3158;
+    --rpi-blue: #4a7ab5;
+    --pale-blue: #e5ecf6;
+    --pale-blue-soft: #edf2f8;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border: #e2e5ea;
+    --white: #ffffff;
+    --gold: #c5a55a;
+    --green: #16a34a;
+    --red: #dc2626;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.5in 0.6in; }
+  body { font-family: 'Inter', -apple-system, sans-serif; font-size: 10pt; line-height: 1.5; color: var(--text-primary); background: var(--white); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; position: relative; }
+  .page:last-child { page-break-after: avoid; }
+
+  .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.1in; border-bottom: 2px solid var(--navy); margin-bottom: 0.2in; }
+  .header-brand { font-size: 9pt; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--navy); }
+  .header-right { font-size: 8pt; color: var(--text-muted); }
+  .confidential { display: inline-block; background: var(--red); color: white; font-size: 7pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; margin-left: 8px; }
+
+  .title { font-size: 20pt; font-weight: 800; color: var(--navy); margin-bottom: 0.05in; }
+  .subtitle { font-size: 10pt; color: var(--text-muted); margin-bottom: 0.15in; }
+  .divider { height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold), transparent); border-radius: 2px; margin-bottom: 0.2in; }
+
+  .phase { margin-bottom: 0.2in; }
+  .phase-header { display: flex; align-items: center; gap: 8px; margin-bottom: 0.08in; }
+  .phase-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--navy); color: var(--white); font-weight: 800; font-size: 13pt; border-radius: 50%; flex-shrink: 0; }
+  .phase-title { font-size: 13pt; font-weight: 800; color: var(--navy); }
+  .phase-time { font-size: 8pt; font-weight: 600; color: var(--rpi-blue); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .step { display: flex; gap: 10px; margin-bottom: 0.06in; margin-left: 36px; }
+  .step-icon { color: var(--rpi-blue); font-weight: 800; flex-shrink: 0; width: 16px; }
+  .step-text { font-size: 10pt; color: var(--text-secondary); line-height: 1.5; }
+  .step-text strong { color: var(--navy); }
+
+  .talk-track { background: var(--pale-blue-soft); border-left: 4px solid var(--rpi-blue); border-radius: 0 8px 8px 0; padding: 0.12in 0.18in; margin: 0.06in 0 0.1in 36px; }
+  .talk-label { font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rpi-blue); margin-bottom: 3px; }
+  .talk-text { font-size: 9.5pt; color: var(--text-secondary); font-style: italic; line-height: 1.5; }
+
+  .warning-box { background: #fef2f2; border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 0.12in 0.18in; margin: 0.06in 0 0.1in 36px; }
+  .warning-label { font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--red); margin-bottom: 3px; }
+  .warning-text { font-size: 9.5pt; color: #991b1b; line-height: 1.5; }
+
+  .checklist { margin-left: 36px; margin-bottom: 0.15in; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 0.04in; }
+  .check-box { width: 14px; height: 14px; border: 2px solid var(--navy); border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+  .check-text { font-size: 9.5pt; color: var(--text-primary); }
+
+  .doc-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 0.1in 0 0.15in 36px; }
+  .doc-table th { background: var(--navy); color: white; padding: 5px 8px; text-align: left; font-weight: 700; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  .doc-table th:first-child { border-radius: 6px 0 0 0; }
+  .doc-table th:last-child { border-radius: 0 6px 0 0; }
+  .doc-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .doc-table tr:nth-child(even) { background: var(--pale-blue-soft); }
+
+  .footer-note { font-size: 7.5pt; color: var(--text-muted); margin-top: 0.15in; padding-top: 0.08in; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PAGE 1: THE PLAYBOOK ═══════════════ -->
+<div class="page">
+  <div class="header">
+    <div>
+      <span class="header-brand">Retirement Protectors</span>
+      <span class="confidential">Agent Use Only</span>
+    </div>
+    <div class="header-right">Mineart Delivery &mdash; March 20, 2026</div>
+  </div>
+
+  <div class="title">Delivery Playbook</div>
+  <div class="subtitle">Stephen &amp; Joyce Mineart &mdash; Nassau GMIB &rarr; JH Survivorship IUL &mdash; Policy 46395803</div>
+  <div class="divider"></div>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-number">1</div>
+      <div>
+        <div class="phase-title">Open: Set the Stage</div>
+        <div class="phase-time">5 minutes</div>
+      </div>
+    </div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Warm greeting. Sit at the table. Have all documents pre-organized in presentation order.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Acknowledge the inheritance situation sensitively: <strong>"Before we get into the numbers, I want you to know this plan is designed to honor what Joyce's mother is leaving behind by turning it into something permanent for your family."</strong></div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Frame the meeting: <strong>"Today I'm going to walk you through three options, show you our recommendation, and get your input. Then we'll handle the paperwork."</strong></div></div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-number">2</div>
+      <div>
+        <div class="phase-title">Present: Strategic Comparison</div>
+        <div class="phase-time">15&ndash;20 minutes</div>
+      </div>
+    </div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Walk through the <strong>Strategic Life Insurance Funding Analysis</strong> (4-page printed PDF).</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Page 1 (Cover):</strong> Confirm policy status &mdash; "John Hancock has approved you both. This is ready to go."</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Page 2 (The Opportunity):</strong> Explain the GMIB roll-up. Key line: <strong>"Every year you wait, the benefit base grows 10%. That's $14,000 more per year, guaranteed, for life."</strong></div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Page 3 (Three Options):</strong> Walk through A, B, C. Spend the most time on Option B. Highlight the flow diagram: GMIB &rarr; Premium &rarr; Surplus toward taxes.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Page 4 (The Math):</strong> Lifetime comparison. Cost per $1M. IRA vs. Life Insurance side-by-side. Let the numbers speak.</div></div>
+
+    <div class="talk-track">
+      <div class="talk-label">Key Talking Point &mdash; Option B</div>
+      <div class="talk-text">"With the inheritance bridging Year 1, your Nassau benefit base gets one more year of growth. Starting Year 2, the GMIB covers the premium AND most of the taxes. Your out-of-pocket is $5,000 to $7,000 a year &mdash; and your children receive $6 million, tax-free. There's no investment that competes with that math."</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-number">3</div>
+      <div>
+        <div class="phase-title">Confirm: Get the Decision</div>
+        <div class="phase-time">5 minutes</div>
+      </div>
+    </div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Ask directly: <strong>"Based on what we've reviewed, does Option B feel right for your situation?"</strong></div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">If yes &rarr; proceed to paperwork. If questions &rarr; address them. If they want Option A or C &rarr; adjust accordingly.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Present the <strong>Client Decision Confirmation</strong>. Walk through the four checkboxes. Get signatures from both Stephen and Joyce.</div></div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-number">4</div>
+      <div>
+        <div class="phase-title">Sign: Illustration + Backdating + Amendments</div>
+        <div class="phase-time">10&ndash;15 minutes</div>
+      </div>
+    </div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Correct illustration ($120K / $6M, Joyce A70):</strong> Have them sign and date <strong>every page</strong>. This is the illustration that matches their selected option.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Backdating form:</strong> Fill in the date that matches the selected illustration. Both Archer (agent) and Stephen (owner) sign.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text"><strong>Amendment Request Letters</strong> (one for Stephen, one for Joyce): Walk through the bullet points. <strong>"These tell John Hancock to update the policy to match the option you've chosen."</strong> Get signatures.</div></div>
+
+    <div class="talk-track">
+      <div class="talk-label">Talking Point &mdash; Why the Amendments</div>
+      <div class="talk-text">"When we submitted your application, we went in at the maximum premium to make sure there were no issues with approval. Now that you're approved, we're adjusting to the exact option you've selected &mdash; $120,000 premium, $6 million death benefit. These forms tell John Hancock to make that adjustment."</div>
+    </div>
+
+    <div class="warning-box">
+      <div class="warning-label">Do Not</div>
+      <div class="warning-text">Do NOT have the Minearts sign the <strong>original delivery kit amendments</strong> ($5,439,399 face). Those reference the wrong illustration. Only sign the corrected Amendment Request Letters and the correct illustration.</div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-number">5</div>
+      <div>
+        <div class="phase-title">Close: Next Steps</div>
+        <div class="phase-time">5 minutes</div>
+      </div>
+    </div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Explain: <strong>"Josh Millang is speaking with John Hancock this morning to get the policy updated. The corrected delivery documents should arrive within a few days. When they do, we'll come back for the final signatures and collect your check."</strong></div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Confirm check details: <strong>$120,000 payable to John Hancock Life Insurance Company (U.S.A.)</strong> &mdash; to be collected at the final delivery, not today.</div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Remind them: <strong>"Do not contact Nassau to activate the GMIB. We need it to roll up on October 2. That's the key to the whole strategy."</strong></div></div>
+    <div class="step"><div class="step-icon">&rarr;</div><div class="step-text">Thank them. Leave copies of the Strategic Comparison and Decision Confirmation.</div></div>
+  </div>
+
+  <div class="footer-note">
+    <p><strong>Documents to bring:</strong> (1) Strategic Life Insurance Funding Analysis (printed, 4 pages) &nbsp;|&nbsp; (2) Client Decision Confirmation &nbsp;|&nbsp;
+    (3) Correct illustration &mdash; $120K/$6M, Joyce A70 (all pages) &nbsp;|&nbsp; (4) Blank Backdating Form &nbsp;|&nbsp;
+    (5) Amendment Request Letters &mdash; Stephen + Joyce &nbsp;|&nbsp; (6) This Playbook (agent reference only, do not leave with client)</p>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE 2: DOCUMENT CHECKLIST ═══════════════ -->
+<div class="page">
+  <div class="header">
+    <div>
+      <span class="header-brand">Retirement Protectors</span>
+      <span class="confidential">Agent Use Only</span>
+    </div>
+    <div class="header-right">Mineart Delivery &mdash; March 20, 2026</div>
+  </div>
+
+  <div class="phase-title" style="font-size: 16pt; margin-bottom: 0.15in;">Meeting Checklist</div>
+  <div class="divider"></div>
+
+  <div style="font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: 0.08in;">Before the Meeting</div>
+  <div class="checklist">
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print Strategic Comparison (4 pages, color)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print correct illustration &mdash; $120K / $6M / Joyce A70 (all pages)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print Client Decision Confirmation (1 page)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print Backdating Form &mdash; blank (1 page)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print Amendment Request &mdash; Stephen (1 page)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Print Amendment Request &mdash; Joyce (1 page)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Confirm with JDM: Did Francesca confirm the reissue?</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Two blue pens</div></div>
+  </div>
+
+  <div style="font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: 0.08in;">Signatures Collected at This Meeting</div>
+  <table class="doc-table" style="width: calc(100% - 36px);">
+    <thead>
+      <tr>
+        <th>Document</th>
+        <th>Stephen Signs</th>
+        <th>Joyce Signs</th>
+        <th>Archer Signs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Client Decision Confirmation</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">Yes</td>
+      </tr>
+      <tr>
+        <td>Correct Illustration ($120K/$6M, all pages)</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">Yes</td>
+      </tr>
+      <tr>
+        <td>Backdating Form</td>
+        <td style="text-align: center;">Yes (Owner)</td>
+        <td style="text-align: center;">&mdash;</td>
+        <td style="text-align: center;">Yes (Agent)</td>
+      </tr>
+      <tr>
+        <td>Amendment Request &mdash; Stephen</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">&mdash;</td>
+        <td style="text-align: center;">Yes</td>
+      </tr>
+      <tr>
+        <td>Amendment Request &mdash; Joyce</td>
+        <td style="text-align: center;">&mdash;</td>
+        <td style="text-align: center;">Yes</td>
+        <td style="text-align: center;">Yes</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: 0.08in;">NOT Collected at This Meeting</div>
+  <div class="checklist" style="margin-bottom: 0.2in;">
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text"><strong>Premium check</strong> &mdash; collected at corrected policy delivery (~1 week)</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text"><strong>Original delivery kit amendments</strong> ($5,439,399) &mdash; do NOT sign these</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text"><strong>Original delivery kit illustration</strong> ($131K/$5,439,399) &mdash; do NOT sign this</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text"><strong>Contract receipt</strong> &mdash; signed at corrected policy delivery</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text"><strong>DOIs</strong> &mdash; signed at corrected policy delivery</div></div>
+  </div>
+
+  <div style="font-size: 10pt; font-weight: 700; color: var(--navy); margin-bottom: 0.08in;">After the Meeting</div>
+  <div class="checklist">
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Scan all signed documents and send to JDM</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Confirm with JDM: Francesca status on reissue</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">Schedule return visit for corrected policy delivery + premium collection</div></div>
+    <div class="checklist-item"><div class="check-box"></div><div class="check-text">File copies to Mineart ACF folder on Shared Drive</div></div>
+  </div>
+
+  <div style="background: var(--navy); color: white; border-radius: 8px; padding: 0.15in 0.2in; margin-top: 0.15in;">
+    <div style="font-size: 11pt; font-weight: 800; color: var(--gold); margin-bottom: 4px;">Key Contacts</div>
+    <div style="font-size: 9pt; display: grid; grid-template-columns: 1fr 1fr; gap: 0.05in;">
+      <div><strong>JH Case Manager:</strong> Francesca Cordia-Davis &mdash; fcordia@jhancock.com &mdash; 617-546-5168</div>
+      <div><strong>JH Underwriter:</strong> Frank Leong</div>
+      <div><strong>Signal Assignee:</strong> Ashley Pica</div>
+      <div><strong>JDM:</strong> Josh Millang &mdash; 515-992-5000</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <p>This playbook is for agent use only and should not be left with the client. All client-facing materials (Strategic Comparison, Decision Confirmation, illustrations) remain with the Minearts.</p>
+  </div>
+</div>
+
+</body>
+</html>

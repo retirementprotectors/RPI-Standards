@@ -39,6 +39,7 @@ REPO_MAP=(
   "MCP-Hub:services/MCP-Hub"
   "PDF_SERVICE:services/PDF_SERVICE"
   "Marketing-Hub:services/Marketing-Hub"
+  "QUE-API:services/QUE-API"
 
   # Archive (read-only, tagged pre-migration-archive)
   "ProDashX:archive/PRODASHX"

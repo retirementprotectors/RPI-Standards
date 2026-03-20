@@ -35,6 +35,7 @@ When an employee or contractor leaves RPI, the following must be completed **the
 - [ ] Remove from any third-party tools (DocuSign, etc.)
 - [ ] Review any API keys/tokens they had access to
 - [ ] Transfer ownership of any Docs/Sheets they owned
+- [ ] Review and remove third-party GitHub App installations (Vercel incident 2026-03-19: unused app had broad repo access for months after project archived)
 - [ ] Document completion date and who performed offboarding
 
 **Responsible party:** COO (John Behn) or CEO (JDM).
@@ -213,5 +214,5 @@ Every production rollout — feature launch, schema change, data migration, UI u
 
 ---
 
-*Version: v1.0 | Feb 19, 2026*
+*Version: v2.0 | March 19, 2026 (OS Audit refresh)*
 *Consolidated from COMPLIANCE_STANDARDS.md, SECURITY_COMPLIANCE.md, PHI_POLICY.md, and CLAUDE.md*

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Decision Confirmation — Stephen & Joyce Mineart</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3158;
+    --rpi-blue: #4a7ab5;
+    --pale-blue: #e5ecf6;
+    --pale-blue-soft: #edf2f8;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border: #e2e5ea;
+    --white: #ffffff;
+    --gold: #c5a55a;
+    --green: #16a34a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.6in 0.7in; }
+  body { font-family: 'Inter', -apple-system, sans-serif; font-size: 11pt; line-height: 1.55; color: var(--text-primary); background: var(--white); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0.15in; border-bottom: 3px solid var(--navy); margin-bottom: 0.25in; }
+  .header-left { }
+  .header-brand { font-size: 11pt; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--navy); }
+  .header-tagline { font-size: 8pt; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rpi-blue); }
+  .header-right { text-align: right; font-size: 9pt; color: var(--text-muted); }
+
+  .title { font-size: 22pt; font-weight: 800; color: var(--navy); margin-bottom: 0.05in; }
+  .subtitle { font-size: 11pt; color: var(--text-muted); margin-bottom: 0.2in; }
+  .divider { height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold), transparent); border-radius: 2px; margin-bottom: 0.25in; }
+
+  .info-banner { background: var(--pale-blue); border-radius: 8px; padding: 0.18in 0.22in; margin-bottom: 0.2in; }
+  .info-banner-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.12in; }
+  .info-item-label { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rpi-blue); margin-bottom: 2px; }
+  .info-item-value { font-size: 11pt; font-weight: 700; color: var(--navy); }
+
+  .section-title { font-size: 14pt; font-weight: 800; color: var(--navy); margin-bottom: 0.08in; margin-top: 0.2in; }
+
+  .selected-option { background: var(--navy); color: var(--white); border-radius: 10px; padding: 0.22in 0.28in; margin-bottom: 0.2in; border-left: 5px solid var(--gold); }
+  .selected-option h3 { font-size: 13pt; font-weight: 800; color: var(--gold); margin-bottom: 0.08in; }
+  .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1in; }
+  .option-item { }
+  .option-label { font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.65); }
+  .option-value { font-size: 14pt; font-weight: 800; color: var(--white); }
+  .option-value.gold { color: var(--gold); }
+
+  .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.12in; margin-bottom: 0.2in; }
+  .metric-card { border: 2px solid var(--border); border-radius: 8px; padding: 0.12in 0.15in; text-align: center; }
+  .metric-card.primary { border-color: var(--rpi-blue); background: var(--pale-blue-soft); }
+  .metric-value { font-size: 16pt; font-weight: 800; color: var(--navy); }
+  .metric-label { font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 3px; }
+
+  .confirm-text { font-size: 10pt; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.15in; }
+  .confirm-text strong { color: var(--navy); }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.1in; }
+  .checkbox { width: 16px; height: 16px; border: 2px solid var(--navy); border-radius: 3px; flex-shrink: 0; margin-top: 3px; }
+  .checkbox-label { font-size: 10pt; color: var(--text-primary); line-height: 1.5; }
+
+  .sig-block { margin-top: 0.3in; }
+  .sig-row { display: grid; grid-template-columns: 1fr 0.8fr; gap: 0.3in; margin-bottom: 0.3in; }
+  .sig-line { border-bottom: 1px solid var(--text-primary); padding-bottom: 4px; margin-bottom: 4px; min-height: 0.25in; }
+  .sig-caption { font-size: 8pt; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .footer-note { font-size: 7.5pt; color: var(--text-muted); margin-top: 0.2in; padding-top: 0.1in; border-top: 1px solid var(--border); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-brand">Retirement Protectors</div>
+    <div class="header-tagline">We're Your People&trade;</div>
+  </div>
+  <div class="header-right">
+    Policy 46395803<br>
+    March 20, 2026
+  </div>
+</div>
+
+<div class="title">Client Decision Confirmation</div>
+<div class="subtitle">Strategic Life Insurance Funding Analysis &mdash; Stephen &amp; Joyce Mineart</div>
+<div class="divider"></div>
+
+<div class="info-banner">
+  <div class="info-banner-grid">
+    <div>
+      <div class="info-item-label">Clients</div>
+      <div class="info-item-value">Stephen &amp; Joyce Mineart</div>
+    </div>
+    <div>
+      <div class="info-item-label">Advisor</div>
+      <div class="info-item-value">Josh Archer</div>
+    </div>
+    <div>
+      <div class="info-item-label">Source Product</div>
+      <div class="info-item-value">Nassau GMIB #28253487</div>
+    </div>
+    <div>
+      <div class="info-item-label">Target Product</div>
+      <div class="info-item-value">JH Protection Survivorship IUL</div>
+    </div>
+    <div>
+      <div class="info-item-label">JH Policy Number</div>
+      <div class="info-item-value">46395803</div>
+    </div>
+    <div>
+      <div class="info-item-label">Underwriting Status</div>
+      <div class="info-item-value" style="color: var(--green);">Approved 03/12/2026</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Selected Option: B &mdash; Wait One Year, Net of Taxes</div>
+
+<div class="selected-option">
+  <h3>Option B &mdash; Inheritance Bridge + GMIB Roll-Up</h3>
+  <div class="option-grid">
+    <div class="option-item">
+      <div class="option-label">Annual Premium</div>
+      <div class="option-value gold">$120,000</div>
+    </div>
+    <div class="option-item">
+      <div class="option-label">Tax-Free Death Benefit</div>
+      <div class="option-value gold">$6,000,000</div>
+    </div>
+    <div class="option-item">
+      <div class="option-label">Year 1 Funding Source</div>
+      <div class="option-value">Inheritance</div>
+    </div>
+    <div class="option-item">
+      <div class="option-label">Year 2+ Funding Source</div>
+      <div class="option-value">Nassau GMIB ($145,152/yr)</div>
+    </div>
+    <div class="option-item">
+      <div class="option-label">Annual Out-of-Pocket (Yr 2+)</div>
+      <div class="option-value">$5,000 &ndash; $7,000</div>
+    </div>
+    <div class="option-item">
+      <div class="option-label">Illustration Basis</div>
+      <div class="option-value">Current Age (Joyce A70)</div>
+    </div>
+  </div>
+</div>
+
+<div class="metric-row">
+  <div class="metric-card primary">
+    <div class="metric-value" style="color: var(--rpi-blue);">$6,000,000</div>
+    <div class="metric-label">Tax-Free to Your Family</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value" style="color: var(--gold);">$5&ndash;7K/yr</div>
+    <div class="metric-label">Your Annual Cost (Year 2+)</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value" style="color: var(--green);">$145,152/yr</div>
+    <div class="metric-label">Guaranteed GMIB for Life</div>
+  </div>
+</div>
+
+<div class="section-title" style="margin-top: 0.15in;">Strategy Confirmation</div>
+
+<p class="confirm-text">
+  By signing below, we confirm that we have reviewed the Strategic Life Insurance Funding Analysis
+  prepared by Retirement Protectors, Inc. and have selected <strong>Option B</strong> as described above.
+  We understand:
+</p>
+
+<div class="checkbox-row">
+  <div class="checkbox"></div>
+  <div class="checkbox-label">Year 1 premium of $120,000 will be funded from inheritance proceeds. The Nassau GMIB will <strong>not</strong> be activated in Year 1, allowing the benefit base to roll up 10% on October 2, 2026.</div>
+</div>
+<div class="checkbox-row">
+  <div class="checkbox"></div>
+  <div class="checkbox-label">Beginning Year 2, the rolled-up GMIB of $145,152/year will fund the $120,000 annual premium, with the surplus applied toward federal income taxes. Iowa does not tax retirement income distributions.</div>
+</div>
+<div class="checkbox-row">
+  <div class="checkbox"></div>
+  <div class="checkbox-label">The John Hancock policy is being adjusted from the initial delivery configuration ($131,000 premium / $5,439,399 face) to our selected option ($120,000 premium / $6,000,000 face) using the <strong>current age</strong> illustration (Joyce age 70). Amendment paperwork has been submitted.</div>
+</div>
+<div class="checkbox-row">
+  <div class="checkbox"></div>
+  <div class="checkbox-label">Premium payment will be collected upon receipt of the corrected policy delivery documents from John Hancock, expected within approximately one week.</div>
+</div>
+
+<div class="sig-block">
+  <div class="sig-row">
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Stephen Mineart &mdash; Signature</div>
+    </div>
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Date</div>
+    </div>
+  </div>
+  <div class="sig-row">
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Joyce Mineart &mdash; Signature</div>
+    </div>
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Date</div>
+    </div>
+  </div>
+  <div class="sig-row">
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Josh Archer &mdash; Presenting Advisor</div>
+    </div>
+    <div>
+      <div class="sig-line"></div>
+      <div class="sig-caption">Date</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  <p>This document confirms the client's selected strategy and illustration preference. It does not constitute the policy delivery or acceptance.
+  Formal policy delivery, including signed illustration and premium payment, will occur upon receipt of the corrected delivery documents from John Hancock.
+  Retirement Protectors, Inc. &nbsp;|&nbsp; 6750 Westown Parkway, Suite 200-382 &nbsp;|&nbsp; West Des Moines, IA 50266 &nbsp;|&nbsp; 515-992-5000</p>
+</div>
+
+</body>
+</html>

@@ -136,7 +136,7 @@ This is a **quick check**, not a full audit. For comprehensive project audits, u
 Tell Claude Code: **"weekly check"** or **"health check"**
 
 Claude Code will automatically:
-1. Check git status across all 18 projects (using SuperProject paths)
+1. Check git status across all 8 active projects (using SuperProject paths)
 2. Scan for forbidden code patterns
 3. Verify documentation status
 4. Report results
