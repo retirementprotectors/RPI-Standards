@@ -125,13 +125,13 @@ for project in "${PROJECTS[@]}"; do
   PROJECT_NAME=$(basename "$project")
 
   if [ -d "$PROJECT_PATH" ]; then
-    # Remove existing .claude directory if it exists
-    rm -rf "$PROJECT_PATH/.claude"
-
-    # Create fresh .claude directory
+    # Create .claude directory if it doesn't exist (preserve existing contents)
     mkdir -p "$PROJECT_PATH/.claude"
 
-    # Create symlinks for each hookify rule
+    # Remove ONLY existing hookify symlinks (preserve discovery docs, sprint dirs, builder prompts)
+    rm -f "$PROJECT_PATH/.claude"/hookify.*.local.md
+
+    # Create fresh symlinks for each hookify rule
     for rule in "$HOOKIFY_DIR"/hookify.*.local.md; do
       if [ -f "$rule" ]; then
         ln -sf "$rule" "$PROJECT_PATH/.claude/"

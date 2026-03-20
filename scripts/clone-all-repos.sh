@@ -28,12 +28,12 @@ REPO_MAP=(
   # GAS engines (maintenance mode)
   "RAPID_CORE:gas/RAPID_CORE"
   "RAPID_IMPORT:gas/RAPID_IMPORT"
-  "RAPID_COMMS:gas/RAPID_COMMS"
-  "RAPID_API:gas/RAPID_API"
-  "RPI-Content-Manager:gas/C3"
-  "CAM:gas/CAM"
+  "RAPID_COMMS:archive/RAPID_COMMS"
+  "RAPID_API:archive/RAPID_API"
+  "RPI-Content-Manager:archive/C3"
+  "CAM:archive/CAM"
   "DEX:gas/DEX"
-  "ATLAS:gas/ATLAS"
+  "ATLAS:archive/ATLAS"
 
   # Standalone services
   "MCP-Hub:services/MCP-Hub"

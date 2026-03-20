@@ -4,7 +4,7 @@
 > See [OS.md](OS.md) for the full architecture.
 > This document defines what's being watched -- automated and manual health checks.
 
-**Version**: v1.0 (February 19, 2026)
+**Version**: v2.0 (March 19, 2026 — OS Audit refresh for toMachina architecture)
 **Merged from**: WEEKLY_HEALTH_CHECK.md + PROJECT_AUDIT.md + extractions from COMPLIANCE_STANDARDS.md and SECURITY_COMPLIANCE.md
 
 ---
@@ -44,14 +44,16 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 
 ### 2.1 launchd Agents (macOS)
 
-Four launchd agents run on JDM's machine:
+Six launchd agent plist files exist on JDM's machine. Status as of 2026-03-19:
 
-| Agent | Schedule | What It Does |
-|-------|----------|--------------|
-| `com.rpi.analytics-push` | Daily 3:30am | Pushes analytics data into MATRIX sheets |
-| `com.rpi.knowledge-promote` | Daily 4:00am | Promotes MEMORY.md learnings into CLAUDE.md; Slack DM digest to JDM; compliance-history.json trend tracking |
-| `com.rpi.claude-cleanup` | Sunday 3am | Cleans up old Claude Code sessions |
-| `com.rpi.mcp-analytics` | Monday 8am | Generates weekly Slack analytics report |
+| Agent | Schedule | Status | What It Does |
+|-------|----------|--------|--------------|
+| `com.rpi.document-watcher` | Always-on (KeepAlive) | DOWN (DNS errors — replaced by WIRE_INCOMING_CORRESPONDENCE Cloud Function) | Intake queue watcher for incoming correspondence |
+| `com.rpi.knowledge-promote` | Daily 11:15pm | ACTIVE | Promotes MEMORY.md learnings into CLAUDE.md; Slack DM digest; compliance-history.json trend tracking |
+| `com.rpi.claude-cleanup` | Sunday 3am | ACTIVE | Cleans up old Claude Code sessions |
+| `com.rpi.mcp-analytics` | Monday 8am | ACTIVE | Generates weekly Slack analytics report |
+| `com.rpi.analytics-push` | Daily 3:30am | DISABLED (replaced by BigQuery streaming Cloud Function in Sprint 5) | Was: push analytics to MATRIX sheets |
+| `com.rpi.prodash-sync` | — | REMOVED 2026-03-19 (plist deleted, was crashed exit 78) | Was: ProDash sync — no longer needed |
 
 **Verify status:**
 ```bash
@@ -143,25 +145,14 @@ Claude Code will automatically:
 
 ```bash
 for repo in \
-  ~/Projects/_RPI_STANDARDS \
-  ~/Projects/PRODASHX_TOOLS/PRODASHX \
-  ~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare \
-  ~/Projects/RAPID_TOOLS/C3 \
-  ~/Projects/RAPID_TOOLS/CAM \
-  ~/Projects/RAPID_TOOLS/CEO-Dashboard \
-  ~/Projects/RAPID_TOOLS/DEX \
-  ~/Projects/RAPID_TOOLS/MCP-Hub \
-  ~/Projects/RAPID_TOOLS/PDF_SERVICE \
-  ~/Projects/RAPID_TOOLS/RAPID_API \
-  ~/Projects/RAPID_TOOLS/RAPID_COMMS \
-  ~/Projects/RAPID_TOOLS/RAPID_CORE \
-  ~/Projects/RAPID_TOOLS/RAPID_IMPORT \
-  ~/Projects/RAPID_TOOLS/SPARK_WEBHOOK_PROXY \
-  ~/Projects/RAPID_TOOLS/RIIMO \
-  ~/Projects/RAPID_TOOLS/RPI-Command-Center \
-  ~/Projects/SENTINEL_TOOLS/DAVID-HUB \
-  ~/Projects/SENTINEL_TOOLS/sentinel \
-  ~/Projects/SENTINEL_TOOLS/sentinel-v2; do
+  ~/Projects/toMachina \
+  ~/Projects/gas/RAPID_CORE \
+  ~/Projects/gas/RAPID_IMPORT \
+  ~/Projects/gas/DEX \
+  ~/Projects/services/MCP-Hub \
+  ~/Projects/services/PDF_SERVICE \
+  ~/Projects/services/Marketing-Hub \
+  ~/Projects/_RPI_STANDARDS; do
   name=$(echo "$repo" | sed "s|$HOME/Projects/||")
   git_short=$(git -C "$repo" status --short 2>/dev/null)
   branch=$(git -C "$repo" branch --show-current 2>/dev/null)

@@ -2,7 +2,7 @@
 
 > **Created**: February 1, 2026  
 > **Source**: PRODASHX GHL sync debugging session (12+ hours)
-> **Status**: CRITICAL - Follow these patterns for all GHL integrations
+> **Status**: ARCHIVED — GHL push code removed Sprint 5. Import/sync code retained for M&A acquisitions only. - Follow these patterns for all GHL integrations
 
 ---
 

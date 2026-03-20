@@ -5,7 +5,7 @@
 # The Machine's Immune System — Hookify
 
 > Complete reference for RPI's code enforcement, session protocol, and learning loop system.
-> Last updated: 2026-02-19
+> Last updated: 2026-03-19 (OS Audit — toMachina migration refresh)
 
 ---
 
@@ -13,7 +13,7 @@
 
 Hookify is a Python-based enforcement engine that intercepts Claude Code at three points in the tool execution lifecycle. It reads `.local.md` rule files, evaluates them against tool input using regex matching with LRU cache, and either **blocks** operations (code never reaches disk) or **warns** (injects guidance while allowing the operation).
 
-**21 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to all 18 RPI projects via `setup-hookify-symlinks.sh`.
+**34 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
 
 **Enforcement hierarchy:** Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
@@ -63,10 +63,10 @@ Two intent rules fire on JDM's words, not Claude's actions:
 
 ```
 PHASE 1: HOOKIFY VERIFICATION
-├─ Count rules in source: _RPI_STANDARDS/hookify/ → Expected: 21 rules
+├─ Count rules in source: _RPI_STANDARDS/hookify/ → Expected: 34 rules
 ├─ Spot-check symlinks across key projects
 ├─ If missing → Run: setup-hookify-symlinks.sh
-└─ Report: "21 rules verified across 18 projects"
+└─ Report: "34 rules verified across 8 projects + global"
 
 PHASE 2: PROJECT CONTEXT
 ├─ Read project CLAUDE.md (if exists in CWD)
@@ -103,9 +103,9 @@ PHASE 5: EXECUTE
 
 ## The Trigger Library: Code Enforcement
 
-### Tier 1 — Block Rules (10 rules)
+### Tier 1 — Block Rules (16 rules)
 
-PreToolUse file events. `action: block`. Code never reaches disk.
+PreToolUse file/prompt/bash events. `action: block`. Code never reaches disk or operation is denied.
 
 #### 1. `block-alert-confirm-prompt`
 - **Files:** `.gs`, `.html`
@@ -169,9 +169,9 @@ PreToolUse file events. `action: block`. Code never reaches disk.
 
 ---
 
-### Quality Gates (2 rules)
+### Quality Gates (6 rules)
 
-PreToolUse bash events. `action: block`. Commands are blocked before execution.
+PreToolUse bash/prompt events. `action: block` or `action: warn`. Enforce process discipline.
 
 #### 11. `quality-gate-deploy-verify`
 - **Blocks:** `clasp deploy -[args]` WITHOUT `clasp deployments` in the same command
@@ -193,7 +193,7 @@ clasp deploy -i [ID] -V [VERSION] -d "vX.X" && clasp deployments | grep "@[VERSI
 
 ---
 
-### Intent Triggers (3 rules)
+### Intent Triggers (6 rules)
 
 UserPromptSubmit events. `action: warn`. Injects protocol instructions.
 
@@ -214,6 +214,8 @@ UserPromptSubmit events. `action: warn`. Injects protocol instructions.
 ### Tier 2 — Warn Rules (6 rules)
 
 PreToolUse file events. `action: warn`. Warns but allows the operation.
+
+> Note: 6 additional rules exist that are not listed individually below (block-generated-logos, block-bulk-import-without-atlas, block-direct-firestore-write, block-seed-without-snapshot, quality-gate-plan-format, quality-gate-audit-verify). See `_RPI_STANDARDS/hookify/` for the complete set. Total: 34 rules.
 
 #### 16. `warn-date-return-no-serialize`
 - **Files:** `.gs`
@@ -256,7 +258,9 @@ PreToolUse file events. `action: warn`. Warns but allows the operation.
 ## The Full Deploy Protocol (#SendIt)
 
 **Trigger:** JDM says "#SendIt", "send it", "ship it"
-**Enforced by:** `quality-gate-deploy-verify` + `quality-gate-commit-remind`
+**Enforced by:** `intent-sendit` + `quality-gate-deploy-verify` + `quality-gate-commit-remind` + `quality-gate-build-verify`
+
+### toMachina Deploy (Primary)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -264,84 +268,65 @@ PreToolUse file events. `action: warn`. Warns but allows the operation.
 │          Triggered by: intent-sendit rule                     │
 │          Enforced by: quality-gate-deploy-verify              │
 │                        quality-gate-commit-remind             │
+│                        quality-gate-build-verify              │
 └──────────────────────────────────────────────────────────────┘
 
 STEP 1: PRE-FLIGHT CHECK
-├─ git status                    → Any uncommitted changes?
-├─ git remote -v                 → Correct remote?
+├─ git status                    → Working tree clean?
+├─ npm run build                 → All workspaces pass? (NOT just type-check)
 └─ If anything wrong → FIX before proceeding. Do NOT deploy dirty.
 
 
-STEP 2: PUSH CODE TO GAS
-├─ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
-├─ Verify output: "Pushed N files"
-└─ If error → STOP. Fix the issue. Do not continue.
-
-
-STEP 3: CREATE VERSION
-├─ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp version "vX.X - description"
-├─ Note the VERSION NUMBER returned (e.g., "Created version 111")
-└─ This number is critical for Step 4
-
-
-STEP 4: DEPLOY + VERIFY (Atomic — enforced by quality gate)
-│
-│  ┌─────────────────────────────────────────────────────────┐
-│  │  QUALITY GATE: quality-gate-deploy-verify               │
-│  │  BLOCKS: clasp deploy without clasp deployments         │
-│  │  These MUST be chained in one command                   │
-│  └─────────────────────────────────────────────────────────┘
-│
-├─ NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deploy -i [DEPLOY_ID] -V [VERSION] -d "vX.X" \
-│    && NODE_TLS_REJECT_UNAUTHORIZED=0 clasp deployments | grep "@[VERSION]"
-│
-├─ VERIFY OUTPUT: The @VERSION number MUST match what you just deployed
-│   ├─ "@111" appears → Deploy confirmed
-│   └─ Old number appears → Deploy FAILED. Fix -V flag. Redeploy.
-│
-└─ WHY: On 2026-02-14, RAPID_API was stuck at @33 while code was v108.
-
-
-STEP 5: GIT COMMIT + PUSH
-│
-│  ┌─────────────────────────────────────────────────────────┐
-│  │  QUALITY GATE: quality-gate-commit-remind               │
-│  │  BLOCKS: git commit with .gs/.html/.json without        │
-│  │  clasp push in the same command chain                   │
-│  └─────────────────────────────────────────────────────────┘
-│
+STEP 2: GIT COMMIT
 ├─ git add [specific files]
-├─ git commit -m "vX.X - description"
-└─ git push
+├─ git commit -m "description"
+└─ Do NOT push yet — verify build first
 
 
-STEP 6: DEPLOY REPORT
+STEP 3: PUSH TO MAIN
+├─ git push origin main
+├─ This triggers GitHub Actions CI automatically
+└─ Push to main = deploy trigger. Make sure the code is ready.
+
+
+STEP 4: CI MONITOR
+├─ CI / check job: type-check + build (must pass)
+├─ CI / deploy-api job: Docker build + push + Cloud Run deploy (must pass)
+├─ Firebase App Hosting: auto-deploys 3 portals when CI check passes
+└─ Watch: gh run list --repo retirementprotectors/toMachina --limit 1
+
+
+STEP 5: DEPLOY REPORT
 └─ Output EVERY time:
 
    | Step              | Result                        |
    |-------------------|-------------------------------|
-   | clasp push        | pass/fail                     |
-   | clasp version     | vN                            |
-   | clasp deploy      | pass/fail                     |
-   | VERIFY: @version  | @N confirmed / MISMATCH       |
+   | npm run build     | pass/fail                     |
    | git commit        | [hash]                        |
    | git push          | pass/fail                     |
-   | Access: Org only  | pass/fail                     |
+   | CI / check        | pass/fail                     |
+   | CI / deploy-api   | pass/fail                     |
+   | Firebase Hosting  | auto-deploy (portals)         |
 
 
 THE ENFORCEMENT CHAIN:
-┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
-│ intent-sendit│────▶│ deploy-verify   │────▶│ commit-remind    │
-│ (triggers    │     │ (blocks deploy  │     │ (blocks commit   │
-│  protocol)   │     │  without verify)│     │  without deploy) │
-└─────────────┘     └─────────────────┘     └──────────────────┘
-     INTENT              GATE 1                   GATE 2
-
-Three rules, working together:
-- The intent STARTS the protocol
-- Gate 1 ENFORCES verification
-- Gate 2 ENFORCES deploy-before-commit ordering
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│ intent-sendit│────▶│ build-verify    │────▶│ deploy-verify    │────▶│ commit-remind    │
+│ (triggers    │     │ (blocks without │     │ (warns before    │     │ (warns before    │
+│  protocol)   │     │  npm run build) │     │  git push)       │     │  git commit)     │
+└─────────────┘     └─────────────────┘     └──────────────────┘     └──────────────────┘
+     INTENT              GATE 1                   GATE 2                   GATE 3
 ```
+
+### GAS Deploy (Maintenance Only — 3 remaining engines)
+
+For rare GAS maintenance deploys (RAPID_CORE, RAPID_IMPORT, DEX):
+```bash
+NODE_TLS_REJECT_UNAUTHORIZED=0 clasp push --force
+git add -A && git commit -m "description"
+git push
+```
+GAS projects no longer need version/deploy steps unless the web app endpoint changes.
 
 ---
 
@@ -396,7 +381,7 @@ SESSION                                                          NEXT SESSION
 1. Sessions generate transcripts (violations, corrections, patterns)
 2. `knowledge-promote.js` runs daily at 4:00am — scans for promotable learnings, routes to MEMORY.md or CLAUDE.md with section-aware insertion
 3. `mcp-analytics` runs Monday 8am — weekly Slack report to JDM on system health
-4. When a mistake repeats, JDM says `/hookify` — a new rule is born, symlinked to all 18 projects instantly
+4. When a mistake repeats, JDM says `/hookify` — a new rule is born, symlinked to all 8 projects + global instantly
 
 **The flywheel:**
 ```
@@ -413,11 +398,11 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 ## System Architecture
 
 ```
-21 RULES in _RPI_STANDARDS/hookify/
+34 RULES in _RPI_STANDARDS/hookify/
      │
      │ symlinked via setup-hookify-symlinks.sh
      │
-     ├──▶ 18 PROJECTS (.claude/ directories)
+     ├──▶ 8 PROJECTS (.claude/ directories)
      │    + ~/.claude/ (global rules)
      │         │
      │         │ loaded at runtime by config_loader.py
@@ -440,10 +425,10 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 │               HOOK ENTRY POINTS                  │
 │                                                  │
 │  UserPromptSubmit ──▶ userpromptsubmit.py       │
-│  (JDM's words)        3 intent rules             │
+│  (JDM's words)        6 intent rules             │
 │                                                  │
 │  PreToolUse ──────▶ pretooluse.py               │
-│  (before execution)   10 block + 6 warn + 2 gate │
+│  (before execution)   16 block + 6 warn + 6 gate │
 │                                                  │
 │  PostToolUse ─────▶ posttooluse.py              │
 │  (after execution)    available for future use    │
@@ -494,17 +479,21 @@ Rules are centrally managed and propagated:
 
 ```bash
 # Source of truth
-~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md   (21 rules)
+~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md   (34 rules)
 
 # Propagation script
 ~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
 
-# Targets (18 projects)
-~/Projects/RAPID_TOOLS/{RAPID_CORE,RAPID_IMPORT,RAPID_API,...}/.claude/
-~/Projects/PRODASHX_TOOLS/{PRODASHX,QUE-Medicare}/.claude/
-~/Projects/SENTINEL_TOOLS/{sentinel,sentinel-v2,DAVID-HUB}/.claude/
-~/Projects/_RPI_STANDARDS/.claude/
-~/.claude/   (global rules)
+# Targets (8 projects + global)
+~/Projects/toMachina/.claude/                    # THE PLATFORM (monorepo)
+~/Projects/gas/RAPID_CORE/.claude/               # GAS — Sheets adapter
+~/Projects/gas/RAPID_IMPORT/.claude/             # GAS — Data ingestion
+~/Projects/gas/DEX/.claude/                      # GAS — PDF/Drive ops
+~/Projects/services/MCP-Hub/.claude/             # MCP intelligence layer
+~/Projects/services/PDF_SERVICE/.claude/         # PDF processing
+~/Projects/services/Marketing-Hub/.claude/       # Marketing automation
+~/Projects/_RPI_STANDARDS/.claude/               # Standards + governance
+~/.claude/   (global rules — always active)
 ```
 
 Edit once in `_RPI_STANDARDS/hookify/`, symlinks propagate instantly to all projects.

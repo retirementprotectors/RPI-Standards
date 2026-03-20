@@ -255,7 +255,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 - **Name**: toMachina — "to" (Greek "the") + "Machina" (Latin "machine")
 
 ### Deploy
-Push to `main` → Firebase App Hosting auto-deploys all 3 portals. That's it.
+Push to `main` → CI (type-check + build) → deploy-api (Docker direct to Artifact Registry + Cloud Run) → Firebase App Hosting auto-deploys all 3 portals. No Cloud Build.
 
 ### Dev
 ```bash
@@ -380,6 +380,8 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 - [ ] No hardcoded colors - use CSS variables
 - [ ] No plain dropdowns or free text for known-entity person selection
 - [ ] Code follows existing patterns in the file
+- [ ] `npm run build` passes (NOT just type-check — build catches webpack/bundler issues)
+- [ ] Server-only code (fs, child_process, Anthropic SDK) NOT exported from shared package barrels — types only, backend imports directly
 - [ ] Hookify gotcha: `alert (` in comments triggers `block-alert-confirm-prompt` — use "notification" not "alert" before parens
 - [ ] Hookify gotcha: `quality-gate-commit-remind` checks bash command text for `.gs/.html/.json` — use `git add -A` instead of naming files with extensions. Run git ops **sequentially** (not parallel) to avoid cascade failures from hookify blocks.
 
@@ -407,7 +409,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 ## Deployment Rules
 
 ### toMachina (Primary)
-Push to `main` → auto-deploy via Firebase App Hosting. All 3 portals deploy automatically.
+Push to `main` → CI (type-check + build) → deploy-api (Docker direct to Artifact Registry + Cloud Run) → Firebase App Hosting auto-deploys portals. No Cloud Build. Run `npm run build` locally before pushing — catches webpack issues that type-check misses.
 
 ### GAS Projects (Maintenance Only)
 For rare GAS maintenance deploys:
