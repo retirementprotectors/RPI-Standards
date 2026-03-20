@@ -256,7 +256,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 - **Name**: toMachina — "to" (Greek "the") + "Machina" (Latin "machine")
 
 ### Deploy
-Push to `main` → CI (type-check + build) → deploy-api (Docker direct to Artifact Registry + Cloud Run) → Firebase App Hosting auto-deploys all 3 portals. No Cloud Build.
+Branch protection ON. Push to branch → PR → CI check must pass → merge to main → deploy-api (Docker + Cloud Run) → Firebase App Hosting auto-deploys portals. Direct push to main is blocked.
 
 ### Dev
 ```bash
@@ -410,7 +410,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 ## Deployment Rules
 
 ### toMachina (Primary)
-Push to `main` → CI (type-check + build) → deploy-api (Docker direct to Artifact Registry + Cloud Run) → Firebase App Hosting auto-deploys portals. No Cloud Build. Run `npm run build` locally before pushing — catches webpack issues that type-check misses.
+Branch protection ON. Push to branch → PR → CI check must pass → merge to main → deploy-api (Docker + Cloud Run) → Firebase App Hosting auto-deploys portals. Direct push to main is blocked. Run `npm run build` locally before pushing — catches webpack issues that type-check misses.
 
 ### GAS Projects (Maintenance Only)
 For rare GAS maintenance deploys:

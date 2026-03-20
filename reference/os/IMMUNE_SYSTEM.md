@@ -283,28 +283,34 @@ STEP 2: GIT COMMIT
 └─ Do NOT push yet — verify build first
 
 
-STEP 3: PUSH TO MAIN
-├─ git push origin main
-├─ This triggers GitHub Actions CI automatically
-└─ Push to main = deploy trigger. Make sure the code is ready.
+STEP 3: BRANCH + PR (Branch protection is ON — direct push to main is blocked)
+├─ git push origin [branch-name]
+├─ gh pr create --title "description" --body "summary"
+└─ This triggers CI / check job on the PR
 
 
-STEP 4: CI MONITOR
-├─ CI / check job: type-check + build (must pass)
-├─ CI / deploy-api job: Docker build + push + Cloud Run deploy (must pass)
-├─ Firebase App Hosting: auto-deploys 3 portals when CI check passes
+STEP 4: CI GATE (Required — cannot merge without green)
+├─ CI / check job: type-check + build (MUST pass to merge)
+├─ Watch: gh pr checks [PR-NUMBER] --repo retirementprotectors/toMachina
+└─ If failed → fix, push to same branch, CI re-runs automatically
+
+
+STEP 5: MERGE + DEPLOY
+├─ gh pr merge --squash (merges to main)
+├─ Merge triggers: CI / deploy-api (Docker + Cloud Run) + Firebase App Hosting (portals)
 └─ Watch: gh run list --repo retirementprotectors/toMachina --limit 1
 
 
-STEP 5: DEPLOY REPORT
+STEP 6: DEPLOY REPORT
 └─ Output EVERY time:
 
    | Step              | Result                        |
    |-------------------|-------------------------------|
    | npm run build     | pass/fail                     |
    | git commit        | [hash]                        |
-   | git push          | pass/fail                     |
-   | CI / check        | pass/fail                     |
+   | PR created        | [URL]                         |
+   | CI / check        | pass/fail (must pass to merge) |
+   | PR merged         | [merge hash]                  |
    | CI / deploy-api   | pass/fail                     |
    | Firebase Hosting  | auto-deploy (portals)         |
 

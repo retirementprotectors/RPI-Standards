@@ -16,17 +16,19 @@ toMachina Deploy Sequence:
 1. **PRE-FLIGHT:** `git status` — working tree clean?
 2. **BUILD VERIFY:** `npm run build` — all workspaces pass?
 3. **COMMIT:** `git add -A && git commit`
-4. **PUSH:** `git push origin main`
-5. **CI MONITOR:** Watch GitHub Actions — check job + deploy-api job must both pass
-6. **DEPLOY REPORT:**
+4. **BRANCH + PR:** `git push origin [branch]` then `gh pr create --title "description"`
+5. **CI GATE:** Wait for CI / check to pass (required by branch protection — cannot merge without green)
+6. **MERGE:** `gh pr merge --squash` (merges to main → triggers deploy-api + Firebase App Hosting)
+7. **DEPLOY REPORT:**
 
 | Step | Result |
 |------|--------|
 | npm run build | pass/fail |
 | git commit | [hash] |
-| git push | pass/fail |
-| CI / check | pass/fail |
+| PR created | [URL] |
+| CI / check | pass/fail (must pass to merge) |
+| PR merged | [merge hash] |
 | CI / deploy-api | pass/fail |
-| Firebase App Hosting | auto-deploys on CI pass |
+| Firebase App Hosting | auto-deploys on merge |
 
-**Do NOT push without `npm run build` passing locally.**
+**Branch protection is ON.** Direct push to main is blocked. Must go through PR with CI green.
