@@ -231,6 +231,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | Jason Moran (JMDC) | Fractional CTO |
 - **Super Admins locked**: Josh + John Behn only.
 
+- **Toll-free**: +18886208587 — works, use as fallback
 - **Offboarded users**: alex@, jmdconsulting@, allison@, christa@, rpifax@
 ### Org Structure
 - **3 Divisions:** Sales (Vince), Service (Nikki), Legacy (Aprille)
