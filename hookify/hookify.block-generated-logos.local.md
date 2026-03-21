@@ -8,6 +8,9 @@ conditions:
     operator: regex_match
     pattern: <svg[^>]*viewBox[^>]*>[\s\S]*?<(path|circle|rect|polygon|ellipse)\s
   - field: file_path
+    operator: regex_match
+    pattern: \.(tsx|jsx)$
+  - field: file_path
     operator: not_contains
     pattern: hookify
 ---

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Discovery — Firestore Config Admin Panel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0c1220;color:#e2e8f0;padding:40px;line-height:1.6}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:28px;font-weight:700;margin-bottom:4px;color:#f1f5f9}
+h2{font-size:20px;font-weight:600;margin:32px 0 12px;color:#a78bfa;border-bottom:1px solid rgba(167,139,250,.2);padding-bottom:6px}
+h3{font-size:15px;font-weight:600;margin:20px 0 8px;color:#94a3b8}
+.subtitle{font-size:14px;color:#64748b;margin-bottom:24px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;margin-right:4px}
+.badge.green{color:#10b981;background:rgba(16,185,129,.15)}
+.badge.amber{color:#f59e0b;background:rgba(245,158,11,.12)}
+.badge.gray{color:#64748b;background:rgba(100,116,139,.15)}
+.badge.red{color:#ef4444;background:rgba(239,68,68,.15)}
+.badge.purple{color:#a78bfa;background:rgba(167,139,250,.15)}
+table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:13px}
+th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#64748b;padding:8px 12px;border-bottom:1px solid rgba(148,163,184,.12)}
+td{padding:8px 12px;border-bottom:1px solid rgba(148,163,184,.06);color:#94a3b8}
+tr:hover td{background:rgba(255,255,255,.02)}
+.mono{font-family:'SF Mono',monospace;font-size:12px;color:#a78bfa}
+p{font-size:14px;color:#94a3b8;margin:8px 0}
+code{font-family:'SF Mono',monospace;font-size:12px;background:rgba(148,163,184,.08);padding:1px 5px;border-radius:3px;color:#e2e8f0}
+ul{margin:8px 0 8px 20px;font-size:13px;color:#94a3b8}
+li{margin:4px 0}
+.card{background:#111827;border:1px solid rgba(148,163,184,.08);border-radius:10px;padding:16px;margin:12px 0}
+.phase{background:#111827;border:1px solid rgba(148,163,184,.08);border-radius:10px;padding:16px 20px;margin:12px 0}
+.phase-title{font-size:14px;font-weight:600;color:#f1f5f9;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.phase-title .num{color:#a78bfa;font-size:12px;font-weight:700;background:rgba(167,139,250,.15);padding:2px 8px;border-radius:4px}
+.ticket{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(148,163,184,.04);font-size:13px}
+.ticket:last-child{border-bottom:none}
+.ticket .tid{font-family:'SF Mono',monospace;font-size:11px;color:#a78bfa;min-width:60px}
+.ticket .scope{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:1px 6px;border-radius:3px}
+.scope.api{color:#06b6d4;background:rgba(6,182,212,.1)}
+.scope.ui{color:#f59e0b;background:rgba(245,158,11,.1)}
+.scope.both{color:#ec4899;background:rgba(236,72,153,.1)}
+.priority{font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px}
+.priority.p1{color:#ef4444;background:rgba(239,68,68,.1)}
+.priority.p2{color:#f59e0b;background:rgba(245,158,11,.1)}
+.priority.p3{color:#64748b;background:rgba(100,116,139,.1)}
+hr{border:none;border-top:1px solid rgba(148,163,184,.08);margin:24px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Firestore Config Admin Panel</h1>
+<p class="subtitle">Discovery Document — FORGE Sprint<br>Created: 2026-03-21 | Author: Claude (GA) | Owner: JDM</p>
+
+<h2>1. Problem Statement</h2>
+<p>Firestore is a black box for JDM. The Firebase Console is developer-oriented and unusable for a non-technical CEO. A v1 "Firestore Config" tab was built in the Admin Panel providing visibility into 12 system config collections with a health dashboard. However, CRUD capabilities are <strong>inconsistent across every level</strong> — some field types have add/edit/delete, others are read-only or missing operations entirely. The feature needs to be completed with <strong>uniform CRUD at every level</strong> and <strong>wiring status indicators</strong> so JDM knows which collections are actually connected to the platform vs just sitting in the database.</p>
+
+<h2>2. Current State (v1 — Shipped)</h2>
+<div class="card">
+<h3>What Exists</h3>
+<ul>
+<li>Firestore Config tab in Admin Panel (all 3 portals) — <code>packages/ui/src/modules/FirestoreConfig.tsx</code></li>
+<li>API route: <code>services/api/src/routes/firestore-config.ts</code> — 3 endpoints (GET /collections, GET /health, PUT /:collection/:docId)</li>
+<li>Health bar: active clients, households, users, active accounts, queues (intake + approval), data gaps (no agent, no household, no accounts)</li>
+<li>Collection picker dropdown with 12 whitelisted collections</li>
+<li>Expandable document cards with auto-detected field type rendering</li>
+<li>Add Collection + Add Document buttons (functional)</li>
+</ul>
+</div>
+
+<h3>CRUD Gap Matrix</h3>
+<table>
+<thead><tr><th>Level</th><th>Add</th><th>Edit</th><th>Delete</th><th>Gap</th></tr></thead>
+<tbody>
+<tr><td>Collection</td><td><span class="badge green">YES</span></td><td>—</td><td><span class="badge red">NO</span></td><td>Need delete w/ confirmation</td></tr>
+<tr><td>Document</td><td><span class="badge green">YES</span></td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td>Need delete w/ confirmation</td></tr>
+<tr><td>String field</td><td><span class="badge red">NO</span></td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td>Need add field + delete field</td></tr>
+<tr><td>Number field</td><td><span class="badge red">NO</span></td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td>Need add field + delete field</td></tr>
+<tr><td>Boolean field</td><td><span class="badge red">NO</span></td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td>Need add field + delete field</td></tr>
+<tr><td>String array items</td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td><span class="badge green">YES</span></td><td>Need inline edit of existing items</td></tr>
+<tr><td>Object array rows</td><td><span class="badge green">YES</span></td><td><span class="badge red">NO</span></td><td><span class="badge green">YES</span></td><td>Need inline cell editing</td></tr>
+<tr><td>Nested objects</td><td><span class="badge red">NO</span></td><td><span class="badge red">NO</span></td><td><span class="badge red">NO</span></td><td>Need add key, edit value, delete key</td></tr>
+</tbody>
+</table>
+
+<h2>3. Collection Wiring Status</h2>
+<p>Each collection needs a visible indicator showing whether changes auto-wire into the platform or just sit as data.</p>
+<table>
+<thead><tr><th>Collection</th><th>Wiring Status</th><th>Backend</th><th>Frontend</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="mono">acf_config</td><td><span class="badge green">FULL STACK</span></td><td>acf.ts (8 endpoints)</td><td>ACFConfigAdmin.tsx</td><td>Changes take immediate effect</td></tr>
+<tr><td class="mono">specialist_configs</td><td><span class="badge green">FULL STACK</span></td><td>specialist-configs.ts</td><td>SpecialistConfigEditor.tsx</td><td>ProZone CRUD complete</td></tr>
+<tr><td class="mono">territories</td><td><span class="badge green">FULL STACK</span></td><td>territories.ts</td><td>TerritoryBuilder.tsx</td><td>ProZone CRUD complete</td></tr>
+<tr><td class="mono">comp_grids</td><td><span class="badge amber">BACKEND ONLY</span></td><td>cam.ts (4 endpoints)</td><td>—</td><td>CAM writes grids, no UI reads yet</td></tr>
+<tr><td class="mono">comp_grid_history</td><td><span class="badge amber">BACKEND ONLY</span></td><td>cam.ts (auto-audit)</td><td>—</td><td>Auto-populated on grid updates</td></tr>
+<tr><td class="mono">spark_config</td><td><span class="badge amber">BACKEND ONLY</span></td><td>spark.ts (webhook)</td><td>—</td><td>Webhook handler writes status</td></tr>
+<tr><td class="mono">wire_definitions</td><td><span class="badge gray">CODE ONLY</span></td><td>Hardcoded in atlas.ts</td><td>—</td><td>16 wires as code constants</td></tr>
+<tr><td class="mono">source_registry</td><td><span class="badge gray">PLACEHOLDER</span></td><td>—</td><td>—</td><td>Collection exists, nothing reads it</td></tr>
+<tr><td class="mono">tool_registry</td><td><span class="badge gray">PLACEHOLDER</span></td><td>—</td><td>—</td><td>Collection exists, nothing reads it</td></tr>
+<tr><td class="mono">atlas_formats</td><td><span class="badge gray">TYPE ONLY</span></td><td>Type imports in import.ts</td><td>—</td><td>Schema types, no queries</td></tr>
+<tr><td class="mono">format_library</td><td><span class="badge gray">TYPE ONLY</span></td><td>Type imports</td><td>—</td><td>Schema types, no queries</td></tr>
+<tr><td class="mono">org</td><td><span class="badge gray">PLACEHOLDER</span></td><td>—</td><td>—</td><td>Empty placeholder</td></tr>
+</tbody>
+</table>
+
+<p><strong>What wiring status means for the user:</strong></p>
+<ul>
+<li><span class="badge green">FULL STACK</span> — Add a new doc → platform picks it up immediately. Edit a value → takes effect on next load.</li>
+<li><span class="badge amber">BACKEND ONLY</span> — API reads/writes it, but no portal UI consumes it yet. Changes are stored correctly but invisible to users.</li>
+<li><span class="badge gray">PLACEHOLDER / CODE ONLY</span> — Data sits in Firestore. Nothing reads it until code is written. Useful for pre-staging config before features are built.</li>
+</ul>
+
+<h2>4. Target Architecture</h2>
+<p>Uniform CRUD at every level of the hierarchy:</p>
+<div class="card">
+<table>
+<thead><tr><th>Level</th><th>Add</th><th>Edit</th><th>Delete</th></tr></thead>
+<tbody>
+<tr><td><strong>Collection</strong></td><td>Create with snake_case name</td><td>—</td><td>Delete all docs + collection (type-to-confirm)</td></tr>
+<tr><td><strong>Document</strong></td><td>Create with custom ID</td><td>Edit all fields inline</td><td>Trash icon w/ confirmation</td></tr>
+<tr><td><strong>Any Field</strong></td><td>"+ Add Field" → pick type → name it</td><td>Type-specific inline editor</td><td>X button per field</td></tr>
+<tr><td><strong>String</strong></td><td>—</td><td>Text input</td><td>—</td></tr>
+<tr><td><strong>Number</strong></td><td>—</td><td>Number input</td><td>—</td></tr>
+<tr><td><strong>Boolean</strong></td><td>—</td><td>Toggle switch</td><td>—</td></tr>
+<tr><td><strong>String Array</strong></td><td>+ Add item</td><td>Click to edit inline</td><td>X per item</td></tr>
+<tr><td><strong>Object Array</strong></td><td>+ Add row (top)</td><td>Click cell to edit inline</td><td>X per row</td></tr>
+<tr><td><strong>Nested Object</strong></td><td>+ Add key</td><td>Click value to edit</td><td>X per key</td></tr>
+</tbody>
+</table>
+</div>
+<p>Every array/object field section gets a <strong>collapsible chevron</strong> — collapsed shows count badge only, expanded shows full editor.</p>
+
+<h2>5. Files Affected</h2>
+<table>
+<thead><tr><th>File</th><th>Action</th><th>Scope</th></tr></thead>
+<tbody>
+<tr><td class="mono">services/api/src/routes/firestore-config.ts</td><td>Rewrite — add DELETE endpoints, field ops, wiring metadata</td><td><span class="badge scope api">API</span></td></tr>
+<tr><td class="mono">packages/ui/src/modules/FirestoreConfig.tsx</td><td>Rewrite — uniform CRUD, collapsible sections, wiring badges</td><td><span class="badge scope ui">UI</span></td></tr>
+<tr><td class="mono">packages/ui/src/modules/AdminPanel.tsx</td><td>No changes — already wired</td><td>—</td></tr>
+<tr><td class="mono">services/api/src/server.ts</td><td>No changes — already registered</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h2>6. Sprint Phases + Tickets</h2>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P1</span> API Completeness</div>
+<div class="ticket"><span class="tid">TRK-505</span><span class="scope api">API</span><span class="priority p1">P1</span> DELETE endpoint for documents</div>
+<div class="ticket"><span class="tid">TRK-506</span><span class="scope api">API</span><span class="priority p1">P1</span> DELETE endpoint for collections (safety: type-to-confirm)</div>
+<div class="ticket"><span class="tid">TRK-507</span><span class="scope api">API</span><span class="priority p1">P1</span> Wiring status metadata on GET /collections response</div>
+</div>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P2</span> Collection + Document CRUD</div>
+<div class="ticket"><span class="tid">TRK-508</span><span class="scope ui">UI</span><span class="priority p1">P1</span> Wiring status badges on collection dropdown (green/amber/gray)</div>
+<div class="ticket"><span class="tid">TRK-509</span><span class="scope ui">UI</span><span class="priority p1">P1</span> Delete Collection button with type-to-confirm dialog</div>
+<div class="ticket"><span class="tid">TRK-510</span><span class="scope ui">UI</span><span class="priority p1">P1</span> Delete Document button with confirmation on each doc card</div>
+</div>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P3</span> Field-Level Add / Delete</div>
+<div class="ticket"><span class="tid">TRK-511</span><span class="scope both">BOTH</span><span class="priority p1">P1</span> "Add Field" button — type picker → name input → creates field</div>
+<div class="ticket"><span class="tid">TRK-512</span><span class="scope both">BOTH</span><span class="priority p1">P1</span> Delete Field (X button) on every field label</div>
+</div>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P4</span> Field Editor Upgrades</div>
+<div class="ticket"><span class="tid">TRK-513</span><span class="scope ui">UI</span><span class="priority p2">P2</span> String array: click-to-edit existing items inline</div>
+<div class="ticket"><span class="tid">TRK-514</span><span class="scope ui">UI</span><span class="priority p2">P2</span> Object array: inline cell editing (click → input → blur saves)</div>
+<div class="ticket"><span class="tid">TRK-515</span><span class="scope ui">UI</span><span class="priority p2">P2</span> Nested object: editable key-value pairs + add/remove keys</div>
+<div class="ticket"><span class="tid">TRK-516</span><span class="scope ui">UI</span><span class="priority p2">P2</span> Collapsible sections for all array/object fields</div>
+</div>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P5</span> UX Polish</div>
+<div class="ticket"><span class="tid">TRK-517</span><span class="scope ui">UI</span><span class="priority p3">P3</span> Button reorder (Add Collection → Add Document → Refresh right-aligned)</div>
+<div class="ticket"><span class="tid">TRK-518</span><span class="scope ui">UI</span><span class="priority p3">P3</span> Consistent loading/saving states across all operations</div>
+<div class="ticket"><span class="tid">TRK-519</span><span class="scope ui">UI</span><span class="priority p3">P3</span> Empty state improvements + helpful prompts</div>
+</div>
+
+<div class="phase">
+<div class="phase-title"><span class="num">P6</span> Health Bar Refinements</div>
+<div class="ticket"><span class="tid">TRK-520</span><span class="scope ui">UI</span><span class="priority p3">P3</span> Health bar responsive wrapping for smaller screens</div>
+<div class="ticket"><span class="tid">TRK-521</span><span class="scope api">API</span><span class="priority p3">P3</span> Health endpoint error resilience (individual failures don't break response)</div>
+</div>
+
+<h2>7. Dependencies</h2>
+<ul>
+<li>P1 must complete before P2 + P3 (API endpoints needed for UI)</li>
+<li>P2 + P3 can run in parallel</li>
+<li>P4 depends on P3 (field-level CRUD must work before editor upgrades)</li>
+<li>P5 + P6 are independent polish — can run after P4 or in parallel</li>
+</ul>
+
+<h2>8. Verification Criteria</h2>
+<ul>
+<li><code>npm run build</code> passes (11/11)</li>
+<li><code>npm run type-check</code> passes (13/13)</li>
+<li>Every CRUD operation works end-to-end: create/edit/delete at collection, document, and field levels</li>
+<li>Wiring status badges correct for all 12 collections</li>
+<li>Collapsible sections work for all array/object fields</li>
+<li>Confirmation dialogs prevent accidental deletes</li>
+<li>All field types editable: string, number, boolean, string array, object array, nested object</li>
+</ul>
+
+
+<h2>9. Audit Notes (Post-Discovery)</h2>
+<ul>
+<li><strong>TRK-513 scope clarification:</strong> String array inline edit MUST replace the current <code>window.prompt()</code> pattern which is a forbidden API (hookify-enforced). The new inline editor eliminates the need for browser dialogs entirely.</li>
+<li><strong>TRK-511 + TRK-512 API detail:</strong> Field-level add/delete requires API support — either new endpoints (POST/DELETE on <code>/:collection/:docId/field/:fieldName</code>) or handled via the existing PUT endpoint with field-level merge/delete semantics using Firestore <code>FieldValue.delete()</code>.</li>
+<li><strong>Disco doc updated 2026-03-21:</strong> TRK numbers backfilled from FORGE sprint <code>eGXjGs3bgOyag486opou</code>. Audit clean — 18/18 tickets map to requirements, 16/16 requirements covered.</li>
+</ul>
+
+<hr>
+<p style="font-size:11px;color:#475569;margin-top:16px">Total: 18 tickets | 6 phases | 2 files rewritten | Est. single-session build</p>
+
+
+</div>
+</body>
+</html>
