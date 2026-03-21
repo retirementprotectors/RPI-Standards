@@ -5,7 +5,7 @@
 # The Machine's Immune System — Hookify
 
 > Complete reference for RPI's code enforcement, session protocol, and learning loop system.
-> Last updated: 2026-03-19 (OS Audit — toMachina migration refresh)
+> Last updated: 2026-03-20 (Added warn-untyped-api-response)
 
 ---
 
@@ -13,7 +13,7 @@
 
 Hookify is a Python-based enforcement engine that intercepts Claude Code at three points in the tool execution lifecycle. It reads `.local.md` rule files, evaluates them against tool input using regex matching with LRU cache, and either **blocks** operations (code never reaches disk) or **warns** (injects guidance while allowing the operation).
 
-**34 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
+**35 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
 
 **Enforcement hierarchy:** Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
@@ -63,10 +63,10 @@ Two intent rules fire on JDM's words, not Claude's actions:
 
 ```
 PHASE 1: HOOKIFY VERIFICATION
-├─ Count rules in source: _RPI_STANDARDS/hookify/ → Expected: 34 rules
+├─ Count rules in source: _RPI_STANDARDS/hookify/ → Expected: 35 rules
 ├─ Spot-check symlinks across key projects
 ├─ If missing → Run: setup-hookify-symlinks.sh
-└─ Report: "34 rules verified across 8 projects + global"
+└─ Report: "35 rules verified across 8 projects + global"
 
 PHASE 2: PROJECT CONTEXT
 ├─ Read project CLAUDE.md (if exists in CWD)
@@ -211,11 +211,11 @@ UserPromptSubmit events. `action: warn`. Injects protocol instructions.
 
 ---
 
-### Tier 2 — Warn Rules (6 rules)
+### Tier 2 — Warn Rules (7 rules)
 
 PreToolUse file events. `action: warn`. Warns but allows the operation.
 
-> Note: 6 additional rules exist that are not listed individually below (block-generated-logos, block-bulk-import-without-atlas, block-direct-firestore-write, block-seed-without-snapshot, quality-gate-plan-format, quality-gate-audit-verify). See `_RPI_STANDARDS/hookify/` for the complete set. Total: 34 rules.
+> Note: 6 additional rules exist that are not listed individually below (block-generated-logos, block-bulk-import-without-atlas, block-direct-firestore-write, block-seed-without-snapshot, quality-gate-plan-format, quality-gate-audit-verify). See `_RPI_STANDARDS/hookify/` for the complete set. Total: 35 rules.
 
 #### 16. `warn-date-return-no-serialize`
 - **Files:** `.gs`
@@ -252,6 +252,13 @@ PreToolUse file events. `action: warn`. Warns but allows the operation.
 - **Pattern:** `<select>` with IDs containing person keywords (`agent`, `owner`, `producer`, `client`, etc.)
 - **Warns:** Known-entity person fields should use Smart Lookup type-ahead, not plain dropdowns
 - **Fix:** Replace with `buildSmartLookup()`
+
+#### 22. `warn-untyped-api-response`
+- **Files:** `services/api/src/routes/`
+- **Pattern:** `res.json(successResponse({...}))` without shared type contract
+- **Warns:** API responses without shared type contracts from `@tomachina/core`. Prevents the ForgeAudit audit-round mismatch class (API returned counts, frontend expected arrays).
+- **Fix:** Define response type in `@tomachina/core` and use it in both the API route and the frontend consumer
+- **Added:** 2026-03-20
 
 ---
 
@@ -404,7 +411,7 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 ## System Architecture
 
 ```
-34 RULES in _RPI_STANDARDS/hookify/
+35 RULES in _RPI_STANDARDS/hookify/
      │
      │ symlinked via setup-hookify-symlinks.sh
      │
@@ -434,7 +441,7 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 │  (JDM's words)        6 intent rules             │
 │                                                  │
 │  PreToolUse ──────▶ pretooluse.py               │
-│  (before execution)   16 block + 6 warn + 6 gate │
+│  (before execution)   16 block + 7 warn + 6 gate │
 │                                                  │
 │  PostToolUse ─────▶ posttooluse.py              │
 │  (after execution)    available for future use    │
@@ -485,7 +492,7 @@ Rules are centrally managed and propagated:
 
 ```bash
 # Source of truth
-~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md   (34 rules)
+~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md   (35 rules)
 
 # Propagation script
 ~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh

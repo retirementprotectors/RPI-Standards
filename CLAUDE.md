@@ -248,7 +248,7 @@ The question is never IF we parallelize — it's HOW MANY agents to spawn.
 | `prodash.tomachina.com` | B2C Portal (ProDash) |
 | `riimo.tomachina.com` | B2E Portal (RIIMO) |
 | `sentinel.tomachina.com` | B2B Portal (SENTINEL) |
-| `api.tomachina.com` | Unified REST API |
+| (no public API URL) | Cloud Run API — proxied via portal `/api/*` routes (IAM protected) |
 
 **Stack:** Next.js 15, React 19, Tailwind v4, Firebase Auth, Firestore, Cloud Run, Turborepo
 **Repo:** `retirementprotectors/toMachina` (monorepo)
@@ -383,6 +383,7 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 - [ ] Code follows existing patterns in the file
 - [ ] `npm run build` passes (NOT just type-check — build catches webpack/bundler issues)
 - [ ] Server-only code (fs, child_process, Anthropic SDK) NOT exported from shared package barrels — types only, backend imports directly
+- [ ] API contract verified: if writing an API route, read the frontend consumer; if writing a fetch call, read the API route. Field names AND types must match.
 - [ ] Hookify gotcha: `alert (` in comments triggers `block-alert-confirm-prompt` — use "notification" not "alert" before parens
 - [ ] Hookify gotcha: `quality-gate-commit-remind` checks bash command text for `.gs/.html/.json` — use `git add -A` instead of naming files with extensions. Run git ops **sequentially** (not parallel) to avoid cascade failures from hookify blocks.
 
@@ -792,7 +793,7 @@ For tab routing, schemas, and configuration: read `RAPID_CORE/CORE_Database.gs` 
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| toMachina API | `https://api.tomachina.com` | Unified REST API (Cloud Run, 30 routes, 1Gi/2CPU) |
+| toMachina API | Proxied via portal `/api/*` routes | Cloud Run (tm-api, 38+ routes, 1Gi/2CPU, IAM protected) |
 | healthcare-mcps | `https://que-api-r6j33zf47q-uc.a.run.app` | Medicare data API (Cloud Run, always on) |
 | RAPID_API | GAS Web App (ARCHIVED) | Legacy REST endpoints — replaced by toMachina API |
 
@@ -961,15 +962,15 @@ The Machine (the business)
 
 ### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 34 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 35 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-**34 rules** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
+**35 rules** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
 
 **Tier 1 — Block Rules (16 rules):**
 `block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `quality-gate-plan-format`
 
-**Tier 2 — Warn Rules (6 rules):**
-`warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`
+**Tier 2 — Warn Rules (7 rules):**
+`warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`, `warn-untyped-api-response`
 
 **Intent Rules (6 rules):**
 `intent-session-start` (triggers session protocol), `intent-sendit` (triggers toMachina deploy protocol), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work)
