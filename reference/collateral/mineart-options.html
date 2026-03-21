@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Options — Mineart GMIB Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a3158; --navy-dark: #0f1d30; --rpi-blue: #4a7ab5;
+    --pale-blue: #e5ecf6; --pale-blue-soft: #edf2f8;
+    --text-primary: #1a1a1a; --text-secondary: #4a5568; --text-muted: #718096;
+    --border: #e2e5ea; --bg-light: #f8f9fa;
+    --gold: #c5a55a; --gold-light: #d4bb7a; --white: #ffffff;
+    --green: #16a34a; --green-light: #f0fdf4;
+    --red: #dc2626; --red-light: #fef2f2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.5; color: var(--text-primary); background: var(--bg-light); }
+  .container { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+
+  .header { text-align: center; padding: 28px 20px 20px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%); border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold), var(--rpi-blue)); }
+  .header-brand { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--rpi-blue); margin-bottom: 4px; }
+  .header h1 { font-size: 22px; font-weight: 800; color: var(--white); line-height: 1.2; margin-bottom: 4px; }
+  .header h2 { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.7); }
+  .header-client { font-size: 16px; font-weight: 700; color: var(--gold); margin-top: 10px; }
+
+  .card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--rpi-blue); margin-bottom: 14px; }
+
+  .gmib-banner { text-align: center; padding: 16px; background: var(--pale-blue-soft); border-radius: 8px; border: 2px solid var(--rpi-blue); margin-bottom: 16px; }
+  .gmib-banner .gmib-val { font-size: 36px; font-weight: 800; color: var(--navy); }
+  .gmib-banner .gmib-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rpi-blue); }
+  .gmib-banner .gmib-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+  .option-card { border-radius: 10px; padding: 18px 16px; text-align: center; border: 2px solid var(--border); background: var(--white); transition: all 0.2s; position: relative; }
+  .option-card.rec { border-color: var(--gold); background: #fefcf5; }
+  .option-card.rec::after { content: 'RECOMMENDED'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--navy-dark); font-size: 8px; font-weight: 800; letter-spacing: 1px; padding: 2px 10px; border-radius: 3px; }
+  .opt-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+  .opt-premium { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .opt-premium span { font-size: 11px; font-weight: 400; color: var(--text-muted); }
+  .opt-db { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1.1; }
+  .opt-db-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--rpi-blue); margin-top: 2px; }
+  .opt-db-note { font-size: 9px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+  .flow-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); text-align: left; }
+  .flow-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+  .flow-row .fl { color: var(--text-secondary); }
+  .flow-row .fv { font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; }
+  .flow-row.oop .fv { font-weight: 800; }
+  .flow-row.oop.negative .fv { color: var(--red); }
+  .flow-row.oop.positive .fv { color: var(--green); }
+  .flow-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  .oop-banner { margin-top: 10px; padding: 8px; border-radius: 6px; text-align: center; }
+  .oop-banner.negative { background: var(--red-light); border: 1px solid var(--red); }
+  .oop-banner.positive { background: var(--green-light); border: 1px solid var(--green); }
+  .oop-val { font-size: 20px; font-weight: 800; }
+  .oop-banner.negative .oop-val { color: var(--red); }
+  .oop-banner.positive .oop-val { color: var(--green); }
+  .oop-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .oop-banner.negative .oop-lbl { color: var(--red); }
+  .oop-banner.positive .oop-lbl { color: var(--green); }
+
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .compare-table thead th { background: var(--navy); color: var(--white); padding: 8px 10px; font-weight: 700; font-size: 10px; text-transform: uppercase; text-align: center; }
+  .compare-table thead th:first-child { text-align: left; border-radius: 6px 0 0 0; }
+  .compare-table thead th:last-child { border-radius: 0 6px 0 0; }
+  .compare-table thead th.rec-col { background: var(--rpi-blue); }
+  .compare-table tbody td { padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  .compare-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--text-secondary); }
+  .compare-table tbody td.rec-col { background: rgba(74, 122, 181, 0.06); }
+  .compare-table tbody tr:nth-child(even) { background: var(--bg-light); }
+  .compare-table tbody tr.highlight td { font-weight: 800; color: var(--navy); border-top: 2px solid var(--rpi-blue); background: var(--pale-blue-soft); }
+  .compare-table tbody tr.highlight td.rec-col { background: rgba(74, 122, 181, 0.12); }
+
+  .callout { background: var(--navy); color: var(--white); border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; border-left: 4px solid var(--gold); }
+  .callout h3 { font-size: 13px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
+  .callout p { font-size: 12px; line-height: 1.55; color: rgba(255,255,255,0.9); }
+
+  .reserve-banner { text-align: center; padding: 14px; background: var(--pale-blue-soft); border-radius: 8px; border: 1px solid var(--rpi-blue); margin-bottom: 16px; }
+  .reserve-banner .rv { font-size: 32px; font-weight: 800; color: var(--navy); }
+  .reserve-banner .rl { font-size: 11px; font-weight: 600; color: var(--rpi-blue); text-transform: uppercase; letter-spacing: 1px; }
+  .reserve-banner .rs { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .footer { text-align: center; padding: 16px; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 8px; }
+  .footer strong { color: var(--navy); }
+
+  @media (max-width: 700px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .opt-db { font-size: 24px; }
+    .compare-table { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-brand">Retirement Protectors</div>
+    <h1>Three Strategies &mdash; One Goal</h1>
+    <h2>Nassau GMIB &rarr; John Hancock Survivorship IUL</h2>
+    <div class="header-client">Stephen &amp; Joyce Mineart</div>
+  </div>
+
+  <!-- GMIB Source -->
+  <div class="gmib-banner">
+    <div class="gmib-label">Nassau GMIB &mdash; Guaranteed for Life (After Oct 2026 Roll-Up)</div>
+    <div class="gmib-val">$145,152/yr</div>
+    <div class="gmib-sub">Benefit Base: $2,189,325 &times; 6.63% (Joyce age 71) &mdash; Spousal GLWB, both lives</div>
+  </div>
+
+  <!-- Three Option Cards -->
+  <div class="options-grid">
+
+    <!-- Option A: $120K / $6M -->
+    <div class="option-card rec">
+      <div class="opt-label">Option A</div>
+      <div class="opt-premium">$120,000/yr premium <span>to JH</span></div>
+      <div class="opt-db">$6,000,000</div>
+      <div class="opt-db-label">Tax-Free Death Benefit</div>
+      <div class="opt-db-note">Per JH illustration on file</div>
+      <div class="flow-section">
+        <div class="flow-row"><span class="fl">GMIB Income</span><span class="fv">$145,152</span></div>
+        <div class="flow-row"><span class="fl">JH Premium</span><span class="fv">-$120,000</span></div>
+        <div class="flow-row"><span class="fl">Remaining</span><span class="fv">$25,152</span></div>
+        <div class="flow-row"><span class="fl">Federal Tax (22%)</span><span class="fv">-$31,933</span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-row oop negative"><span class="fl">Annual Out-of-Pocket</span><span class="fv">-$6,781</span></div>
+      </div>
+      <div class="oop-banner negative">
+        <div class="oop-lbl">Your Cost</div>
+        <div class="oop-val">$565/mo</div>
+      </div>
+    </div>
+
+    <!-- Option B: $90K / $4.5M -->
+    <div class="option-card">
+      <div class="opt-label">Option B</div>
+      <div class="opt-premium">$90,000/yr premium <span>to JH</span></div>
+      <div class="opt-db">$4,500,000</div>
+      <div class="opt-db-label">Tax-Free Death Benefit</div>
+      <div class="opt-db-note">Per JH Winflex illustration &mdash; 03/20/2026</div>
+      <div class="flow-section">
+        <div class="flow-row"><span class="fl">GMIB Income</span><span class="fv">$145,152</span></div>
+        <div class="flow-row"><span class="fl">JH Premium</span><span class="fv">-$90,000</span></div>
+        <div class="flow-row"><span class="fl">Remaining</span><span class="fv">$55,152</span></div>
+        <div class="flow-row"><span class="fl">Federal Tax (22%)</span><span class="fv">-$31,933</span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-row oop positive"><span class="fl">Annual Income to You</span><span class="fv">+$23,219</span></div>
+      </div>
+      <div class="oop-banner positive">
+        <div class="oop-lbl">You Keep</div>
+        <div class="oop-val">+$1,935/mo</div>
+      </div>
+    </div>
+
+    <!-- Option C: $60K / $3M -->
+    <div class="option-card">
+      <div class="opt-label">Option C</div>
+      <div class="opt-premium">$60,000/yr premium <span>to JH</span></div>
+      <div class="opt-db">$3,000,000</div>
+      <div class="opt-db-label">Tax-Free Death Benefit</div>
+      <div class="opt-db-note">Per JH Winflex illustration &mdash; 03/20/2026</div>
+      <div class="flow-section">
+        <div class="flow-row"><span class="fl">GMIB Income</span><span class="fv">$145,152</span></div>
+        <div class="flow-row"><span class="fl">JH Premium</span><span class="fv">-$60,000</span></div>
+        <div class="flow-row"><span class="fl">Remaining</span><span class="fv">$85,152</span></div>
+        <div class="flow-row"><span class="fl">Federal Tax (22%)</span><span class="fv">-$31,933</span></div>
+        <div class="flow-divider"></div>
+        <div class="flow-row oop positive"><span class="fl">Annual Income to You</span><span class="fv">+$53,219</span></div>
+      </div>
+      <div class="oop-banner positive">
+        <div class="oop-lbl">You Keep</div>
+        <div class="oop-val">+$4,435/mo</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="card">
+    <div class="card-title">Side-by-Side Comparison</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="rec-col">Option A</th>
+          <th>Option B</th>
+          <th>Option C</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Annual JH Premium</td>
+          <td class="rec-col"><strong>$120,000</strong></td>
+          <td><strong>$90,000</strong></td>
+          <td><strong>$60,000</strong></td>
+        </tr>
+        <tr>
+          <td>Tax-Free Death Benefit</td>
+          <td class="rec-col"><strong>$6,000,000</strong></td>
+          <td><strong>$4,500,000</strong></td>
+          <td><strong>$3,000,000</strong></td>
+        </tr>
+        <tr>
+          <td>GMIB After Premium</td>
+          <td class="rec-col">$25,152</td>
+          <td>$55,152</td>
+          <td>$85,152</td>
+        </tr>
+        <tr>
+          <td>Federal Tax on GMIB (22%)</td>
+          <td class="rec-col">$31,933</td>
+          <td>$31,933</td>
+          <td>$31,933</td>
+        </tr>
+        <tr class="highlight">
+          <td>Annual Out-of-Pocket / Income</td>
+          <td class="rec-col" style="color:var(--red);"><strong>-$6,781</strong></td>
+          <td style="color:var(--green);"><strong>+$23,219</strong></td>
+          <td style="color:var(--green);"><strong>+$53,219</strong></td>
+        </tr>
+        <tr class="highlight">
+          <td>Monthly Impact</td>
+          <td class="rec-col" style="color:var(--red);"><strong>-$565/mo</strong></td>
+          <td style="color:var(--green);"><strong>+$1,935/mo</strong></td>
+          <td style="color:var(--green);"><strong>+$4,435/mo</strong></td>
+        </tr>
+        <tr>
+          <td>Year 1 Source</td>
+          <td class="rec-col">Inheritance</td>
+          <td>Inheritance</td>
+          <td>Inheritance</td>
+        </tr>
+        <tr>
+          <td>Cost per $1M of Death Benefit</td>
+          <td class="rec-col">$1,130/yr</td>
+          <td>$0 (net positive)</td>
+          <td>$0 (net positive)</td>
+        </tr>
+        <tr>
+          <td>Post-Retirement Total Income</td>
+          <td class="rec-col">$8,345/mo</td>
+          <td><strong>$10,845/mo</strong></td>
+          <td><strong>$13,345/mo</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px; font-size:10px; color:var(--text-muted);">
+      All three options illustrated by JH carrier engine (Winflex) with matching inputs: DOBs, 12/15/2025 backdate, $1,000 CV at age 100, 100% Base Capped, Gold Vitality.<br>
+      Post-Retirement Total = Base retirement income ($8,910/mo) + GMIB net after premium and taxes.<br>
+      Iowa does not tax retirement income distributions. Federal tax only at 22% MFJ bracket.
+    </div>
+  </div>
+
+  <!-- Income Context -->
+  <div class="callout">
+    <h3>What This Means for Your Retirement Income</h3>
+    <p>
+      <strong>Option A ($6M)</strong> costs $565/mo out of pocket &mdash; but that buys $6 million in
+      tax-free protection for Joyce and the kids. Your post-retirement income is $8,345/mo vs. $8,910 today without MHP. Nearly the same.<br><br>
+      <strong>Option B ($4.5M)</strong> actually <em>adds</em> $1,935/mo to your income. You end up making MORE
+      in retirement than you do today with Mahaska Health, AND you get $4.5M tax-free.<br><br>
+      <strong>Option C ($3M)</strong> adds $4,435/mo &mdash; a significant income boost plus $3M tax-free protection.
+      Maximum lifestyle, strong legacy.
+    </p>
+  </div>
+
+  <!-- Reserves -->
+  <div class="reserve-banner">
+    <div class="rl">Liquid Reserves &mdash; Untouched Safety Net</div>
+    <div class="rv">$637,000+</div>
+    <div class="rs">
+      Checking ($60K) + Savings ($110K) + HSA ($50K) + WF Inheritance ($217K) + RiverSource (~$200K)
+      <br>This money sits untouched regardless of which option you choose.
+    </div>
+  </div>
+
+  <!-- Year 1 Bridge -->
+  <div class="card">
+    <div class="card-title">Year 1 &mdash; The Inheritance Bridge</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="rec-col">Option A</th>
+          <th>Option B</th>
+          <th>Option C</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Year 1 Premium (from inheritance)</td>
+          <td class="rec-col"><strong>$120,000</strong></td>
+          <td><strong>$90,000</strong></td>
+          <td><strong>$60,000</strong></td>
+        </tr>
+        <tr>
+          <td>WF Inheritance Available</td>
+          <td class="rec-col">$217,000</td>
+          <td>$217,000</td>
+          <td>$217,000</td>
+        </tr>
+        <tr class="highlight">
+          <td>Inheritance Remaining After Yr 1</td>
+          <td class="rec-col"><strong>$97,000</strong></td>
+          <td><strong>$127,000</strong></td>
+          <td><strong>$157,000</strong></td>
+        </tr>
+        <tr>
+          <td>Year 1 Taxes Owed</td>
+          <td class="rec-col"><strong>$0</strong></td>
+          <td><strong>$0</strong></td>
+          <td><strong>$0</strong></td>
+        </tr>
+        <tr>
+          <td>GMIB Status Year 1</td>
+          <td class="rec-col">Rolling up 10%</td>
+          <td>Rolling up 10%</td>
+          <td>Rolling up 10%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">
+      By paying Year 1 from inheritance, the Nassau GMIB gets one more 10% roll-up (Oct 2, 2026).
+      No withdrawal = no taxes in Year 1. The remaining inheritance stays in reserves.
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3>The Question Is Simple</h3>
+    <p>
+      All three options use money that was going to sit in a taxable IRA anyway.
+      The GMIB funds the premium automatically starting Year 2.
+      The only question: <strong>how much tax-free protection do you want for Joyce and the kids?</strong><br><br>
+      $6M for $565/mo? &nbsp; $4.5M and you MAKE money? &nbsp; $3M and you boost income by $4,400/mo?<br><br>
+      There is no wrong answer. Every option is better than doing nothing.
+    </p>
+  </div>
+
+  <div style="text-align:center; margin-bottom:16px;">
+    <a href="index.html" style="display:inline-block; padding:10px 24px; background:var(--navy); color:var(--white); border-radius:6px; text-decoration:none; font-size:13px; font-weight:700;">
+      View Full Income Replacement Analysis &rarr;
+    </a>
+  </div>
+
+  <div class="footer">
+    <strong>Retirement Protectors, Inc.</strong> &mdash; We're Your People&trade;<br>
+    Prepared for Stephen &amp; Joyce Mineart &nbsp;|&nbsp; Advisor: Josh Archer<br>
+    6750 Westown Parkway, Suite 200-382 &nbsp;|&nbsp; West Des Moines, IA 50266 &nbsp;|&nbsp; 515-992-5000<br><br>
+    All options from JH carrier engine (Winflex) with matching inputs.<br>
+    Tax estimates assume 22% MFJ federal bracket. Iowa does not tax retirement income distributions.<br>
+    GMIB of $145,152/yr assumes activation after October 2, 2026 roll-up. Guaranteed by Nassau contract #28253487.<br>
+    Updated March 20, 2026
+  </div>
+
+</div>
+
+</body>
+</html>

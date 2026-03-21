@@ -159,7 +159,8 @@ Option C is the aggressive play — maximum death benefit, but highest annual OO
 
 ### Design System
 - Font: Inter (Google Fonts), weights 300-800
-- Colors: `--navy: #1a3158`, `--rpi-blue: #4a7ab5`, `--pale-blue: #e5ecf6`, `--gold: #c5a55a`, `--green: #16a34a`
+- Brand colors: `--navy: #1a3158`, `--rpi-blue: #4a7ab5`, `--pale-blue: #e5ecf6` / `#edf2f8`, `--charcoal: #5a6270` (per RPI-PORTFOLIO-INSIGHTS-HANDOFF.md)
+- Data indicators (functional only, never on brand elements): standard traffic light colors acceptable for surplus/deficit/status in tables and charts
 - Print: Letter size, 0.5in/0.6in margins, `print-color-adjust: exact`
 - Body text: 11pt minimum (senior audience)
 - Logo: `rpi-shield.png` co-located with HTML

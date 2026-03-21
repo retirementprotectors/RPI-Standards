@@ -16,7 +16,7 @@
     --text-muted: #718096;
     --border: #e2e5ea;
     --white: #ffffff;
-    --gold: #c5a55a;
+    /* gold removed — use --rpi-blue */
     --green: #16a34a;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,7 +31,7 @@
 
   .title { font-size: 22pt; font-weight: 800; color: var(--navy); margin-bottom: 0.05in; }
   .subtitle { font-size: 11pt; color: var(--text-muted); margin-bottom: 0.2in; }
-  .divider { height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--gold), transparent); border-radius: 2px; margin-bottom: 0.25in; }
+  .divider { height: 3px; background: linear-gradient(90deg, var(--rpi-blue), var(--navy), transparent); border-radius: 2px; margin-bottom: 0.25in; }
 
   .info-banner { background: var(--pale-blue); border-radius: 8px; padding: 0.18in 0.22in; margin-bottom: 0.2in; }
   .info-banner-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.12in; }
@@ -40,13 +40,13 @@
 
   .section-title { font-size: 14pt; font-weight: 800; color: var(--navy); margin-bottom: 0.08in; margin-top: 0.2in; }
 
-  .selected-option { background: var(--navy); color: var(--white); border-radius: 10px; padding: 0.22in 0.28in; margin-bottom: 0.2in; border-left: 5px solid var(--gold); }
-  .selected-option h3 { font-size: 13pt; font-weight: 800; color: var(--gold); margin-bottom: 0.08in; }
+  .selected-option { background: var(--navy); color: var(--white); border-radius: 10px; padding: 0.22in 0.28in; margin-bottom: 0.2in; border-left: 5px solid var(--rpi-blue); }
+  .selected-option h3 { font-size: 13pt; font-weight: 800; color: var(--rpi-blue); margin-bottom: 0.08in; }
   .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1in; }
   .option-item { }
   .option-label { font-size: 8pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.65); }
   .option-value { font-size: 14pt; font-weight: 800; color: var(--white); }
-  .option-value.gold { color: var(--gold); }
+  .option-value.gold { color: var(--rpi-blue); }
 
   .metric-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.12in; margin-bottom: 0.2in; }
   .metric-card { border: 2px solid var(--border); border-radius: 8px; padding: 0.12in 0.15in; text-align: center; }
@@ -153,7 +153,7 @@
     <div class="metric-label">Tax-Free to Your Family</div>
   </div>
   <div class="metric-card">
-    <div class="metric-value" style="color: var(--gold);">$5&ndash;7K/yr</div>
+    <div class="metric-value" style="color: var(--rpi-blue);">$5&ndash;7K/yr</div>
     <div class="metric-label">Your Annual Cost (Year 2+)</div>
   </div>
   <div class="metric-card">
