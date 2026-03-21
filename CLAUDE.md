@@ -410,8 +410,33 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 
 ## Deployment Rules
 
-### toMachina (Primary)
-Branch protection ON. Push to branch → PR → CI check must pass → merge to main → deploy-api (Docker + Cloud Run) → Firebase App Hosting auto-deploys portals. Direct push to main is blocked. Run `npm run build` locally before pushing — catches webpack issues that type-check misses.
+### toMachina (Primary) — `#SendIt` Sequence
+When JDM says `#SendIt`, execute this full sequence:
+
+```bash
+# 1. Create branch + commit
+git checkout -b <branch-name>
+git add <files>
+git commit -m "description"
+
+# 2. Push + open PR with auto-merge
+git push -u origin <branch-name>
+gh pr create --title "..." --body "..."
+gh pr merge --auto --squash --delete-branch
+
+# 3. Done — CI runs → auto-merges on pass → deploy-api fires → portals auto-deploy
+```
+
+**What happens automatically after step 2:**
+- CI runs `type-check` + `build` (~3.5 min)
+- If CI passes → PR auto-merges to main (squash)
+- Push to main triggers `deploy-api` job (Docker build → Artifact Registry → Cloud Run)
+- Firebase App Hosting auto-deploys all 3 portals
+- Total time: ~8 min from push to live
+
+**No babysitting required.** Branch protection + CI is the gatekeeper. `--auto` means "merge when checks pass." If CI fails, it blocks automatically.
+
+**Do NOT manually `gh pr merge` after `--auto` is set.** It's already queued.
 
 ### GAS Projects (Maintenance Only)
 For rare GAS maintenance deploys:
@@ -1029,3 +1054,4 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - All 3 portals deployed with standardized UI: RIIMO @86, SENTINEL @36, PRODASHX @216
 - PortalStandard.html = shared CSS design system (master in _RPI_STANDARDS/reference/portal/)
 - Meetings tab = NEW feature on all 3 portals (employee_profile JSON on _USER_HIERARCHY)
+- Phase 5 (polish) still pending — visual QA, entitlement gating verification
