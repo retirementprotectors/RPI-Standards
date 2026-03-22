@@ -13,7 +13,7 @@
 
 Hookify is a Python-based enforcement engine that intercepts Claude Code at three points in the tool execution lifecycle. It reads `.local.md` rule files, evaluates them against tool input using regex matching with LRU cache, and either **blocks** operations (code never reaches disk) or **warns** (injects guidance while allowing the operation).
 
-**35 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
+**36 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
 
 **Enforcement hierarchy:** GitHub Security (supply-chain) > Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
