@@ -17,7 +17,12 @@ Hookify is a Python-based enforcement engine that intercepts Claude Code at thre
 
 **Enforcement hierarchy:** GitHub Security (supply-chain) > Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
-**Outer perimeter (CI):** Dependabot (dependency vulnerabilities) + CodeQL (static analysis) scan every PR and weekly. These catch supply-chain and code-flow security issues that pattern-matching rules cannot.
+**Outer perimeter (CI):** Dependabot (dependency vulnerabilities) + CodeQL (static analysis) + E2E tests (pipeline + UI verification) scan every PR and deploy. These catch supply-chain, code-flow, runtime, and visual regression issues that pattern-matching rules cannot.
+
+**E2E test gates (2 CI jobs):**
+- `e2e-ui` — Playwright visual verification of 10 ProDash modules (pre-deploy, runs on PR + push to main)
+- `e2e-intake` — Vitest pipeline tests for 4 intake wire sources (post-deploy, runs after deploy-api on push to main)
+- Status: `continue-on-error: true` while CI auth is being tuned. Will be made blocking once Firebase REST + WIF auth are verified green.
 
 ---
 

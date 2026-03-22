@@ -206,6 +206,13 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 - [x] Removed Cursor Bugbot GitHub App (unauthorized third-party code reviewer)
 - [x] Verified only authorized GitHub Apps remain: Claude, Firebase App Hosting
 
+#### E2E Test Coverage (2026-03-22)
+- [x] Vitest backend pipeline tests: 4 intake wire tests (ACF_UPLOAD, MAIL, SPC_INTAKE, ACF_SCAN)
+- [x] Playwright UI visual tests: 10 module tests (Contacts, Accounts, Comms, Connect, Admin, MyRPI, FORGE, Pipeline Studio, Quick Intake, Sidebar+Header)
+- [x] CI jobs: e2e-ui (pre-deploy) + e2e-intake (post-deploy)
+- [ ] CI auth tuning: Firebase REST + Workload Identity — pending (jobs run but fail on auth, non-blocking)
+- Coverage: 4 pipeline paths + 10 UI modules verified automatically. ~50 items remain manual-only (subjective UX, new features not yet covered).
+
 ### Public Website Pages (retireprotected.com)
 
 Published legal/compliance pages — public-facing, no authentication required. Built from existing RPI compliance docs (Client Guide, PII/PHI Data Protection Policy, Security Compliance Framework).

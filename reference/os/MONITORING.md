@@ -37,6 +37,8 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 | Annual | BAA / vendor security review | Manual |
 | Annual | Policy review and update | Manual |
 | Annual | Training completion verification | Manual |
+| Every PR + push to main | E2E UI visual verification (Playwright — 10 modules) | GitHub Actions (e2e-ui) |
+| Every push to main | E2E intake pipeline tests (Vitest — 4 wire tests) | GitHub Actions (e2e-intake) |
 | Weekly (Mon) | Dependabot dependency vulnerability scan | GitHub (automated PRs) |
 | Weekly (Sun) + every PR | CodeQL static security analysis | GitHub Actions |
 
