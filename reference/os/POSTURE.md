@@ -198,6 +198,14 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 | QUE-Medicare | DOMAIN | 2026-02-15 | Verified -- appsscript.json `"access": "DOMAIN"` confirmed. |
 | DAVID-HUB | DOMAIN | 2026-02-15 | Fixed -- "Phase 0: Security hardening" commit `fcc5011`. Source file + deployment verified. |
 
+### Supply Chain + Code Security (2026-03-22)
+
+#### Automated CI Security
+- [x] Enabled Dependabot for npm dependency vulnerability scanning (weekly, Mondays)
+- [x] Enabled CodeQL static analysis for JavaScript/TypeScript (every PR + weekly Sunday)
+- [x] Removed Cursor Bugbot GitHub App (unauthorized third-party code reviewer)
+- [x] Verified only authorized GitHub Apps remain: Claude, Firebase App Hosting
+
 ### Public Website Pages (retireprotected.com)
 
 Published legal/compliance pages — public-facing, no authentication required. Built from existing RPI compliance docs (Client Guide, PII/PHI Data Protection Policy, Security Compliance Framework).

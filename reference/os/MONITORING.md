@@ -37,6 +37,8 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 | Annual | BAA / vendor security review | Manual |
 | Annual | Policy review and update | Manual |
 | Annual | Training completion verification | Manual |
+| Weekly (Mon) | Dependabot dependency vulnerability scan | GitHub (automated PRs) |
+| Weekly (Sun) + every PR | CodeQL static security analysis | GitHub Actions |
 
 ---
 
