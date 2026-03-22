@@ -41,9 +41,15 @@ import type { AuditRoundResponse } from '@tomachina/core'
 useState<AuditRoundResponse | null>(null)
 ```
 
-**Until Sprint 10 (shared API types package):**
-- Before writing any `res.json(successResponse({...}))`, read the frontend consumer that calls this endpoint
+**Three-layer protection:**
+- **Layer 1 (this rule):** Warns when API routes return inline objects without shared DTOs
+- **Layer 2 (TypeScript):** Shared DTOs in `@tomachina/core/api-types/` enforce types at compile-time
+- **Layer 3 (Valibot):** `fetchValidated` validates response shapes at runtime in the browser — catches mismatches TypeScript can't see across HTTP boundaries
+
+**Before writing any `res.json(successResponse({...}))`:**
+- Read the frontend consumer that calls this endpoint
 - Verify field names AND types match exactly
 - Pay special attention to: arrays vs counts, nested objects vs flat values, field name differences
+- Ensure the corresponding Valibot schema in `packages/core/src/schemas/` matches
 
-See: toMachina CLAUDE.md -> Code Standards
+See: toMachina CLAUDE.md -> Code Standards | IMMUNE_SYSTEM.md -> Three-Layer Enforcement Model

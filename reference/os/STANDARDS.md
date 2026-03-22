@@ -259,6 +259,19 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 | **Can't access raw PHI** | Only aggregated/anonymized health data |
 | **Can't export bulk data** | Rate limits on data access |
 
+### API Response Validation (Layer 3)
+
+Critical API consumers in `packages/ui/src/modules/` must use `fetchValidated` (not raw `fetchWithAuth`) for all JSON API calls. `fetchValidated` validates response shapes at runtime using Valibot schemas, catching type mismatches that TypeScript cannot detect across HTTP boundaries.
+
+| Rule | Rationale |
+|------|-----------|
+| **Use `fetchValidated` for all JSON API calls** | Runtime shape validation prevents render crashes from unexpected API response shapes |
+| **Add type parameter on typed state assignments** | `fetchValidated<MyType[]>(url)` ensures `result.data` is correctly typed |
+| **Schemas validate critical render fields only** | Shape schemas in `packages/core/src/schemas/` check 5-15 fields per entity with passthrough for the rest |
+| **Non-blocking in production** | Validation mismatches warn in dev (`console.warn`), never crash in prod |
+
+**Exception:** Non-JSON endpoints (e.g., HTML roadmap) may use `fetchWithAuth` directly with a comment explaining why.
+
 ### AI Disclosure
 
 When AI interacts with clients (if ever):

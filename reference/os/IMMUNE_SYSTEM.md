@@ -17,6 +17,16 @@ Hookify is a Python-based enforcement engine that intercepts Claude Code at thre
 
 **Enforcement hierarchy:** GitHub Security (supply-chain) > Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
+### Three-Layer Enforcement Model
+
+| Layer | Name | When | What |
+|-------|------|------|------|
+| **Layer 1** | Hookify (code-time) | Before code hits disk | Pattern-matching blocks/warns on Write/Edit tool calls |
+| **Layer 2** | TypeScript (compile-time) | `npm run type-check` + `npm run build` | Shared DTOs in `@tomachina/core/api-types/` enforce field names + types at build |
+| **Layer 3** | Valibot (runtime) | Every API call in the browser | `fetchValidated` wrapper validates response shapes against schemas at runtime. Non-blocking: `console.warn` in dev, silent in prod. Catches type mismatches TypeScript can't see across HTTP boundaries. |
+
+Layer 3 was added in Sprint ZOD (2026-03-22) after the ForgeAudit crash proved TypeScript can't protect data crossing the HTTP boundary. Schemas live in `packages/core/src/schemas/`, wrapper at `packages/ui/src/modules/fetchValidated.ts`.
+
 **Outer perimeter (CI):** Dependabot (dependency vulnerabilities) + CodeQL (static analysis) + E2E tests (pipeline + UI verification) scan every PR and deploy. These catch supply-chain, code-flow, runtime, and visual regression issues that pattern-matching rules cannot.
 
 **E2E test gates (2 CI jobs):**

@@ -39,6 +39,7 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 | Annual | Training completion verification | Manual |
 | Every PR + push to main | E2E UI visual verification (Playwright — 10 modules) | GitHub Actions (e2e-ui) |
 | Every push to main | E2E intake pipeline tests (Vitest — 4 wire tests) | GitHub Actions (e2e-intake) |
+| Real-time (browser) | `[ResponseValidation]` warnings from fetchValidated | Console (dev), silent (prod) |
 | Weekly (Mon) | Dependabot dependency vulnerability scan | GitHub (automated PRs) |
 | Weekly (Sun) + every PR | CodeQL static security analysis | GitHub Actions |
 
@@ -76,7 +77,22 @@ Three automated GAS triggers run in RAPID_API:
 
 **Setup:** Project: RAPID_API | File: API_Compliance.gs | Run: `SETUP_ComplianceTrigger`
 
-### 2.3 Pending GAS Triggers (Not Yet Implemented)
+### 2.3 Response Validation Signals (Layer 3)
+
+`fetchValidated` in `packages/ui/src/modules/fetchValidated.ts` validates API response shapes at runtime using Valibot schemas from `packages/core/src/schemas/`.
+
+| Signal | Format | When | Where |
+|--------|--------|------|-------|
+| Shape mismatch | `[ResponseValidation] /api/tracker: status — Expected string, received number` | API returns unexpected data shape | Dev: `console.warn`. Prod: `validationWarnings[]` in return value (silent). |
+
+**How to interpret:**
+- A `[ResponseValidation]` warning means the API returned data that doesn't match the schema. The app still works (non-blocking mode) but the data shape is unexpected.
+- Common causes: API route changed a field name, added/removed a field, or changed a type (array vs count, string vs number).
+- Fix: Update the Valibot schema in `packages/core/src/schemas/` OR fix the API route to return the expected shape.
+
+**Future:** Knowledge-promote pipeline will pick up `[ResponseValidation]` prefix and route to Slack DM + FORGE ticket (TRK-ZOD-011, deferred).
+
+### 2.4 Pending GAS Triggers (Not Yet Implemented)
 
 | Trigger | Purpose | Status |
 |---------|---------|--------|
