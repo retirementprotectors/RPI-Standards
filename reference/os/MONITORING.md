@@ -37,6 +37,7 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 | Annual | BAA / vendor security review | Manual |
 | Annual | Policy review and update | Manual |
 | Annual | Training completion verification | Manual |
+| Every PR + push to main | Type-check 13/13 + Build 11/11 (includes DTO compile verification) | GitHub Actions (CI) |
 | Every PR + push to main | E2E UI visual verification (Playwright — 10 modules) | GitHub Actions (e2e-ui) |
 | Every push to main | E2E intake pipeline tests (Vitest — 4 wire tests) | GitHub Actions (e2e-intake) |
 | Real-time (browser) | `[ResponseValidation]` warnings from fetchValidated | Console (dev), silent (prod) |
@@ -131,6 +132,17 @@ The hookify plugin provides real-time code enforcement during every Claude Code 
 - **Quality Gates:** Post-bash reminders for deploy verification and commit/deploy pairing
 
 For full details, see [IMMUNE_SYSTEM.md](IMMUNE_SYSTEM.md).
+
+### 2.6 API Contract DTO Verification (Compile-Time)
+
+Type-check and build failures are deployment-blocking signals. If `npm run type-check` or `npm run build` fails, the PR cannot merge.
+
+**DTO-specific signals:**
+- `successResponse(` without `<` in route files → hookify `warn-untyped-api-response` fires at code-write time
+- Type mismatch between DTO and response data → `npm run type-check` fails (CI blocks merge)
+- Missing DTO for a new route → type-check passes but hookify warns; add DTO to `packages/core/src/api-types/` before shipping
+
+**Current baseline:** 455 typed `successResponse<DtoType>()` calls across 54 route files, 300+ named DTOs in 10 api-types files. Zero `<unknown>` generics.
 
 ---
 

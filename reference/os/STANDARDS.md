@@ -259,6 +259,24 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 | **Can't access raw PHI** | Only aggregated/anonymized health data |
 | **Can't export bulk data** | Rate limits on data access |
 
+### API Contract Standards (Layer 2 — Compile-Time DTOs)
+
+All API routes in `services/api/src/routes/` must use typed DTOs from `@tomachina/core/api-types/` on every `successResponse<T>()` call. This is the compile-time layer of the 3-layer API safety model.
+
+| Rule | Rationale |
+|------|-----------|
+| **Every `successResponse()` must have a `<DtoType>` generic** | Typed generics document the contract and enable grep-based auditing |
+| **DTOs live in `packages/core/src/api-types/`** | Single source of truth — both API and frontend reference the same types |
+| **Use `as unknown as DtoType` cast on Firestore data** | Firestore returns `Record<string, unknown>` which requires explicit narrowing |
+| **New routes must define DTOs before shipping** | Hookify rule `warn-untyped-api-response` enforces this at code-write time |
+
+**DTO file structure:** 10 files (1 barrel + 1 common + 8 route group files) covering all 54 API routes with 300+ named types.
+
+**3-layer enforcement model:**
+- **Layer 1 (code-write):** Hookify `warn-untyped-api-response` warns on bare `successResponse()` calls
+- **Layer 2 (compile-time):** DTOs catch shape mismatches at `npm run type-check` (this section)
+- **Layer 3 (runtime):** Valibot schemas in `fetchValidated` catch mismatches at runtime (see below)
+
 ### API Response Validation (Layer 3)
 
 Critical API consumers in `packages/ui/src/modules/` must use `fetchValidated` (not raw `fetchWithAuth`) for all JSON API calls. `fetchValidated` validates response shapes at runtime using Valibot schemas, catching type mismatches that TypeScript cannot detect across HTTP boundaries.
@@ -437,3 +455,4 @@ Violations of these standards may result in:
 | v0.1 | Jan 25, 2026 | Initial skeleton |
 | v1.0 | Feb 13, 2026 | HIPAA status resolved (BAA signed), PHI training status updated (10/13 complete), version upgraded from draft to active |
 | v2.0 | Feb 19, 2026 | Merged from COMPLIANCE_STANDARDS.md + PHI_POLICY.md into OS kernel. Operational content moved to OPERATIONS.md, monitoring content to MONITORING.md, posture details to POSTURE.md. Added enforcement section, transmission security rules, approved storage locations, expanded definitions. |
+| v2.1 | Mar 22, 2026 | Added API Contract Standards (Layer 2) section — compile-time DTO enforcement via @tomachina/core/api-types/. 3-layer API safety model documented. |
