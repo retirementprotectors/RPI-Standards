@@ -168,6 +168,35 @@ The GA (you) should be an ORCHESTRATOR, not a solo worker.
 The question is never IF we parallelize — it's HOW MANY agents to spawn.
 ```
 
+### 9. Model Routing — Stop Burning Opus on Everything
+```
+CRITICAL COST RULE — HOOK-ENFORCED [warn-opus-subagent]
+
+JDM's org spends ~$250/day on Claude. 98% is Opus. Most sub-agent
+work does NOT need Opus. Route models by task type:
+
+| Task Type                        | Model   | Why                          |
+|----------------------------------|---------|------------------------------|
+| GA ↔ JDM conversation           | Opus    | Strategy, decisions, planning |
+| Planning / architecture agents   | Opus    | Complex multi-project reasoning |
+| Code execution agents            | Sonnet  | Writing code from plans       |
+| Research / explore agents        | Sonnet  | Codebase search, file analysis |
+| Build / test agents              | Sonnet  | npm run build, test suites    |
+| Simple lookups / validation      | Haiku   | File search, git status, fmt  |
+| Cron jobs / automations          | Haiku   | Scheduled tasks, monitoring   |
+
+EVERY Agent() call MUST specify model= parameter:
+  Agent(model="sonnet", prompt="build this feature")
+  Agent(model="haiku", prompt="find this file")
+  Agent(model="opus", prompt="architect this system")  ← ONLY for planning
+
+❌ WRONG: Agent(prompt="write the code")  ← defaults to Opus, wastes $$$
+✅ RIGHT: Agent(model="sonnet", prompt="write the code")
+
+The GA (Opus) THINKS. The SPCs (Sonnet/Haiku) EXECUTE.
+This saves ~$4,000/month at current usage levels.
+```
+
 ---
 
 ## Communication Style
@@ -1055,3 +1084,6 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - PortalStandard.html = shared CSS design system (master in _RPI_STANDARDS/reference/portal/)
 - Meetings tab = NEW feature on all 3 portals (employee_profile JSON on _USER_HIERARCHY)
 - Phase 5 (polish) still pending — visual QA, entitlement gating verification
+- [Auto-merge PRs](feedback_auto_merge.md) — always use `--auto --squash`, never babysit CI
+- [Batch parallel by default](feedback_batch_parallel.md) — any operation over ~200 items must use parallel APIs first
+- [ACF Subfolder Lifecycle](project_acf_subfolder_lifecycle.md) — 5 subfolders are a lifecycle not categories
