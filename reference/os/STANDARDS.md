@@ -290,6 +290,20 @@ Critical API consumers in `packages/ui/src/modules/` must use `fetchValidated` (
 
 **Exception:** Non-JSON endpoints (e.g., HTML roadmap) may use `fetchWithAuth` directly with a comment explaining why.
 
+### Config Registry Pattern
+
+All platform configuration that changes at a business cadence (carrier maps, thresholds, tax brackets, product catalogs) must be stored in the `config_registry` Firestore collection and editable from the Admin Module's Config Registry tab — never hardcoded as the primary source.
+
+| Rule | Rationale |
+|------|-----------|
+| **Configs live in `config_registry` collection** | Single source of truth, no code deploy to change a carrier name |
+| **Hardcoded values are FALLBACK ONLY** | If Firestore is unavailable, code constants provide defaults |
+| **All reads via `getConfig(key, fallback)`** | Shared helper with 60s TTL cache, consistent access pattern |
+| **PUT validation per config type** | Sliders have min/max, tables require non-empty keys, checklists reject dupes |
+| **Seed script for initial population** | `seed-config-registry.ts` — idempotent, manual, one-time after deploy |
+
+**12 configs currently managed:** dedup thresholds, carrier/charter map, status map, carrier aliases, product type map, tax brackets, IRMAA brackets, carrier products, ATLAS stages, content block types, excluded statuses, rate limits.
+
 ### AI Disclosure
 
 When AI interacts with clients (if ever):

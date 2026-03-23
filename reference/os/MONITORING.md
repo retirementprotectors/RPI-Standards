@@ -144,6 +144,18 @@ Type-check and build failures are deployment-blocking signals. If `npm run type-
 
 **Current baseline:** 455 typed `successResponse<DtoType>()` calls across 54 route files, 300+ named DTOs in 10 api-types files. Zero `<unknown>` generics.
 
+### 2.7 Config Registry Staleness (Admin-Managed Configs)
+
+Platform configs in `config_registry` Firestore collection are admin-editable. Some require annual updates (tax brackets, IRMAA) or periodic review (carrier maps, product catalogs).
+
+**Staleness signals:**
+- Tax brackets (`tax_brackets`) not updated since January → flag for annual refresh
+- IRMAA brackets (`irmaa_brackets`) not updated since November → flag for annual refresh
+- Carrier map (`carrier_charter_map`) not updated in 90+ days → review for new carriers/acquisitions
+- Any config not updated in 13+ months → flag for staleness review
+
+**Current baseline:** 12 configs in registry (4 data quality, 3 financial, 5 operations). Editable from Admin > Config Registry tab.
+
 ---
 
 ## Part 3: Weekly Health Check
