@@ -1087,3 +1087,8 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 - [Auto-merge PRs](feedback_auto_merge.md) — always use `--auto --squash`, never babysit CI
 - [Batch parallel by default](feedback_batch_parallel.md) — any operation over ~200 items must use parallel APIs first
 - [ACF Subfolder Lifecycle](project_acf_subfolder_lifecycle.md) — 5 subfolders are a lifecycle not categories
+- [THE answer not AN answer](feedback_the_answer_not_an_answer.md) — never report complete without full verification; false confidence costs more than uncertainty
+- [FORGE Sprint Lifecycle](feedback_forge_sprint_lifecycle.md) — 11-step lifecycle from Sprint Ticket → #LandedIt!!! with audit checkpoints at every phase
+- [FORGE Reporting Format](feedback_forge_reporting_format.md) — checklist + HTML links + exec summary table at every phase transition
+- [ACF 2.0 Sprint](project_acf2_sprint.md) — COMPLETE + AUDITED, 23 tickets shipped
+- [Next session priorities](project_next_session.md) — FORGE fix, E2E tests, UX polish, dedup
