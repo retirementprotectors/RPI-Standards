@@ -11,7 +11,6 @@ The Dojo's leadership layer. All tmux warriors. All JDM-facing.
 ```
                          ┌──────────────────────────┐
                          │    JDM — Chairman / CEO   │
-                         │    AgentX                 │
                          └─────────┬────────────────┘
                                    │
             ═══════════════════════╪═══════════════════════
@@ -24,42 +23,60 @@ The Dojo's leadership layer. All tmux warriors. All JDM-facing.
    │  CTO                  │ │  COO            │ │  VP, CMO         │
    │  Tech Strategy        │ │  Ops Strategy   │ │  Creative +      │
    │  Architecture +       │ │  Sprint mgmt +  │ │  Brand + Design  │
-   │  Infrastructure       │ │  Dojo management│ │  Discovery Docs  │
-   └──────────┬───────────┘ └─────┬──────────┘ └─────────────────┘
-              │                   │
-              │ tech direction    │ ops direction
-              ▼                   ▼
-         ┌────────────────────────────────────┐
-         │  JONIN — VP, Integrator             │
-         │  CCSDK Field Commander              │
-         │  Integrates CTO + COO strategy      │
-         │  down to the execution team         │
-         └───────────────────┬────────────────┘
-                             │
-           ┌─────────┬───────┴───────┬──────────┐
-           ▼         ▼               ▼          ▼
-        RONIN(s)  RAIDEN         VOLTRON    MDJ Specialists
-        Builders  Guardian       The Bot    6 Specialists
-        [CCSDK]   [CCSDK]       [CCSDK]    [CCSDK]
+   │  Infrastructure       │ │  Dojo mgmt +    │ │  Discovery Docs  │
+   │                       │ │  CCSDK mesh     │ │  (self-integrat.)│
+   └───────────────────────┘ └─────┬──────────┘ └─────────────────┘
+                                   │
+                     direct API access to CCSDK mesh
+                                   │
+            ═══════════════════════╪═══════════════════════
+                       CCSDK MESH (mdj-agent:4200)
+            ═══════════════════════╪═══════════════════════
+               ┌───────────────────┼───────────────────┐
+               ▼                   ▼                   ▼
+           RONIN(s)             RAIDEN              VOLTRON
+           Builders             Guardian            The Bot
+           [CCSDK]              [CCSDK]             [CCSDK]
+                                                        │
+                                          ┌─────────────┴──────────────┐
+                                          │   Business Specialists       │
+                                          │   (intent-routed inside      │
+                                          │    VOLTRON)                  │
+                                          │   General · Medicare ·       │
+                                          │   Securities · Service ·     │
+                                          │   DAVID · Ops                │
+                                          └─────────────────────────────┘
 ```
 
 | Role | Warrior | Type | Scope |
 |------|---------|------|-------|
 | CEO | JDM | Human | Vision for Business + Executive.AI Team |
 | CTO | SHINOB1 | tmux | Tech Strategy — architecture, infrastructure, "how we build" |
-| COO | 2HINOBI | tmux | Ops Strategy — sprints, Dojo management, CI/repo, day-to-day |
+| COO | 2HINOBI | tmux | Ops Strategy — sprints, Dojo management, CI/repo, CCSDK mesh management |
 | VP, CMO | MUSASHI | tmux | Creative Strategy — brand, voice, discovery docs (self-integrating) |
-| VP, Integrator | JONIN (fka SHINOBI) | CCSDK | Field Commander — CTO+COO strategy → execution team |
 | Builder | RONIN(s) | CCSDK | Autonomous sprint execution via FORGE |
 | Guardian | RAIDEN | CCSDK | Reactive monitoring, triage, auto-fix |
-| The Bot | VOLTRON | CCSDK | Team's weapon — 82+ tools, 6 specialists |
+| The Bot | VOLTRON | CCSDK | ONLY client + team-facing agent — 82+ tools, 6 specialists |
 
 ### Interface Rules
 
 - **tmux warriors** talk directly to JDM. They are the Executive.AI Team.
-- **CCSDK warriors** talk machine-to-machine. They report to JONIN.
-- **MUSASHI is self-integrating** — he doesn't delegate to JONIN. Art x Blade: writes AND ships.
-- **JONIN takes direction from BOTH CTO and COO** — the integration point where strategy becomes execution.
+- **CCSDK warriors** are machine-to-machine. All managed directly by 2HINOBI (COO) via API.
+- **MUSASHI is self-integrating** — Art x Blade: writes AND ships. No delegation needed.
+- **2HINOBI manages the CCSDK mesh directly** — sprint launches via `POST /forge/sprint`, RAIDEN monitoring, VOLTRON oversight. The 5-min cron is his management loop.
+- **All executives have direct API access** to any CCSDK agent on mdj-agent:4200.
+- **VOLTRON is the ONLY client + team-facing agent** — all human-facing interaction goes through VOLTRON via the toMachina Platform. RONIN and RAIDEN are machine-to-machine only.
+
+### Access Model
+
+| Warrior | MCP Access | Firestore | Git | Portal |
+|---------|-----------|-----------|-----|--------|
+| SHINOB1 (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| 2HINOBI (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| MUSASHI (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| RONIN (CCSDK) | SA key auth | Read/Write | Yes (PR only) | No |
+| RAIDEN (CCSDK) | SA key auth | Read | No | No |
+| VOLTRON (CCSDK) | SA key auth | Read (client data) | No | Yes — only via toMachina Platform |
 
 ---
 
@@ -114,7 +131,6 @@ created: YYYY-MM-DD
 machine: MDJ_SERVER (Dell PowerEdge T440)
 messages: ~N (estimated)
 brain_file: {warrior}/brain.txt (N lines)
-ccsdk_counterpart: JONIN (if applicable)
 ---
 
 # WARRIOR_NAME — Title
@@ -228,10 +244,11 @@ Warrior-specific checks are documented in the [MDJ_SERVER User Guide](https://re
 
 | Current Name | Previous Name | Why Changed | Date |
 |-------------|--------------|-------------|------|
-| SHINOB1 | Shinobi — The OG Ninja | Numbered to distinguish from CCSDK mode | 2026-03-24 |
-| JONIN | SHINOBI | SHINOB1 back as active warrior — too similar | 2026-03-28 |
+| SHINOB1 | Shinobi — The OG Ninja | Numbered to distinguish as the OG | 2026-03-24 |
 | VOLTRON | MDJ / MyDigitalJosh | Formal product name adopted | 2026-03-27 |
 | MDJ_SERVER | MDJ1 / MFS-DC01 | Naming sweep for clarity | 2026-03-27 |
+
+**JONIN — considered and killed (2026-03-28):** A CCSDK field commander role between the Executive.AI Team and the CCSDK mesh was proposed (JONIN, fka SHINOBI). Killed in favor of the direct management model: 2HINOBI (COO) manages the CCSDK mesh directly via API. No middleman.
 
 ---
 
