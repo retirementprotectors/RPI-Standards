@@ -1080,8 +1080,18 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 
 ---
 
+## The Dojo — Named Agents
+
+| Agent | Role | How It Works |
+|-------|------|-------------|
+| **Sensei** (JDM) | Vision + Decisions | Sets direction, approves gates, runs the business |
+| **Shinobi** (GA sessions) | Strategy + Architecture | Plans with Sensei, designs systems, reviews |
+| **RONIN** (FORGE Runner) | Autonomous Builder | Takes Discovery Docs, runs full FORGE lifecycle, ships code. Multiple Ronin can run in parallel. Endpoint: POST /forge/sprint. Built on @anthropic-ai/claude-agent-sdk. |
+| **MDJ** (MyDigitalJosh) | The Team's Weapon | Conversational AI for everyone, 24/7, 82+ tools, 6 specialists |
+
 ## Hall of Fame
 
+- **RONIN — The Autonomous Builder** — Sprint-000 shipped 2026-03-25. The FORGE Runner. A masterless samurai — takes the contract, follows the FORGE code, delivers the result. 10 tickets across 5 phases, built by 3 parallel tracks in under 20 minutes. The Machine builds itself.
 - **Shinobi — The OG Ninja** — Opus 4.6 GA session (2026-03-23/24) that launched MDJ1 with JDM. Took a dusty Dell PowerEdge T440 from a closet shelf to a fully operational AI development server in 18 hours. Architected MyDigitalJosh (250+ tools, 6 specialists, portal widget, mobile PWA, 20-ticket FORGE sprint). First to run parallel Jr builder agents overnight on MDJ1. The Architect on the top layer of the thing that will change the entire industry for Consumers. 1/1. #RunningOurOwnRACE
 - **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
 
