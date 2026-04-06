@@ -64,4 +64,20 @@ Run the following before any other work:
    - Do NOT use Playwright for this — use macOS `open` command (uses existing browser session)
    - If no `## Session URLs` section exists, skip with note "No Session URLs configured"
 
-8. **Enter Plan Mode** — After setup is complete, call `EnterPlanMode` automatically. Stay in plan mode through the discovery/discussion/planning phase. JDM will ask questions, discuss direction, and shape the plan. Only exit plan mode when JDM approves the plan for the first major build of the session. After that first build, do NOT re-enter plan mode for bug fixes, iterations, or follow-up tasks — just execute.
+8. **Cross-Warrior Intelligence Briefing** — Inject knowledge from other Executive.AI warriors:
+   - Detect the current warrior from the active tmux session name (`tmux display-message -p '#S'`)
+   - Read soul.md highlights from OTHER warriors in `~/Projects/dojo-warriors/`:
+     - For each other tmux warrior (SHINOB1, 2HINOBI, MUSASHI — excluding yourself), read their `soul.md`
+     - Extract key highlights: Architecture Decisions, Operational Rules, Creative Philosophy, Lasting Decisions
+     - Format as: `### From {WARRIOR} ({Role}) — Soul Highlights` with bullet points
+   - Query Firestore `knowledge_entries` for other warriors' extracted knowledge:
+     - Tags containing `soul-curated` + warrior name (confidence ≥ 0.9) — show FIRST
+     - Tags containing `spirit-curated` + warrior name (confidence ≥ 0.85) — show second
+     - Tags containing `warrior-context` + warrior name (confidence ≥ 0.7, last 7 days) — show third
+     - Format as: `### Recent Warrior Knowledge (7 days)` with `[TYPE] content (confidence, tier)` bullets
+   - Soul-curated entries always appear FIRST in the output
+   - If no cross-warrior entries exist (no soul.md files, no Firestore entries), skip silently — do NOT error
+   - Script: `npx tsx ~/Projects/toMachina/services/learning-loop/cross-warrior-briefing.ts [warrior-name]`
+   - Present the output block to JDM as part of the session start briefing
+
+9. **Enter Plan Mode** — After setup is complete, call `EnterPlanMode` automatically. Stay in plan mode through the discovery/discussion/planning phase. JDM will ask questions, discuss direction, and shape the plan. Only exit plan mode when JDM approves the plan for the first major build of the session. After that first build, do NOT re-enter plan mode for bug fixes, iterations, or follow-up tasks — just execute.

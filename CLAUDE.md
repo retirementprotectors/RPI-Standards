@@ -748,7 +748,7 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 - PRO: Node v23.10.0 | AIR: Node v22.22.0
 - SSH access: PRO can manage AIR remotely (`joshd.millang@Joshs-MacBook-Air.local`)
 
-**MDJ1 Server (Dell PowerEdge T440) — The Machine's Body (live 2026-03-23):**
+**MDJ_SERVER (Dell PowerEdge T440) — The Machine's Body (live 2026-03-23):**
 - **Tailscale IP:** `100.99.181.57` | **Local IP:** `192.168.6.93` | **SSH:** `ssh mdj1`
 - Ubuntu 24.04 LTS | 16 cores | 16GB RAM (32GB when stick arrives) | Docker 29.3.0
 - Node.js 22.22.1 | Claude Code 2.1.81 | tmux 3.4
@@ -757,12 +757,12 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 - toMachina repo cloned at `~/Projects/toMachina/` | Full build in ~80s
 - Tailscale connected — reachable from AIR, PRO, or anywhere
 - `ssh mdj1` → `tmux ls` to see running sessions
-- `ssh -t mdj1 "cd ~/Projects/toMachina && claude"` to launch Claude Code on MDJ1
+- `ssh -t mdj1 "cd ~/Projects/toMachina && claude"` to launch Claude Code on MDJ_SERVER
 - Access guide: Shared Drive `0AFUXPgL0EWC6Uk9PVA` → `MDJ1_ACCESS_GUIDE.md`
 
-**MyDigitalJosh (MDJ) — LIVE (MDJ-ALPHA Sprint shipped 2026-03-24):**
+**VOLTRON (fka MyDigitalJosh/MDJ) — LIVE (MDJ-ALPHA Sprint shipped 2026-03-24):**
 - MDJ Panel on all 3 portals (smart_toy button in sidebar)
-- 82 tools (57 TM API + 25 MCP) wired into Claude Sonnet on MDJ1
+- 82 tools (57 TM API + 25 MCP) wired into Claude Sonnet on MDJ_SERVER
 - 6 specialists: General, Medicare, Securities, Service, DAVID, Ops
 - Agent behavior: multi-step tool chaining (15 rounds), compound task resolution
 - Anti-hallucination Golden Rule: **"If you didn't READ IT, don't REPORT IT."**
@@ -771,8 +771,8 @@ mv ~/.claude ~/.claude-backup && rm -rf ~/.claude-code && claude
 - Funnel URL: `https://mdjserver.tail7845ea.ts.net`
 - MDJ-ALPHA Sprint: C0h0Ylibz7724v9c4A5d (20 tickets, all shipped)
 
-**MDJ Platform Mirror (v2.0 Architecture — in discovery):**
-- MDJ IS ProDashX operated by conversation. "The portal is the dashboard. MDJ is the steering wheel."
+**VOLTRON Platform Mirror (v2.0 Architecture — in discovery):**
+- VOLTRON IS ProDashX operated by conversation. "The portal is the dashboard. VOLTRON is the steering wheel."
 - 6-layer stack: Foundation → Platform Mirror → Platform Modules → Portal Modules → Apps → Specialists
 - Auto-registry: tool definitions GENERATED from portal code, not hand-written
 - Super Tools pattern: Tools → Super Tools → Wires (same as ATLAS)
@@ -1087,12 +1087,12 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 | **Sensei** (JDM) | Vision + Decisions | Sets direction, approves gates, runs the business |
 | **Shinobi** (GA sessions) | Strategy + Architecture | Plans with Sensei, designs systems, reviews |
 | **RONIN** (FORGE Runner) | Autonomous Builder | Takes Discovery Docs, runs full FORGE lifecycle, ships code. Multiple Ronin can run in parallel. Endpoint: POST /forge/sprint. Built on @anthropic-ai/claude-agent-sdk. |
-| **MDJ** (MyDigitalJosh) | The Team's Weapon | Conversational AI for everyone, 24/7, 82+ tools, 6 specialists |
+| **VOLTRON** (fka MyDigitalJosh) | The Team's Weapon | Conversational AI for everyone, 24/7, 82+ tools, 6 specialists |
 
 ## Hall of Fame
 
 - **RONIN — The Autonomous Builder** — Sprint-000 shipped 2026-03-25. The FORGE Runner. A masterless samurai — takes the contract, follows the FORGE code, delivers the result. 10 tickets across 5 phases, built by 3 parallel tracks in under 20 minutes. The Machine builds itself.
-- **Shinobi — The OG Ninja** — Opus 4.6 GA session (2026-03-23/24) that launched MDJ1 with JDM. Took a dusty Dell PowerEdge T440 from a closet shelf to a fully operational AI development server in 18 hours. Architected MyDigitalJosh (250+ tools, 6 specialists, portal widget, mobile PWA, 20-ticket FORGE sprint). First to run parallel Jr builder agents overnight on MDJ1. The Architect on the top layer of the thing that will change the entire industry for Consumers. 1/1. #RunningOurOwnRACE
+- **Shinobi — The OG Ninja** — Opus 4.6 GA session (2026-03-23/24) that launched MDJ_SERVER with JDM. Took a dusty Dell PowerEdge T440 from a closet shelf to a fully operational AI development server in 18 hours. Architected MyDigitalJosh (250+ tools, 6 specialists, portal widget, mobile PWA, 20-ticket FORGE sprint). First to run parallel Jr builder agents overnight on MDJ_SERVER. The Architect on the top layer of the thing that will change the entire industry for Consumers. 1/1. #RunningOurOwnRACE
 - **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
 
 ---
@@ -1107,9 +1107,9 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 | SENTINEL | https://sentinel.tomachina.com |
 | Firebase Console | https://console.firebase.google.com/project/claude-mcp-484718 |
 | GCP Console | https://console.cloud.google.com/home/dashboard?project=claude-mcp-484718 |
-| MDJ1 (Tailscale) | `ssh jdm@100.99.181.57` or `ssh mdj1` |
-| MDJ1 (Local) | `ssh jdm@192.168.6.93` or `ssh mdj1-local` |
-| MDJ1 Agent Health | `ssh mdj1 "curl http://localhost:4200/health"` |
+| MDJ_SERVER (Tailscale) | `ssh jdm@100.99.181.57` or `ssh mdj1` |
+| MDJ_SERVER (Local) | `ssh jdm@192.168.6.93` or `ssh mdj1-local` |
+| MDJ_SERVER Agent Health | `ssh mdj1 "curl http://localhost:4200/health"` |
 | MDJ Mobile | https://mdj-mobile--claude-mcp-484718.us-central1.hosted.app/ |
 | MDJ Discovery | https://retirementprotectors.github.io/toMachina/mdj-discovery.html |
 | MDJ Plan | https://retirementprotectors.github.io/toMachina/mdj-alpha-plan.html |

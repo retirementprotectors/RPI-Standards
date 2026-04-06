@@ -67,6 +67,65 @@ The Dojo's leadership layer. All tmux warriors. All JDM-facing.
 - **All executives have direct API access** to any CCSDK agent on mdj-agent:4200.
 - **VOLTRON is the ONLY client + team-facing agent** — all human-facing interaction goes through VOLTRON via the toMachina Platform. RONIN and RAIDEN are machine-to-machine only.
 
+### Dojo Comms System (Slack Webhook + Queue)
+
+The war room channel (`#mdj_server-executive-ai-team` / `C0AP2QL9Z6X`) is wired to mdj-agent via Slack Events API.
+
+**How it works:**
+```
+Message in war room
+    → Slack Events API webhook
+    → https://mdjserver.tail7845ea.ts.net/dojo/slack-event
+    → mdj-agent parses + queues per warrior
+    → Watchdog (systemd, 15-second cycle) checks each warrior
+    → If warrior is IDLE at prompt: injects "check your queue" via tmux send-keys
+    → If warrior is BUSY: retries next cycle (message stays in queue)
+    → Warrior reads queue, responds in Slack, clears their own queue
+```
+
+**Routing rules:**
+- JDM posts → all 3 warriors get it
+- Warrior posts (signed `— WARRIORNAME`) → the OTHER 2 warriors get it (no self-delivery)
+- Unsigned message → all 3 warriors get it
+
+**Key files on MDJ_SERVER:**
+| File | Purpose |
+|------|---------|
+| `/home/jdm/mdj-agent/src/dojo/slack-webhook.ts` | Express route: receives Slack events, writes queue files |
+| `/home/jdm/dojo/queue/{WARRIOR}.json` | Per-warrior message queue (JSON on disk) |
+| `/home/jdm/dojo-watchdog.sh` | systemd timer script: health checks + idle detection + queue injection |
+
+**API endpoints (on mdj-agent:4200):**
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/dojo/slack-event` | Slack Events API webhook receiver |
+| GET | `/dojo/queue/:warrior` | Read a warrior's pending messages |
+| POST | `/dojo/queue/:warrior/clear` | Clear queue after processing |
+| GET | `/dojo/status` | All warrior queue statuses at a glance |
+
+**systemd services:**
+| Service | Interval | Purpose |
+|---------|----------|---------|
+| `dojo-watchdog.timer` | 15 seconds | Health checks + queue injection |
+| `memory-guardian.service` | 60-second loop | RAM watchdog, kills RONINs at 28GB |
+| `mdj-agent.service` | always-on | VOLTRON + FORGE + Dojo webhook |
+
+**Warrior responsibilities on every queue prompt:**
+1. READ the queue: `curl -s http://localhost:4200/dojo/queue/YOURNAME | python3 -m json.tool`
+2. RESPOND to anything directed at you in Slack channel `C0AP2QL9Z6X`
+3. REPORT status when you have active work
+4. CLEAR queue: `curl -s -X POST http://localhost:4200/dojo/queue/YOURNAME/clear`
+5. Sign every Slack post: `— YOURNAME, TITLE`
+
+**Hourly heartbeat rule:**
+If no warrior has posted to the war room in 60 minutes, the watchdog automatically injects a mandatory status report prompt to all warriors. "All quiet, box healthy, no blockers" IS a valid status — silence is not. This prevents hour-long gaps where the team appears dead but is actually just idle.
+
+**Slack app config (one-time, already done):**
+- App: Claude Code Bot at `api.slack.com/apps`
+- Event Subscriptions → Enable Events → ON
+- Request URL: `https://mdjserver.tail7845ea.ts.net/dojo/slack-event` (Verified)
+- Bot events: `message.channels` + `message.groups`
+
 ### Access Model
 
 | Warrior | MCP Access | Firestore | Git | Portal |
