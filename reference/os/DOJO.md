@@ -91,9 +91,9 @@ Message in war room
 **Key files on MDJ_SERVER:**
 | File | Purpose |
 |------|---------|
-| `/home/jdm/mdj-agent/src/dojo/slack-webhook.ts` | Express route: receives Slack events, writes queue files |
-| `/home/jdm/dojo/queue/{WARRIOR}.json` | Per-warrior message queue (JSON on disk) |
-| `/home/jdm/dojo-watchdog.sh` | systemd timer script: health checks + idle detection + queue injection |
+| `/home/jdm/Projects/dojo-warriors/mdj-agent/src/dojo/slack-webhook.ts` | Express route: receives Slack events, writes queue files |
+| `/home/jdm/Projects/dojo-warriors/queue/{WARRIOR}.json` | Per-warrior message queue (JSON on disk) |
+| `/home/jdm/Projects/dojo-warriors/mdj-agent/scripts/dojo-watchdog.sh` | systemd timer script: health checks + idle detection + queue injection |
 
 **API endpoints (on mdj-agent:4200):**
 | Method | Path | Purpose |
