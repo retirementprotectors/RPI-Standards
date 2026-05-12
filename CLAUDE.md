@@ -576,6 +576,81 @@ if (isFeatureEnabled('my-new-feature', { user, partner })) {
 
 If the feature-flag layer doesn't exist for your scope, *flag-gate at the simplest level that works* (env var, `NODE_ENV` check, presence of a config row in Firestore) and document the lift to upgrade later. *Don't block landing on flag infrastructure perfection.*
 
+### Feature Flag — Existing Pattern Reference
+
+The reference implementation lives at `packages/ui/src/modules/SystemSynergy/useCleanupFeatureFlag.ts` — a minimal env-var-driven React hook (no SaaS, no async fetch, defaults to enabled). Pattern:
+
+```ts
+// Read overrides from NEXT_PUBLIC_<NAMESPACE>_FLAG_OVERRIDES env var
+// (JSON object mapping flag_id → boolean)
+// Default to enabled when no override is set
+const { enabled } = useCleanupFeatureFlag('my-feature-id')
+if (!enabled) return <Disabled tooltip="wired in next sprint" />
+```
+
+**For new feature gating, use the simplest layer that works:**
+
+| Scope | Pattern |
+|---|---|
+| Server-side (services/api) | `if (process.env.FEATURE_X === 'true')` |
+| Client React | Copy `useCleanupFeatureFlag` pattern with a new namespace env var |
+| Per-tenant gate | Read `feature_flags/{flag_id}` Firestore doc with partner_id allowlist |
+| Per-user gate | Check Firebase Auth custom claim or user doc field |
+
+*Don't build a feature-flag SaaS abstraction.* The env-var + Firestore-doc + custom-claim layers cover 95% of cases without infra lift. Upgrade to a shared utility only when a feature-flag-of-the-month problem actually emerges.
+
+---
+
+## Warrior Session Continuity Protocol
+
+> **Adopted 2026-05-12 per JDM directive.** When a warrior session needs to absorb new doctrine, Hook Rules, or other CLAUDE.md updates — *don't restart cold.* Carry the conversation context forward through a graceful handoff.
+
+### The 4-Step Handoff
+
+```
+1. OLD session — capture context
+   In the warrior's existing tmux session, run the /export slash command.
+   Claude Code writes a full conversation transcript to a file (path shown in output).
+   Note the exact path (e.g. /tmp/<warrior>-export-<date>.txt).
+
+2. RENAME old session
+   tmux rename-session WARRIOR WARRIOR-archive
+   Frees the WARRIOR name for the new session; preserves the old one for fallback.
+
+3. LAUNCH new session
+   launch-warrior.sh warrior
+   Picks up the LATEST CLAUDE.md + hookify symlinks + soul/spirit + boot file.
+
+4. PUSH context into new session
+   tmux send-keys -t WARRIOR "Read /tmp/<warrior>-export-<date>.txt as your prior session context, then proceed" Enter
+   The new warrior absorbs the old conversation as context AND has the new doctrine state loaded.
+
+5. KILL archive
+   tmux kill-session -t WARRIOR-archive
+   Only after the new session is confirmed operational and absorbing the export.
+```
+
+### When to use it
+
+- After major CLAUDE.md / Hook Rule updates land (warriors need next session to absorb)
+- After OAuth scope changes (warrior needs fresh auth handshake)
+- When a warrior session has been running >24h and context is bloated
+- After a warrior identity correction (new soul.md / spirit.md doctrine landed)
+
+### When NOT to use it
+
+- Mid-active-execution (let the current arc finish first)
+- When the warrior is in an irrecoverable state (kill outright, accept the context loss)
+- When the warrior owns time-sensitive in-flight work (defer until the work lands)
+
+### Why this beats cold restart
+
+Cold restart loses the running conversation. The warrior wakes up with full doctrine but zero context on what they were doing. Export+handoff preserves both: latest doctrine *and* operational continuity.
+
+### Reference protocol that produced this doctrine
+
+JDM executed this exact pattern manually on 2026-05-11 during a CXO restart. Recognized as the canonical pattern; baking it as the standard.
+
 ---
 
 ## Available MCP Tools
