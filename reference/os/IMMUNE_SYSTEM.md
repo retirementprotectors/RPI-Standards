@@ -27,7 +27,7 @@ Hookify is a Python-based enforcement engine that intercepts Claude Code at thre
 
 Layer 3 was added in Sprint ZOD (2026-03-22) after the ForgeAudit crash proved TypeScript can't protect data crossing the HTTP boundary. Schemas live in `packages/core/src/schemas/`, wrapper at `packages/ui/src/modules/fetchValidated.ts`.
 
-**Outer perimeter (CI):** Dependabot (dependency vulnerabilities) + CodeQL (static analysis) + E2E tests (pipeline + UI verification) scan every PR and deploy. These catch supply-chain, code-flow, runtime, and visual regression issues that pattern-matching rules cannot.
+**Outer perimeter (CI):** Own `cve-scan.yml` workflow (`npm audit --production --audit-level=high`, weekly Monday 13:00 UTC — Dependabot uninvited 2026-05-12 per ZRD-UNINVITE-DESTRUCTABOT-001 after 9-of-10 Dependabot PRs closed unmerged; POSTURE doctrine drift closed) + CodeQL (static analysis) + E2E tests (pipeline + UI verification) scan every PR and deploy. These catch supply-chain, code-flow, runtime, and visual regression issues that pattern-matching rules cannot.
 
 **E2E test gates (2 CI jobs):**
 - `e2e-ui` — Playwright visual verification of 10 ProDash modules (pre-deploy, runs on PR + push to main)

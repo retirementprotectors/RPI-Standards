@@ -41,7 +41,7 @@ Every monitoring activity in The Machine, from real-time code enforcement to ann
 | Every PR + push to main | E2E UI visual verification (Playwright — 10 modules) | GitHub Actions (e2e-ui) |
 | Every push to main | E2E intake pipeline tests (Vitest — 4 wire tests) | GitHub Actions (e2e-intake) |
 | Real-time (browser) | `[ResponseValidation]` warnings from fetchValidated | Console (dev), silent (prod) |
-| Weekly (Mon) | Dependabot dependency vulnerability scan | GitHub (automated PRs) |
+| Weekly (Mon 13:00 UTC) | Own `npm audit --production --audit-level=high` CVE scan | GitHub Actions `cve-scan.yml` (own scanner — Dependabot uninvited 2026-05-12 per ZRD-UNINVITE-DESTRUCTABOT-001; output: auto-opened GitHub Issue + workflow-failure email on findings; silent on clean) |
 | Weekly (Sun) + every PR | CodeQL static security analysis | GitHub Actions |
 
 ---
