@@ -97,13 +97,22 @@ if [[ "$TMUX_SESSION" =~ ^([a-zA-Z0-9_]+)-disco-sub-[^[:space:]]+$ ]]; then
   fi
 
   # Detect disco/scope claim (same regex as the channel-allowlist check below,
-  # repeated here for the audit branch — only audit when the post is disco-shape)
+  # repeated here for the audit branch — only audit when the post is disco-shape).
+  # SCOPE-005-1-OPT-B (2026-05-17): keyword-only triggers require an authoring
+  # verb within 200 chars (either direction). Citations + project names that
+  # share substrings no longer false-trip the rule. Verb pattern is shared with
+  # the main-branch check below.
+  AUTHORING_VERBS='(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)'
   shopt -s nocasematch
   AUDIT_MATCH=0
-  if [[ "$TEXT" =~ (disco|discovery|disco[[:space:]]+doc|discovery[[:space:]]+doc) ]]; then AUDIT_MATCH=1; fi
-  if [[ "$TEXT" =~ scope.*\b(writing|drafting|authoring|completing)\b ]]; then AUDIT_MATCH=1; fi
-  if [[ "$TEXT" =~ ZRD-[A-Za-z0-9_-]+ ]]; then AUDIT_MATCH=1; fi
-  if [[ "$TEXT" =~ 8[-[:space:]]?tab ]]; then AUDIT_MATCH=1; fi
+  if [[ "$TEXT" =~ (disco|discovery).{0,200}${AUTHORING_VERBS} ]] || \
+     [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}(disco|discovery) ]]; then AUDIT_MATCH=1; fi
+  if [[ "$TEXT" =~ scope.{0,200}${AUTHORING_VERBS} ]] || \
+     [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}scope ]]; then AUDIT_MATCH=1; fi
+  if [[ "$TEXT" =~ ZRD-[A-Za-z0-9_-]+.{0,200}${AUTHORING_VERBS} ]] || \
+     [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}ZRD-[A-Za-z0-9_-]+ ]]; then AUDIT_MATCH=1; fi
+  if [[ "$TEXT" =~ 8[-[:space:]]?tab.{0,200}${AUTHORING_VERBS} ]] || \
+     [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}8[-[:space:]]?tab ]]; then AUDIT_MATCH=1; fi
   shopt -u nocasematch
 
   # Allow-through: not a disco-shape post → skip audit
@@ -150,19 +159,35 @@ fi
 PARENT_LOWER="${PARENT_BY_CHANNEL[$CHANNEL]:-}"
 [[ -z "$PARENT_LOWER" ]] && exit 0
 
-# Scope/disco claim regex (per rule body lines 24-29 of
+# Scope/disco claim regex (per rule body of
 # block-parent-cxo-disco-without-spawn.local.md).
-# - "disco" or "discovery" (case-insensitive)
-# - "scope" + ("writing" | "drafting" | "authoring" | "completing")
-# - "ZRD-" followed by anything
-# - "8-tab" or "8 tab"
-# - "discovery doc" or "disco doc"
+#
+# SCOPE-005-1-OPT-B (2026-05-17, per JDM directive): keyword triggers require
+# an authoring verb within ~200 chars (either direction). Citations + project
+# names that share substrings no longer false-trip the rule. Rationale:
+# 2026-05-17 session hit 5 false-positives on legitimate analytics + status
+# posts — all citations, none of them authoring-claims. Tightened from "bare
+# keyword anywhere" to "keyword + authoring verb in proximity."
+#
+# Triggers (must satisfy keyword AND verb-proximity):
+# - "disco" / "discovery"  + authoring verb
+# - "scope"                + authoring verb
+# - "ZRD-<id>"             + authoring verb
+# - "8-tab" / "8 tab"      + authoring verb
+#
+# Authoring verbs: writing|drafting|authoring|completing|signing|filing
+# (third-person variants too: writes|drafts|authors|completes|signs|files)
+AUTHORING_VERBS='(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)'
 shopt -s nocasematch
 MATCH=0
-if [[ "$TEXT" =~ (disco|discovery|disco[[:space:]]+doc|discovery[[:space:]]+doc) ]]; then MATCH=1; fi
-if [[ "$TEXT" =~ scope.*\b(writing|drafting|authoring|completing)\b ]]; then MATCH=1; fi
-if [[ "$TEXT" =~ ZRD-[A-Za-z0-9_-]+ ]]; then MATCH=1; fi
-if [[ "$TEXT" =~ 8[-[:space:]]?tab ]]; then MATCH=1; fi
+if [[ "$TEXT" =~ (disco|discovery).{0,200}${AUTHORING_VERBS} ]] || \
+   [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}(disco|discovery) ]]; then MATCH=1; fi
+if [[ "$TEXT" =~ scope.{0,200}${AUTHORING_VERBS} ]] || \
+   [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}scope ]]; then MATCH=1; fi
+if [[ "$TEXT" =~ ZRD-[A-Za-z0-9_-]+.{0,200}${AUTHORING_VERBS} ]] || \
+   [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}ZRD-[A-Za-z0-9_-]+ ]]; then MATCH=1; fi
+if [[ "$TEXT" =~ 8[-[:space:]]?tab.{0,200}${AUTHORING_VERBS} ]] || \
+   [[ "$TEXT" =~ ${AUTHORING_VERBS}.{0,200}8[-[:space:]]?tab ]]; then MATCH=1; fi
 shopt -u nocasematch
 
 # Death-gate ACK allow-through: message contains "ACK" + "-disco-sub-" + a URL.
