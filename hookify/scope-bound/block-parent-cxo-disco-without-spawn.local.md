@@ -24,14 +24,12 @@ Fires on **pre-Slack-post** in parent CXO bilateral channels:
 A Slack message is BLOCKED when ALL of the following are true:
 
 1. The message is posted to one of the channels above
-2. The message body contains any of these scope/disco claim patterns:
-   - "disco" or "discovery" (case-insensitive)
-   - "scope" + ("writing" | "drafting" | "authoring" | "completing")
-   - "ZRD-" followed by a scope identifier
-   - "8-tab" or "8 tab"
-   - "discovery doc" or "disco doc"
-3. No `<parent>-disco-sub-*` session exists in `ForgeRunState` for that parent
-   within the last **1 hour** (`spawn_ts >= now - 3600s`)
+2. The message body satisfies a claim pattern — **keyword AND authoring verb in proximity** (per SCOPE-005-1-OPT-B):
+   - **Keyword** (case-insensitive): `disco`, `discovery`, `scope`, `ZRD-<id>`, or `8-tab` / `8 tab`
+   - **Authoring verb** (within ~200 chars of the keyword, either direction): `writing`, `drafting`, `authoring`, `completing`, `signing`, `filing` (third-person: `writes`, `drafts`, `authors`, `completes`, `signs`, `files`)
+3. No `<parent>-disco-sub-*` session exists in `ForgeRunState` for that parent within the last **1 hour** (`spawn_ts >= now - 3600s`)
+
+**SCOPE-005-1-OPT-B (2026-05-17)** — the verb-proximity requirement was added to eliminate false-positives on legitimate analytics, status reports, and project-name citations. Before Opt-B, bare-keyword matches blocked benign posts like `ZRD-tickets 215` (analytics) or `MEGAZORD Discovery` (project name). With Opt-B, the rule fires only when keyword + authoring verb co-occur — the actual "I'm writing a doc" failure class.
 
 ## Block Message
 When triggered, the hook blocks with this message:
