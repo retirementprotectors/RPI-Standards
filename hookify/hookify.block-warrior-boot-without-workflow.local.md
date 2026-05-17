@@ -19,7 +19,7 @@ exclude:
   #   discovery-cxonode / discovery-launchguide / discovery-masterplan /
   #   mwm-spyglass / plan-p1 / plan-p2 / plan-p3 / plan-pwauth
   - pattern: launch-warrior\.sh\s+(megazord|musashi|raiden|taiko|voltron)(\s|$)
-  - pattern: launch-warrior\.sh\s+ronin(-[abc])?(\s|$)
+  - pattern: launch-warrior\.sh\s+ronin(-[a-z]+)?(\s|$)
   - pattern: launch-warrior\.sh\s+shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)))?(\s|$)
   # Workflow-aware boot — operator referenced WORKFLOW.md in the same
   # bash invocation (e.g. cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo).

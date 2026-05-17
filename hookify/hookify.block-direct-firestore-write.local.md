@@ -12,6 +12,7 @@ exclude:
   - pattern: services/bridge/src/
   - pattern: services/intake/
   - pattern: services/bigquery-stream/
+  - pattern: services/learning-loop/
   - pattern: \.(test|spec)\.(ts|js)
 ---
 
