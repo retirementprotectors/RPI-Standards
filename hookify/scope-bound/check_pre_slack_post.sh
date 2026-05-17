@@ -37,6 +37,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT_GUESS="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 FORGE_STATE_LOAD="${FORGE_STATE_LOAD:-${REPO_ROOT_GUESS}/scripts/forge-state-load.mjs}"
 
+# Phase 5 partial 5.4 / SHINOB1-FORGE-STATE-LIST-001:
+# Auto-default the list-script path to toMachina/scripts/forge-state-list.mjs
+# if the env override is unset. Falls back gracefully if neither exists —
+# the wall stays in place (no active sub assumed; block remains the default).
+if [[ -z "${HOOKIFY_FORGE_STATE_LIST:-}" ]]; then
+  for _try in \
+    "${HOME:-/home/jdm}/Projects/toMachina/scripts/forge-state-list.mjs" \
+    "${REPO_ROOT_GUESS}/scripts/forge-state-list.mjs"
+  do
+    if [[ -x "$_try" ]]; then
+      HOOKIFY_FORGE_STATE_LIST="$_try"
+      break
+    fi
+  done
+fi
+
 # 5 parent bilateral channel IDs (verbatim per disco + CLAUDE.md).
 declare -A PARENT_BY_CHANNEL=(
   ["C0AS0LETSBW"]="shinob1"
