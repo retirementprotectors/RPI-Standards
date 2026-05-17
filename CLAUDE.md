@@ -243,6 +243,8 @@ This saves ~$4,000/month at current usage levels.
 
 **Be direct. Skip fluff. Show results, not process.**
 
+**Default verbosity: TERSE.** Match response length to question complexity. Skip preamble, recap, and end-of-turn summaries unless explicitly requested. Long-form responses only when (a) JDM asks for "the whole picture" / "all the things" / "in English please", (b) the question requires structured walkthrough (architecture, strategy, plan), or (c) a postmortem / doctrine doc is being written. *Default is short. If unsure, shorter.* Cost target: reduce average response token count by 30–50%.
+
 **Slack channel rules:**
 - **#jdmceo (C09UNESEYMU) is JDM → Team ONLY** — NEVER send automated reports there. That channel is for JDM's announcements to the team.
 - **Automated reports** (analytics, knowledge pipeline, etc.) go to **JDM's DM: `U09BBHTN8F2`** — use user ID as Slack `channel` param for bot DMs.
