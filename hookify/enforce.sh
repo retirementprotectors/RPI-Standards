@@ -39,18 +39,37 @@ VIOLATION_LOG="${HOOKIFY_VIOLATION_LOG:-${HOME_DIR}/.claude/hooks/violation-log.
 
 # Canonical scope-bound rule directory (repo SSOT). Override with
 # HOOKIFY_SCOPE_BOUND_DIR for tests or alternate deployments.
-SCOPE_BOUND_DIR="${HOOKIFY_SCOPE_BOUND_DIR:-${HOME_DIR}/Projects/toMachina/_RPI_STANDARDS/hookify/scope-bound}"
-if [[ ! -d "$SCOPE_BOUND_DIR" ]]; then
-  # Fallback: dispatcher's sibling directory (works when invoked from repo).
-  # SCOPE-005-1-O: resolve symlinks before computing parent dir. When the
-  # dispatcher is invoked via the ~/.claude/hooks/enforce.sh symlink,
-  # ${BASH_SOURCE[0]} is the symlink path; dirname returns ~/.claude/hooks
-  # which has no scope-bound/ sibling. readlink -f resolves to the real
-  # script location so the worktree's scope-bound/ rules are found.
+#
+# SHINOB1-DISPATCHER-CANONICAL-PRIORITY-001 (2026-05-17):
+# Resolution priority — canonical sibling first, then the toMachina mirror
+# fallback for fresh-checkout environments. Previously the order was
+# inverted: the toMachina mirror was the primary default, which meant every
+# canonical-repo edit needed a hand-mirror commit into toMachina or it
+# never took effect in production. This was exactly the failure mode that
+# blocked 5+ legitimate Slack posts after Opt-B "merged" earlier this
+# session — the change landed in _RPI_STANDARDS but the dispatcher read
+# from the stale mirror copy in toMachina.
+#
+# New order:
+#   1. HOOKIFY_SCOPE_BOUND_DIR env override (tests, alternate deployments)
+#   2. Canonical _RPI_STANDARDS path (the dispatcher's own sibling, resolved
+#      via readlink -f so the ~/.claude/hooks/enforce.sh symlink resolves
+#      to its real location at _RPI_STANDARDS/hookify/enforce.sh)
+#   3. toMachina mirror at toMachina/_RPI_STANDARDS/hookify/scope-bound/
+#      (fallback for environments without a separate _RPI_STANDARDS clone)
+SCOPE_BOUND_DIR="${HOOKIFY_SCOPE_BOUND_DIR:-}"
+if [[ -z "$SCOPE_BOUND_DIR" || ! -d "$SCOPE_BOUND_DIR" ]]; then
+  # Step 1: try canonical (dispatcher's sibling, resolved through symlinks).
   _ENFORCE_REAL="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || printf '%s' "${BASH_SOURCE[0]}")"
   _ENFORCE_DIR="$(cd "$(dirname "$_ENFORCE_REAL")" && pwd)"
   if [[ -d "${_ENFORCE_DIR}/scope-bound" ]]; then
     SCOPE_BOUND_DIR="${_ENFORCE_DIR}/scope-bound"
+  else
+    # Step 2: fall back to the toMachina mirror.
+    _TM_MIRROR="${HOME_DIR}/Projects/toMachina/_RPI_STANDARDS/hookify/scope-bound"
+    if [[ -d "$_TM_MIRROR" ]]; then
+      SCOPE_BOUND_DIR="$_TM_MIRROR"
+    fi
   fi
 fi
 
