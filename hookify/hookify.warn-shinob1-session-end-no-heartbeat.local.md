@@ -6,7 +6,9 @@ action: warn
 severity: WARN
 scope: SHINOB1-HEARTBEAT-001
 introduced: 2026-05-18
-implementation: social-contract + session-end shell hook
+implementation: stop-event shell hook via check_shinob1_session_end_heartbeat.sh
+status: enforced
+wired_in: session-end-brain-export.sh (Stop hook registered in ~/.claude/settings.json)
 ---
 
 # warn-shinob1-session-end-no-heartbeat
@@ -38,37 +40,33 @@ Next: <what the next SHINOB1 session should pick up>
 
 ## Implementation status
 
-**Current state: SOCIAL CONTRACT + SESSION-END SHELL HOOK STUB**
+**Current state: ENFORCED via Stop-event shell hook**
 
-The hookify plugin's frontmatter `event:` system natively supports `file`, `bash`, and `intent` events dispatched through `enforce.sh` (PreToolUse). It does NOT currently dispatch on Claude Code's `Stop` lifecycle event.
+SHINOB1-STOP-HOOK-001 (2026-05-18) wired the check script into the active Stop hook.
 
-Claude Code's `Stop` hook IS wired in `~/.claude/settings.json`:
-
-```json
-"Stop": [{
-  "matcher": "",
-  "hooks": [{ "type": "command", "command": "...session-end.sh" }]
-}]
+**Wiring path:**
+```
+~/.claude/settings.json Stop hook
+  → toMachina/services/learning-loop/deploy/hooks/session-end-brain-export.sh
+    → _RPI_STANDARDS/hookify/check_shinob1_session_end_heartbeat.sh
 ```
 
-To make this rule machine-enforced, SHINOB1 must:
+**Check script** (`check_shinob1_session_end_heartbeat.sh`):
+- Reads `/tmp/scope-prior-art-<tmux-session>.jsonl` (per-session ledger from enforce.sh)
+- Scoped to SHINOB1/shinob1 sessions only (regex: `^[Ss][Hh][Ii][Nn][Oo][Bb]1`)
+- Counts `mcp__slack__slack_post_message` entries in the ledger
+- If count < 1 → prints WARN with heartbeat template to stderr
+- Always exits 0 (Stop hooks cannot block)
 
-1. Author `~/Projects/_RPI_STANDARDS/hookify/check_shinob1_session_end_heartbeat.sh`
-   — reads the per-session Slack ledger at `/tmp/scope-prior-art-<tmux-session>.jsonl`
-   — checks if any `mcp__slack__slack_post_message` call targeted `C0AS0LETSBW` during this session
-   — exits 0 (heartbeat posted, allow) or prints a WARN and exits 0 (never block Stop)
+**Why any slack_post_message = bilateral proxy:**
+SHINOB1 is blocked from posting to team channels by `block-team-channels.py`. Therefore any
+`slack_post_message` that succeeded during the session must have been a bilateral or warrior-channel post.
+Zero slack posts = zero heartbeat of any kind = WARN fires.
 
-2. Register it in `~/.claude/settings.json` Stop hooks block:
-   ```json
-   {
-     "type": "command",
-     "command": "/home/jdm/.claude/hooks/check_shinob1_session_end_heartbeat.sh"
-   }
-   ```
-
-3. Add the registration to `_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh`'s Stop-hook section (or create one if missing).
-
-Until step 2 lands, this rule is enforced by SHINOB1's own discipline and session protocol. The hookify `.local.md` file exists to document the intent and provide the spec for the shell script when wired.
+**Note on ledger channel granularity:**
+The enforce.sh ledger currently stores tool name only (not channel_id). A future enhancement
+(adding `"channel"` to the Slack ledger entries) would enable filtering specifically to
+`C0AS0LETSBW` posts. The current any-slack-post proxy is correct for WARN purposes.
 
 ## Why WARN not BLOCK
 
