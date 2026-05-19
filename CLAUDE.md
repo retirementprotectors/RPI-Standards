@@ -1216,9 +1216,9 @@ The Machine (the business)
 
 ### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 68 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 69 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-**68 rules** (64 top-level + 4 scope-bound `.local.md` files in `_RPI_STANDARDS/hookify/`):
+**69 rules** (65 top-level + 4 scope-bound `.local.md` files in `_RPI_STANDARDS/hookify/`):
 
 **Tier 1 — Block Rules (36 top-level + 4 scope-bound):**
 `block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `block-claude-settings-write`, `block-date-return-no-serialize`, `block-disco-write-outside-discoveries-dir`, `block-funnel-url-in-team-facing-docs`, `block-gh-pr-merge-auto-docs-check`, `block-git-checkout-main-in-worktree`, `block-hookify-rule-write-outside-canonical`, `block-launch-guide-edit`, `block-mcp-config-write`, `block-modal-no-flexbox`, `block-musashi-non-canonical-path`, `block-nested-home-paths`, `block-opus-subagent`, `block-plain-person-select`, `block-untyped-api-response`, `block-untyped-firestore-fields`, `block-unvalidated-fetch`, `block-warrior-boot-without-workflow`, `block-warrior-doctrine-write-outside-warriors-cluster`, `block-workflow-with-unverified-repo`, `block-xlsx-raw-import` + scope-bound: `block-disco-missing-canonical-tabs`, `block-disco-write-from-non-sub-session`, `block-parent-cxo-disco-without-spawn`, `block-tmux-kill-without-exit-gate`
