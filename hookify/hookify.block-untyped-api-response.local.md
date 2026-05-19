@@ -1,8 +1,8 @@
 ---
-name: warn-untyped-api-response
+name: block-untyped-api-response
 enabled: true
 event: file
-action: warn
+action: block
 conditions:
   - field: content
     operator: regex_match
@@ -14,7 +14,7 @@ exclude:
   - pattern: \.test\.(ts|js)
 ---
 
-**WARNING: API Response Without Shared Type Contract**
+🛑 **BLOCKED: API response without shared type contract**
 
 You are returning an inline object from `successResponse({...})` in an API route without a shared type from `@tomachina/core`.
 
@@ -23,18 +23,18 @@ You are returning an inline object from `successResponse({...})` in an API route
 - The frontend may expect a different shape than what the API returns (arrays vs counts, different field names)
 - This is the exact bug class that caused the ForgeAudit `audit-round` crash (2026-03-20): API returned `{ pending: NUMBER }`, frontend expected `{ pending: ARRAY[] }`
 
-**Required pattern:**
+**Canonical pattern:**
+
 ```typescript
 // In packages/core/src/api-types/sprints.ts
 export interface AuditRoundResponse {
   current_round: number
   pending: TrackerItem[]
-  // ...
 }
 
 // In services/api/src/routes/sprints.ts
 import type { AuditRoundResponse } from '@tomachina/core'
-res.json(successResponse<AuditRoundResponse>({...}))
+res.json(successResponse<AuditRoundResponse>({ current_round, pending }))
 
 // In packages/ui/src/modules/ForgeAudit.tsx
 import type { AuditRoundResponse } from '@tomachina/core'
@@ -42,14 +42,14 @@ useState<AuditRoundResponse | null>(null)
 ```
 
 **Three-layer protection:**
-- **Layer 1 (this rule):** Warns when API routes return inline objects without shared DTOs
-- **Layer 2 (TypeScript):** Shared DTOs in `@tomachina/core/api-types/` enforce types at compile-time
-- **Layer 3 (Valibot):** `fetchValidated` validates response shapes at runtime in the browser — catches mismatches TypeScript can't see across HTTP boundaries
+- **Layer 1 (this BLOCK):** prevents inline objects in API routes
+- **Layer 2 (TypeScript):** shared DTOs in `@tomachina/core/api-types/` enforce types at compile-time
+- **Layer 3 (Valibot):** `fetchValidated` validates response shapes at runtime in the browser
 
-**Before writing any `res.json(successResponse({...}))`:**
-- Read the frontend consumer that calls this endpoint
-- Verify field names AND types match exactly
-- Pay special attention to: arrays vs counts, nested objects vs flat values, field name differences
-- Ensure the corresponding Valibot schema in `packages/core/src/schemas/` matches
+**Override (rare — temporary scaffolding, not for production):**
+- WIP route under active development: rename the call site so it doesn't match (e.g. `res.json(successResponse(payload))` where `payload` is a typed variable) — that's actually the correct pattern anyway, since the type lives on the variable.
+- The regex specifically matches `successResponse(\{` — passing a typed variable bypasses it cleanly.
 
-See: toMachina CLAUDE.md -> Code Standards | IMMUNE_SYSTEM.md -> Three-Layer Enforcement Model
+**Why BLOCK, not WARN:** the WARN was invisible. The ForgeAudit crash class has shipped before. BLOCK forces shared DTOs or explicit-variable typing.
+
+See: toMachina CLAUDE.md → Code Standards | IMMUNE_SYSTEM.md → Three-Layer Enforcement Model
