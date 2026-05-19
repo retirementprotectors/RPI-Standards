@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (audit\s+(phase|the\s+work|this)|verify\s+(phase|the\s+work|this|completion)|check\s+the\s+work|run\s+audit|adversarial\s+audit)
+owner: shinob1
 ---
 
 **AUDIT PROTOCOL ACTIVATED (Phase IV)**

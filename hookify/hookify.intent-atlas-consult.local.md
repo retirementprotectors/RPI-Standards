@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (ATLAS\s+tool|ATLAS\s+registr|_TOOL_REGISTRY|_SOURCE_REGISTRY|data\s+import|data\s+migration|data\s+intake|bulk\s+import|BoB\s+import|book\s+of\s+business|commission\s+import|revenue\s+import|account\s+import|client\s+import|carrier\s+data|import\s+pipeline|intake\s+queue|data\s+foundation|operation\s+data)
+owner: megazord
 ---
 
 ## ATLAS Consultation — MANDATORY for Data Work

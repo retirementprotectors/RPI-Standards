@@ -13,6 +13,7 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: hookify
+owner: musashi
 ---
 
 ## BLOCKED: Generated SVG Logo Detected

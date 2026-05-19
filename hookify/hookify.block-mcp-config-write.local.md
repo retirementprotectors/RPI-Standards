@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: ^/home/jdm/\.mcp\.json$
+owner: shinob1
 ---
 
 **BLOCKED: Direct write to `~/.mcp.json`**

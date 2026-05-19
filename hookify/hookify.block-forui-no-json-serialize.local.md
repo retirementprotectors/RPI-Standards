@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.gs$
+owner: shinob1
 ---
 
 **WARNING: ForUI function detected**

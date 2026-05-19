@@ -7,6 +7,7 @@ conditions:
   - field: command
     operator: regex_match
     pattern: gh\s+pr\s+merge\b.*--auto\b
+owner: shinob1
 ---
 
 🛑 **BLOCKED: `gh pr merge --auto` — verify this PR is NOT docs-only first.**

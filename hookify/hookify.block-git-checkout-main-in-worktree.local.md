@@ -7,6 +7,7 @@ conditions:
   - field: command
     operator: regex_match
     pattern: ^\s*git\s+(checkout|switch)\s+(-[a-zA-Z]*\s+)*main(\s|$)
+owner: shinob1
 ---
 
 **BLOCKED: `git checkout main` / `git switch main` in a worktree**

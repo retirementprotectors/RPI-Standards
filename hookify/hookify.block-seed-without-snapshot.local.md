@@ -10,6 +10,7 @@ conditions:
 exclude:
   - pattern: --snapshot
   - pattern: --dry-run
+owner: megazord
 ---
 
 **BLOCKED: Seed/Migration Script Without Safety Flag**

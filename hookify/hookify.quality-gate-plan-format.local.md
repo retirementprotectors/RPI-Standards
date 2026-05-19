@@ -16,6 +16,7 @@ conditions:
   - field: content
     operator: not_contains
     pattern: Audit Method
+owner: shinob1
 ---
 
 **BLOCKED: Plan file missing required pipeline columns**

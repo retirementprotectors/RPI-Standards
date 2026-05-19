@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: RAPID_CORE
+owner: megazord
 ---
 
 **BLOCKED: Direct MATRIX Write**

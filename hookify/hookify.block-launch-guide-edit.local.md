@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: (^|/)warrior-launch-guide\.html$
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Direct edit of `warrior-launch-guide.html`**

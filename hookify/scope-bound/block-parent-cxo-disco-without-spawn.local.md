@@ -1,3 +1,10 @@
+---
+name: block-parent-cxo-disco-without-spawn
+category: scope-bound
+event: pre-slack-post
+check: check_pre_slack_post.sh
+owner: shinob1
+---
 # Hookify Rule: block-parent-cxo-disco-without-spawn
 # Category: scope-bound
 # TRK-14757 · ZRD-SCOPE-005-001 ENF-007 | _RPI_STANDARDS/hookify/scope-bound/

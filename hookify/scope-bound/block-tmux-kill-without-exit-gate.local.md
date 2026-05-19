@@ -1,3 +1,10 @@
+---
+name: block-tmux-kill-without-exit-gate
+category: scope-bound
+event: pre-tmux-kill
+check: check_pre_tmux_kill.sh
+owner: ronin
+---
 # Hookify Rule: block-tmux-kill-without-exit-gate
 # Category: scope-bound
 # TRK-14758 · ZRD-SCOPE-005-001 ENF-008 | _RPI_STANDARDS/hookify/scope-bound/

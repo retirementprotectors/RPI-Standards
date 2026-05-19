@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: docs/discoveries/
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Discovery Doc written outside canonical directory**

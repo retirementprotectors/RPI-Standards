@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: Agent\s*\([^)]*(?:model\s*[:=]\s*['"]opus['"]|(?!model\s*[:=]))
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Sub-Agent using Opus or missing `model=` parameter**

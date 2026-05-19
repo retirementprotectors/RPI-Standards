@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.claude/settings(\.local)?\.json$
+owner: shinob1
 ---
 
 **BLOCKED: Direct write to `~/.claude/settings.json` (or `settings.local.json`)**

@@ -12,6 +12,7 @@ conditions:
     pattern: services/api/src/routes/
 exclude:
   - pattern: \.test\.(ts|js)
+owner: shinob1
 ---
 
 🛑 **BLOCKED: API response without shared type contract**

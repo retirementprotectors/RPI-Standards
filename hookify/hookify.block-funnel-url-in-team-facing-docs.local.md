@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: mdjserver\.tail7845ea\.ts\.net
+owner: shinob1
 ---
 
 **BLOCKED: Tailscale Funnel URL detected in team-facing document.**

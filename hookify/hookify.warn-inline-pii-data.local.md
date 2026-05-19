@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: var\s+\w+\s*=\s*\{\s*'[^']+'\s*:\s*\{[^}]*(dob|ssn|social_security|medicare_id|phone|email|address|date_of_birth)[^}]*\}
+owner: shinob1
 ---
 
 **WARNING: Inline PII Data Detected**

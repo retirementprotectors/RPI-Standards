@@ -9,6 +9,7 @@ conditions:
     pattern: (?:import|bulk|batch).*(?:data|write|update|firestore|migration)|(?:migrate|seed).*(?:firestore|collection)
 exclude:
   - pattern: atlas|ATLAS|guardian|snapshot
+owner: megazord
 ---
 
 **BLOCKED: Data Import/Migration Without ATLAS Consultation**

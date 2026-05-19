@@ -7,6 +7,7 @@ conditions:
   - field: command
     operator: regex_match
     pattern: git\s+push
+owner: shinob1
 ---
 
 **DEPLOY GATE: Verify before pushing**

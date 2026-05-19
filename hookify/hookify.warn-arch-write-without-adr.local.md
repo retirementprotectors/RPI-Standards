@@ -11,6 +11,7 @@ exclude:
   - pattern: git\s+commit\s+.*--allow-empty
   - pattern: git\s+commit\s+.*\[no-adr\]
   - pattern: git\s+commit\s+.*\[no-ticket\]
+owner: shinob1
 ---
 
 **COMMIT GATE: Architecture files staged — does this decision have an ADR?**

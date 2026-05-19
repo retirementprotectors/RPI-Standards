@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (xoxb-[a-zA-Z0-9\-]+|xoxp-[a-zA-Z0-9\-]+|hooks\.slack\.com/services/[A-Z0-9/]+|sk-[a-zA-Z0-9]{20,})
+owner: shinob1
 ---
 
 **BLOCKED: Plaintext Credential Detected**

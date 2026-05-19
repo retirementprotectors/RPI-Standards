@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (create\s+(a\s+|the\s+|new\s+)?(folder|directory|sub-?folder|drive\s+folder|shared\s+drive|workspace|google\s+account|firestore\s+collection|cloud\s+run\s+service|github\s+repo|repository|secret|env\s+var|environment\s+variable|cron\s+job|systemd\s+(unit|service)|launchd\s+agent|trigger|mcp(\s+server)?|service\s+account|sa\s+key|oauth\s+(scope|client|token)|api\s+key|workspace\s+ou|domain[- ]wide\s+delegation|dwd|webhook|alias|ou)|mkdir\s+|gh\s+repo\s+create|claude\s+mcp\s+add|gcloud\s+iam\s+service-accounts\s+create|gcloud\s+secrets\s+create|firebase\s+projects:create|gcloud\s+run\s+deploy|drive\.files\.create|spawn\s+(a\s+)?new\s+(mcp|service|wire))
+owner: shinob1
 ---
 
 ## DON'T CREATE WITHOUT REGISTRY CHECK — Mandatory Pre-Flight

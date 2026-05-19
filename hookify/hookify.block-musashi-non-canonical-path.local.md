@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: (?:docs/warriors/musashi|!MUSASHI DOCS!)/(?!(?:agentx|rpi|tomachina|david|_meta)(?:/|$)|README\.md$|cmo-ownership-grid\.html$|\.gitkeep$)
+owner: musashi
 ---
 
 # BLOCKED: Non-canonical MUSASHI path

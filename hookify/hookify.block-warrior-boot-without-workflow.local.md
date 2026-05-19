@@ -29,6 +29,7 @@ conditions:
   - field: command
     operator: not_contains
     pattern: --legacy-boot
+owner: shinob1
 ---
 
 **BLOCKED: Warrior boot without WORKFLOW.md**

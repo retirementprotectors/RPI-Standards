@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.(tsx|jsx|ts|js|html)$
+owner: shinob1
 ---
 
 **BLOCKED: Hardcoded Color Detected**

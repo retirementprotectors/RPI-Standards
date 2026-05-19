@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: dojo-warriors/warriors/
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Warrior doctrine file written outside canonical cluster**

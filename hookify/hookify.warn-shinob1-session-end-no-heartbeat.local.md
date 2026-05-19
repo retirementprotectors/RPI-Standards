@@ -9,6 +9,7 @@ introduced: 2026-05-18
 implementation: stop-event shell hook via check_shinob1_session_end_heartbeat.sh
 status: enforced
 wired_in: session-end-brain-export.sh (Stop hook registered in ~/.claude/settings.json)
+owner: shinob1
 ---
 
 # warn-shinob1-session-end-no-heartbeat

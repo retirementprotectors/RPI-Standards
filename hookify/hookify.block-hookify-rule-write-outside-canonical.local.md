@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: _RPI_STANDARDS/hookify/
+owner: shinob1
 ---
 
 🛑 **BLOCKED: hookify rule write outside canonical location**

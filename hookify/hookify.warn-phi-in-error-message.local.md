@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: catch\s*\([^)]*\)\s*\{[\s\S]*?(return|throw|log).*error\.(message|stack|toString)
+owner: shinob1
 ---
 
 **WARNING: Error Message May Expose PHI**
