@@ -3,29 +3,32 @@ name: block-warrior-boot-without-workflow
 enabled: true
 event: bash
 action: block
+# 2026-05-19 (SHINOB1): hookify upstream removed `exclude:` semantics, which
+# silently bricked this rule — ALL warrior spawns were blocked instead of
+# only non-allowlisted ones. Rewrote to express the same intent using only
+# operators the current runtime supports: a single negative-lookahead
+# regex_match (allowlist baked in) ANDed with two not_contains opt-outs.
+# Same allowlist as the frozen 2026-05-03 set — no scope change.
 conditions:
+  # Block when launch-warrior.sh fires for a warrior NOT in the frozen allowlist.
+  # Allowlist (frozen 2026-05-03, one-way ratchet, SHINOB1 sign-off required to expand):
+  #   Mains (7): megazord, musashi, raiden, ronin, shinob1, taiko, voltron
+  #   Ronin variants: ronin-<lowercase>
+  #   Shinob1 variants (13): auditor / auditor-hermes / auditor-raiden / coach /
+  #     discovery-cxonode / discovery-launchguide / discovery-masterplan /
+  #     mwm-spyglass / plan-p1 / plan-p2 / plan-p3 / plan-pwauth
   - field: command
     operator: regex_match
-    pattern: launch-warrior\.sh\s+[a-z][a-z0-9-]*
-exclude:
-  # Legacy allowlist — explicit, frozen 2026-05-03 (FORGE 2.0 P2).
-  # These warriors boot via the legacy soul.md/spirit.md/boot.txt scatter
-  # because they predate WORKFLOW.md consolidation. Adding to this list
-  # requires SHINOB1 sign-off — it is a one-way ratchet.
-  #
-  # Mains (7): megazord, musashi, raiden, ronin, shinob1, taiko, voltron
-  # Ronin variants (3): ronin-a, ronin-b, ronin-c
-  # Shinob1 variants (13): auditor / auditor-hermes / auditor-raiden / coach /
-  #   discovery-cxonode / discovery-launchguide / discovery-masterplan /
-  #   mwm-spyglass / plan-p1 / plan-p2 / plan-p3 / plan-pwauth
-  - pattern: launch-warrior\.sh\s+(megazord|musashi|raiden|taiko|voltron)(\s|$)
-  - pattern: launch-warrior\.sh\s+ronin(-[a-z]+)?(\s|$)
-  - pattern: launch-warrior\.sh\s+shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)))?(\s|$)
-  # Workflow-aware boot — operator referenced WORKFLOW.md in the same
-  # bash invocation (e.g. cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo).
-  - pattern: WORKFLOW\.md
-  # Explicit legacy-path opt-out — operator confirms intentional pre-FORGE-2.0 boot.
-  - pattern: --legacy-boot
+    pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin(-[a-z]+)?|shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)))?)(\s|$))[a-z]
+  # Opt-out 1: workflow-aware boot — operator referenced WORKFLOW.md in the
+  # same bash invocation (e.g. `cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo`).
+  - field: command
+    operator: not_contains
+    pattern: WORKFLOW.md
+  # Opt-out 2: explicit legacy-path opt-out — operator confirms intentional pre-FORGE-2.0 boot.
+  - field: command
+    operator: not_contains
+    pattern: --legacy-boot
 ---
 
 **BLOCKED: Warrior boot without WORKFLOW.md**
