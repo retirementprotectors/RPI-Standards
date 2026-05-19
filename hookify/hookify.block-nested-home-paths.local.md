@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: ^/home/jdm/(home|jdm)/
+owner: shinob1
 ---
 
 **BLOCKED: Nested `/home/jdm/home/` or `/home/jdm/jdm/` path detected**

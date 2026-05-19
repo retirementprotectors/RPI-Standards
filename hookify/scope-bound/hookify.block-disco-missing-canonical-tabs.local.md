@@ -5,6 +5,7 @@ check: check_disco_canonical_tabs.sh
 severity: BLOCK
 scope: SCOPE-DISCO-TABS-001
 introduced: 2026-05-18
+owner: shinob1
 ---
 
 # block-disco-missing-canonical-tabs

@@ -5,6 +5,7 @@ event: PreToolUse
 action: warn
 tools: [Write, Edit, Bash]
 enabled: true
+owner: megazord
 ---
 
 # Warn: Firestore Collection Assumption

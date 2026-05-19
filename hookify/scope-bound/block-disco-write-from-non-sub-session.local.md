@@ -5,6 +5,7 @@ check: check_disco_write.sh
 severity: BLOCK
 scope: SCOPE-005-1-L
 introduced: 2026-05-13
+owner: shinob1
 ---
 
 # block-disco-write-from-non-sub-session

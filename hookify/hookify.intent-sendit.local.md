@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (#SendIt|#sendit|send\s+it|ship\s+it|deploy\s+to\s+prod)
+owner: shinob1
 ---
 
 **DEPLOY PROTOCOL TRIGGERED (#SendIt)**

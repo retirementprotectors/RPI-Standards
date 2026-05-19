@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: appsscript\.json$
+owner: shinob1
 ---
 
 **BLOCKED: Public Access Detected**

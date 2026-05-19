@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (type-check\s+pass|type.check.*13/13|13/13.*pass|npm run type-check)
+owner: shinob1
 ---
 
 **BUILD GATE: type-check is insufficient**

@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: \.(set|update|add)\s*\(\s*\{
+owner: megazord
 ---
 
 **BLOCKED: Firestore Write — Verify Fields Against Schema**

@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (#LetsRockIt|#letsrockit|let'?s\s+rock|rock\s+it|execute\s+the\s+plan|plan\s+approved|green\s+light|go\s+build)
+owner: shinob1
 ---
 
 **PLAN EXECUTION TRIGGERED (#LetsRockIt)**

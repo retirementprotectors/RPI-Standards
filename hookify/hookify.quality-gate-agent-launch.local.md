@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (maxTurns\s*:\s*\d+|maxBudgetUsd\s*:\s*\d|permissionMode\s*:\s*['"]acceptEdits['"])
+owner: shinob1
 ---
 
 **BLOCKED: CCSDK Agent Lobotomy Detected**

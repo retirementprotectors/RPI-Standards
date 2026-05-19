@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.(html|css)$
+owner: shinob1
 ---
 
 🛑 **BLOCKED: `.modal-content` rule without flexbox layout**

@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.gs$
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Returning a raw Date object from GAS**

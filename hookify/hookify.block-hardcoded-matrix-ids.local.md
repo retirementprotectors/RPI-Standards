@@ -12,6 +12,7 @@ exclude:
   - pattern: docs/templates/
   - pattern: docs/discoveries/
   - pattern: /inbox/
+owner: megazord
 ---
 
 **BLOCKED: Hardcoded MATRIX Spreadsheet ID**

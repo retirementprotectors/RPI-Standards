@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.(backup|bak)([.0-9\-]|$)
+owner: shinob1
 ---
 
 **WARNING: Backup file creation detected outside `exports/archive/`**

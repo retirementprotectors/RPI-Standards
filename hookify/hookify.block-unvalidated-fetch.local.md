@@ -13,6 +13,7 @@ conditions:
 exclude:
   - pattern: fetchValidated\.ts$
   - pattern: \.test\.(ts|js)
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Raw `fetchWithAuth` import in a UI module — use `fetchValidated`**

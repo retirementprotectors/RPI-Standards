@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (UrlFetchApp\.fetch|fetch\s*\(|axios).*drive\.google\.com
+owner: shinob1
 ---
 
 **BLOCKED: Drive URL in External Fetch**

@@ -13,6 +13,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: "continue-on-error:\\s+true"
+owner: shinob1
 ---
 
 **WARNING: `actions/checkout` + `continue-on-error: true` anti-pattern detected**

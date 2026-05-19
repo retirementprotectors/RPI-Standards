@@ -10,6 +10,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: \.(gs|ts|js)$
+owner: shinob1
 ---
 
 **WARNING: Missing Structured Response**

@@ -14,6 +14,7 @@ exclude:
   - pattern: services/bigquery-stream/
   - pattern: services/learning-loop/
   - pattern: \.(test|spec)\.(ts|js)
+owner: megazord
 ---
 
 **BLOCKED: Direct Firestore Write Outside API**

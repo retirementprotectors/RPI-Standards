@@ -7,6 +7,7 @@ conditions:
   - field: command
     operator: regex_match
     pattern: git\s+commit
+owner: shinob1
 ---
 
 **COMMIT GATE: Did you verify the build?**

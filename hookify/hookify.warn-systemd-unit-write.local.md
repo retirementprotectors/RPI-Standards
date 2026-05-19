@@ -7,6 +7,7 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: ^/etc/systemd/system/.*\.(service|timer)$
+owner: shinob1
 ---
 
 **WARNING: Writing systemd unit to `/etc/systemd/system/`**

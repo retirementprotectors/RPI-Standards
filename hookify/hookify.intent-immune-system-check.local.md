@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (immune\s+system|knowledge\s+report|knowledge\s+pipeline|what\s+happened\s+overnight|morning\s+briefing|overnight\s+report|compliance\s+(status|check))
+owner: shinob1
 ---
 
 ## Immune System Check — Deliver Structured Briefing

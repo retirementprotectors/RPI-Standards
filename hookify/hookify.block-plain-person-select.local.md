@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: <select[^>]*id\s*=\s*['"][^'"]*(?:agent|owner|producer|client|specialist|advisor)[^'"]*['"]
+owner: shinob1
 ---
 
 🛑 **BLOCKED: Plain dropdown for known-entity person selection**

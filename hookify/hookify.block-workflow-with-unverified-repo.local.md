@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: "repository:\\s+[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+"
+owner: shinob1
 ---
 
 **BLOCKED: Unverified `repository:` reference in GH Actions workflow**

@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: '((build|implement|create)\s+(a\s+)?new\b|spawn\s+a\s+(new\s+)?(warrior|sub|sprint)|(start(ing)?|launch(ing)?|kickoff)\s+(a\s+)?(new\s+)?sprint|/forge[-\s]?sprint|new\s+sprint\b)'
+owner: shinob1
 ---
 
 ## Pre-Flight Validator — MANDATORY before new sprint / build work

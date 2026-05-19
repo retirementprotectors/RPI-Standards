@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (all.*(?:built|done|complete|pass|shipped|audited)|(?:built|done|complete|pass|shipped|audited).*all|everything.*(?:done|built|pass)|PASS.*audit|audit.*PASS)
+owner: shinob1
 ---
 
 **EVIDENCE GATE: Cannot report completion without verification**

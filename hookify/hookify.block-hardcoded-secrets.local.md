@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (api_key|apiKey|API_KEY|token|TOKEN|password|PASSWORD|secret|SECRET|access_key|ACCESS_KEY)\s*[:=]\s*['"][A-Za-z0-9_\-]{20,}['"]
+owner: shinob1
 ---
 
 **BLOCKED: Hardcoded Secret Detected**

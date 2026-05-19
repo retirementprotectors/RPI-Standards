@@ -11,6 +11,7 @@ conditions:
     - "write the disco doc"
     - "create a discovery doc"
     - "write a discovery document"
+owner: ronin
 ---
 
 ## FORGE Discovery Document — Creation Spec

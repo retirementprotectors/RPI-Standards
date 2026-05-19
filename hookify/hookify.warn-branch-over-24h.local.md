@@ -7,6 +7,7 @@ conditions:
   - field: command
     operator: regex_match
     pattern: ^\s*git\s+push(\s|$)
+owner: shinob1
 ---
 
 **WARN: Trunk-Based Discipline check — is this branch <24 hours old?**

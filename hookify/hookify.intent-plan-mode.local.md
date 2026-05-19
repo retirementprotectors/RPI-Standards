@@ -7,6 +7,7 @@ conditions:
   - field: user_prompt
     operator: regex_match
     pattern: (#LetsPlanIt|#letsplanit|plan\s+(this|it|out|for)|build\s+a\s+plan|make\s+a\s+plan|let'?s\s+plan|need\s+a\s+plan|create\s+a\s+plan|EnterPlanMode|plan\s+mode)
+owner: shinob1
 ---
 
 **THINKING LEVEL: SWITCH TO HIGH**

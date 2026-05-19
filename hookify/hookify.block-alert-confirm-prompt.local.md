@@ -7,6 +7,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (alert|confirm|prompt)\s*\(
+owner: shinob1
 ---
 
 **BLOCKED: Browser Dialog API Detected**

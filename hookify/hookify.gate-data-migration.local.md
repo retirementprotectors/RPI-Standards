@@ -10,6 +10,7 @@ conditions:
   - field: content
     operator: regex_match
     pattern: FieldValue\.delete\(\)|deleteField\(\)|\.delete\(\).*field|remove.*field
+owner: megazord
 ---
 
 **BLOCKED: Data Migration Gate — MEGAZORD Protocol Required**

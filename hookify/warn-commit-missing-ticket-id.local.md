@@ -10,6 +10,7 @@ conditions:
 exclude:
   - pattern: git\s+commit\s+.*--allow-empty
   - pattern: git\s+commit\s+.*\[no-ticket\]
+owner: shinob1
 ---
 
 **COMMIT GATE: Missing ticket-ID in commit subject**
