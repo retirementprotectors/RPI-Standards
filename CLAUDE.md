@@ -1216,21 +1216,24 @@ The Machine (the business)
 
 ### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 35 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 68 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-**35 rules** (all `.local.md` files in `_RPI_STANDARDS/hookify/`):
+**68 rules** (64 top-level + 4 scope-bound `.local.md` files in `_RPI_STANDARDS/hookify/`):
 
-**Tier 1 — Block Rules (16 rules):**
-`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `quality-gate-plan-format`
+**Tier 1 — Block Rules (36 top-level + 4 scope-bound):**
+`block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `block-claude-settings-write`, `block-date-return-no-serialize`, `block-disco-write-outside-discoveries-dir`, `block-funnel-url-in-team-facing-docs`, `block-gh-pr-merge-auto-docs-check`, `block-git-checkout-main-in-worktree`, `block-hookify-rule-write-outside-canonical`, `block-launch-guide-edit`, `block-mcp-config-write`, `block-modal-no-flexbox`, `block-musashi-non-canonical-path`, `block-nested-home-paths`, `block-opus-subagent`, `block-plain-person-select`, `block-untyped-api-response`, `block-untyped-firestore-fields`, `block-unvalidated-fetch`, `block-warrior-boot-without-workflow`, `block-warrior-doctrine-write-outside-warriors-cluster`, `block-workflow-with-unverified-repo`, `block-xlsx-raw-import` + scope-bound: `block-disco-missing-canonical-tabs`, `block-disco-write-from-non-sub-session`, `block-parent-cxo-disco-without-spawn`, `block-tmux-kill-without-exit-gate`
 
-**Tier 2 — Warn Rules (7 rules):**
-`warn-date-return-no-serialize`, `warn-missing-structured-response`, `warn-modal-no-flexbox`, `warn-phi-in-error-message`, `warn-plain-person-select`, `warn-inline-pii-data`, `warn-untyped-api-response`
+**Tier 2 — Warn Rules (10 rules):**
+`warn-arch-write-without-adr`, `warn-backup-file-outside-archive`, `warn-branch-over-24h`, `warn-commit-missing-ticket-id`, `warn-firestore-collection-assumption`, `warn-inline-pii-data`, `warn-missing-structured-response`, `warn-phi-in-error-message`, `warn-shinob1-session-end-no-heartbeat`, `warn-systemd-unit-write`
 
-**Intent Rules (6 rules):**
-`intent-session-start` (triggers session protocol), `intent-sendit` (triggers toMachina deploy protocol), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work)
+**Intent Rules (9 rules):**
+`intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work), `intent-create-disco-doc` (triggers discovery doc creation flow), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-no-create-without-registry-check` (blocks create without registry check), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-pre-flight-check` (triggers pre-flight validation), `intent-sendit` (triggers toMachina deploy protocol), `intent-session-start` (triggers session protocol)
 
-**Quality Gates (6 rules):**
-`quality-gate-deploy-verify` (warns before git push), `quality-gate-commit-remind` (warns before git commit), `quality-gate-build-verify` (blocks type-check as sufficient — requires npm run build), `quality-gate-done-without-evidence` (blocks reporting complete without git status + build proof), `quality-gate-phase-complete` (blocks phase complete without evidence), `quality-gate-audit-verify` (activates audit protocol)
+**Quality Gates (8 rules):**
+`quality-gate-agent-launch` (validates agent launch conditions), `quality-gate-audit-verify` (activates audit protocol), `quality-gate-build-verify` (blocks type-check as sufficient — requires npm run build), `quality-gate-commit-remind` (warns before git commit), `quality-gate-deploy-verify` (warns before git push), `quality-gate-done-without-evidence` (blocks reporting complete without git status + build proof), `quality-gate-phase-complete` (blocks phase complete without evidence), `quality-gate-plan-format` (enforces plan format standard)
+
+**Gate Rules (1 rule):**
+`gate-data-migration` (gates data migration operations)
 
 ### Rule Propagation
 
