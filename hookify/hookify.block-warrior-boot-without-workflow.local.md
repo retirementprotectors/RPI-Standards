@@ -7,8 +7,12 @@ action: block
 # silently bricked this rule — ALL warrior spawns were blocked instead of
 # only non-allowlisted ones. Rewrote to express the same intent using only
 # operators the current runtime supports: a single negative-lookahead
-# regex_match (allowlist baked in) ANDed with two not_contains opt-outs.
+# regex_match (allowlist baked in) ANDed with one not_contains opt-out.
 # Same allowlist as the frozen 2026-05-03 set — no scope change.
+#
+# 2026-05-30 (RONIN, CUT-006): Removed opt-out #2 (not_contains --legacy-boot).
+# --legacy-boot was the gate-bypass backdoor killed in CUT-005 (Symphony Cutover).
+# Single positive condition only: WORKFLOW.md must be present. No escape hatch.
 conditions:
   # Block when launch-warrior.sh fires for a warrior NOT in the frozen allowlist.
   # Allowlist (frozen 2026-05-03, one-way ratchet, SHINOB1 sign-off required to expand):
@@ -20,23 +24,19 @@ conditions:
   - field: command
     operator: regex_match
     pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin(-[a-z]+)?|shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)))?)(\s|$))[a-z]
-  # Opt-out 1: workflow-aware boot — operator referenced WORKFLOW.md in the
+  # Opt-out: workflow-aware boot — operator referenced WORKFLOW.md in the
   # same bash invocation (e.g. `cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo`).
   - field: command
     operator: not_contains
     pattern: WORKFLOW.md
-  # Opt-out 2: explicit legacy-path opt-out — operator confirms intentional pre-FORGE-2.0 boot.
-  - field: command
-    operator: not_contains
-    pattern: --legacy-boot
 owner: shinob1
 ---
 
 **BLOCKED: Warrior boot without WORKFLOW.md**
 
-Per JDM directive 2026-05-03 (FORGE 2.0 Phase 2, SYM-003), all NEW warrior boots
-must consume their runtime config from a versioned `WORKFLOW.md`, not the legacy
-`soul.md` / `spirit.md` / `/tmp/<warrior>-boot.txt` scatter.
+Per JDM directive 2026-05-03 (FORGE 2.0 Phase 2, SYM-003), all warrior boots
+must have a versioned `WORKFLOW.md`. The Symphony Launcher Cutover (CUT-006,
+2026-05-30) removed the `--legacy-boot` escape. There is no bypass.
 
 **Why this is blocked:**
 - Soul/spirit/boot scatter is unversioned, drifts across machines, and forks
@@ -46,25 +46,22 @@ must consume their runtime config from a versioned `WORKFLOW.md`, not the legacy
 - Without WORKFLOW.md, parallel warrior variants accumulate undocumented
   divergence — the exact failure mode FORGE 2.0 P2 exists to fix.
 
-**To proceed, do ONE of these:**
+**To proceed:**
 
-1. **Migrate the warrior** (preferred):
-   - Author `~/Projects/dojo-warriors/warriors/<name>/WORKFLOW.md` per the
-     FORGE 2.0 P2 spec (consolidates soul + spirit + boot into one file).
-   - Re-run the launch — the rule will pass once WORKFLOW.md is referenced.
+1. **Author WORKFLOW.md for the warrior** (the only path):
+   - Create `~/Projects/dojo-warriors/warriors/<name>/WORKFLOW.md` per the
+     FORGE 2.0 P2 spec (see `forge2-symphony-discovery-doc-v1.0.html` SYM-002).
+   - For sub-CXOs / case nodes: they inherit the parent's WORKFLOW.md via the
+     parent-fallback chain in `launch-warrior.sh` — no separate WORKFLOW.md needed
+     if the parent already has one.
+   - Re-run the launch — the rule will pass once WORKFLOW.md is present.
 
-2. **Add to legacy allowlist** (only for pre-2026-05-03 warriors):
-   - Edit this rule's `exclude:` block to add the warrior to the legacy
-     allowlist regex. Get SHINOB1 sign-off — the allowlist is a one-way ratchet.
-
-3. **Explicit one-shot legacy opt-out**:
-   - Append `--legacy-boot` to your bash invocation, e.g.
-     `bash launch-warrior.sh <name> --legacy-boot`. Use sparingly; this is
-     for emergency reboots of legacy warriors only, not new variants.
+2. **Add to legacy allowlist** (only for pre-2026-05-03 warriors with SHINOB1 sign-off):
+   - Edit this rule's allowlist regex. This is a one-way ratchet — SHINOB1 review required.
 
 **Reference:**
 - FORGE 2.0 Discovery Doc — SYM-003 in Tab 6 (Tickets)
-- Phase 2 Plan — per-line spec for WORKFLOW.md format
+- Symphony Cutover — launcher-symphony-cutover-v1.html (CUT-006)
 - `_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh` — propagates this rule
   to active project `.claude/` dirs after merge
 
