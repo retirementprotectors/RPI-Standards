@@ -72,12 +72,12 @@ This tracks:
 
 ### 3. The Immune System — Automatic Enforcement
 
-This is the part that runs in the background every time code is written or deployed. 21 rules that automatically:
+This is the part that runs in the background every time code is written or deployed. Dozens of enforced rules that automatically:
 - **Block** dangerous patterns before they ever make it into the system (hardcoded passwords, exposed credentials, PHI in log files, public-facing app access)
 - **Warn** about risky patterns that need review (dates that might break, missing response formats, accessibility issues)
 - **Learn** from every session and get smarter over time
 
-**Why it matters to you:** You don't need to do anything with this — it's automatic. But it's why our codebase stays clean. Every piece of code goes through 21 checkpoints before it reaches production. Think of it as the antibodies in The Machine's bloodstream.
+**Why it matters to you:** You don't need to do anything with this — it's automatic. But it's why our codebase stays clean. Every piece of code goes through the hookify rule set before it reaches production. Think of it as the antibodies in The Machine's bloodstream.
 
 **The learning loop:** When the Immune System catches something, it gets logged. Every morning at 4am, a pipeline reviews what was caught, updates the rules if needed, and reports to Josh. The system literally gets smarter every day.
 
@@ -165,7 +165,7 @@ The full technical reference is in the OS directory. Immune System has the compl
 
 | Metric | Count |
 |--------|-------|
-| Enforcement rules (automatic) | 21 |
+| Enforcement rules (automatic) | see `ls _RPI_STANDARDS/hookify/*.local.md \| wc -l` |
 | Automated monitoring agents | 4 (daily, weekly schedules) |
 | GAS compliance triggers | 3 (quarterly, weekly, monthly) |
 | Web apps verified org-only | 13 of 13 |

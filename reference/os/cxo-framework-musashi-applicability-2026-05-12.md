@@ -37,7 +37,7 @@ Read of `mm-reg-v2-discovery-doc-v1.html` (live at retirementprotectors.github.i
 I do not currently have a structured registry. My work-products (Discovery Docs, hookify rules, doctrine memories, ZRD records, architecture decisions) are scattered across:
 - `docs/discoveries/` (~57 disco docs in the toMachina repo)
 - `_RPI_STANDARDS/CLAUDE.md` (1100+ lines, no entry-level index)
-- `_RPI_STANDARDS/hookify/` (~55 rules, partially indexed)
+- `_RPI_STANDARDS/hookify/` (the hookify rule set, partially indexed — run `ls hookify/*.local.md | wc -l` for current count)
 - `_RPI_STANDARDS/reference/os/` (a half-dozen strategic docs)
 - `~/.claude/projects/.../memory/` (hundreds of feedback/project/reference memories)
 
