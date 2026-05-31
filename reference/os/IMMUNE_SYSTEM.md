@@ -13,7 +13,7 @@
 
 Hookify is a Python-based enforcement engine that intercepts Claude Code at three points in the tool execution lifecycle. It reads `.local.md` rule files, evaluates them against tool input using regex matching with LRU cache, and either **blocks** operations (code never reaches disk) or **warns** (injects guidance while allowing the operation).
 
-**36 rules** live in `_RPI_STANDARDS/hookify/` and are symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`.
+The hookify rule set lives in `_RPI_STANDARDS/hookify/` and is symlinked to 8 active projects + `~/.claude/` (global) via `setup-hookify-symlinks.sh`. Run `ls _RPI_STANDARDS/hookify/*.local.md | wc -l` for the current count.
 
 **Enforcement hierarchy:** GitHub Security (supply-chain) > Hookify rules (code-level) > CLAUDE.md (instruction-level) > MEMORY.md > Knowledge Pipeline
 
@@ -80,10 +80,10 @@ Two intent rules fire on JDM's words, not Claude's actions:
 
 ```
 PHASE 1: HOOKIFY VERIFICATION
-├─ Count rules in source: _RPI_STANDARDS/hookify/ → Expected: 35 rules
+├─ Count rules in source: ls _RPI_STANDARDS/hookify/*.local.md | wc -l
 ├─ Spot-check symlinks across key projects
 ├─ If missing → Run: setup-hookify-symlinks.sh
-└─ Report: "35 rules verified across 8 projects + global"
+└─ Report: "[N] rules verified across 8 projects + global"
 
 PHASE 2: PROJECT CONTEXT
 ├─ Read project CLAUDE.md (if exists in CWD)
@@ -120,7 +120,7 @@ PHASE 5: EXECUTE
 
 ## The Trigger Library: Code Enforcement
 
-### Tier 1 — Block Rules (16 rules)
+### Tier 1 — Block Rules
 
 PreToolUse file/prompt/bash events. `action: block`. Code never reaches disk or operation is denied.
 
@@ -186,7 +186,7 @@ PreToolUse file/prompt/bash events. `action: block`. Code never reaches disk or 
 
 ---
 
-### Quality Gates (6 rules)
+### Quality Gates
 
 PreToolUse bash/prompt events. `action: block` or `action: warn`. Enforce process discipline.
 
@@ -210,7 +210,7 @@ clasp deploy -i [ID] -V [VERSION] -d "vX.X" && clasp deployments | grep "@[VERSI
 
 ---
 
-### Intent Triggers (6 rules)
+### Intent Triggers
 
 UserPromptSubmit events. `action: warn`. Injects protocol instructions.
 
@@ -228,11 +228,11 @@ UserPromptSubmit events. `action: warn`. Injects protocol instructions.
 
 ---
 
-### Tier 2 — Warn Rules (7 rules)
+### Tier 2 — Warn Rules
 
 PreToolUse file events. `action: warn`. Warns but allows the operation.
 
-> Note: 6 additional rules exist that are not listed individually below (block-generated-logos, block-bulk-import-without-atlas, block-direct-firestore-write, block-seed-without-snapshot, quality-gate-plan-format, quality-gate-audit-verify). See `_RPI_STANDARDS/hookify/` for the complete set. Total: 35 rules.
+> Note: Additional rules not listed individually below include block-generated-logos, block-bulk-import-without-atlas, block-direct-firestore-write, block-seed-without-snapshot, quality-gate-plan-format, and quality-gate-audit-verify. See `_RPI_STANDARDS/hookify/` for the complete current set.
 
 #### 16. `warn-date-return-no-serialize`
 - **Files:** `.gs`
@@ -428,7 +428,7 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 ## System Architecture
 
 ```
-35 RULES in _RPI_STANDARDS/hookify/
+_RPI_STANDARDS/hookify/ (run `ls hookify/*.local.md | wc -l` for current count)
      │
      │ symlinked via setup-hookify-symlinks.sh
      │
@@ -458,7 +458,7 @@ Every session makes the immune system stronger. Every rule eliminates an entire 
 │  (JDM's words)        6 intent rules             │
 │                                                  │
 │  PreToolUse ──────▶ pretooluse.py               │
-│  (before execution)   16 block + 7 warn + 6 gate │
+│  (before execution)   block + warn + gate rules   │
 │                                                  │
 │  PostToolUse ─────▶ posttooluse.py              │
 │  (after execution)    available for future use    │
@@ -509,7 +509,7 @@ Rules are centrally managed and propagated:
 
 ```bash
 # Source of truth
-~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md   (35 rules)
+~/Projects/_RPI_STANDARDS/hookify/hookify.*.local.md
 
 # Propagation script
 ~/Projects/_RPI_STANDARDS/scripts/setup-hookify-symlinks.sh
