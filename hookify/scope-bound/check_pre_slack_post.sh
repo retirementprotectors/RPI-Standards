@@ -91,14 +91,14 @@ if [[ "$TMUX_SESSION" =~ ^([a-zA-Z0-9_]+)-disco-sub-[^[:space:]]+$ ]]; then
 
   # Required tools per parent
   REQUIRED_UNIVERSAL=(
-    "mcp__shinob1__grep_discoveries"
-    "mcp__shinob1__grep_codebase"
-    "mcp__shinob1__gh_search_prs"
-    "mcp__shinob1__firestore_collections_list"
+    "mcp__rpi-cto__grep_discoveries"
+    "mcp__rpi-cto__grep_codebase"
+    "mcp__rpi-cto__gh_search_prs"
+    "mcp__rpi-cto__firestore_collections_list"
   )
   REQUIRED_PARENT=""
   case "$PARENT_FROM_SESSION" in
-    shinob1)  REQUIRED_PARENT="mcp__shinob1__architecture_search" ;;
+    shinob1)  REQUIRED_PARENT="mcp__rpi-cto__architecture_search" ;;
     musashi)  REQUIRED_PARENT="mcp__musashi__cmo_registry_search" ;;
     megazord) REQUIRED_PARENT="mcp__megazord__atlas_registry_search" ;;
     voltron)  REQUIRED_PARENT="mcp__voltron__que_registry_search" ;;
