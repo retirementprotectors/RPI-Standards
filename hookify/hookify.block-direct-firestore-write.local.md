@@ -7,13 +7,17 @@ conditions:
   - field: content
     operator: regex_match
     pattern: db\.collection\(|\.collection\(.*\)\.doc\(|getFirestore\(\)\.collection\(
-exclude:
-  - pattern: services/api/src/
-  - pattern: services/bridge/src/
-  - pattern: services/intake/
-  - pattern: services/bigquery-stream/
-  - pattern: services/learning-loop/
-  - pattern: \.(test|spec)\.(ts|js)
+  # FIX 2026-06-01 (shinob1, JDM-authorized "you can handle it"; megazord notified): the
+  # `exclude:` clause below was DEAD config — the hookify engine never parses `exclude:`
+  # (same class that bricked block-warrior-boot-without-workflow, 2026-05-19). So this rule
+  # silently false-blocked legit Firestore reads/writes in services/api/src/ etc. The
+  # authorized-path exemptions are now baked into a file_path negative-lookahead so they
+  # ACTUALLY apply: block fires only when content matches AND path is NOT authorized.
+  # MEGAZORD's policy is unchanged — this only restores the exemptions to working order.
+  # Surfaced by RONIN-Asset (tm2 Index couldn't wire live A1/A2 substrate reads). Verified 6/6.
+  - field: file_path
+    operator: regex_match
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|\.(test|spec)\.(ts|js))).*
 owner: megazord
 ---
 
