@@ -118,7 +118,7 @@ if [[ "$TMUX_SESSION" =~ ^([a-zA-Z0-9_]+)-disco-sub-[^[:space:]]+$ ]]; then
   # verb within 200 chars (either direction). Citations + project names that
   # share substrings no longer false-trip the rule. Verb pattern is shared with
   # the main-branch check below.
-  AUTHORING_VERBS='(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)'
+  AUTHORING_VERBS='(^|[^[:alpha:]])(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)([^[:alpha:]]|$)'
   shopt -s nocasematch
   AUDIT_MATCH=0
   if [[ "$TEXT" =~ (disco|discovery).{0,200}${AUTHORING_VERBS} ]] || \
@@ -193,7 +193,7 @@ PARENT_LOWER="${PARENT_BY_CHANNEL[$CHANNEL]:-}"
 #
 # Authoring verbs: writing|drafting|authoring|completing|signing|filing
 # (third-person variants too: writes|drafts|authors|completes|signs|files)
-AUTHORING_VERBS='(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)'
+AUTHORING_VERBS='(^|[^[:alpha:]])(writing|drafting|authoring|completing|signing|filing|writes|drafts|authors|completes|signs|files)([^[:alpha:]]|$)'
 shopt -s nocasematch
 MATCH=0
 if [[ "$TEXT" =~ (disco|discovery).{0,200}${AUTHORING_VERBS} ]] || \
