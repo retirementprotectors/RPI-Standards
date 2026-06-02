@@ -104,6 +104,22 @@ if [[ "$TOOL_NAME" == mcp__* ]]; then
   fi
 fi
 
+# SHINOB1-ARC-SLACKOUT-001: tag SHIP actions (git push / gh pr create|merge|ready)
+# into the ledger so the Stop-event arc-slackout gate can require a Slack-Out
+# after a ship. Additive + best-effort — a failure here only skips the tag and
+# never blocks the tool call.
+if [[ "$TOOL_NAME" == "Bash" ]]; then
+  _ASO_CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
+  if [[ "$_ASO_CMD" == *"git push"* ]] || { [[ "$_ASO_CMD" == *"gh pr "* || "$_ASO_CMD" == *"gh pr'"* ]] && [[ "$_ASO_CMD" == *create* || "$_ASO_CMD" == *merge* || "$_ASO_CMD" == *ready* ]]; }; then
+    _ASO_SESSION="$(tmux display-message -p '#S' 2>/dev/null || true)"
+    if [[ -n "$_ASO_SESSION" ]]; then
+      _ASO_LEDGER="/tmp/scope-prior-art-${_ASO_SESSION}.jsonl"
+      _ASO_TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      echo "{\"ts\":\"${_ASO_TS}\",\"tool\":\"__ship__\"}" >> "$_ASO_LEDGER" 2>/dev/null || true
+    fi
+  fi
+fi
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Scope-bound event dispatch — runs before file-content rules so that a
 # blocked Slack post or tmux kill never falls through to the file-content
