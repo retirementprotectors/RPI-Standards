@@ -73,9 +73,9 @@ Validated GAM checklist (run in order):
 
 **Verify ALL of:** `Account Suspended: False` · `Is Archived: False` · active (non-Archived-User) license · `Mailbox is setup: True`. *(A GAM "Service Account … not authorized for Gmail API" error on `show vacation` is a GAM scope limit, NOT the user's mailbox being down — don't confuse the two.)*
 
-### Automation (in progress)
+### Automation
 
-The above is spec'd as ATLAS wires `WIRE_EMAIL_REROUTE` (offboard) + `WIRE_EMAIL_UNREROUTE` (rehire — Step 6 `unarchive_user`, added by PR #1169) in `packages/core/src/atlas/wires.ts`, **but the wires have no executor yet** — 5 of 6 atomic tools are unbuilt, so this stays a manual runbook. Build scoped in `!MEGAZORD DOCS!/Discovery/seed-offboard-wire-executor.md` (tickets OWE-001 → 005). Until that ships, follow the GAM checklists above by hand.
+The full offboard/rehire sequence is **implemented** as the `wire_email_reroute` (offboard) / `wire_email_unreroute` (rehire) MCP tools in `services/MCP-Hub/rpi-workspace-mcp/src/drive-audit-tools.js` (the 3-week-old seed disco assumed no executor; it was built since). The reverse wire reverses delete-hub-alias → kill-auto-forward → rename-back → license-check → unsuspend → **un-archive** (Step 6 `unarchive_user`, added 2026-06-05 in MCP-Hub `5f3eb60` — the gap that bounced Nikki's rehire + left Matt inactive). New code goes live on MCP restart; dry-run verified (full 7-step plan reaches `unarchive_user`). **The wire is fail-fast** — it errors out if the account isn't in the exact state its prior wire produced, so run `wire_email_reroute` to offboard and `wire_email_unreroute` to rehire; the GAM checklist above is the hand-run fallback for partial/manual states.
 
 ---
 
