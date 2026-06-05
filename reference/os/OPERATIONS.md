@@ -49,6 +49,34 @@ When an employee or contractor leaves RPI, the following must be completed **the
 
 **On departure:** Move user to `/RPI- Offboarded` — do NOT move to `/RPI- Archived Users` (that OU is for FINRA compliance only).
 
+### Workspace Account Mechanics — what "disable the account" actually does
+
+The offboard sequence (currently a manual GAM runbook — `gam` = gamadv-xtd3 at `~/bin/gamadv-xtd3/gam`; being automated, see *Automation* below) sets these states on the departing user. **Each is a SEPARATE state — reactivation must reverse all of them:**
+
+1. **Suspend** — `gam update user <email> suspended on`
+2. **Archive** — sets `Is Archived: True` and downgrades the license to **"Business Plus – Archived User"** (retention-only). ⚠️ This is a *distinct* state from suspended — an archived user can't log in or use Gmail even when not suspended.
+3. **Rename** — `gam update user <email> username <local>.archived` → `user@` becomes `user.archived@`
+4. **Park the freed email on the 2FA hub** — `user@retireprotected.com` is added as an alias on the `2fa@retireprotected.com` service-team catch-all so in-flight mail to the departed user is caught. *(This is the "move the other to 2FA" step.)*
+5. **OU** — move to `/RPI- Offboarded`.
+
+### Reactivation / Rehire — the REVERSE (un-suspend alone is NOT enough)
+
+⚠️ **The archive flag, the license, and the 2FA-hub alias each must be reversed or the rehire's email stays dead.** This has bitten **twice**: **Nikki's rehire (2026-05-14)** bounced SMTP 5.2.1 because the path reversed `suspended` but not `archived`; **Matt McCormick (2026-06-05)** showed "inactive" for the identical reason.
+
+Validated GAM checklist (run in order):
+1. `gam update user <X>.archived@ suspended off`
+2. **`gam update user <X>.archived@ archived off`** ← the step that gets missed; this auto-restores the active Business Plus license (a separate `add license` will fail "already has a license")
+3. `gam update user <X>.archived@ ou "/"`  *(active employees live in root `/`)*
+4. Reclaim the email: `gam delete alias <X>@retireprotected.com` (pull it off the 2fa@ catch-all) **then** `gam update user <X>.archived@ username <X>` (rename back). The rename throws "Entity already exists" if run immediately after the alias delete — directory propagation lag; wait a beat + retry.
+5. `gam update user <X>@retireprotected.com password '<temp>' changepassword on`
+6. If 2FA is enforced and their old device is gone: `gam user <X>@ update backupcodes` then `gam user <X>@ show backupcodes`.
+
+**Verify ALL of:** `Account Suspended: False` · `Is Archived: False` · active (non-Archived-User) license · `Mailbox is setup: True`. *(A GAM "Service Account … not authorized for Gmail API" error on `show vacation` is a GAM scope limit, NOT the user's mailbox being down — don't confuse the two.)*
+
+### Automation (in progress)
+
+The above is spec'd as ATLAS wires `WIRE_EMAIL_REROUTE` (offboard) + `WIRE_EMAIL_UNREROUTE` (rehire — Step 6 `unarchive_user`, added by PR #1169) in `packages/core/src/atlas/wires.ts`, **but the wires have no executor yet** — 5 of 6 atomic tools are unbuilt, so this stays a manual runbook. Build scoped in `!MEGAZORD DOCS!/Discovery/seed-offboard-wire-executor.md` (tickets OWE-001 → 005). Until that ships, follow the GAM checklists above by hand.
+
 ---
 
 ## Part 3: Incident Response Procedure
