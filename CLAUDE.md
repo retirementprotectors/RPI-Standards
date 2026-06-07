@@ -282,14 +282,11 @@ This saves ~$4,000/month at current usage levels.
 ### Key Team
 | Name | Role |
 |------|------|
-| John Behn | COO/Integrator |
-| Shane Parmenter | CFO |
-| Nikki Gray | Service Division |
 | Vince Vazquez | Sales Division |
 | Matt McCormick | B2B/DAVID Division |
-| Dr. Aprille Trupiano | CMO/Legacy Services |
-| Jason Moran (JMDC) | Fractional CTO |
-- **Super Admins locked**: Josh + John Behn only.
+| Nikki Gray | Service Division |
+
+> Current operational team (per JDM 2026-06-07): **Vince, Matt, Nikki.** Shane Parmenter, John Behn, Dr. Aprille Trupiano, and Jason Moran are no longer on the team — do not cite them as current staff.
 
 - **Toll-free**: +18886208587 — works, use as fallback
 - **Offboarded users**: alex@, jmdconsulting@, allison@, christa@, rpifax@
@@ -1186,7 +1183,7 @@ It knows where every piece of data comes from — which carrier, which API, whic
 
 It enforces the rules automatically. PHI never leaks into Slack. Code never deploys without verification. Credentials never get hardcoded. Violations get logged, reported, and the system gets smarter every day. No human in the loop — it just runs.
 
-*For investors:* "We built automated compliance and security enforcement into our development process. Every piece of code gets checked against 23 rules before it ships. Every violation gets tracked and trended. The system literally teaches itself to prevent the same mistake twice."
+*For investors:* "We built automated compliance and security enforcement into our development process. Every piece of code gets checked against our full rule set before it ships. Every violation gets tracked and trended. The system literally teaches itself to prevent the same mistake twice."
 
 ---
 
@@ -1216,23 +1213,23 @@ The Machine (the business)
 
 ### The Immune System (Hookify)
 
-The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 71 rules, 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
+The **hookify plugin** (`~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify/`) — 4 hook events, enforces standards in real-time. Full reference: `_RPI_STANDARDS/reference/os/IMMUNE_SYSTEM.md`
 
-**71 rules** (67 top-level + 4 scope-bound `.local.md` files in `_RPI_STANDARDS/hookify/`):
+**The rules**:
 
-**Tier 1 — Block Rules (36 top-level + 4 scope-bound):**
+**Tier 1 — Block Rules:**
 `block-hardcoded-secrets`, `block-credentials-in-config`, `block-phi-in-logs`, `block-anyone-anonymous-access`, `block-hardcoded-matrix-ids`, `block-alert-confirm-prompt`, `block-drive-url-external`, `block-forui-no-json-serialize`, `block-hardcoded-colors`, `block-let-module-caching`, `block-direct-matrix-write`, `block-generated-logos`, `block-direct-firestore-write`, `block-bulk-import-without-atlas`, `block-seed-without-snapshot`, `block-claude-settings-write`, `block-date-return-no-serialize`, `block-disco-write-outside-discoveries-dir`, `block-funnel-url-in-team-facing-docs`, `block-gh-pr-merge-auto-docs-check`, `block-git-checkout-main-in-worktree`, `block-hookify-rule-write-outside-canonical`, `block-launch-guide-edit`, `block-mcp-config-write`, `block-modal-no-flexbox`, `block-musashi-non-canonical-path`, `block-nested-home-paths`, `block-opus-subagent`, `block-plain-person-select`, `block-untyped-api-response`, `block-untyped-firestore-fields`, `block-unvalidated-fetch`, `block-warrior-boot-without-workflow`, `block-warrior-doctrine-write-outside-warriors-cluster`, `block-workflow-with-unverified-repo`, `block-xlsx-raw-import` + scope-bound: `block-disco-missing-canonical-tabs`, `block-disco-write-from-non-sub-session`, `block-parent-cxo-disco-without-spawn`, `block-tmux-kill-without-exit-gate`
 
-**Tier 2 — Warn Rules (10 rules):**
+**Tier 2 — Warn Rules:**
 `warn-arch-write-without-adr`, `warn-backup-file-outside-archive`, `warn-branch-over-24h`, `warn-commit-missing-ticket-id`, `warn-firestore-collection-assumption`, `warn-inline-pii-data`, `warn-missing-structured-response`, `warn-phi-in-error-message`, `warn-shinob1-session-end-no-heartbeat`, `warn-systemd-unit-write`
 
-**Intent Rules (9 rules):**
+**Intent Rules:**
 `intent-atlas-consult` (forces ATLAS registry consultation before any data import/migration work), `intent-create-disco-doc` (triggers discovery doc creation flow), `intent-execute-plan` (switches to MEDIUM thinking, executes approved plan), `intent-immune-system-check` (triggers pipeline + compliance briefing), `intent-no-create-without-registry-check` (blocks create without registry check), `intent-plan-mode` (switches to HIGH thinking for planning), `intent-pre-flight-check` (triggers pre-flight validation), `intent-sendit` (triggers toMachina deploy protocol), `intent-session-start` (triggers session protocol)
 
-**Quality Gates (8 rules):**
+**Quality Gates:**
 `quality-gate-agent-launch` (validates agent launch conditions), `quality-gate-audit-verify` (activates audit protocol), `quality-gate-build-verify` (blocks type-check as sufficient — requires npm run build), `quality-gate-commit-remind` (warns before git commit), `quality-gate-deploy-verify` (warns before git push), `quality-gate-done-without-evidence` (blocks reporting complete without git status + build proof), `quality-gate-phase-complete` (blocks phase complete without evidence), `quality-gate-plan-format` (enforces plan format standard)
 
-**Gate Rules (1 rule):**
+**Gate Rules:**
 `gate-data-migration` (gates data migration operations)
 
 ### Rule Propagation
@@ -1297,7 +1294,7 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 
 *This context applies to ALL sessions. Project-specific context comes from project CLAUDE.md files.*
 - **Bash working directory persists** between tool calls — always use absolute paths or explicit `cd` for multi-project deploys
-- **NEVER guess or fabricate phone numbers, emails, or contact info.** On 2026-02-25, fabricated a phone number for Shane Parmenter and sent an SMS to a random stranger from RPI's brand-new toll-free line. Could have triggered spam complaints and jeopardized the toll-free verification that was approved minutes earlier.
+- **NEVER guess or fabricate phone numbers, emails, or contact info.** On 2026-02-25, fabricated a phone number for a team member and sent an SMS to a random stranger from RPI's brand-new toll-free line. Could have triggered spam complaints and jeopardized the toll-free verification that was approved minutes earlier.
 - **If you don't have contact info, ASK.** Do not guess. Do not assume. Do not make up numbers.
 - **Pattern**: Every `ghl_contact_id || client_id` swapped to `client_id || ghl_contact_id`. GHL fallback retained for safety.
 - **Root cause**: Sprenger BD/RIA accounts imported via Gradient with `client_id` only (no GHL ID) were invisible to lookups that checked `ghl_contact_id` first
