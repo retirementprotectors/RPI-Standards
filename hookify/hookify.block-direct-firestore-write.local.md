@@ -15,9 +15,18 @@ conditions:
   # ACTUALLY apply: block fires only when content matches AND path is NOT authorized.
   # MEGAZORD's policy is unchanged — this only restores the exemptions to working order.
   # Surfaced by RONIN-Asset (tm2 Index couldn't wire live A1/A2 substrate reads). Verified 6/6.
+  # FIX 2026-06-09 (shinob1, JDM-authorized "GO FIRESTORE"; megazord notified): added
+  # `docs/.*\.html` to the exemption. The content regex above matches ANY Firestore
+  # collection/doc access — including read-only reads — so APPA standalone-HTML tools
+  # (docs/*.html, the JDM-blessed Firebase-web-SDK prototype lane) were false-blocked
+  # even on pure reads. Precedent: docs/partners/midwest-medigap/dashboard.html +
+  # docs/que/medicare-medsupp-quote-v1.html. Direct Firestore stays gated in apps/ +
+  # packages/ (must use the API proxy); only services/* and docs/*.html are exempt.
+  # JDM 2026-06-09: "Hard to write when you're just reading, and we have HARD GATES for
+  # write-shape on Client/Account data now." Surfaced by VOLTRON-MSG.
   - field: file_path
     operator: regex_match
-    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|\.(test|spec)\.(ts|js))).*
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|docs/.*\.html|\.(test|spec)\.(ts|js))).*
 owner: megazord
 ---
 

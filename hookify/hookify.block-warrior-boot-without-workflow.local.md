@@ -18,12 +18,13 @@ conditions:
   # Allowlist (frozen 2026-05-03, one-way ratchet, SHINOB1 sign-off required to expand):
   #   Mains (7): megazord, musashi, raiden, ronin, shinob1, taiko, voltron
   #   Ronin variants: ronin-<lowercase>
-  #   Shinob1 variants (13): auditor / auditor-hermes / auditor-raiden / coach /
+  #   Shinob1 variants (14): auditor / auditor-hermes / auditor-raiden / coach /
   #     discovery-cxonode / discovery-launchguide / discovery-masterplan /
-  #     mwm-spyglass / plan-p1 / plan-p2 / plan-p3 / plan-pwauth
+  #     mwm-spyglass / plan-p1 / plan-p2 / plan-p3 / plan-pwauth /
+  #     dex (added 2026-06-09 — JDM "clear the hook for SHINOB1-DEX"; SHINOB1 sign-off)
   - field: command
     operator: regex_match
-    pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin(-[a-z]+)?|shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)))?)(\s|$))[a-z]
+    pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin(-[a-z]+)?|shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)|dex))?)(\s|$))[a-z]
   # Opt-out: workflow-aware boot — operator referenced WORKFLOW.md in the
   # same bash invocation (e.g. `cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo`).
   - field: command
