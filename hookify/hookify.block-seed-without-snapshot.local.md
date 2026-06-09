@@ -3,13 +3,22 @@ name: block-seed-without-snapshot
 enabled: true
 event: bash
 action: block
+# 2026-06-09 (MEGAZORD): hookify upstream removed `exclude:` semantics (same
+# break that bricked block-warrior-boot) — the gate was blocking ALL
+# seed-/migrate-/backfill- runs unconditionally, even compliant ones with safety
+# flags. Rewrote the exclude as two `not_contains` conditions (ANDed): block only
+# when a seed command carries NEITHER --snapshot NOR --dry-run. Same intent, using
+# operators the current runtime actually supports.
 conditions:
   - field: command
     operator: regex_match
     pattern: npx tsx.*(?:seed-|migrate-|backfill-)
-exclude:
-  - pattern: --snapshot
-  - pattern: --dry-run
+  - field: command
+    operator: not_contains
+    pattern: --snapshot
+  - field: command
+    operator: not_contains
+    pattern: --dry-run
 owner: megazord
 ---
 
