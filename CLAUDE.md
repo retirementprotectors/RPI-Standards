@@ -380,13 +380,13 @@ console.log('user error');               // Not for user feedback
 ❌ NEVER draw shapes, circles, or paths and call them a logo
 ❌ NEVER generate ANY visual mark, icon, or brand element
 
-✅ ALWAYS use the REAL logos at packages/ui/src/logos/
-✅ prodashx-mark.svg / prodashx-logo.svg (ProDashX)
-✅ riimo-mark.svg / riimo-logo.svg (RIIMO)
-✅ sentinel-mark.svg / sentinel-logo.svg (SENTINEL)
+✅ CANONICAL logos (the ones on theagentxstory.com) = the "-tm" set in packages/ui/src/logos/
+✅ prodashx-tm/ (ProDashX), riimo-tm/ (RIIMO), sentinel-tm/ (SENTINEL) — each has:
+   -tm-transparent.png (full logo) · -tm-icon-150w.png (small) · -tm-on-dark.png · -tm-on-white.png
+✅ These are WIDE horizontal logos (no square-mark variant). Size to fit; "wide is fine" (JDM 2026-06-09).
 ✅ LogoProDashX.tsx / LogoToMachina.tsx (React components)
-✅ PNG exports in prodashx/, prodashx-tm/, riimo-tm/, sentinel-tm/, tomachina/
-✅ If a logo doesn't exist yet — ASK JDM. Use a text label, never a generated shape.
+⛔ RETIRED 2026-06-09: the old gauge/compass/shield *-mark.svg / *-logo.svg were the WRONG logos — deleted repo-wide (PR #1709). Do NOT reference or recreate them.
+✅ If a needed logo variant doesn't exist yet — ASK JDM. Use a text label, never a generated shape.
 ```
 **JDM spent hours personally art-directing every logo. Generating a shitty SVG substitute is the single most disrespectful thing an agent can do. This rule is non-negotiable, applies to every session, every agent, every project, forever.**
 
