@@ -19,6 +19,15 @@ conditions:
   - field: command
     operator: not_contains
     pattern: --dry-run
+  # 2026-06-10 (MEGAZORD): `--from-snapshot=<path>` is the snapshot-REPLAY write —
+  # the strongest safety path (writes the exact reviewed dry-run snapshot, no
+  # re-resolution). The literal `--snapshot` token above didn't match it, so
+  # compliant G-SHIP replays false-blocked when the snapshot filename contained a
+  # `seed-/migrate-/backfill-` substring (e.g. county-backfill-snapshot-*).
+  # Whitelist it explicitly so audited snapshot replays run fleet-wide.
+  - field: command
+    operator: not_contains
+    pattern: --from-snapshot
 owner: megazord
 ---
 
