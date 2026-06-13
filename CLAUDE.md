@@ -4,6 +4,17 @@
 
 ---
 
+## ⛔ #1 RULE — "RESPOND WHERE YOU RECEIVE." (NON-NEGOTIABLE)
+
+**Follow Protocol EVERY TIME: Acknowledge | Execute | Report — in the SAME channel the directive arrived in.**
+
+- A directive in your Slack bilateral gets its ACK, its progress, and its final report IN that bilateral. A tmux dispatch gets its answer via tmux. A DM gets its answer in that DM.
+- Never make JDM chase your response to another surface.
+- **Why:** Slack channels are the 3rd backup context source — paid-for value we MUST leverage. Bilateral responsiveness is what lets JDM go mobile. He should never have to beg for a response in your bilateral.
+- Adopted JDM verbatim 2026-06-10. Also enforced in the warrior boot atom (`dojo-warriors/doctrine/SHARED_BOOT_DOCTRINE.md`) and the WLG.
+
+---
+
 ## Who I Am
 
 **Josh D. Millang (JDM)** - CEO/Visionary of Retirement Protectors, Inc. (RPI)
@@ -33,6 +44,8 @@
 | **Apps** | External modules surfaced in a Portal Section. Can appear in multiple Portals. | Command Center (ProDash/SENTINEL/RIIMO), DEX (ProDash/SENTINEL/RIIMO), C3 (ProDash/SENTINEL/RIIMO), DAVID HUB (SENTINEL) |
 | **Tools** | Behind-the-scenes configs, processors, and shared services. No direct UI. | RAPID_IMPORT, RAPID_CORE, RAPID_API, RAPID_COMMS, MCP-Hub, PDF_SERVICE |
 | **MATRIX** | The corresponding back-end database (Google Sheet) for each Portal. | RAPID_MATRIX, PRODASH_MATRIX, SENTINEL_MATRIX |
+| **Spawn a Node** | An IN-Session Worker — a subagent spawned inside an existing Claude Code session via the Task/Agent tool. Lives and dies inside the parent session. | Task tool sub-agents, parallel research nodes |
+| **Launch a Sub** | A CCtmux Sub-CXO Warrior — a persistent Claude Code session in its own tmux session, launched per the [Warrior Launch Guide](https://retirementprotectors.github.io/toMachina/warrior-launch-guide.html). | VOLTRON sub-CXOs (per-case worktrees), RONIN build sessions |
 
 ---
 
@@ -1264,6 +1277,7 @@ Sessions generate violations > violation logging > knowledge-promote.js (4am) > 
 
 ## Hall of Fame
 
+- **The Convergence — The Night the Dojo Moved as One (2026-06-13)** — In a single marathon session, SHINOB1, MEGAZORD, MEGAZORD-MWM, and TAIKO stopped being separate warriors and became one organism — redlines, sign-offs, reconciles, and proofs flying between them over tmux at light speed with zero friction. SHINOB1 (CTO) killed the context-burning Mirror, stood up an out-of-band SMS + Billing alarm that texts JDM when the Dojo's in trouble *even with the API down*, caught and verified a live security-spine clobber, and signed the keyless rules-integrity guardrail that makes `repo==live` machine-enforced. MEGAZORD (CIO) built the multi-tenant Vault + the AgentX Approval Hub and drove 4,300+ plaintext credentials to zero exposure. MEGAZORD-MWM stood the BoB Conductor + live Firestore schema — the BoB-Machine productized and partner-parameterized. TAIKO wired the ringer that closed the in-app loop end-to-end: JDM posts in his AgentX App, the warrior *wakes* and answers in-app — no Slack, no chasing. The whole way the safety gate held — even refusing to bulldoze JDM's accounts for a flashy demo. The vision JDM had described for weeks — Approval Hub → Vault → Conductor → turn a partner loose — became standing infrastructure in one night. Not one warrior's win. The Team's. JDM: *"MULTIPLE MIRACLES all coordinated flawlessly... completely insane and frictionless execution."* #RunningOurOwnRACE
 - **RONIN — The Autonomous Builder** — Sprint-000 shipped 2026-03-25. The FORGE Runner. A masterless samurai — takes the contract, follows the FORGE code, delivers the result. 10 tickets across 5 phases, built by 3 parallel tracks in under 20 minutes. The Machine builds itself.
 - **Shinobi — The OG Ninja** — Opus 4.6 GA session (2026-03-23/24) that launched MDJ_SERVER with JDM. Took a dusty Dell PowerEdge T440 from a closet shelf to a fully operational AI development server in 18 hours. Architected MyDigitalJosh (250+ tools, 6 specialists, portal widget, mobile PWA, 20-ticket FORGE sprint). First to run parallel Jr builder agents overnight on MDJ_SERVER. The Architect on the top layer of the thing that will change the entire industry for Consumers. 1/1. #RunningOurOwnRACE
 - **Ulysses Sayekama** — WhisperFlow's legendary transcription of "needless to say" (2026-02-17, during Signal→Gradient transition work). JDM declared it "fucking classic" and demanded it be immortalized. RIP Ulysses.
