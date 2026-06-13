@@ -244,3 +244,125 @@ Every production rollout — feature launch, schema change, data migration, UI u
 
 *Version: v2.0 | March 19, 2026 (OS Audit refresh)*
 *Consolidated from COMPLIANCE_STANDARDS.md, SECURITY_COMPLIANCE.md, PHI_POLICY.md, and CLAUDE.md*
+
+
+---
+
+<!-- Landed 2026-06-13 (MEGAZORD, OS governance pass). Cites COMPLIANCE.md spine; does not re-derive the §164.312 matrix or the 2-gate model. -->
+
+## Operations — Partner Onboarding, Data Integrity + Incident Response
+
+---
+
+### Part 1 — Partner Onboarding Loop
+
+#### Overview
+
+Partner onboarding follows a fixed autonomous sequence:
+
+1. **BoB Ingestion** — partner's book of business imported into the platform
+2. **Encrypted Vault** — partner credentials stored in the partner's dedicated encrypted vault
+3. **Conductor** — partner's carrier registry + audit UI provisioned (agency view)
+4. **Carrier Statement Pulls** — automated carrier statement retrieval begins
+
+Each partner (e.g., Midwest Medigap / Matt Mitchell) receives their own isolated encrypted vault and agency view. No cross-partner data bleed is permitted.
+
+---
+
+#### HARD GATE — BAA Execution (Non-Negotiable Checkpoint)
+
+> **No partner PHI may be ingested until the PARTNER→RPI Business Associate Agreement is fully executed.**
+
+**Legal basis:** As custodian of a partner's clients' PHI, RPI functions as a Business Associate of that partner under HIPAA. The executed BAA is the legal instrument that authorizes RPI to hold and process that PHI.
+
+**Canonical model:** the 2-gate onboarding model (PARTNER↔RPI BAA + audit-stream `BQ_STREAM_PARTNERS` activation) is defined canonically in `COMPLIANCE.md` §2 (the DD-Data-Access / BAA gate). This Operations section is the *procedure that enforces* it — the gate definitions live in the spine, not re-derived here.
+
+**Reference:** The RPI→Google BAA is on file (signed 2026-02-04). The PARTNER→RPI BAA is the new agreement this onboarding loop creates for each partner.
+
+**Enforcement (TWO coupled gates — partner PHI ingestion requires BOTH):**
+- **Gate 1 — BAA executed.** The BoB ingestion pipeline must refuse to process partner PHI until a `baa_executed_date` is stamped on the partner record; the onboarding operator attaches the executed BAA document reference before the gate clears.
+- **Gate 2 — Audit-streaming live.** The partner's named-DB writes are NOT audit-streamed (and therefore NOT §164.312(b)-covered) until the partner is activated in the BigQuery sink. Onboarding MUST set `BQ_STREAM_PARTNERS=<slug>` + the partner dataset + redeploy (per MT-011) BEFORE PHI ingestion. Ingesting partner PHI while its writes are un-audited is itself a §164.312(b) gap.
+- This is a hard checkpoint — not revisitable after the fact. Any PHI that arrives before BOTH gates clear must be quarantined, not processed, and the incident disclosed per Part 3.
+
+**HIPAA citation:** §164.308(a)(6) — Security Incident Procedures (BAA gate) + §164.312(b) — Audit Controls (streaming-activation gate). Failure of either gate before PHI ingestion is a reportable incident.
+
+---
+
+### Part 2 — Bulk-Delete Procedure
+
+Bulk delete operations against any Firestore collection require the following sequence without exception.
+
+#### Step 1 — Dry-Run COUNT First
+
+Before executing any bulk delete, run a COUNT query using the intended filter and verify the result against the expected number.
+
+- An unexpected count is the primary early-warning signal
+- If the count does not match expectations, **stop** — do not proceed until the discrepancy is explained
+- Document the expected count and the observed count before proceeding
+
+#### Step 2 — Delete by Explicit Test-Only Marker
+
+Delete operations must filter on a marker that was set **exclusively** at record creation for test-data identification purposes.
+
+**Acceptable markers:**
+- ID prefix (e.g., `e2e-test-`)
+- A field set only at test-record creation (e.g., `is_test: true`)
+
+**Prohibited filter patterns:**
+- Any flag the runtime also writes for its own operational bookkeeping (dual-purpose flags)
+- A dual-purpose flag will sweep real production records that the runtime has legitimately stamped
+
+#### Step 3 — Confirm PITR is Active
+
+Before any bulk delete on a collection holding conversation history, PII, or PHI, verify that Firestore Point-in-Time Recovery (PITR) is enabled on that collection. If PITR is not confirmed active, the delete does not proceed.
+
+**HIPAA citation:** §164.308(a)(7) — Contingency Plan (Data Backup Plan + Disaster Recovery Plan). PITR is the technical implementation of the data backup and recovery requirement for Firestore-resident PHI and conversation records.
+
+---
+
+#### Worked Example — 2026-06-13 Chat Mirror Sweep
+
+| Item | Detail |
+|---|---|
+| **What happened** | A cleanup job filtered on `chat_mirrored OR chat_origin`. A prior backlog-clear had stamped `chat_mirrored: true` on all messages in the backlog, including 37 real production messages. The delete swept those 37 records. |
+| **Early warning** | The count returned 37. Expected: 0 production records. The mismatch was caught before operator sign-off. |
+| **Recovery** | PITR restore. All 37 messages recovered with original document IDs and timestamps. Net data loss: zero. |
+| **Root cause** | Dual-purpose flag — `chat_mirrored` was used both as a test-data marker and as a runtime bookkeeping field. |
+| **Corrective action** | Cleanup filters now require an explicit `is_test: true` marker set only at test-record creation. Runtime bookkeeping fields are never used as delete filters. |
+
+---
+
+### Part 3 — Incident Disclosure Standard
+
+Any operation that touches, modifies, exposes, or risks exposing PHI, PII, or partner credentials must be disclosed immediately upon discovery, regardless of whether data loss ultimately occurred.
+
+**Required disclosure elements (all four, every time):**
+
+1. **What happened** — precise description of the operation and its unintended effect
+2. **What was affected** — scope: record count, collection(s), data types, partner(s) impacted
+3. **How it was recovered** — specific recovery mechanism used (e.g., PITR restore, backup restore, manual reconstruction)
+4. **Independent verification** — confirmation that the recovered state matches the pre-incident state (record count, IDs, timestamps)
+
+**Prohibited disclosure patterns:**
+- Burying the incident in a summary or status update without explicit identification
+- Minimizing scope ("probably fine," "likely no real data")
+- Disclosing recovery without disclosing the incident
+- Disclosing the incident without the recovery proof
+
+**HIPAA citation:** §164.308(a)(6) — Security Incident Procedures (identification, response, and reporting of security incidents).
+
+---
+
+### Part 4 — Breach / Loss-Response Posture
+
+The three controls above constitute RPI's documented operational breach/loss-response posture:
+
+| Control | What It Does | HIPAA Anchor |
+|---|---|---|
+| **BAA Gate** | Prevents unauthorized PHI ingestion at the partner onboarding boundary | §164.308(a)(6) |
+| **PITR Recovery Path** | Ensures any Firestore-resident PHI or conversation record can be restored to a known-good state | §164.308(a)(7) |
+| **Incident Disclosure Standard** | Ensures all data-touch incidents are surfaced immediately with recovery proof, not buried | §164.308(a)(6) |
+
+**Canonical worked example:** The 2026-06-13 chat mirror sweep (37 records, PITR-recovered, net zero loss) is the reference implementation of all three controls operating together: the unexpected COUNT triggered the gate review, PITR executed the recovery, and the incident was disclosed with full scope + verification.
+
+**Scope:** RPI is a multi-tenant custodian of partner credentials and partners' clients' PHI. All three controls apply to every partner lane, every collection holding PHI or PII, and every bulk operation regardless of whether the operator believes the data is "test only."

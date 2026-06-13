@@ -352,3 +352,68 @@ Published legal/compliance pages — public-facing, no authentication required. 
 ---
 
 *This document should be reviewed quarterly and updated as RPI's security posture evolves.*
+
+
+---
+
+<!-- Landed 2026-06-13 (MEGAZORD, OS governance pass). Cites COMPLIANCE.md spine; does not re-derive the §164.312 matrix or the 2-gate model. -->
+
+## 1. New Firestore collections + access posture (verification table additions)
+
+| Collection | Rule posture | Notes |
+|---|---|---|
+| `dojo_threads` | owner-gated: read `owner_email==token.email \|\| isHubAdmin()`; create owner-only; update/delete `false` | Hub comms backbone (thread list + previews). Doc-id `{sanitized_owner_email}__{warrior_id}`. |
+| `dojo_messages` | owner-gated: read owner-or-hubadmin; create owner-only + `from=='me'`; update/delete `false` | The conversation log. Ringer reads via Admin SDK (bypass). `delivered:true` = ✓✓ receipt. |
+| `approval_requests` | read owner-or-hubadmin; create `isRPIUser()` + status `pending` + `owner_email` is string + `!decided_by`; update owner-decides + `final_text` | Multi-tenant Approval Hub cards. |
+| `approval_secrets` | create owner-gated; **read `false`** | Server-only (Admin SDK). Secret values never client-readable — held through both rule clobbers this week. |
+| `partner_vault/{tenant}/**` | **no explicit match → deny-by-default via `{document=**} → if false` catch-all** | Encrypted partner carrier creds. Server-only (Admin SDK). Verified secure (the "partner_vault" string in the ruleset is only a comment; the catch-all is the real guard). |
+| `chat_oauth` | **RETIRED 2026-06-13** | gchat tossed by JDM. Token revoked + doc deleted; owner-only rule remains DORMANT/harmless in live ruleset — candidate for removal on the next rules pass. |
+
+**3-tenancy vault map (encode as the canonical credential topology):**
+- RPI team → `users/{email}/access_items`
+- Partner → `partner_vault/{tenant}/carriers/{key}`
+- Client → `clients/{clientId}/access_items`
+
+Live ruleset: **fc981d23** (post-`chat_oauth`, PR #1842). `isHubAdmin()` / `isPartnerOfTenant(t)` helpers present.
+
+## 2. PITR — new posture REQUIREMENT
+
+**Point-in-time recovery MUST be ON for every collection holding conversation history or PII** (`dojo_messages`, `clients`, `approval_requests`, etc.).
+- Currently: **ON** (verified by use — recovered 37 deleted messages 2026-06-13).
+- Verification line: confirm PITR enabled in Firestore settings; treat OFF as a Sev-1 posture gap for any PII collection.
+- Rationale: it is the difference between "recovered in 2 min" and "permanent loss" on a bad bulk op. (See the delete-by-flag incident → Immune System pass.)
+
+## 3. IAM standing posture (NEW — flagged for review)
+
+- **`mdj-agent@claude-mcp-484718` holds `roles/iam.projectIamAdmin` STANDING.** This is the root enabler of warrior IAM self-grants. **Flagged for scope-down review** — not minimal-privilege.
+- **IAM self-escalation log pattern (encode as standard):** any self-grant is logged with `grant_ts | drop_ts | held | sa | role | reason | created_in_window | dropped_verified | outcome` (the `SECURITY_INCIDENTS.md` schema). Self-grants are grant→use→**drop**, narrowest scope, owner-routed if broader scope is needed.
+- Reference event: WIF pool-admin self-grant `2026-06-13T04:34:05Z` → drop `04:35:23Z` (78s held), routed to owner when SA bindings needed `serviceAccountAdmin` (broader than minimal). Zero broader escalation taken.
+
+## 4. Rules deploy posture
+
+- Live ruleset = **fc981d23**; `firestore.rules` is **deploy-from-main-only** going forward (no live-only hand-patches; fetch-live→merge→deploy + land-to-main same session; verify rule BODY not just block-presence).
+- Drift-gate + deploy-on-merge CI: **staged + signed, HELD pending the WIF owner-bootstrap** (SHINOB1's open item). Mark "staged, pending owner-bootstrap" — do not claim live.
+
+## 5. InfoSec + HIPAA pillar (first-class LENS over this Posture section)
+
+**Why now:** RPI is now a **multi-tenant custodian of partner firms' credentials AND their clients' PHI**. That is an elevated regulatory weight class — HIPAA is the spine of this section, not a footnote.
+
+**BAA chain (document + verify each link):**
+- `RPI → Google`: **SIGNED 2026-02-04** (covers Workspace + GCP HIPAA-eligible: Firestore, STT, Vertex, BQ). PHI-to-Google = cleared. On-box at `reference/os/STANDARDS.md` + `POSTURE.md`.
+- `Partner → RPI`: **NEW link, must be papered.** As custodian of a partner's clients' PHI, RPI is a Business Associate of the partner (or the partner is a covered client under our BAA umbrella). **Flag as REQUIRED-verify before any partner's PHI lands** — JDM/legal item, not assert-done.
+
+**Tenant isolation = a DOCUMENTED HIPAA technical safeguard** (write it down as such, not just as a rule):
+- Owner-gating (`owner_email==token.email`) + `isPartnerOfTenant(t)` custom-claim + per-tenant vault paths (`partner_vault/{tenant}/**`) are the *access-control safeguard* (§164.312(a)). One partner can never read another's creds/PHI — enforced at the rules layer + verified (partner_vault deny-by-default; approval_secrets read=false).
+
+**Encryption / access / audit — controls written down (HIPAA §164.312):**
+- **At rest:** partner creds AES-256-GCM via `vault-cipher` (`VAULT_ENCRYPTION_KEY` in GSM); PHI in Firestore (Google-encrypted, BAA-covered). No plaintext creds anywhere (the 2,584-pw bulk load was encrypted + shredded).
+- **Access control:** Firebase Auth `@retireprotected.com` domain restriction + per-tenant claims + owner-gating.
+- **Audit:** `vault_audit` writes on every cred op; `dojo_messages` is an immutable conversation audit log (update/delete `false`). Encode "audit trail is queryable + immutable" as a control.
+- **Availability/integrity:** PITR ON (§2 above) = the recoverability control.
+
+**PHI handling EXTENDED to the new surfaces:** the global PHI rules (Workspace/Firestore only, never Slack, never logs) now explicitly cover the **hub (dojo_messages) + the vault + Approval Hub cards**. Hub DMs are BAA-covered (Firestore); Slack is NOT in the BAA → never route PHI to a Slack mirror.
+
+**Breach response (Operations cross-ref):** the incident-disclosure standard (straight + immediate + recovery-proof) + the PITR recovery path = the documented breach/loss-response posture. The 37-message recovery 2026-06-13 is the worked example.
+
+---
+*Recipes/paths on request. The HIPAA lens also threads the Standards draft (encryption standard, access-control rules, PHI-handling extension, breach-response procedure) + Operations (breach-response runbook) — both follow on your signal, steps 3–4.* — 🏯 MEGAZORD

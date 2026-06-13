@@ -470,3 +470,157 @@ Violations of these standards may result in:
 | v1.0 | Feb 13, 2026 | HIPAA status resolved (BAA signed), PHI training status updated (10/13 complete), version upgraded from draft to active |
 | v2.0 | Feb 19, 2026 | Merged from COMPLIANCE_STANDARDS.md + PHI_POLICY.md into OS kernel. Operational content moved to OPERATIONS.md, monitoring content to MONITORING.md, posture details to POSTURE.md. Added enforcement section, transmission security rules, approved storage locations, expanded definitions. |
 | v2.1 | Mar 22, 2026 | Added API Contract Standards (Layer 2) section — compile-time DTO enforcement via @tomachina/core/api-types/. 3-layer API safety model documented. |
+
+
+---
+
+<!-- Landed 2026-06-13 (MEGAZORD, OS governance pass). Cites COMPLIANCE.md spine; does not re-derive the §164.312 matrix or the 2-gate model. -->
+
+## Standards — Multi-Tenant Custody + InfoSec/HIPAA
+
+> **Regulatory weight class:** RPI is a multi-tenant custodian of partner firms' credentials AND their clients' PHI. Every subsection below carries an InfoSec/HIPAA obligation. Laxity in any layer is a reportable incident.
+
+---
+
+### 1. Tenancy Model
+
+RPI operates a three-tier credential topology. Each tier has a distinct Firestore path, a distinct access-control predicate, and a distinct data-sensitivity classification.
+
+| Tier | Firestore Path | Sensitivity |
+|---|---|---|
+| **RPI Team** | `users/{email}/access_items` | Internal credentials |
+| **Partner** | `partner_vault/{tenant}/carriers/{key}` | Partner PHI + carrier credentials |
+| **Client** | `clients/{clientId}/access_items` | Client PHI |
+
+**Tenant isolation is a HIPAA technical access-control safeguard under §164.312(a)(1).** Isolation is enforced at the Firestore Rules layer, not the application layer, so it cannot be bypassed by a compromised API route.
+
+#### Rule Helpers (canonical — do not inline these predicates)
+
+```
+// Per-partner tenancy check
+function isPartnerOfTenant(t) {
+  return request.auth.token.tenant == t;
+}
+
+// Owner-gate for hub and vault collections
+function isOwner() {
+  return resource.data.owner_email == request.auth.token.email || isHubAdmin();
+}
+```
+
+- `isPartnerOfTenant(t)` — gates all `partner_vault/{tenant}/**` reads and writes. A partner session must carry the `tenant` custom claim (set server-side at login via Firebase Auth Admin SDK) and that claim must match the path segment.
+- `isOwner()` — gates hub/vault collection documents where a single human owns the record (e.g. `dojo_messages`, approval cards, per-user OAuth tokens). A document is readable/writable only by the email that owns it, or by a verified hub admin.
+
+**Auth domain restriction:** Firebase Auth is locked to `@retireprotected.com`. No account outside that domain can obtain an ID token that satisfies any `isRPIUser()` predicate in `firestore.rules`.
+
+---
+
+### 2. PHI Handling — Permitted Surfaces
+
+PHI is ONLY permitted on BAA-covered surfaces. The BAA is signed with Google (covers Google Workspace and GCP). **Slack is NOT covered by the BAA.**
+
+| Surface | PHI Permitted | Notes |
+|---|---|---|
+| Firestore (Native mode) | **Yes** | Primary PHI store. BAA-covered. |
+| Google Workspace (Drive, Sheets, Docs) | **Yes** | BAA-covered. |
+| Cloud Run logs | **No** | Never log PHI — hook-enforced (`block-phi-in-logs`). |
+| Slack (any channel or DM) | **No** | Not in BAA. Routing PHI to Slack is a reportable breach. |
+| `dojo_messages` / Approval Hub cards | **Treat as PHI surface** | Hub messages may carry client context. Owner-gate applies. Never forward to Slack. |
+| Local disk / tmux panes | **No** | Transient processing only; never persist. |
+
+PHI extends to: client names when paired with health information, Medicare IDs, DOB paired with coverage data, and any carrier-account credential that could be used to access a client's health record.
+
+---
+
+### 3. Encryption at Rest
+
+**Standard:** Partner and carrier credentials are NEVER stored in plaintext. PHI fields in Firestore that would be sensitive if the Firestore project were compromised MUST be encrypted before write.
+
+**Cipher module:** `@tomachina/core/crypto/vault-cipher`
+
+```typescript
+import { encrypt } from '@tomachina/core/crypto/vault-cipher';
+
+const field: EncryptedField = encrypt(plaintext);
+// Returns: { ciphertext, iv, authTag, encrypted_at, key_version }
+```
+
+- Algorithm: AES-256-GCM (authenticated encryption — ciphertext integrity is verified on decrypt).
+- Key material: `VAULT_ENCRYPTION_KEY` — a base64-encoded 32-byte key stored in **Google Secret Manager only**. Never in env files, never in source, never in Slack.
+- Key retrieval (authorized services only):
+  ```bash
+  gcloud secrets versions access latest --secret=VAULT_ENCRYPTION_KEY
+  ```
+- The `key_version` field in `EncryptedField` enables future key rotation without re-encrypting in-place — increment the version, re-encrypt on next write.
+
+**HIPAA cite:** AES-256-GCM at rest satisfies §164.312(a)(2)(iv) (Encryption and Decryption) and §164.312(e)(2)(ii) (Encryption of data at rest).
+
+**Enforcement:** Any Write or Edit that stores a carrier credential, OAuth token, or PHI field without routing through `vault-cipher` is a Tier 1 violation. Hook `block-hardcoded-secrets` enforces the secret-in-source dimension; the vault-cipher usage standard covers the plaintext-in-Firestore dimension.
+
+---
+
+### 4. Firestore Rules — Deploy Standard
+
+The Firestore Rules file is a **whole-file last-writer-wins deploy**. Deploying from a stale local copy silently clobbers every match block added by other warriors since the last pull. This is a security incident, not just a merge conflict.
+
+#### Required Procedure (no exceptions)
+
+1. **Fetch the live ruleset** before writing a single line.
+   - REST: `GET https://firebaserules.googleapis.com/v1/projects/PROJECT/releases/cloud.firestore` → extract `rulesetName`.
+   - `GET https://firebaserules.googleapis.com/v1/{rulesetName}` → `source.files[0].content` is the authoritative current ruleset.
+2. **Insert your match block** into the fetched content (before the documents-block closing brace).
+3. **POST a new ruleset.** The file name in the payload body MUST be `'firestore.rules'` — not a full path, not a directory-prefixed string.
+4. **PATCH the release** to point at the new ruleset:
+   ```
+   PATCH https://firebaserules.googleapis.com/v1/projects/PROJECT/releases/cloud.firestore
+   Body: {
+     "release": { "name": "projects/PROJECT/releases/cloud.firestore", "rulesetName": "projects/PROJECT/rulesets/<id>" },
+     "updateMask": "rulesetName"
+   }
+   ```
+   The `rulesetName` value is the **bare resource name** `projects/PROJECT/rulesets/<id>` — not a URL, not a full `https://` path.
+5. **Auth:** `GOOGLE_APPLICATION_CREDENTIALS=<sa-key> gcloud auth application-default print-access-token`
+6. **Land the identical content to `main` in the same session.** `repo == live` is the invariant. A live-only hand-patch that does not land to `main` creates drift and will be silently overwritten on the next deploy.
+7. **Verify the rule body**, not just that the match block is present. Confirm the `allow` condition evaluates correctly against a test token before closing the session.
+
+**HIPAA cite:** Correctly scoped Firestore Rules are the technical implementation of §164.312(a)(1) access controls. A clobber event that removes a match block is an unintended PHI access-control regression and must be treated as a potential incident.
+
+---
+
+### 5. In-App OAuth — Per-User Consent Pattern
+
+When a feature requires access to a user's external account (e.g. a carrier portal, a Google service beyond base SSO), use the in-app OAuth consent pattern. Do not pre-provision shared service-account tokens for per-human resources.
+
+**Flow:**
+
+1. A **'Connect'** button initiates an OAuth consent popup scoped to exactly the permissions needed.
+2. On successful consent, store the resulting token in an owner-gated Firestore document where the document ID equals `request.auth.token.email`. The Firestore rule enforces that only that email (or a hub admin) can read or write the document.
+3. The token never transits Slack, is never written to Cloud Run logs, and is never stored outside Firestore.
+
+**Firebase Compat SDK gotcha (do not repeat this error):**
+
+```typescript
+// WRONG — returns null in compat SDK:
+const credential = GoogleAuthProvider.credentialFromResult(result);
+const token = credential?.accessToken; // null
+
+// CORRECT — read directly from result in compat:
+const token = result.credential.accessToken;
+
+// To add scopes to an already-signed-in user:
+const result = await reauthenticateWithPopup(currentUser, provider);
+```
+
+**HIPAA relevance:** Per-user OAuth tokens that grant access to a system containing PHI (e.g. a carrier portal) are themselves PHI-adjacent credentials. Owner-gating in Firestore is the access-control safeguard; vault-cipher encryption is the encryption-at-rest safeguard. Both apply.
+
+---
+
+### 6. §164.312 Coverage — see the spine matrix (no double-maintenance)
+
+The canonical §164.312 technical-safeguards matrix lives in the **compliance spine** (`COMPLIANCE.md` §3) — it is the SSOT and indexes every control documented across Standards/Posture/Operations. This Standards doc is the *implementation layer*; it does not re-maintain the matrix.
+
+**Where each Standards section maps in:**
+- §1 Tenancy model → spine: Access control §164.312(a)(1) + Tenant isolation + Person/entity auth §164.312(d)
+- §3 Encryption at rest → spine: Encryption §164.312(a)(2)(iv) + §164.312(e)(2)(ii)
+- §2 PHI permitted-surfaces + §4 deploy-from-main → spine: PHI-on-new-surfaces (§4) + Access control
+- **Audit controls §164.312(b): VERIFIED 2026-06-13** — `vault_audit` per cred op + immutable `dojo_messages` + `bigquery-stream` write-stream; two caveats (best-effort; per-partner activation via `BQ_STREAM_PARTNERS`) carried in spine §3 + open item §7. Not re-asserted here.
