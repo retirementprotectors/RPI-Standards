@@ -6,7 +6,7 @@
 
 ## Purpose
 
-The Operating System is the governance layer of The Machine. It defines what's allowed (Standards), who has access (Posture), how rules are enforced (Immune System), what's being watched (Monitoring), and what humans do (Operations).
+The Operating System is the governance layer of The Machine. It defines what's allowed (Standards), the HIPAA/InfoSec framework everything threads (Compliance), who has access (Posture), how rules are enforced (Immune System), what's being watched (Monitoring), and what humans do (Operations).
 
 The Machine is the business -- the platforms, the code, the data, the people. The OS is the thing that keeps it all honest.
 
@@ -18,6 +18,7 @@ The Machine is the business -- the platforms, the code, the data, the people. Th
 The Machine (the business)
   └── The Operating System (governance layer)
         ├── Standards    (STANDARDS.md)       ← the kernel -- what the rules ARE
+        ├── Compliance   (COMPLIANCE.md)      ← HIPAA/InfoSec spine -- the legal+PHI framework the others thread (added 2026-06-13: multi-tenant PHI custody)
         ├── Posture      (POSTURE.md)         ← access control -- who can do what
         ├── Immune System (IMMUNE_SYSTEM.md)  ← enforcement + learning loop
         ├── Monitoring   (MONITORING.md)      ← watchdogs + health checks

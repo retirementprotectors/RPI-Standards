@@ -277,6 +277,14 @@ PreToolUse file events. `action: warn`. Warns but allows the operation.
 - **Fix:** Define response type in `@tomachina/core` and use it in both the API route and the frontend consumer
 - **Added:** 2026-03-20
 
+#### 23. `warn-bulk-delete-without-count-dryrun`
+- **Files:** bash (`event: bash`)
+- **Pattern:** A `tsx`/`node`/`python` script named `delete-`/`cleanup-`/`purge-`/`sweep-`/`prune-`/`wipe-` run with NEITHER `--dry-run` NOR `--count`/`--dry-count`
+- **Warns:** Bulk delete without a dry-run COUNT first; reminds to never delete by a runtime/bookkeeping flag (dual-purpose flags sweep real records) and to confirm PITR is on
+- **Fix:** `--count` → `--dry-run` → execute; delete only by a creation-stamped test marker (`e2e-test-`/`is_test:true`)
+- **Born from:** the 2026-06-13 `chat_mirrored` sweep (37 real msgs deleted by a dual-purpose flag; PITR-recovered). Sibling to `block-seed-without-snapshot` (which covers seed/migrate/backfill WRITES, not deletes).
+- **Added:** 2026-06-13 (SHINOB1)
+
 ---
 
 ## The Full Deploy Protocol (#SendIt)

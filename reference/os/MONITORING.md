@@ -66,6 +66,26 @@ Six launchd agent plist files exist on JDM's machine. Status as of 2026-03-19:
 launchctl list | grep com.rpi
 ```
 
+### 2.1b MDJ_SERVER systemd Services (Linux) — Dojo Comms Backbone
+
+The Dojo comms backbone runs as systemd services on MDJ_SERVER. Status verified 2026-06-13:
+
+| Service | Restart policy | Role | Criticality |
+|---------|---------------|------|-------------|
+| `dojo-deliver.service` (the **ringer**) | `Restart=always`, `RestartSec=5` ✓ | onSnapshot's new `from='me'` hub DMs → injects into the target warrior's tmux at turn-boundary (tag: *answer IN THE HUB*) | **🔴 CRITICAL SPOF — if it dies, warriors stop waking on JDM's hub DMs.** The hub is now JDM's primary channel; this service is what makes a hub post reach a warrior. |
+| `oom-guard-alert.service` | systemd | Out-of-band SMS alarm (rate-limit / billing-cutoff / OOM / GPU-thermal → JDM's phone, Twilio, zero-Anthropic-dependency) | High — the fleet's out-of-band lifeline |
+
+**SPOF posture for the ringer:**
+- ✅ **Single-crash recovery is covered** — `Restart=always` + `RestartSec=5` means systemd auto-restarts it within ~5s of a crash.
+- ⚠️ **GAP (open follow-up):** the ringer is **NOT yet in the out-of-band alarm's watch list** (`dojo-warriors/scripts/oom-guard-alert.sh`). So a crash-**loop** (restart repeatedly failing) or a **silent wedge** (process up but not delivering) would NOT page JDM. Recommended: add a dojo-deliver health-probe to `oom-guard-alert.sh` — `systemctl is-active dojo-deliver` AND a recent-delivery freshness check (the watcher logs `[dojo-deliver] ok <id> -> <WARRIOR>` per delivery) → SMS if down/stale. Out-of-band by design (works when the Anthropic API is down).
+- Do **NOT** add a gchat-mirror/receiver to monitoring — that bridge was torn down 2026-06-13 (services inactive, token revoked). Only `dojo-deliver` (the ringer) is the live core.
+
+**Verify status:**
+```bash
+ssh mdj1 'systemctl is-active dojo-deliver.service oom-guard-alert.service'
+ssh mdj1 'journalctl -u dojo-deliver.service --since "10 min ago" | tail'   # recent deliveries
+```
+
 ### 2.2 GAS Triggers (RAPID_API)
 
 Three automated GAS triggers run in RAPID_API:
