@@ -24,7 +24,18 @@ conditions:
   #     dex (added 2026-06-09 — JDM "clear the hook for SHINOB1-DEX"; SHINOB1 sign-off)
   - field: command
     operator: regex_match
-    pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin(-[a-z]+)?|shinob1(-(auditor(-hermes|-raiden)?|coach|discovery-(cxonode|launchguide|masterplan)|mwm-spyglass|plan-(p1|p2|p3|pwauth)|dex))?)(\s|$))[a-z]
+    # 2026-06-09: + megazord-usps-county, ronin-usps-label (JDM "USPS 100%, parallelize
+    #   via sub-CXO launches"; SHINOB1 sign-off). Multi-segment names the single-segment
+    #   ronin(-[a-z]+)? pattern + megazord-no-variant didn't cover.
+    # BROADENED 2026-06-09 (JDM "one yes and sub-CXO launches stop hitting this" = explicit
+    #   authorization for the open fix). Any of the 7 mains + any -<lowercase/digit/hyphen>
+    #   variant launches. The WORKFLOW.md requirement (this rule's ACTUAL purpose) is still
+    #   enforced by the not_contains condition below — who-gating is removed, version-gating
+    #   stays. Replaces the frozen explicit allowlist that generated 3 friction-edits in one night.
+    # 2026-06-15 (SHINOB1 sign-off): + kagami — the 8th MAIN warrior (Surface CXO),
+    #   born this session, WORKFLOW.md authored at toMachina/docs/warriors/kagami/.
+    #   New permanent main = allowlist add (the one-way ratchet, CTO sign-off).
+    pattern: launch-warrior\.sh\s+(?!(megazord|musashi|raiden|taiko|voltron|ronin|shinob1|kagami)(-[a-z0-9-]+)?(\s|$))[a-z]
   # Opt-out: workflow-aware boot — operator referenced WORKFLOW.md in the
   # same bash invocation (e.g. `cat warriors/foo/WORKFLOW.md && launch-warrior.sh foo`).
   - field: command

@@ -7,6 +7,15 @@ conditions:
   - field: command
     operator: regex_match
     pattern: gh\s+pr\s+merge\b.*--auto\b
+  # Opt-out: a verified code-PR declares itself with this token (mirrors the
+  # admin-bypass rule's `# admin-justified:`). The merge proceeds ONLY when the
+  # operator has run the docs-vs-code file check and is consciously asserting
+  # this is a code PR that legitimately needs the CI gate. Intent-revealing,
+  # not a regex dodge. (2026-06-11: the old shell-var "dodge" example stopped
+  # working when the regex outgrew it; replaced with this proper token.)
+  - field: command
+    operator: not_contains
+    pattern: '# code-verified:'
 owner: shinob1
 ---
 
@@ -26,8 +35,8 @@ gh pr view --json files -q '.files[].path' | grep -vE '\.(html|md|png|svg|jpg|jp
 ```
 
 - **Output empty** → 100% docs-only → rerun with `--admin --squash --delete-branch`
-- **Output non-empty** → has code/config changes → `--auto` IS the right command — bypass this block by piping the verification through first, e.g. `gh pr view ... && gh pr merge <#> --auto --squash --delete-branch` (the regex won't match if `--auto` isn't on the literal `gh pr merge` line).
+- **Output non-empty** → has code/config changes → the auto-queue IS the right command. Append the intent token (see Override) so the gate passes a *verified* code PR.
 
 **Why BLOCK, not WARN:** 2026-05-19 (this session) — the WARN version fired but its `systemMessage` got attached as a side-channel `hook_system_message` and didn't reliably surface inline with the Bash tool output, so Claude could miss it. BLOCK forces the action to terminate; the reason MUST surface. Per Sensei: *"Memory is documentation, hookify is enforcement, BLOCK is the obvious play."*
 
-**Override (rare):** if the BLOCK fires on a legitimate code-PR `--auto` and the verification one-liner confirms code changes exist, just rerun the merge command in a way that doesn't match the regex (e.g. shell variable: `CMD="gh pr merge $PR --auto --squash --delete-branch"; $CMD`).
+**Override (rare):** when the BLOCK fires on a legitimate code PR and the file check above confirms code changes exist, append a trailing comment containing the literal token `# code-verified:` plus a short reason to the merge command. The gate's `not_contains` clause then lets that command through. This declares intent (you ran the check, you assert it is a code PR needing CI) rather than hiding from the regex. The earlier shell-variable evasion is RETIRED — it stopped working on 2026-06-11 and a documented evasion was the wrong design. Mirrors the `# admin-justified:` token on the admin-bypass rule.
