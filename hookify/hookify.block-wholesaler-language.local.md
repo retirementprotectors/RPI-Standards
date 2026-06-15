@@ -19,6 +19,17 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: CLAUDE.md
+  # 2026-06-15 (SHINOB1, ZRD-SCOPE-HOOK-001): meta-citation self-exemption. The disco/audit
+  # surface that legitimately names + grades this rule (docs/discoveries/) was NOT exempt and
+  # tripped the gate 3x while authoring the hook-scope audit; plus a term-free content opt-out
+  # token for prose/MEMORY that documents the pattern. Core block stays everywhere else; RULE #1
+  # remains fully enforced. (file+bash twins share this exemption vocabulary.)
+  - field: file_path
+    operator: not_contains
+    pattern: docs/discoveries
+  - field: content
+    operator: not_contains
+    pattern: "termgate-meta:"
 owner: shinob1
 ---
 

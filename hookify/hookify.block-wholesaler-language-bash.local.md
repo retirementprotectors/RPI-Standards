@@ -10,6 +10,12 @@ conditions:
   - field: command
     operator: regex_match
     pattern: ([Ww]holesaler|[Jj]ustin\s*[Bb]rock)
+  # 2026-06-15 (SHINOB1, ZRD-SCOPE-HOOK-001): meta-citation opt-out. A commit/echo/dispatch that
+  # legitimately cites this rule by name appends the term-free token below to pass the gate. Core
+  # block stays everywhere else; RULE #1 remains fully enforced.
+  - field: command
+    operator: not_contains
+    pattern: "termgate-meta:"
 owner: shinob1
 ---
 
