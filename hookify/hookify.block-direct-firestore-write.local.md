@@ -26,7 +26,7 @@ conditions:
   # write-shape on Client/Account data now." Surfaced by VOLTRON-MSG.
   - field: file_path
     operator: regex_match
-    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|docs/.*\.html|\.(test|spec)\.(ts|js))).*
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
 owner: megazord
 ---
 

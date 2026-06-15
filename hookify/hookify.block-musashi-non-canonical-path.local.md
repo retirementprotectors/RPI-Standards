@@ -6,7 +6,7 @@ action: block
 conditions:
   - field: file_path
     operator: regex_match
-    pattern: (?:docs/warriors/musashi|!MUSASHI DOCS!)/(?!(?:agentx|rpi|tomachina|david|_meta)(?:/|$)|README\.md$|cmo-ownership-grid\.html$|\.gitkeep$)
+    pattern: (?:docs/warriors/musashi|!MUSASHI DOCS!)/(?!(?:agentx|rpi|tomachina|david|_meta)(?:/|$)|README\.md$|cmo-ownership-grid\.html$|_INDEX\.md$|\.gitkeep$)
 owner: musashi
 ---
 
