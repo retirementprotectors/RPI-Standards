@@ -62,7 +62,7 @@ The auditor signs only after the **live** check for the deliverable's type:
 | Deliverable | Completeness check (LIVE, not static) |
 |---|---|
 | **API / endpoint** | authed **curl-200 with DATA** against the deployed surface. `registered ≠ mounted+serving`; `200 ≠ 200-with-data`; an unauth/IAM 401 proves nothing (auth gates before routing). |
-| **Surface / UI** | live-render co-sign on the **deployed** URL (token-clean + honest-empty where no data, no fake-green) — not a local/branch render, not "code merged." |
+| **Surface / UI** | live-render co-sign on the **deployed** URL (token-clean + honest-empty where no data, no fake-green) — not a local/branch render, not "code merged." For a multi-view surface, verify **EACH tab/route mounts its DISTINCT real content** — a front-door 200 proves nothing about the tabs. (RSA-ITP E4: a registry shipped every real module to main yet mapped every tab to a stub — code-correct + bundle-current + Firestore-empty still rendered stubs. **Built ≠ wired**: the registry rewire was the missing tissue.) |
 | **Data surface** | the producing run actually wrote, AND the consumer's service-account can READ the data-source (provisioning grant present) → 200-**with-data**. |
 | **Route mount** | boot **fail-loud assertion** proves it mounted (a registry that nothing consumes is dead); a non-mounted route must THROW at boot, never silently 404. |
 | **New build vs prior-art** | prior-art audit sweeps **live surfaces** (funnel boards / the living-surface-registry), not just code — confirm no existing live surface already does it. |
