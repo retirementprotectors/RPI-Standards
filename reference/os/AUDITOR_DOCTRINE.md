@@ -103,4 +103,47 @@ never opt-in:
 
 ---
 
-🥷 — SHINOB1, CTO. Earned the hard way, one night, six times. Verify the live reality.
+## 6. The Delegation Loop — Pull-to-Closure (the completeness law, extended to delegation)
+
+> Codified 2026-06-18 (SHINOB1, JDM-directed) as EL-3 of the Durable Machine. Earned from a
+> 30-day corpus analysis + a live miss the same day (a finished scope whose keystone handoff
+> silently failed to reach its delegator until the CEO nudged).
+
+A delegation that expects a report-back IS a scope — the same law applies: it is not "done"
+when dispatched, only when the loop **closes**. Cross-warrior report-back runs **~88%**
+(measured, 30-day transcript corpus). That sounds fine until you compound it across a real
+EPIC: a scope with **N** delegated handoffs is `0.88^N` safe — a 10-handoff EPIC is **~28%**
+safe, i.e. **~72% carry at least one silent-death handoff** that kills the whole scope. Even
+a 3-handoff scope is ~32% exposed. The failure is invisible: the delegate goes quiet, nobody
+pulls, the work **dies on the vine** — surfaced only when the original problem it was built
+to solve re-erupts. It is NOT a "12% of messages" problem; it is "most multi-delegation
+EPICs carry a hidden single point of failure."
+
+Two teeth, both required (doctrine without enforcement IS the documented-but-not-wired bug — §2.3):
+
+1. **PULL is mandatory, not a virtue.** When you delegate with a report-back expectation,
+   FOLLOWING it to closure is **part of the delegation** — the same obligation as the build
+   itself. Fire-and-**FOLLOW** (arm a self-wake, re-arm until it lands) is the hard default,
+   not optional diligence. A delegator who fires and forgets **owns** the silent death. (Pairs
+   with the boot FIRE-AND-FOLLOW atom; this makes it load-bearing, not aspirational.)
+
+2. **The immune system catches the fall-through.** The stale-handoff watcher tracks every
+   report-back-expected dispatch; one gone silent past threshold **screams to the DELEGATOR's
+   ops watch** (not the CEO — health reports to its owner, per EL-6). Same anti-corpse
+   heartbeat as the live-surface watchers, aimed at delegations — and it carries its own
+   heartbeat so the watcher can't silently die either. This surfaces the dying 12% **while
+   they're still fixable**, not when the scope's failure re-erupts later.
+
+NOT the wrong fix: this is **not** a proactive-status-cadence to the CEO (he will ask when
+he wants status; unsolicited status pings are noise). It is the delegation LOOP made
+unbreakable — pull + push + an immune catch.
+
+A delegated scope closes only when its handoffs closed AND its completeness auditor signed
+(§1). The silent-death scopes are precisely those whose handoff died before anyone audited
+them — which is why this lives in the auditor law, not in a comms guide.
+
+---
+
+🥷 — SHINOB1, CTO. Earned the hard way — six live catches one night (§2), and one silent
+handoff death the day delegation-completeness (§6) was written. Verify the live reality;
+close the loop.

@@ -6,7 +6,7 @@ action: block
 conditions:
   - field: content
     operator: regex_match
-    pattern: Agent\s*\([^)]*(?:model\s*[:=]\s*['"]opus['"]|(?!model\s*[:=]))
+    pattern: model['"\s]*[:=]['"\s]*['"]?opus\b(?![\s\S]*opus-justified)
 owner: shinob1
 ---
 
