@@ -27,6 +27,12 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: docs/discoveries
+  # 2026-06-21 (SHINOB1, CLAUDEMD-MIGRATE-001 follow-on): the canonical doctrine SSOT moved
+  # off CLAUDE.md to the Scroll shared streams (docs/warriors/shared/*.md). That doctrine
+  # legitimately documents Rule #1 → exempt it too, like CLAUDE.md. Core block unchanged everywhere else.
+  - field: file_path
+    operator: not_contains
+    pattern: warriors/shared
   - field: content
     operator: not_contains
     pattern: "termgate-meta:"

@@ -22,6 +22,9 @@ conditions:
   - field: file_path
     operator: not_contains
     pattern: memory
+  - field: file_path
+    operator: not_contains
+    pattern: warriors/shared
 owner: shinob1
 ---
 
