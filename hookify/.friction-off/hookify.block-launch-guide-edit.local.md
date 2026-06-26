@@ -1,6 +1,6 @@
 ---
 name: block-launch-guide-edit
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:

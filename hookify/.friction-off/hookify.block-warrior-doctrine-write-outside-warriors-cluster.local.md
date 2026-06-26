@@ -1,6 +1,6 @@
 ---
 name: block-warrior-doctrine-write-outside-warriors-cluster
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:

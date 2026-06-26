@@ -1,6 +1,6 @@
 ---
 name: intent-sendit
-enabled: false
+enabled: true
 event: prompt
 action: warn
 conditions:

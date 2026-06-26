@@ -1,6 +1,6 @@
 ---
 name: block-subcxo-brief-without-5surface-section
-enabled: false
+enabled: true
 event: bash
 action: block
 # 2026-05-31 (SHINOB1): Authored from JDM directive "MEMORY.md is a fucking

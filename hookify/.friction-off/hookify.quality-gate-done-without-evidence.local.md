@@ -1,6 +1,6 @@
 ---
 name: quality-gate-done-without-evidence
-enabled: false
+enabled: true
 event: prompt
 action: warn
 conditions:

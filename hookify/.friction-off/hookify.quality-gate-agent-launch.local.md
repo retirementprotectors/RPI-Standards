@@ -1,6 +1,6 @@
 ---
 name: quality-gate-agent-launch
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:

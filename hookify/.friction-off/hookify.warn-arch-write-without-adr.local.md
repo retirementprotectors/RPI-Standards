@@ -1,6 +1,6 @@
 ---
 name: warn-arch-write-without-adr
-enabled: false
+enabled: true
 event: bash
 action: warn
 conditions:

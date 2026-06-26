@@ -1,6 +1,6 @@
 ---
 name: block-warrior-boot-without-workflow
-enabled: false
+enabled: true
 event: bash
 action: block
 # 2026-05-19 (SHINOB1): hookify upstream removed `exclude:` semantics, which

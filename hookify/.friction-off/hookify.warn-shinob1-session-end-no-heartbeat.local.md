@@ -1,6 +1,6 @@
 ---
 name: warn-shinob1-session-end-no-heartbeat
-enabled: false
+enabled: true
 event: stop
 action: warn
 severity: WARN

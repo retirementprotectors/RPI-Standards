@@ -1,6 +1,6 @@
 ---
 name: intent-pre-flight-check
-enabled: false
+enabled: true
 event: prompt
 action: block
 conditions:

@@ -4,6 +4,14 @@ enabled: true
 event: file
 action: block
 conditions:
+  # Scope to CODE files only — Agent() is a tool call in .ts/.js/.py, never in prose.
+  # Without this, the content pattern matched the substring "agent (" case-insensitively,
+  # so a doc/brief mentioning the "mdj-agent (the ...)" SERVICE NAME got falsely blocked,
+  # and the rule even blocked edits to its own .md (which contains Agent() examples).
+  # A6 precision fix (false-positive minimization). SHINOB1 2026-06-26.
+  - field: file_path
+    operator: regex_match
+    pattern: \.(ts|tsx|js|jsx|mjs|cjs|py)$
   - field: content
     operator: regex_match
     pattern: Agent\s*\([^)]*(?:model\s*[:=]\s*['"]opus['"]|(?!model\s*[:=]))

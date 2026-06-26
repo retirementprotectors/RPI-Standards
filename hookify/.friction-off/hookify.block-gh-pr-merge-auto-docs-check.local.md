@@ -1,6 +1,6 @@
 ---
 name: block-gh-pr-merge-auto-docs-check
-enabled: false
+enabled: true
 event: bash
 action: block
 conditions:

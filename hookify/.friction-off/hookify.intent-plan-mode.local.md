@@ -1,6 +1,6 @@
 ---
 name: intent-plan-mode
-enabled: false
+enabled: true
 event: prompt
 action: warn
 conditions:
