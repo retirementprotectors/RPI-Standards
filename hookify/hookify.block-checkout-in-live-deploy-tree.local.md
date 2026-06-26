@@ -6,8 +6,12 @@ action: block
 conditions:
   - field: command
     operator: regex_match
-    pattern: Projects/dojo-warriors(?![\w-])[^\n]*(checkout|switch\b)
+    pattern: Projects/dojo-warriors(?![\w-])
+  - field: command
+    operator: regex_match
+    pattern: \bgit\s+(-C\s+\S+\s+)*(checkout|switch)\b
 owner: shinob1
+reviewed: 2026-06-26 SHINOB1 A6 — FP fix. Old single pattern matched the dojo-warriors PATH + the bare word "switch"/"checkout" anywhere in the command, so any `node /home/jdm/Projects/dojo-warriors/.../dojo-reply.mjs "...global switch..."` (hub-status prose) tripped it. Split into AND conditions: (1) references the live deploy path, AND (2) contains an actual `git [-C <path>] checkout|switch` op. Prose containing "switch"/"checkout" no longer fires; real branch ops on the live tree still blocked. Same prose-substring FP class as block-opus-subagent / block-alert-confirm-prompt.
 ---
 
 **BLOCKED: Branch checkout/switch targeting the live dojo-warriors deploy checkout**
