@@ -1,6 +1,6 @@
 ---
 name: warn-early-conclusion
-enabled: false
+enabled: true
 event: file
 action: warn
 owner: ronin
