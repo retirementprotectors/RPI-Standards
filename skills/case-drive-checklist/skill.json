@@ -1,0 +1,20 @@
+{
+  "id": "case-drive-checklist",
+  "name": "Case-Drive Checklist",
+  "version": "1.1.0",
+  "owner_warrior": "voltron",
+  "lane": "client-operations",
+  "description": "Canonical 8-step process for driving any client case to 100%. Three gates: Firestore true-up (Gate 1, MEGAZORD lane), ACF true-up (Gate 2), and AOR/Held-Away Recapture (Gate 3, BLOCKING ship-gate).",
+  "invoke": "/case-drive-checklist",
+  "skill_md": "SKILL.md",
+  "born": "2026-06-26",
+  "origin": "field-authored by VOLTRON from a live case, promoted via SKILLS-REG-001",
+  "mcps_called": [],
+  "hooks_enforcing": [
+    "block-untyped-firestore-fields",
+    "block-direct-firestore-write",
+    "block-case-roadmap-in-repo"
+  ],
+  "promoted_by": "SHINOB1",
+  "promoted_at": "2026-06-26"
+}
