@@ -1,6 +1,6 @@
 ---
 name: block-gh-pr-merge-admin-bypass
-enabled: false
+enabled: true
 event: bash
 action: block
 # 2026-05-31 (SHINOB1): Authored after JDM caught me admin-bypassing

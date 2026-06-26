@@ -1,6 +1,6 @@
 ---
 name: quality-gate-build-verify
-enabled: false
+enabled: true
 event: prompt
 action: warn
 conditions:

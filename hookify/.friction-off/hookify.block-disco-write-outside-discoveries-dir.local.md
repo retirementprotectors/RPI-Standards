@@ -1,6 +1,6 @@
 ---
 name: block-disco-write-outside-discoveries-dir
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:

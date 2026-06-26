@@ -1,6 +1,6 @@
 ---
 name: quality-gate-deploy-verify
-enabled: false
+enabled: true
 event: bash
 action: warn
 conditions:

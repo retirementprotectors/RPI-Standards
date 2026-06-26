@@ -1,6 +1,6 @@
 ---
 name: warn-commit-missing-ticket-id
-enabled: false
+enabled: true
 event: bash
 action: warn
 conditions:

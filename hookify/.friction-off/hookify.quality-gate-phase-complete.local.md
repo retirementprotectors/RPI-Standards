@@ -1,6 +1,6 @@
 ---
 name: quality-gate-phase-complete
-enabled: false
+enabled: true
 event: prompt
 action: block
 conditions:

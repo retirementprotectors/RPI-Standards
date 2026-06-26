@@ -1,6 +1,6 @@
 ---
 name: block-musashi-non-canonical-path
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:

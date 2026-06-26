@@ -1,6 +1,6 @@
 ---
 name: block-shinob1-arc-without-slackout
-enabled: false
+enabled: true
 event: stop
 action: block
 severity: BLOCK

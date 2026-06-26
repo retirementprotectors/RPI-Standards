@@ -1,6 +1,6 @@
 ---
 name: quality-gate-commit-remind
-enabled: false
+enabled: true
 event: bash
 action: warn
 conditions:

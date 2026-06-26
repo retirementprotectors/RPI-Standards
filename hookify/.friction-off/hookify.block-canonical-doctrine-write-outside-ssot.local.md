@@ -1,6 +1,6 @@
 ---
 name: block-canonical-doctrine-write-outside-ssot
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:
