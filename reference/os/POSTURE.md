@@ -202,7 +202,7 @@ For PHI handling policies, see [STANDARDS.md](STANDARDS.md).
 
 #### Automated CI Security
 - [x] *(REVISED 2026-05-12 per ZRD-UNINVITE-DESTRUCTABOT-001)* CVE scanning via own `cve-scan.yml` workflow — `npm audit --production --audit-level=high` weekly Monday 13:00 UTC + `workflow_dispatch` for ad-hoc; opens GitHub Issue + fails workflow on high/critical findings, silent on clean. *Replaces Dependabot, which was uninvited after surfacing doctrine drift: prior POSTURE claim of "Dependabot CVE scanning" was fictional — `dependabot_security_updates` was disabled at GitHub Settings level; only the weekly minor-and-patch update PRs ran, closing 9 of 10 unmerged. Own scanner = real coverage we control.*
-- [x] Enabled CodeQL static analysis for JavaScript/TypeScript (every PR + weekly Sunday)
+- [x] Enabled CodeQL static analysis for JavaScript/TypeScript (weekly Sunday — GitHub-hosted, off PR gate per JDM-CI-CODEQL-OFFPR-001 2026-06-25)
 - [x] Removed Cursor Bugbot GitHub App (unauthorized third-party code reviewer)
 - [x] Verified only authorized GitHub Apps remain: Claude, Firebase App Hosting
 
