@@ -28,6 +28,15 @@ They live in the inbox/funnel only.
 |------|---------------|
 | `block-case-roadmap-in-repo` | Blocks any client case file (HTML/PDF) written under `docs/cases/` in the toMachina repo — prevents PHI exposure via GitHub Pages (the incident that triggered this rule on 2026-06-12: 28 client case files were briefly public). ACF documents are filed to the inbox/funnel, never the repo. |
 
+## Gate #3 — AOR / Held-Away Recapture (BLOCKING ship-gate)
+
+**What the gate enforces:** Every case must identify all accounts where the
+Advisor of Record is not us, flag them as pending-RIA candidates, and produce
+an explicit attestation. No case ships without a clean Gate #3 result.
+
+**Enforced by:** Skill logic (Step 8 BLOCKING gate) — no code-level hookify rule
+yet. Candidate for a future `block-case-ship-without-aor` rule.
+
 ---
 
 > **To add a new enforcing rule:** author it in `_RPI_STANDARDS/hookify/` per the

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Skill #001 — Case-Drive Checklist · Skills Registry</title>
 <style>
-:root{--bg:#0a0e17;--card:#111827;--card2:#1a2236;--border:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--green:#22c55e;--blue:#3b82f6;--gold:#d4a44c;--cyan:#06b6d4;--voltron:#f59e0b}
+:root{--bg:#0a0e17;--card:#111827;--card2:#1a2236;--border:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--green:#22c55e;--blue:#3b82f6;--gold:#d4a44c;--cyan:#06b6d4;--red:#ef4444;--voltron:#f59e0b}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;max-width:920px;margin:0 auto;padding:28px 20px}
 h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--voltron),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -13,6 +13,7 @@ h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--volt
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:999px}
 .badge.skill{background:rgba(59,130,246,0.12);color:var(--blue);border:1px solid rgba(59,130,246,0.35)}
 .badge.gate{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.35)}
+.badge.block{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.35)}
 .badge.owner{background:rgba(245,158,11,0.12);color:var(--voltron);border:1px solid rgba(245,158,11,0.35)}
 .intro{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--voltron);border-radius:10px;padding:14px 18px;font-size:0.92rem;margin-bottom:20px}
 .intro strong{color:var(--voltron)}
@@ -22,10 +23,14 @@ h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--volt
 .step .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--blue)}
 .step.gate-step{border-left:4px solid var(--green)}
 .step.gate-step .n{color:var(--green);border-color:var(--green)}
+.step.block-gate{border-left:4px solid var(--red)}
+.step.block-gate .n{color:var(--red);border-color:var(--red)}
 .step h3{font-size:1rem;margin-bottom:3px}
 .step .who{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
 .step p{font-size:0.88rem;color:var(--muted)}
 .step p strong{color:var(--text)}
+.step ul{font-size:0.88rem;color:var(--muted);margin-top:5px;padding-left:18px}
+.step ul li{margin-bottom:2px}
 .gates-table{width:100%;border-collapse:collapse;font-size:0.86rem}
 .gates-table th{text-align:left;padding:8px 12px;background:var(--card2);color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
 .gates-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
@@ -37,6 +42,8 @@ h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--volt
 .invoke-box p{font-size:0.86rem;color:var(--muted)}
 .cad{background:rgba(212,164,76,0.08);border:1px solid var(--gold);border-radius:10px;padding:13px 18px;margin:18px 0;font-size:0.9rem;color:var(--muted)}
 .cad strong{color:var(--gold)}
+.alert{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 16px;margin-bottom:10px;font-size:0.88rem;color:var(--muted)}
+.alert strong{color:var(--red)}
 .footer{color:var(--muted);font-size:0.75rem;border-top:1px solid var(--border);margin-top:22px;padding-top:12px}
 </style>
 </head>
@@ -47,40 +54,53 @@ h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--volt
   <span class="badge skill">Skill #001</span>
   <span class="badge owner">Owner: VOLTRON</span>
   <span class="badge gate">Lane: Client Operations</span>
-  <span style="color:var(--muted);font-size:0.82rem;align-self:center">v1.0 · 2026-06-26 · born on Myers</span>
+  <span style="color:var(--muted);font-size:0.82rem;align-self:center">v1.1 · 2026-06-26</span>
 </div>
 
-<div class="intro"><strong>Why this exists:</strong> we solved the case-drive <em>process</em> once — now every case (Parks, Legler, Sprenger, all of them) inherits it instead of re-deriving it. Stop being the magic each time; institutionalize the pattern. Run a case top-to-bottom through these 7 steps. <strong>"100%" = both Gates (4 &amp; 5) closed.</strong></div>
+<div class="intro"><strong>Why this exists:</strong> we solved the case-drive <em>process</em> once — now every case, all of them, inherits it instead of re-deriving it. Stop being the magic each time; institutionalize the pattern. Run a case top-to-bottom through these 8 steps. <strong>"100%" = all three Gates (4, 5, 8) closed AND Step 6 executed.</strong></div>
 
 <div class="section">
 <h2>How to invoke</h2>
 <div class="invoke-box">
   <h3>Any warrior or MDJ specialist</h3>
   <code>/case-drive-checklist</code>
-  <p>The skill walks through all 7 steps in order. Works in any Claude Code session where the skill is symlinked (all active projects + <code>~/.claude/</code>).</p>
+  <p>The skill walks through all 8 steps in order. Works in any Claude Code session where the skill is symlinked (all active projects + <code>~/.claude/</code>).</p>
 </div>
 </div>
 
 <div class="section">
-<h2>The 7-step process</h2>
+<h2>The 8-step process</h2>
 
 <div class="step"><div class="n">1</div><div><div class="who">Open the case</div><h3>SWEEP — the 5 Surfaces</h3><p>Registry · Data · State (Firestore) · Comms (BigQuery recall) · Auth (carrier-direct). Pull carrier-direct wherever possible. Don't start a case cold — its history is one recall away.</p></div></div>
 
-<div class="step"><div class="n">2</div><div><div class="who">Carrier = SSOT</div><h3>RECONCILE the 3 systems of record</h3><p>Line up <strong>every number</strong> across <strong>Carrier ↔ Firestore ↔ ACF</strong>. Flag every drift. The carrier-direct value wins — an on-file/Firestore number is the floor, not today's truth.</p></div></div>
+<div class="step"><div class="n">2</div><div><div class="who">Carrier = SSOT</div><h3>RECONCILE the 3 systems of record + capture AOR</h3><p>Line up <strong>every number</strong> across <strong>Carrier ↔ Firestore ↔ ACF</strong>. Flag every drift. The carrier-direct value wins.<br><br><strong>Also capture the Advisor of Record (AOR) for every account as you enumerate it</strong> — record who holds advisory/servicing standing alongside the value. Data capture only here; Step 8 evaluates and gates it.</p></div></div>
 
-<div class="step"><div class="n">3</div><div><div class="who">The deliverable spine</div><h3>POLISH the Roadmap</h3><p>Drive the roadmap to current truth; iterate with the writer/JDM to <strong>LOCK</strong>. It's the live case record. The one-pager + pay-plan <em>distill</em> it — build/sync those <em>after</em> the strategy locks (don't re-sync every iteration).</p></div></div>
+<div class="step"><div class="n">3</div><div><div class="who">The deliverable spine</div><h3>POLISH the Roadmap</h3><p>Drive the roadmap to current truth; iterate with the writer/JDM to <strong>LOCK</strong>. Where income-rider timing is in play, model the optimal-flip-year / Year-N activation pattern. The one-pager + pay-plan distill it — build/sync those <em>after</em> the strategy locks. Do not advance to Gates until locked.</p></div></div>
 
-<div class="step gate-step"><div class="n">4</div><div><div class="who">MEGAZORD's lane (VOLTRON flags, read-only)</div><h3>FIRESTORE True-Up <span class="badge gate" style="font-size:0.65rem">100% Gate #1</span></h3><p>Write <strong>every</strong> carrier-confirmed fix to Firestore: DOB, account values, rider status, beneficiaries, dedupe. <strong>Gate closed = Firestore matches carrier-direct, no stale fields, no duplicates.</strong></p></div></div>
+<div class="step gate-step"><div class="n">4</div><div><div class="who">MEGAZORD's lane (VOLTRON flags, read-only)</div><h3>FIRESTORE True-Up <span class="badge gate" style="font-size:0.65rem">Gate #1</span></h3><p>Write <strong>every</strong> carrier-confirmed fix to Firestore: DOB, account values, rider status, beneficiaries, dedupe. <strong>Gate closed = Firestore matches carrier-direct, no stale fields, no duplicates. MEGAZORD signs — not VOLTRON.</strong></p></div></div>
 
-<div class="step gate-step"><div class="n">5</div><div><div class="who">The document file</div><h3>ACF True-Up <span class="badge gate" style="font-size:0.65rem">100% Gate #2</span></h3><p>Every doc that should be on file <strong>is</strong>: carrier statements, illustrations, RMD letters, signed forms (distribution / ACH / activation), beneficiary forms. Pull/file what's missing. <strong>Gate closed = nothing referenced that isn't filed.</strong></p></div></div>
+<div class="step gate-step"><div class="n">5</div><div><div class="who">The document file</div><h3>ACF True-Up <span class="badge gate" style="font-size:0.65rem">Gate #2</span></h3><p>Every doc that should be on file <strong>is</strong>: carrier statements, illustrations, RMD letters, signed forms (distribution / ACH / activation), beneficiary forms. Pull/file what's missing. <strong>Gate closed = nothing referenced that isn't filed.</strong></p></div></div>
 
-<div class="step"><div class="n">6</div><div><div class="who">Make it happen</div><h3>EXECUTE + Document</h3><p>Run the open work (the forms, the activations), then log the <strong>standing instruction in ProDash</strong> so it recurs — don't leave it a one-time manual pull.</p></div></div>
+<div class="step"><div class="n">6</div><div><div class="who">Make it happen</div><h3>EXECUTE + Document</h3><p>Run the open work (forms, activations, distributions). Log the <strong>standing instruction in ProDash</strong> so it recurs — don't leave it a one-time manual pull.</p></div></div>
 
-<div class="step"><div class="n">7</div><div><div class="who">Owner sign-off</div><h3>SIGN-OFF + Park</h3><p>JDM eyeballs before anything goes client-facing. Then the case-sub <strong>stands by</strong> and updates the roadmap as truth moves. Death-gate only on explicit close.</p></div></div>
+<div class="step"><div class="n">7</div><div><div class="who">Client-facing artifacts</div><h3>POLISH the Deliverables</h3><p>Distill the locked roadmap into client-facing artifacts: build/sync the <strong>gold-standard 2-page Income Pay Plan</strong> and the one-pager. No figure appears that isn't reconciled.</p></div></div>
+
+<div class="step block-gate"><div class="n">8</div><div><div class="who">BLOCKING ship-gate — no case ships without this</div><h3>AOR / HELD-AWAY RECAPTURE CHECK <span class="badge block" style="font-size:0.65rem">Gate #3 · BLOCKING</span></h3><p>Every case must surface accounts the household <strong>owns</strong> where the <strong>Advisor of Record is not us</strong>. Each is a <strong>pending-RIA AOR recapture candidate</strong> (e.g., an account at Signal, Ameritas, or another firm). A candidate is a <strong>FLAG, not an action</strong> — no transaction, no money moved.</p>
+<ul>
+  <li><strong>AOR is ours</strong> → no flag</li>
+  <li><strong>AOR is not ours</strong> → flag as <code>pending-RIA</code></li>
+  <li><strong>AOR unknown / not captured</strong> → flag as <code>AOR-unconfirmed</code> — never silently cleared</li>
+  <li><strong>AOR genuinely N/A</strong> → record an exclusion with a reason code — do not drop silently</li>
+</ul>
+<p style="margin-top:8px"><strong>PASS</strong> = every account is ours, reason-coded exclusion, or flagged <code>pending-RIA</code>. <strong>BLOCK</strong> = any not-ours account is unflagged — case does not ship. A clean result is NOT "zero held-away accounts" — it is "every held-away account is accounted for." Output: an AOR block on the case record or explicit <code>none — all accounts ours / N/A</code> attestation.</p></div></div>
+
+<div class="step"><div class="n">9</div><div><div class="who">Owner sign-off</div><h3>SIGN-OFF + Park</h3><p>JDM eyeballs before anything goes client-facing. Sign-off attests all three gates passed (Firestore, ACF, AOR). Then the case-sub <strong>stands by</strong> and updates the roadmap as truth moves. Death-gate only on explicit close.</p></div></div>
 
 </div>
 
-<div class="cad"><strong>Cadence:</strong> reconcile at roadmap-build, and <strong>RE-VERIFY at LOCK</strong>. A case is "<strong>roadmap-100%</strong>" once Steps 1–3 are done &amp; locked; it's "<strong>case-100%</strong>" only when Gates 4 (Firestore) &amp; 5 (ACF) are both closed and Step 6 executed. Track the gate status per case right on the roadmap.</div>
+<div class="alert"><strong>Golden Rule (Step 8):</strong> if you didn't READ the account's AOR, don't REPORT it as ours. Unconfirmed AOR is a candidate, never an assumed clear.</div>
+
+<div class="cad"><strong>Cadence:</strong> reconcile at roadmap-build, RE-VERIFY at LOCK. A case is "<strong>roadmap-100%</strong>" once Steps 1–3 done &amp; locked. It's "<strong>case-100%</strong>" only when Gates 1 + 2 + 3 are all closed and Step 6 executed. Track all three gate statuses per case right on the roadmap.</div>
 
 <div class="section">
 <h2>Enforcing hookify gates</h2>
@@ -90,10 +110,11 @@ h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--volt
     <tr><td><strong>Gate #1</strong> Firestore True-Up</td><td><code>block-untyped-firestore-fields</code></td><td>Blocks Firestore writes with untyped fields — prevents schema drift on carrier-confirmed corrections</td></tr>
     <tr><td><strong>Gate #1</strong> Firestore True-Up</td><td><code>block-direct-firestore-write</code></td><td>Enforces writes go through MEGAZORD's sanctioned path — VOLTRON cannot bypass the lane in code</td></tr>
     <tr><td><strong>Gate #2</strong> ACF True-Up</td><td><code>block-case-roadmap-in-repo</code></td><td>Blocks client case files from entering the repo — ACF documents are inbox/funnel only (PHI)</td></tr>
+    <tr><td><strong>Gate #3</strong> AOR Recapture</td><td><em>process-enforced (skill logic)</em></td><td>No code-level hook yet — enforced by Step 8 blocking logic; candidate for a future <code>block-case-ship-without-aor</code> rule</td></tr>
   </tbody>
 </table>
 </div>
 
-<div class="footer">🦁 VOLTRON, CSO — Client Operations · Case-Drive Checklist v1.0 · Skill #001 · Skills Registry (SKILLS-REG-001) · <code>_RPI_STANDARDS/skills/case-drive-checklist/</code> · <code>/case-drive-checklist</code> · #RunningOurOwnRACE</div>
+<div class="footer">🦁 VOLTRON, CSO — Client Operations · Case-Drive Checklist v1.1 · Skill #001 · Skills Registry (SKILLS-REG-001) · <code>_RPI_STANDARDS/skills/case-drive-checklist/</code> · <code>/case-drive-checklist</code> · #RunningOurOwnRACE</div>
 </body>
 </html>
