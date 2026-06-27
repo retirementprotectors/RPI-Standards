@@ -26,7 +26,10 @@ conditions:
   # write-shape on Client/Account data now." Surfaced by VOLTRON-MSG.
   - field: file_path
     operator: regex_match
-    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
+    # FIX 2026-06-27 (ronin, TRK-14785): added mdj-agent/src/ — the mdj-agent is a
+    # standalone server-side service (firebase-admin already initialized in agent/firebase.ts,
+    # db used throughout). Same class as services/api/src/. Surfaced by TRK-14785 audit-first wiring.
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|mdj-agent/src/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
 owner: megazord
 ---
 
@@ -44,6 +47,7 @@ You are writing directly to Firestore outside the authorized write paths.
 - `services/bridge/src/` — Dual-write bridge (Firestore + Sheets)
 - `services/intake/` — Intake Cloud Functions
 - `services/bigquery-stream/` — BigQuery streaming Cloud Functions
+- `mdj-agent/src/` — MDJ Agent server-side service (firebase-admin, server runtime)
 
 **Fix:**
 - Move your Firestore write logic into the appropriate service
