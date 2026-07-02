@@ -9,12 +9,20 @@ conditions:
   # so a doc/brief mentioning the "mdj-agent (the ...)" SERVICE NAME got falsely blocked,
   # and the rule even blocked edits to its own .md (which contains Agent() examples).
   # A6 precision fix (false-positive minimization). SHINOB1 2026-06-26.
+  #
+  # A6 precision fix #2 (SHINOB1 2026-07-01): the .ts scope above still let the
+  # "mdj-agent (" SERVICE NAME inside CODE COMMENTS/prose trip the rule (e.g. a model-
+  # registry config whose header reads "central registry for mdj-agent (single source…)").
+  # Require a boundary before "Agent(" that is NOT a word-char or hyphen, so the hyphenated
+  # service name "-agent (" no longer matches, while genuine tool calls ( `Agent(`, ` Agent(`,
+  # `=Agent(`, `await Agent(`, `>Agent(`, or line-start ) still do. Detection strength of
+  # real Agent() calls is unchanged.
   - field: file_path
     operator: regex_match
     pattern: \.(ts|tsx|js|jsx|mjs|cjs|py)$
   - field: content
     operator: regex_match
-    pattern: Agent\s*\([^)]*(?:model\s*[:=]\s*['"]opus['"]|(?!model\s*[:=]))
+    pattern: (?:^|[^\w-])Agent\s*\([^)]*(?:model\s*[:=]\s*['"]opus['"]|(?!model\s*[:=]))
 owner: shinob1
 ---
 
