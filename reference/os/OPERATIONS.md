@@ -141,7 +141,7 @@ Update controls, hookify rules, and CLAUDE.md to prevent recurrence. Conduct a p
 
 | Completed | Outstanding |
 |-----------|-------------|
-| Susan Kaelin, Bob Lacy, Vince Vazquez, Josh Archer, Aprille Trupiano (departed), Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn (departed) | Shane Parmenter (CFO, departed), Matt McCormick (B2B) |
+| Susan Kaelin, Bob Lacy, Vince Vazquez, Josh Archer, Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla | Matt McCormick (B2B) |
 
 ---
 
