@@ -121,7 +121,7 @@ The GAS editor UI and `appsscript.json` are **two different settings** that can 
 
 ### Super Admin Access
 
-Super Admins locked to **Josh + John Behn only** (reduced from 5 to 2 as of Q1 2026 audit).
+Super Admin locked to **Josh only** — verified live 2026-07-06 (`gam print users query isAdmin=True` → 1 result: Josh@retireprotected.com). Q1 2026 audit reduced 5→2 (Josh + John Behn); John Behn was subsequently offboarded (account `johnbehn.archived@`, suspended, `/RPI- Offboarded`), leaving Josh as sole super-admin.
 
 ### Organizational Unit (OU) Structure
 

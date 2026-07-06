@@ -470,9 +470,9 @@ buildSmartLookup('agent-select', items, val, 'Search agent...')  // Type-ahead
 | **Storage** | PHI ONLY in Google Workspace (Drive, Sheets) - NEVER Slack, text, personal email |
 | **Logging** | NEVER log PHI to console, error messages, or debug output |
 | **Display** | Mask SSN (show last 4), DOB unless explicitly needed for the task |
-| **Breach** | Report suspected breaches to JDM or John Behn immediately |
+| **Breach** | Report suspected breaches to JDM immediately |
 | **PHI Projects** | PRODASHX, QUE-Medicare, DEX, CAM - extra caution required |
-| **Admin Access** | Super Admins locked to Josh + John Behn only. OU `/RPI- Archived Users` = FINRA email archiving (active licensed users). OU `/RPI- Offboarded` = suspended/departed employees. |
+| **Admin Access** | Super Admin locked to Josh only (sole super-admin — verified live 2026-07-06; John Behn offboarded). OU `/RPI- Archived Users` = FINRA email archiving (active licensed users). OU `/RPI- Offboarded` = suspended/departed employees. |
 
 **For full policy details:** Read `_RPI_STANDARDS/reference/os/STANDARDS.md`
 
