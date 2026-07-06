@@ -11,7 +11,7 @@
 > **Scope**: Universal - Applies to ALL RPI Projects, Employees, Contractors, and Agents
 > **Status**: Active - Enforced
 > **Owner**: CEO (Josh D. Millang)
-> **Security Officer**: COO (John Behn)
+> **Security Officer**: JDM (acting Security Officer — formal designation pending; prior COO John Behn offboarded 2026 — Josh sole super-admin, GAM-verified 2026-07-06)
 
 ---
 
@@ -78,9 +78,9 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 ### Controls (Implemented)
 
 1. **Administrative Safeguards**
-   - Designated Security Officer: John Behn (COO)
+   - Designated Security Officer: JDM (acting — formal designation pending; prior COO John Behn offboarded)
    - PHI Training deployed Feb 4, 2026 (see Part 10 for status)
-   - Incident response: Report breaches to John Behn immediately
+   - Incident response: Report breaches to JDM immediately
 
 2. **Physical Safeguards**
    - Google Workspace handles physical security (SOC 2, ISO 27001)
@@ -415,7 +415,7 @@ Violations of these standards may result in:
 - Disciplinary action up to and including termination
 - Potential legal liability for willful violations
 
-**There is no penalty for good-faith reporting of incidents.** Report to CEO (JDM) or COO (John Behn).
+**There is no penalty for good-faith reporting of incidents.** Report to CEO (JDM).
 
 ---
 

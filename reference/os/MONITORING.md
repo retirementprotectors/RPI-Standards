@@ -575,7 +575,7 @@ Extracted from COMPLIANCE_STANDARDS.md. These are manual reviews that supplement
 
 | Review | When | Owner | Deliverable |
 |--------|------|-------|-------------|
-| Access permissions audit | Feb, May, Aug, Nov | JDM + John Behn | Verified user list, removed stale access |
+| Access permissions audit | Feb, May, Aug, Nov | JDM (John Behn offboarded 2026 — Josh sole super-admin, GAM-verified 2026-07-06) | Verified user list, removed stale access |
 | Compliance audit results review | After each GAS trigger run | JDM | Slack post acknowledgment, remediation if needed |
 
 ### Annual Reviews
@@ -584,7 +584,7 @@ Extracted from COMPLIANCE_STANDARDS.md. These are manual reviews that supplement
 |--------|------|-------|-------------|
 | Full security review | January | JDM + JMDC | Security posture report |
 | Vendor security review | January | JDM + Shane | Vendor risk assessment |
-| BAA review | January | JDM + John Behn | Updated BAA documentation |
+| BAA review | January | JDM | Updated BAA documentation |
 | Policy review and update | January | JDM | Updated COMPLIANCE_STANDARDS.md |
 | Training completion verification | January | JDM + Nikki | Training records for all staff |
 

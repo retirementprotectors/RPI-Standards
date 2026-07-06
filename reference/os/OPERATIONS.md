@@ -38,9 +38,9 @@ When an employee or contractor leaves RPI, the following must be completed **the
 - [ ] Review and remove third-party GitHub App installations (Vercel incident 2026-03-19: unused app had broad repo access for months after project archived)
 - [ ] Document completion date and who performed offboarding
 
-**Responsible party:** COO (John Behn) or CEO (JDM).
+**Responsible party:** CEO (JDM).
 
-**Super Admin access is locked to Josh + John Behn only.**
+**Super Admin access is locked to Josh only** (John Behn offboarded 2026 — Josh sole super-admin, GAM-verified 2026-07-06).
 
 **OU Structure:**
 - `/RPI- Archived Users` = FINRA email archiving via Global Relay (active securities-licensed users: Josh, Nikki, Angelique)
@@ -90,7 +90,7 @@ Disable affected accounts/tokens immediately. Revoke any compromised API keys or
 Determine scope: what data may have been accessed, how many records, what type (PHI, PII, financial). Identify the root cause — credential leak, phishing, misconfiguration, etc.
 
 **Step 3: Notify**
-Inform CEO (JDM) and COO (John Behn) immediately. For PHI breaches, HHS notification is required within 60 days. See notification requirements table below.
+Inform CEO (JDM) immediately. For PHI breaches, HHS notification is required within 60 days. See notification requirements table below.
 
 **Step 4: Remediate**
 Fix the vulnerability. Rotate all affected credentials. Patch the attack vector. Deploy additional controls if needed.
@@ -107,7 +107,7 @@ Update controls, hookify rules, and CLAUDE.md to prevent recurrence. Conduct a p
 |----------|---------------|----------|
 | PHI breach | HHS + affected individuals | 60 days |
 | PII breach (state laws) | State AG + affected individuals | Varies (Iowa: 60 days) |
-| Security incident (internal) | Leadership (JDM + John Behn) | Immediate |
+| Security incident (internal) | Leadership (JDM) | Immediate |
 | Breaches affecting 500+ individuals | HHS + media | 60 days |
 
 ### Contact Information
@@ -115,7 +115,6 @@ Update controls, hookify rules, and CLAUDE.md to prevent recurrence. Conduct a p
 - **Google Workspace Support:** admin.google.com > Support
 - **GitHub Security:** github.com/security
 - **CEO (JDM):** Direct Slack DM or phone
-- **COO (John Behn):** Direct Slack DM or phone
 
 ---
 
@@ -142,7 +141,7 @@ Update controls, hookify rules, and CLAUDE.md to prevent recurrence. Conduct a p
 
 | Completed | Outstanding |
 |-----------|-------------|
-| Susan Kaelin, Bob Lacy, Vince Vazquez, Josh Archer, Aprille Trupiano, Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn | Shane Parmenter (CFO), Matt McCormick (B2B) |
+| Susan Kaelin, Bob Lacy, Vince Vazquez, Josh Archer, Aprille Trupiano (departed), Lucas Dexter, Nikki Gray, Christa Irwin, Angelique Bonilla, John Behn (departed) | Shane Parmenter (CFO, departed), Matt McCormick (B2B) |
 
 ---
 
@@ -156,7 +155,7 @@ All workforce members must **immediately** report any of the following:
 - Suspected phishing or social engineering attempts
 - Any other potential PHI breach
 
-**Report to:** CEO (JDM) or COO (John Behn).
+**Report to:** CEO (JDM).
 
 **There is no penalty for good-faith reporting.** RPI encourages reporting of all suspected incidents regardless of severity. Early reporting minimizes damage and demonstrates compliance.
 

@@ -225,4 +225,4 @@ We didn't just clean the data. We built the system that keeps it clean forever.
 
 *Document location: `_RPI_STANDARDS/reference/data/DATA_TEAM_GUIDE.md`*
 *Last updated: February 20, 2026*
-*Questions? Ask Josh or John Behn.*
+*Questions? Ask Josh.*

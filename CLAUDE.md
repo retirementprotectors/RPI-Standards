@@ -304,7 +304,7 @@ This saves ~$4,000/month at current usage levels.
 - **Toll-free**: +18886208587 — works, use as fallback
 - **Offboarded users**: alex@, jmdconsulting@, allison@, christa@, rpifax@
 ### Org Structure
-- **3 Divisions:** Sales (Vince), Service (Nikki), Legacy (Aprille)
+- **3 Divisions:** Sales (Vince), Service (Nikki), Legacy (lead TBD — Aprille departed)
 - **COR/AST/SPC** = team LEVELS, not routing indicators. Leaders sort within their teams.
 
 ---

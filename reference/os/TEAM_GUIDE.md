@@ -66,7 +66,7 @@ This tracks:
 **Key facts from Posture:**
 - 2FA is mandatory for all users (enforced org-wide)
 - All 13 web apps are restricted to RPI organization members only
-- Super Admin access is locked to Josh + John Behn
+- Super Admin access is locked to Josh only (John Behn offboarded 2026 — Josh sole super-admin, GAM-verified 2026-07-06)
 - BAA with Google signed February 4, 2026
 - All data encrypted in transit (TLS 1.3) and at rest (AES-256)
 
@@ -170,7 +170,7 @@ The full technical reference is in the OS directory. Immune System has the compl
 | GAS compliance triggers | 3 (quarterly, weekly, monthly) |
 | Web apps verified org-only | 13 of 13 |
 | Tokens revoked (Q1 audit) | 26 |
-| Super Admins (locked down) | 2 (Josh + John Behn) |
+| Super Admins (locked down) | 1 (Josh) |
 | 2FA enforcement | 100% of users |
 | Policy documents (unified) | 6 (was 5, now organized) |
 | Projects covered | 18 |
@@ -202,4 +202,4 @@ We're not a tech company that bolted on compliance. We built compliance into the
 
 *Document location: `_RPI_STANDARDS/reference/os/TEAM_GUIDE.md`*
 *Last updated: February 19, 2026*
-*Questions? Ask Josh or John Behn.*
+*Questions? Ask Josh.*
