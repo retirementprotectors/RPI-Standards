@@ -11,7 +11,7 @@
 > **Scope**: Universal - Applies to ALL RPI Projects, Employees, Contractors, and Agents
 > **Status**: Active - Enforced
 > **Owner**: CEO (Josh D. Millang)
-> **Security Officer**: JDM (acting Security Officer — formal designation pending; prior COO John Behn offboarded 2026 — Josh sole super-admin, GAM-verified 2026-07-06)
+> **Security Officer**: JDM (formal HIPAA Security Officer, designated 2026-07-06; prior COO John Behn offboarded — Josh sole super-admin, GAM-verified 2026-07-06)
 
 ---
 
@@ -78,7 +78,7 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 ### Controls (Implemented)
 
 1. **Administrative Safeguards**
-   - Designated Security Officer: JDM (acting — formal designation pending; prior COO John Behn offboarded)
+   - Designated Security Officer: JDM (formal HIPAA designation 2026-07-06; prior COO John Behn offboarded)
    - PHI Training deployed Feb 4, 2026 (see Part 10 for status)
    - Incident response: Report breaches to JDM immediately
 
