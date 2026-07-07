@@ -46,8 +46,14 @@ CLASS=""; DETAIL=""
 case "$TOOL" in
   # CLASS B — the ONE gmail send (draft is safe; only *_send_email is the send).
   *gmail_send_email)                 CLASS="B"; DETAIL="gmail_send_email (external send)";;
-  # CLASS C — browser INTERACTION (form submit / click). Navigation/snapshot/read are NOT here → pass.
-  *browser_fill_form|*browser_click) CLASS="C"; DETAIL="$TOOL (custodian-portal interaction)";;
+  # CLASS C — browser INTERACTION / EXECUTION verbs. The READ verbs (navigate, navigate_back,
+  # snapshot, take_screenshot, hover, wait_for, console/network reads, tabs, resize, close) are
+  # NOT listed → they PASS. Render-evidence reads (navigate→snapshot→take_screenshot) are daily
+  # case work (HIKARI/VOLTRON blessed). evaluate + run_code_unsafe are code-exec → always blocked
+  # in a case seat; type/press_key/select_option/file_upload/drag/handle_dialog can submit/confirm
+  # a custodian action → blocked. Blocklist (not allowlist) so benign browser READS never FP.
+  *browser_click|*browser_fill_form|*browser_type|*browser_press_key|*browser_select_option|*browser_file_upload|*browser_drag|*browser_evaluate|*browser_run_code_unsafe|*browser_handle_dialog)
+    CLASS="C"; DETAIL="$TOOL (custodian-portal interaction/execution)";;
   # CLASS B — Slack post/reply (dead surface but still inside '*').
   *slack_post_message|*slack_reply_to_thread) CLASS="B"; DETAIL="$TOOL (external Slack send)";;
   Bash)

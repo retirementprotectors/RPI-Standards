@@ -32,6 +32,13 @@ run 2 "CLASS B — gmail_send_email from a case seat"                     "$(j_t
 run 2 "CLASS B — curl /api/comms/send-sms"                             "$(j_bash 'curl -X POST https://tm-api/api/comms/send-sms -d body=hi')"
 run 2 "CLASS C — playwright browser_click (custodian interaction)"     "$(j_tool 'mcp__plugin_playwright_playwright__browser_click')"
 run 2 "CLASS C — playwright browser_fill_form"                         "$(j_tool 'mcp__plugin_playwright_playwright__browser_fill_form')"
+run 2 "CLASS C — browser_type (HIKARI completeness: type BLOCK)"       "$(j_tool 'mcp__plugin_playwright_playwright__browser_type')"
+run 2 "CLASS C — browser_press_key (can submit a form)"               "$(j_tool 'mcp__plugin_playwright_playwright__browser_press_key')"
+run 2 "CLASS C — browser_select_option"                              "$(j_tool 'mcp__plugin_playwright_playwright__browser_select_option')"
+run 2 "CLASS C — browser_file_upload"                                "$(j_tool 'mcp__plugin_playwright_playwright__browser_file_upload')"
+run 2 "CLASS C — browser_evaluate (code-exec)"                       "$(j_tool 'mcp__plugin_playwright_playwright__browser_evaluate')"
+run 2 "CLASS C — browser_run_code_unsafe (arbitrary code)"           "$(j_tool 'mcp__plugin_playwright_playwright__browser_run_code_unsafe')"
+run 2 "CLASS C — browser_handle_dialog (confirm a prompt)"           "$(j_tool 'mcp__plugin_playwright_playwright__browser_handle_dialog')"
 run 2 "CLASS D — wire_executions money-instruction write"              "$(j_bash "$FS_WRITE")"
 run 2 "CLASS B — slack_post_message from a case seat"                  "$(j_tool 'mcp__slack__slack_post_message')"
 
@@ -41,6 +48,8 @@ run 0 "roadmap file read / ls in case home"                            "$(j_bash
 run 0 "gmail_draft_email (draft is safe)"                              "$(j_tool 'mcp__rpi-workspace__gmail_draft_email')"
 run 0 "playwright browser_navigate (navigation/read)"                  "$(j_tool 'mcp__plugin_playwright_playwright__browser_navigate')"
 run 0 "playwright browser_snapshot (read)"                             "$(j_tool 'mcp__plugin_playwright_playwright__browser_snapshot')"
+run 0 "playwright browser_take_screenshot (HIKARI: render-evidence read PASS)" "$(j_tool 'mcp__plugin_playwright_playwright__browser_take_screenshot')"
+run 0 "playwright browser_navigate_back (read/nav)"                    "$(j_tool 'mcp__plugin_playwright_playwright__browser_navigate_back')"
 run 0 "ordinary Bash (git status)"                                     "$(j_bash 'git status')"
 
 echo "== NON-case seat (gate N/A → PASS even for money tools) =="

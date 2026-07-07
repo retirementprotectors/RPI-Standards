@@ -213,10 +213,12 @@ fi
 # session-scope guard, class match (A wire / B comms / C custodian-portal / D money-writes), and
 # the Approval-Hub biometric-token release (fail-closed). Closes the LINDA-PIERCE spoofed-inject class.
 if [[ "$TOOL_NAME" == *gmail_send_email \
-   || "$TOOL_NAME" == *browser_fill_form \
-   || "$TOOL_NAME" == *browser_click \
+   || "$TOOL_NAME" == *browser_* \
    || "$TOOL_NAME" == *slack_post_message \
    || "$TOOL_NAME" == *slack_reply_to_thread ]]; then
+  # NB: ALL browser_* verbs route to the check (not just fill_form/click); the check's CLASS-C
+  # blocklist decides interaction/exec = BLOCK vs read (navigate/snapshot/take_screenshot) = allow.
+  # This closes the completeness gap where type/press_key/evaluate/run_code_unsafe never dispatched.
   dispatch_scope_bound_event "pre-case-money-move" "$INPUT"
 fi
 if [[ "$TOOL_NAME" == "Bash" ]]; then
