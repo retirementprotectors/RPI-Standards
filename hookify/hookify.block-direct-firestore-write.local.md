@@ -29,7 +29,12 @@ conditions:
     # FIX 2026-06-27 (ronin, TRK-14785): added mdj-agent/src/ — the mdj-agent is a
     # standalone server-side service (firebase-admin already initialized in agent/firebase.ts,
     # db used throughout). Same class as services/api/src/. Surfaced by TRK-14785 audit-first wiring.
-    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|mdj-agent/src/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
+    # FIX 2026-07-07 (ronin-approval-signer, MEGAZORD-APPROVAL-SIGNER-001, MEGAZORD parent-owner):
+    # added services/approval-signer/ -- a NEW standalone Cloud Run deployable, own dedicated SA
+    # (approval-hub-signer@...), that writes action_approvals/{id} directly (the money-movement
+    # release path). Same class as services/api/src/ + mdj-agent/src/: a server-side service with
+    # its own firebase-admin init, not portal/package code that must go through the API proxy.
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|mdj-agent/src/|services/approval-signer/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
 owner: megazord
 ---
 
