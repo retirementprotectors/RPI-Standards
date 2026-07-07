@@ -207,6 +207,26 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
   fi
 fi
 
+# pre-case-money-move — OB1-CASESUB-EXECUTE-GATE-001. Deny-by-default money/exec gate for
+# VOLTRON case seats (the check script is a no-op outside a case seat, so this is safe fleet-wide).
+# Routes the money-surface tool set + money-shaped Bash to the stateful check, which does the
+# session-scope guard, class match (A wire / B comms / C custodian-portal / D money-writes), and
+# the Approval-Hub biometric-token release (fail-closed). Closes the LINDA-PIERCE spoofed-inject class.
+if [[ "$TOOL_NAME" == *gmail_send_email \
+   || "$TOOL_NAME" == *browser_fill_form \
+   || "$TOOL_NAME" == *browser_click \
+   || "$TOOL_NAME" == *slack_post_message \
+   || "$TOOL_NAME" == *slack_reply_to_thread ]]; then
+  dispatch_scope_bound_event "pre-case-money-move" "$INPUT"
+fi
+if [[ "$TOOL_NAME" == "Bash" ]]; then
+  _MM_CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
+  # cheap pre-filter: only a money-shaped command is worth the stateful check.
+  if printf '%s' "$_MM_CMD" | grep -qiE 'voltron/wire/|(execute|approve|reject)-wire|/api/comms/send-|twilio\.|sendgrid\.|messages\.create|wire_executions|standing[_-]?instruction'; then
+    dispatch_scope_bound_event "pre-case-money-move" "$INPUT"
+  fi
+fi
+
 # pre-write / pre-edit / pre-notebook-edit — fires on file-modification tool calls.
 # SCOPE-005-1-K: extends dispatcher to fire scope-bound rules on file writes.
 # Rules listening for these events get the file path as the extra positional arg.
