@@ -417,3 +417,29 @@ Live ruleset: **fc981d23** (post-`chat_oauth`, PR #1842). `isHubAdmin()` / `isPa
 
 ---
 *Recipes/paths on request. The HIPAA lens also threads the Standards draft (encryption standard, access-control rules, PHI-handling extension, breach-response procedure) + Operations (breach-response runbook) — both follow on your signal, steps 3–4.* — 🏯 MEGAZORD
+
+---
+
+## Money-Safety Account Model — VOLTRON Case-Seat Isolation (2026-07-07)
+
+> Established by MEGAZORD + SHINOB1 to close the case-seat ghost-injection class (an unattributable
+> tmux-injected $25K execute command, defused). Gate the ACTION, not the input. Full design:
+> `!MEGAZORD DOCS!/RPI-Data-Vault/approval-hub-token-contract-v1.md` (v1.1).
+
+**The principle:** tmux injection on a one-user box is structurally unattributable, so a case seat's
+money/execution surface is deny-by-default (SHINOB1 gate OB1-CASESUB-EXECUTE-GATE-001, fail-closed, LIVE).
+A move is released ONLY by a valid `approval_sig` the seat CANNOT mint — validity rests on the SIGNATURE,
+never a Firestore status field (the seat SA has coarse Firestore write and could forge a status).
+
+**Identities:**
+| Identity | Role | Why |
+|---|---|---|
+| `voltron-case-seat@claude-mcp-484718.iam` | **`roles/datastore.user` ONLY** (verified) — NO secretmanager, editor, KMS, projectIamAdmin, or signer-impersonation | Case seats run on THIS (via `launch-voltron-case.sh`, SHINOB1 lane). Provably zero path to read OR self-grant to the signing key. Coarse Firestore RW is safe because the sig, not status, is the trust root. |
+| `mdj-agent@…` (shared warrior/infra SA) | Broad (editor + secretmanager.admin + projectIamAdmin) | The OLD case-seat SA + the reason the boundary was broken — an over-privileged seat could read the key AND self-grant. Case seats MUST migrate OFF it. Kept for general warrior/infra use (NOT case seats). |
+| Approval-Hub signer identity (TBD — co-scope) | `roles/cloudkms.signerVerifier` on the key ONLY | Mints `approval_sig` after JDM's biometric. Must be a DEDICATED Hub-backend identity — NOT mdj-agent (broad) and NOT the seat. |
+
+**Signing key:** KMS asymmetric-sign key `projects/claude-mcp-484718/locations/us-central1/keyRings/approval-hub/cryptoKeys/action-approval-signer` (EC_SIGN_P256_SHA256, v1 ENABLED). Private key **never leaves KMS** (not exfiltratable even by the Hub). Hook verifies with the PUBLIC key (local, non-secret). Key IAM policy = EMPTY at creation → seat SA has zero access (boundary probe passes).
+
+**Boundary probe (SHINOB1 self-test #6):** as `voltron-case-seat@`, attempt to access/sign with the key → assert PERMISSION_DENIED. Pre-verified at creation: seat SA has no project-level KMS/secret/editor/iam role + no binding on the key.
+
+**Open (co-scope):** the dedicated Hub-signer identity + its `signerVerifier` binding; the seat creds mechanism (key file vs WIF — recommend key file now, WIF as hardening; even a stolen seat key is datastore.user-only and cannot sign).
