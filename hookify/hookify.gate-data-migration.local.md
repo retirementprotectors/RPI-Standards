@@ -1,15 +1,31 @@
 ---
 name: gate-data-migration
 enabled: true
-event: PreToolUse
+# REVIVAL (megazord, §2d normalization, 2026-07-08 — HELD FOR JDM BLESS, TIER 2 / arms a blocker):
+# event PreToolUse -> file. The hookify PreToolUse hook computes event from tool_name
+# (Bash->bash, Edit/Write/MultiEdit->file) and config_loader SKIPS any rule whose event is
+# neither 'all' nor the computed value. 'PreToolUse' is never computed, so this gate was DEAD
+# (never loaded, never fired) since it was authored — a data-migration SAFETY gate silently off.
+# Flipping to event:file arms it. Shape mirrors the proven live sibling block-direct-firestore-write:
+# event:file + content (+ file_path), and NO `tool` condition — event:file already scopes to
+# Edit/Write/MultiEdit, and the old `tool: equals Edit` wrongly dropped Write. This change is NOT
+# live until it is blessed + merged to main and setup-hookify-symlinks.sh runs (atomic flip).
+event: file
 action: block
 conditions:
-  - field: tool
-    operator: equals
-    value: Edit
   - field: content
     operator: regex_match
-    pattern: FieldValue\.delete\(\)|deleteField\(\)|\.delete\(\).*field|remove.*field
+    # TIGHTENED at revival (over-block verify): kept the two Firestore-specific field-delete APIs
+    # (near-zero false-positive: 5 hits repo-wide). DROPPED the broad `\.delete\(\).*field` +
+    # `remove.*field` alternations — as a LIVE block they false-fire on prose/comments ("remove
+    # the field") and any unrelated `.delete()` sharing a line with the word "field".
+    pattern: FieldValue\.delete\(\)|deleteField\(\)
+  - field: file_path
+    operator: regex_match
+    # Exempt tests + docs so a fixture or doc that MENTIONS deleteField() does not block. Production
+    # code everywhere else (incl. services/*, apps/*, packages/*) STILL gates — a real field deletion
+    # must run the 8-stage protocol regardless of path (that is the entire purpose of the gate).
+    pattern: ^(?!.*(\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
 owner: megazord
 ---
 
