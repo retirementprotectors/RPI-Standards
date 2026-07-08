@@ -7,6 +7,9 @@ conditions:
   - field: file_path
     operator: regex_match
     pattern: (/home/jdm/\.claude/CLAUDE\.md|_RPI_STANDARDS/CLAUDE\.md)$
+  - field: content
+    operator: not_contains
+    pattern: claudemd-stub-update
 owner: shinob1
 status: ARMED_2026-07-08_0.3-complete
 ---
@@ -43,7 +46,7 @@ design and stated honestly. The boot-proof gate (RAIDEN, 0.4 companion) covers t
 "boot loaded a re-grown file" case that a write-block alone can't.
 
 **Legit stub edit (rare governance):** include the token `# claudemd-stub-update: <reason>`
-in the prompt to bypass this block.
+in the WRITTEN FILE CONTENT to bypass this block (matched via a `not_contains` condition).
 
 **Arming:** `enabled: false` until Phase 0 step 0.3 retires the file to a stub — arming it
 before 0.3 would block the retire-to-stub write itself. Flip `enabled: true` as the final
