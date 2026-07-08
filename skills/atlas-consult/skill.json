@@ -1,0 +1,19 @@
+{
+  "id": "atlas-consult",
+  "name": "ATLAS Consult",
+  "version": "0.1.0-draft",
+  "owner_warrior": "megazord",
+  "lane": "data-operations",
+  "description": "Consult ATLAS (the Data Operating System) before any data-import/migration/intake/BoB work — read the Source Registry, Tool Registry, and Wire Definitions first, so work reuses registered sources/tools instead of recreating them blind.",
+  "invoke": "/atlas-consult",
+  "skill_md": "SKILL.md",
+  "born": "2026-07-08",
+  "origin": "GV2 WS-B pilot — converted from hookify `intent-atlas-consult` (a dumb context-injector, event:prompt/action:block used only to inject the runbook, not to detect a violation) by SHINOB1 sub-seat shinob1-build-wsb-atlas-skill",
+  "mcps_called": [],
+  "hooks_enforcing": [],
+  "migrated_from_hookify": "intent-atlas-consult",
+  "status": "draft-staged-unratified",
+  "format_note": "Structured to mirror Skill #001 (case-drive-checklist: SKILL.md + gates.md + surface.html + skill.json) — the only shipped skill format in this repo at draft time. RAIDEN's WS-C skills-library was reported in-flight in parallel but no WS-C schema/location was found in this repo as of 2026-07-08; this is an explicit format assumption to be reconciled before promotion.",
+  "promoted_by": null,
+  "promoted_at": null
+}
