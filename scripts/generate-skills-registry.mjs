@@ -3,8 +3,13 @@
  * generate-skills-registry.mjs — Skills Registry inventory generator
  *
  * AUTO-GENERATED output — do NOT hand-edit skills-registry.json.
- * This script is the SSOT. Edit skill.json files in _RPI_STANDARDS/skills/<name>/
- * and re-run this script to regenerate.
+ * This script is the SSOT. Edit the SKILL.md frontmatter in
+ * _RPI_STANDARDS/skills/<name>/ and re-run this script to regenerate.
+ *
+ * Metadata source (OB1-GV2 skill-format lock, 2026-07-08): SKILL.md FRONTMATTER,
+ * resolved via ./lib/skill-frontmatter.mjs (frontmatter-primary, skill.json fallback
+ * for un-migrated legacy 4-file skills). A single-file skill with no skill.json now
+ * appears here — closing the "no skill.json -> skipped" gap.
  *
  * Usage: node scripts/generate-skills-registry.mjs
  *
@@ -13,9 +18,10 @@
  *   _RPI_STANDARDS/skills-registry.html  — human surface (auto-mounts on roadmaps)
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs'
+import { writeFileSync, readdirSync, statSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { resolveSkillMeta } from './lib/skill-frontmatter.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const STANDARDS_ROOT = dirname(__dirname)
@@ -23,7 +29,7 @@ const SKILLS_DIR = join(STANDARDS_ROOT, 'skills')
 const REGISTRY_JSON = join(STANDARDS_ROOT, 'skills-registry.json')
 const REGISTRY_HTML = join(STANDARDS_ROOT, 'skills-registry.html')
 
-// Collect all skills by scanning skills/*/skill.json
+// Collect all skills by scanning skills/*/SKILL.md (metadata from frontmatter).
 const skills = []
 
 if (!existsSync(SKILLS_DIR)) {
@@ -35,38 +41,25 @@ for (const entry of readdirSync(SKILLS_DIR)) {
   const skillDir = join(SKILLS_DIR, entry)
   if (!statSync(skillDir).isDirectory()) continue
 
-  const jsonPath = join(skillDir, 'skill.json')
-  const skillMdPath = join(skillDir, 'SKILL.md')
-  const gatesMdPath = join(skillDir, 'gates.md')
-  const surfacePath = join(skillDir, 'surface.html')
+  const { meta, source, hasSkillMd, hasSkillJson, missing } = resolveSkillMeta(skillDir)
 
-  if (!existsSync(jsonPath)) {
-    console.warn(`⚠️  Skipping ${entry} — no skill.json found`)
+  if (!hasSkillMd) {
+    console.warn(`⚠️  Skipping ${entry} — no SKILL.md found`)
     continue
   }
-
-  let meta
-  try {
-    meta = JSON.parse(readFileSync(jsonPath, 'utf8'))
-  } catch (e) {
-    console.warn(`⚠️  Skipping ${entry} — invalid skill.json: ${e.message}`)
-    continue
-  }
-
-  // Validate required fields
-  const required = ['id', 'owner_warrior', 'lane', 'version']
-  const missing = required.filter(f => !meta[f])
   if (missing.length) {
-    console.warn(`⚠️  Skipping ${entry} — skill.json missing: ${missing.join(', ')}`)
+    console.warn(`⚠️  Skipping ${entry} — missing required field(s): ${missing.join(', ')} (put them in SKILL.md frontmatter)`)
     continue
   }
 
   skills.push({
     ...meta,
+    _meta_source: source,
     _files: {
-      skill_md: existsSync(skillMdPath),
-      gates_md: existsSync(gatesMdPath),
-      surface_html: existsSync(surfacePath),
+      skill_md: hasSkillMd,
+      gates_md: existsSync(join(skillDir, 'gates.md')),
+      surface_html: existsSync(join(skillDir, 'surface.html')),
+      skill_json: hasSkillJson,
     },
     _path: `skills/${entry}/`,
   })
