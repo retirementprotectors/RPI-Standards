@@ -1,6 +1,6 @@
 ---
 name: block-global-claudemd-write
-enabled: false
+enabled: true
 event: file
 action: block
 conditions:
@@ -8,7 +8,7 @@ conditions:
     operator: regex_match
     pattern: (/home/jdm/\.claude/CLAUDE\.md|_RPI_STANDARDS/CLAUDE\.md)$
 owner: shinob1
-status: BUILT_ARMS_AT_0.3
+status: ARMED_2026-07-08_0.3-complete
 ---
 
 **BLOCKED: Direct write to the global `CLAUDE.md` — it is a RETIRED STUB, not a doctrine file.**
