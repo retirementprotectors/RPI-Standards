@@ -17,24 +17,25 @@ owner: shinob1
 
 You are embedding a `mdjserver.tail7845ea.ts.net/...` URL inside a document that the IRL team will see. The team doesn't have Tailscale clients on their machines, and even though Funnel URLs are technically reachable as public anycast, the optics are wrong (the URL looks internal/private).
 
-**Per JDM directive 2026-05-15** — team-facing means clean public URLs (GitHub Pages or auth-gated portal route), never Funnel.
+**Per JDM directive 2026-05-15** — team-facing means an **auth-gated portal route** or delivery **through the AgentX app**, never Funnel. (A `retirementprotectors.github.io/...` URL is NOT an option: GitHub Pages 404s since the 2026-06-27 PHI funnel-privacy lockdown, and `block-github-io-dead-link` blocks it. This remedy was reconciled 2026-07-08 — GV2 WS-A conflict #1 — so it no longer points at the exact dead URL the sibling rule blocks.)
 
 **Detected pattern:** `mdjserver\.tail7845ea\.ts\.net`
 
 **What to use instead:**
 
-Use `scripts/inbox-to-pages.sh` to copy the inbox artifact into the toMachina docs tree:
+The public-`github.io`-Pages flow (`inbox-to-pages.sh` → a `github.io` URL) is **retired** — Pages
+was taken down in the 2026-06-27 PHI funnel-privacy lockdown, so that URL is born-404 AND blocked by
+`block-github-io-dead-link`. For a team-facing artifact, deliver through an **auth-gated surface**:
 
-```bash
-scripts/inbox-to-pages.sh \
-  "/home/jdm/inbox/!VOLTRON DOCS!/!Cases/Riesberg Case/Statement.pdf" \
-  riesberg \
-  "statement.pdf"
+- **Auth-gated portal route** (ProDash / RIIMO / SENTINEL) — the team signs in; the artifact is served behind entitlement, not a public URL.
+- **The AgentX app** — the sanctioned team + partner delivery surface (2-way Dojo / dashboards).
+- For a doc that lives in the repo, reference the **repo-relative path** (`toMachina/docs/...`), not a public URL — the doc is alive in the repo even though the public URL convention is dead.
 
-# stdout: https://retirementprotectors.github.io/toMachina/docs/cases/assets/riesberg/statement.pdf
-```
+Never embed the Funnel URL (`mdjserver.tail7845ea.ts.net`) in a team-facing doc.
 
-Embed THAT URL in the team-facing doc, not the Funnel URL.
+> **STAGED / GV2 WS-A #1 — for JDM/HIKARI review:** the exact concrete team-facing delivery mechanism
+> (which portal route / app surface for case PDFs) should be confirmed at bless; this reconcile removes
+> the dead+blocked `github.io` recommendation regardless of that choice.
 
 **Scope of this rule:**
 
