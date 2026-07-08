@@ -1,0 +1,19 @@
+{
+  "id": "session-start",
+  "name": "Session Start",
+  "version": "0.1.0-draft",
+  "owner_warrior": "shinob1",
+  "lane": "session-ops",
+  "description": "The legacy session-start protocol — git pull all active repos, hookify symlink sync check, project CLAUDE.md read, GAS ping, Reference Detection, MCP dependency check, open session URLs, cross-warrior briefing, then EnterPlanMode. Superseded in spirit by the live Scroll boot (see staleness note).",
+  "invoke": "/session-start",
+  "skill_md": "SKILL.md",
+  "born": "2026-07-08",
+  "origin": "GV2 WS-B batch 2 — converted from hookify `intent-session-start` (a dumb context-injector, event:prompt used only to inject guidance, not to detect a violation) by SHINOB1 sub-seat shinob1-build-wsb-atlas-skill",
+  "mcps_called": [],
+  "hooks_enforcing": [],
+  "migrated_from_hookify": "intent-session-start",
+  "status": "draft-staged-unratified",
+  "format_note": "Structured to mirror Skill #001 (case-drive-checklist) and the ratified pilot (atlas-consult, PR #56) — SKILL.md + gates.md + surface.html + skill.json, per HIKARI-confirmed WS-C reconciliation (2026-07-08): the tooling-enforced 4-file _RPI_STANDARDS/skills/ shape is canonical for fleet-registered skills, distinct from RAIDEN's single-file docs/warriors/raiden/skills/ convention used for warrior-specific verify runbooks.",
+  "promoted_by": null,
+  "promoted_at": null
+}
