@@ -19,8 +19,8 @@
  *     -> prints ✅ field lines + exits 0, or ❌ BLOCKED + exits 1.
  */
 
-import { readFileSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, existsSync, statSync } from 'node:fs'
+import { join, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const REQUIRED_FIELDS = ['id', 'owner_warrior', 'lane', 'version']
@@ -134,12 +134,17 @@ export function resolveSkillMeta(skillDir) {
 
 // ---- CLI: `--validate <skill-dir>` (used by promote-skill.sh) ----
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const [flag, dir] = process.argv.slice(2)
-  if (flag !== '--validate' || !dir) {
-    console.error('Usage: node skill-frontmatter.mjs --validate <skill-dir>')
+  const [flag, arg] = process.argv.slice(2)
+  if (flag !== '--validate' || !arg) {
+    console.error('Usage: node skill-frontmatter.mjs --validate <skill-dir | path/to/SKILL.md>')
     process.exit(2)
   }
-  const { meta, source, hasSkillMd, missing } = resolveSkillMeta(dir)
+  // Ergonomics: accept either the skill DIR or a path to its SKILL.md (coerce to the dir).
+  let skillDir = arg
+  if (basename(skillDir) === 'SKILL.md' || (existsSync(skillDir) && statSync(skillDir).isFile())) {
+    skillDir = dirname(skillDir)
+  }
+  const { meta, source, hasSkillMd, missing } = resolveSkillMeta(skillDir)
   if (!hasSkillMd) {
     console.error('❌ BLOCKED: SKILL.md is required and was not found.')
     process.exit(1)
