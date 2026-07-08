@@ -1,15 +1,31 @@
 ---
 name: block-untyped-firestore-fields
 enabled: true
-event: PreToolUse
+# REVIVAL (megazord, §2d normalization, 2026-07-08 — HELD FOR JDM BLESS, TIER 2 / arms a blocker):
+# event PreToolUse→file. The engine computes event from tool_name (Edit/Write/MultiEdit→file) and
+# config_loader skips any rule whose event≠'all'≠computed — so 'PreToolUse' never matched and this
+# rule was DEAD since authored (phantom-field writes uncaught everywhere). Flip to event:file arms
+# it. Mirrors the proven live sibling block-direct-firestore-write: NO `tool` condition (event:file
+# already scopes to Edit/Write/MultiEdit; the old `tool: equals Edit` also wrongly dropped Write).
+# NOT live until bless-merge to main + setup-hookify-symlinks.sh (atomic flip).
+event: file
 action: block
 conditions:
-  - field: tool
-    operator: equals
-    value: Edit
   - field: content
     operator: regex_match
+    # Object-literal Firestore write: .set({ / .update({ / .add({. The \{ keeps it write-shaped
+    # (does NOT match Map.set(k,v)/Set.add(x)/setState) — verified 0 non-Firestore hits in packages/ui.
     pattern: \.(set|update|add)\s*\(\s*\{
+  - field: file_path
+    operator: regex_match
+    # FULL sibling allowlist (mirrors block-direct-firestore-write EXACTLY — the two Firestore rules
+    # must share one exemption surface so they never shadow/contradict). Exempts the legit direct-write
+    # server layer + the Firebase-web-SDK prototype lanes (docs/*.html, inbox/*.html) + test/spec/md.
+    # COVERAGE NOTE (megazord re-decision 2026-07-08): this exempts services/api/src, where some raw
+    # untyped .set({...}) scripts (backfill-geo/whitepages/seed-domain) live — accepted deliberately:
+    # block-untyped is a REMINDER guard, not a type-checker; the DURABLE field-schema fix for server
+    # scripts is a typed Firestore client (packages/db converter), tracked separately, not this regex.
+    pattern: ^(?!.*(services/api/src/|services/bridge/src/|services/intake/|services/bigquery-stream/|services/learning-loop/|mdj-agent/src/|services/approval-signer/|docs/.*\.html|inbox/.*\.html|\.(test|spec)\.(ts|js)|\.(md|txt)$)).*
 owner: megazord
 ---
 
