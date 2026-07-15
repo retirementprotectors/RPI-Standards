@@ -1,0 +1,19 @@
+{
+  "id": "pre-flight-check",
+  "name": "Pre Flight Check",
+  "version": "0.1.0-draft",
+  "owner_warrior": "shinob1",
+  "lane": "build-ops",
+  "description": "Mandatory before new sprint/build work — run the cto_pre_flight_check MCP tool against the CTO Registry + last 60 shipped commits + top 30 in-flight branches before writing a line of code, to catch duplicate/colliding build work before it starts.",
+  "invoke": "/pre-flight-check",
+  "skill_md": "SKILL.md",
+  "born": "2026-07-08",
+  "origin": "GV2 WS-B batch 2 — converted from hookify `intent-pre-flight-check` (a dumb context-injector, event:prompt used only to inject guidance, not to detect a violation) by SHINOB1 sub-seat shinob1-build-wsb-atlas-skill",
+  "mcps_called": [],
+  "hooks_enforcing": [],
+  "migrated_from_hookify": "intent-pre-flight-check",
+  "status": "draft-staged-unratified",
+  "format_note": "Structured to mirror Skill #001 (case-drive-checklist) and the ratified pilot (atlas-consult, PR #56) — SKILL.md + gates.md + surface.html + skill.json, per HIKARI-confirmed WS-C reconciliation (2026-07-08): the tooling-enforced 4-file _RPI_STANDARDS/skills/ shape is canonical for fleet-registered skills, distinct from RAIDEN's single-file docs/warriors/raiden/skills/ convention used for warrior-specific verify runbooks.",
+  "promoted_by": null,
+  "promoted_at": null
+}

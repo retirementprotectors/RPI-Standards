@@ -1,0 +1,19 @@
+{
+  "id": "execute-plan",
+  "name": "Execute Plan",
+  "version": "0.1.0-draft",
+  "owner_warrior": "shinob1",
+  "lane": "session-ops",
+  "description": "Switch from Plan Mode to execution once a plan is approved (#LetsRockIt) — drop to MEDIUM thinking, exit Plan Mode, execute the approved plan sequentially, spawn parallel agents on independent phases, and report at each milestone.",
+  "invoke": "/execute-plan",
+  "skill_md": "SKILL.md",
+  "born": "2026-07-08",
+  "origin": "GV2 WS-B batch 2 — converted from hookify `intent-execute-plan` (a dumb context-injector, event:prompt used only to inject guidance, not to detect a violation) by SHINOB1 sub-seat shinob1-build-wsb-atlas-skill",
+  "mcps_called": [],
+  "hooks_enforcing": [],
+  "migrated_from_hookify": "intent-execute-plan",
+  "status": "draft-staged-unratified",
+  "format_note": "Structured to mirror Skill #001 (case-drive-checklist) and the ratified pilot (atlas-consult, PR #56) — SKILL.md + gates.md + surface.html + skill.json, per HIKARI-confirmed WS-C reconciliation (2026-07-08): the tooling-enforced 4-file _RPI_STANDARDS/skills/ shape is canonical for fleet-registered skills, distinct from RAIDEN's single-file docs/warriors/raiden/skills/ convention used for warrior-specific verify runbooks.",
+  "promoted_by": null,
+  "promoted_at": null
+}

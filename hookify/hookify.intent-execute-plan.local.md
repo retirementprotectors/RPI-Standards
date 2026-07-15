@@ -1,6 +1,10 @@
 ---
 name: intent-execute-plan
 enabled: false
+# → migrated to skill execute-plan (GV2 WS-B batch 2, STAGED). See
+#   _RPI_STANDARDS/skills/execute-plan/. Pattern + regex kept below as
+#   historical reference and as the fallback if the skill conversion is
+#   not ratified. Do NOT re-enable without SHINOB1 review.
 event: prompt
 action: warn
 conditions:
