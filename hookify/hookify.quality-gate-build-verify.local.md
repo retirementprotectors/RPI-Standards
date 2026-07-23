@@ -1,10 +1,10 @@
 ---
 name: quality-gate-build-verify
-enabled: false
-event: prompt
+enabled: true
+event: stop
 action: warn
 conditions:
-  - field: user_prompt
+  - field: last_assistant_message
     operator: regex_match
     pattern: (type-check\s+pass|type.check.*13/13|13/13.*pass|npm run type-check)
 owner: shinob1

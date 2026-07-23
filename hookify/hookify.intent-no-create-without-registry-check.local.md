@@ -1,6 +1,6 @@
 ---
 name: intent-no-create-without-registry-check
-enabled: false
+enabled: true
 event: prompt
 action: block
 conditions:

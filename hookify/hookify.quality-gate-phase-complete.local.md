@@ -1,10 +1,10 @@
 ---
 name: quality-gate-phase-complete
-enabled: false
-event: prompt
+enabled: true
+event: stop
 action: block
 conditions:
-  - field: user_prompt
+  - field: last_assistant_message
     operator: regex_match
     pattern: (phase\s+complete|sub-?phase\s+(done|complete)|ready\s+for\s+review|checkpoint\s+(reached|done|complete)|all\s+tasks\s+(done|complete)|deployed\s+and\s+verified)
 owner: shinob1

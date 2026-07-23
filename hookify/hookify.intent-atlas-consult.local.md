@@ -50,7 +50,14 @@ owner: megazord
    JDM decides what's a real source vs noise. Agents do NOT write to `_SOURCE_REGISTRY` without explicit approval. The registry is only useful if it stays clean — one garbage registration ("Josh's conference notepad") and the whole thing loses trust.
 
 ### ATLAS Project Details
-- **Location:** `~/Projects/RAPID_TOOLS/ATLAS/`
+- **Location:** `~/Projects/archive/ATLAS/`
+  - ⚠️ CORRECTED 2026-07-22 (JDM: "There IS NO RAPID_TOOLS Library any longer"). This rule
+    pointed at `~/Projects/RAPID_TOOLS/ATLAS/` for months. That path does not exist, so a warrior
+    following the rule literally dead-ends and may conclude ATLAS is unavailable — the exact
+    opposite of what this rule exists to cause. Key files: `ATLAS_Seed.gs` (`_SOURCE_REGISTRY`),
+    `ATLAS_ToolSeed.gs` (`_TOOL_REGISTRY`).
+  - Live Firestore/Apps-Script reads are billing-walled during the 2026-07 GCP incident; the
+    local `.gs` tree is the readable consult surface until reads unwall.
 - **Script ID:** `1dLLKTyOIOSN8W3X6oxn57FwbMHNCKDrI4HMdGojMRGfYAZpSNPHknUU_`
 - **Key functions:** `getRegistryForUI({})`, `getGapAnalysisForUI({"group_by":"gap_status"})`, `getToolRegistryForUI({})` (WARNING: ~107K chars — read saved file if token limit hit), `getWiresByProductLineForUI()`, `getAutomationStatusForUI()`, `getPipelineSnapshotForUI()`
 

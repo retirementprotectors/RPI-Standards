@@ -20,23 +20,23 @@ Run the following before any other work:
    - If a repo has uncommitted changes, pull anyway but WARN JDM about the dirty state
    Projects:
    - `~/Projects/_RPI_STANDARDS`
-   - `~/Projects/PRODASHX_TOOLS/PRODASHX`
-   - `~/Projects/PRODASHX_TOOLS/QUE/QUE-Medicare`
-   - `~/Projects/RAPID_TOOLS/C3`
-   - `~/Projects/RAPID_TOOLS/CAM`
-   - `~/Projects/RAPID_TOOLS/CEO-Dashboard`
-   - `~/Projects/RAPID_TOOLS/DEX`
-   - `~/Projects/RAPID_TOOLS/Marketing-Hub`
-   - `~/Projects/RAPID_TOOLS/MCP-Hub`
-   - `~/Projects/RAPID_TOOLS/RAPID_API`
-   - `~/Projects/RAPID_TOOLS/RAPID_CORE`
-   - `~/Projects/RAPID_TOOLS/RAPID_IMPORT`
-   - `~/Projects/RAPID_TOOLS/RIIMO`
-   - `~/Projects/RAPID_TOOLS/RPI-Command-Center`
-   - `~/Projects/RAPID_TOOLS/PDF_SERVICE`
-   - `~/Projects/SENTINEL_TOOLS/DAVID-HUB`
-   - `~/Projects/SENTINEL_TOOLS/sentinel`
-   - `~/Projects/SENTINEL_TOOLS/sentinel-v2`
+   - `(RETIRED - not on disk; verify before citing)`
+   - `~/Projects/archive/QUE-Medicare`
+   - `(RETIRED - not on disk; verify before citing)`
+   - `~/Projects/archive/CAM`
+   - `(RETIRED - not on disk; verify before citing)`
+   - `~/Projects/archive/DEX`
+   - `~/Projects/archive/Marketing-Hub`
+   - `~/Projects/services/MCP-Hub`
+   - `~/Projects/archive/RAPID_API`
+   - `~/Projects/archive/RAPID_CORE`
+   - `~/Projects/archive/RAPID_IMPORT`
+   - `~/Projects/archive/RIIMO`
+   - `~/Projects/archive/RPI-Command-Center`
+   - `~/Projects/archive/PDF_SERVICE`
+   - `~/Projects/archive/DAVID-HUB`
+   - `~/Projects/archive/sentinel`
+   - `~/Projects/archive/sentinel-v2`
 
 2. **Hookify rule sync check** — Verify hookify rules are symlinked from `_RPI_STANDARDS/hookify/` into this project's `.claude/` directory. Compare counts, link any missing rules, report status.
 
@@ -78,7 +78,7 @@ Run the following before any other work:
      - Format as: `### Recent Warrior Knowledge (7 days)` with `[TYPE] content (confidence, tier)` bullets
    - Soul-curated entries always appear FIRST in the output
    - If no cross-warrior entries exist (no soul.md files, no Firestore entries), skip silently — do NOT error
-   - Script: `npx tsx ~/Projects/toMachina/services/learning-loop/cross-warrior-briefing.ts [warrior-name]`
+   - Script: `npx tsx (RETIRED - not on disk; verify before citing).ts [warrior-name]`
    - Present the output block to JDM as part of the session start briefing
 
 9. **Enter Plan Mode** — After setup is complete, call `EnterPlanMode` automatically. Stay in plan mode through the discovery/discussion/planning phase. JDM will ask questions, discuss direction, and shape the plan. Only exit plan mode when JDM approves the plan for the first major build of the session. After that first build, do NOT re-enter plan mode for bug fixes, iterations, or follow-up tasks — just execute.
