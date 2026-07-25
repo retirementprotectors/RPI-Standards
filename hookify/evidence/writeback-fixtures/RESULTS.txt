@@ -1,0 +1,3 @@
+positive-unretired-loop.mjs: WARN FIRES  (all 4 conditions matched)
+negative-retired-loop.mjs: clean (no warn)  (not_contains FAILED (found 'RETIREMENT_CHECK' — clears the warn))
+negative-ordinary-load.mjs: clean (no warn)  (regex_match FAILED: '\\bload\\b[\\s\\S]{0,80}--replace\\b|--replace\\b[\\s\\S]{0,80}\\bload\\b')
