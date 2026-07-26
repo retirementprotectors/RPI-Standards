@@ -6,7 +6,23 @@ action: warn
 conditions:
   - field: user_prompt
     operator: regex_match
-    pattern: (#SendIt|#sendit|send\s+it|ship\s+it|deploy\s+to\s+prod)
+    # OB1-INTENT-TRIGGER-INTENT-001 (2026-07-25): bare `send\s+it` and `ship\s+it` REMOVED.
+    # They are not deploy syntax — they are ordinary operational English, and this is an
+    # event:prompt rule whose body is INJECTED INTO A WARRIOR'S CONTEXT AS DIRECTIVES. So a
+    # bare-verb-phrase match here is a fabricated-deploy-order generator.
+    # MEASURED on 2026-07-25: every single fire that night came from ordinary prose — a
+    # comms-ROUTING broadcast containing "send it to me" fired the deploy protocol on four
+    # seats at once; a "SHIP IT AND REPORT" broadcast hit the rest. Eight-plus fires across
+    # six seats, ZERO of them a deploy request. Nothing bad happened only because six seats
+    # each independently refused a false order.
+    # A deploy trigger must require an EXPLICIT, UNAMBIGUOUS invocation. `#SendIt` is that.
+    # Do NOT re-add a bare verb phrase here. If one is ever genuinely needed, require
+    # co-occurrence with a deploy noun (prod|release|merge to main) and exclude quoted or
+    # routed blocks — a matcher with no concept of intent cannot be trusted with a protocol.
+    # (Found by HIKARI-DOJOV3 by reading the regex instead of theorising from a fire;
+    #  independently probed by HIKARI, which ran strings THROUGH the pattern. Two
+    #  differently-constructed checks, same answer.)
+    pattern: (#SendIt|#sendit|deploy\s+to\s+prod)
 owner: shinob1
 ---
 
