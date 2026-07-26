@@ -6,7 +6,48 @@ action: block
 conditions:
   - field: user_prompt
     operator: regex_match
-    pattern: (ATLAS\s+tool|ATLAS\s+registr|_TOOL_REGISTRY|_SOURCE_REGISTRY|data\s+import|data\s+migration|data\s+intake|bulk\s+import|BoB\s+import|book\s+of\s+business|commission\s+import|revenue\s+import|account\s+import|client\s+import|carrier\s+data|import\s+pipeline|intake\s+queue|data\s+foundation|operation\s+data)
+    # OB1-ATLAS-CONSULT-ANCHOR-001 (2026-07-26, megazord — owner).
+    # THE TWIN OF `block-bulk-import-without-atlas`. Found by SHINOB1, corroborated by HIKARI.
+    #
+    # WAS: 19 BARE ALTERNATIONS, COMPLETELY UNANCHORED —
+    #   (ATLAS\s+tool|...|data\s+import|...|bulk\s+import|...|carrier\s+data|...)
+    #
+    # It matched a MENTION anywhere in a prompt and could not distinguish a QUOTATION from a
+    # DECLARATION. It fired on SHINOB1, then on HIKARI, then on ME — each time on a routed peer
+    # message *reporting that it fires*, matching the quoted test string inside the report.
+    # Four+ false fires in one night.
+    #
+    # ⚠️ WHY THIS TWIN IS THE MORE DANGEROUS OF THE PAIR — and it is NOT the action field.
+    # HIKARI's correction, which is the sharper diagnosis: BOTH rules are `action: block`, so
+    # mechanically the hit-Enter tier injects the rule BODY as context either way. The danger
+    # scales with BODY IMPERATIVENESS, not action type. This body is a full numbered procedure
+    # in imperative voice ("What You MUST Do Before Any Data Work", six steps, function names,
+    # a script ID). **A body written as a procedure READS AS A DIRECTIVE when injected.**
+    # That is the fabricated-directive failure OB1-INTENT-INJECT-001 exists to contain.
+    # ⇒ Any `event: prompt` rule whose body is a numbered procedure is in this class. Audit on
+    #   that axis, not on the action axis.
+    #
+    # THE CLASS THIS BELONGS TO: I narrowed the other twin first and declared the class closed.
+    # **A fix whose coverage is PARTIAL looks exactly like a fix that worked.** The pair was never
+    # enumerated — and the enumeration is one command: `ls hookify/*atlas*` returns exactly 2.
+    # Same shape as the duplicated six-name brain.txt allowlist, `context.payload` (one syntactic
+    # form of two), and the three unwired regression tests where only the exemplar was examined.
+    #
+    # NOW: line-initial imperative + a data-domain object WITHIN 60 CHARS ON THE SAME LINE.
+    # A declaration cannot be faked by prose that merely names the words.
+    #
+    # VERIFIED BY EXECUTION on a corpus that REPRODUCES the false fire — including the
+    # quoted-string forms, which is the corpus that caught this twin and which none of us had
+    # until the rule fired on the message announcing the other fix:
+    #   QUIET on: an indented quoted test table · a routed peer message · prose naming the terms
+    #             · "Do not cite..." · "I ran the falsifier against the data import corpus..."
+    #   FIRES on: "please bulk import records into the table" · "do a data import of the carrier
+    #             statements" · "migrate the book of business into firestore" · "Import the BoB
+    #             data for Devoted" · "backfill the commission records into bigquery"
+    # 10/10. Both halves — no false positive, and NO false negative traded for it.
+    # (`do a data import` failed my first draft; shipping that would have traded one defect for
+    #  the other, so the verb branch was widened and everything re-run.)
+    pattern: (?i)(?:^|\n)[[:space:]]*(?:please[[:space:]]+)?(?:bulk[[:space:]-]?(?:import|load)|import|migrate|ingest|backfill|load|intake|(?:do|run|start|perform|kick[[:space:]]+off)[[:space:]]+(?:a[[:space:]]+)?(?:bulk[[:space:]-]|data[[:space:]-])?(?:import|migration|intake|load|backfill))\b[^\n]{0,60}\b(?:data|records?|contacts?|book[[:space:]]+of[[:space:]]+business|BoB|carrier[[:space:]]+(?:data|statements?)|commissions?|revenue|firestore|bigquery|collection|table|pipeline|queue|registry)\b
 owner: megazord
 ---
 
