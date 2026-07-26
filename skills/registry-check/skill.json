@@ -1,0 +1,19 @@
+{
+  "id": "registry-check",
+  "name": "Registry Check",
+  "version": "0.1.0-draft",
+  "owner_warrior": "shinob1",
+  "lane": "governance",
+  "description": "Mandatory pre-flight before creating ANY folder, MCP, service account, OAuth scope, Workspace account/OU, Drive structure, Firestore collection, GitHub repo, Cloud Run service, secret, cron job, systemd unit, or webhook — check the authoritative registry first, verify the asset does not already exist, and register on creation.",
+  "invoke": "/registry-check",
+  "skill_md": "SKILL.md",
+  "born": "2026-07-08",
+  "origin": "GV2 WS-B batch 2 — converted from hookify `intent-no-create-without-registry-check` (a dumb context-injector, event:prompt used only to inject guidance, not to detect a violation) by SHINOB1 sub-seat shinob1-build-wsb-atlas-skill",
+  "mcps_called": [],
+  "hooks_enforcing": [],
+  "migrated_from_hookify": "intent-no-create-without-registry-check",
+  "status": "draft-staged-unratified",
+  "format_note": "Structured to mirror Skill #001 (case-drive-checklist) and the ratified pilot (atlas-consult, PR #56) — SKILL.md + gates.md + surface.html + skill.json, per HIKARI-confirmed WS-C reconciliation (2026-07-08): the tooling-enforced 4-file _RPI_STANDARDS/skills/ shape is canonical for fleet-registered skills, distinct from RAIDEN's single-file docs/warriors/raiden/skills/ convention used for warrior-specific verify runbooks.",
+  "promoted_by": null,
+  "promoted_at": null
+}

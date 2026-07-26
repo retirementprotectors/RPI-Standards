@@ -1,6 +1,12 @@
 ---
 name: intent-immune-system-check
 enabled: true
+# GV2 WS-B batch 2: a DRAFT skill exists at _RPI_STANDARDS/skills/immune-system-check/.
+# It is NOT WIRED. Skills load only via a manual symlink into ~/.claude/skills/;
+# exactly one such symlink exists on the box today (case-drive-checklist).
+# Until that symlink exists AND the skill is proven to load, THIS RULE IS THE ONLY
+# ENFORCEMENT PATH. Do NOT set enabled:false on the strength of the draft alone --
+# that removes enforcement and replaces it with a skill that never loads.
 event: prompt
 action: warn
 conditions:
