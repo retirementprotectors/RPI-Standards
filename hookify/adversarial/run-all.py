@@ -53,6 +53,29 @@ USAGE
 Use it to prove a corpus can still discriminate — a corpus that passes against both a broken
 and a fixed rule proves nothing, and that check is only meaningful if you actually run it.
 
+`--confirmatory <name>[,<name>]` exempts CONFIRMATORY corpora from that inversion.
+
+NOT EVERY CORPUS HUNTS A DEFECT  (MZ-RUNALL-SCORE-CLAUSE-001, second finding)
+-----------------------------------------------------------------------------
+`--expect-fail` assumed every corpus is defect-hunting. Some CONFIRM a property instead —
+`round4b-nesting-matrix.py` confirms the span clause is order-independent. Measured against the
+real pre-#76 rule: round3 went 17/17 -> 12/17 and round4 13/13 -> 8/13, while round4b scored
+4/4 against BOTH. That is not a broken corpus. The old rule has no span clause at all, so
+nesting order is trivially irrelevant and its four cases pass for a COMPLETELY DIFFERENT REASON
+than they pass against the live rule. Same score, opposite causes.
+
+The runner reported that working corpus as `XX ... did not fail` and failed the whole run, so
+the prescribed discrimination check pointed at a correct file — and the obvious "fix" is to
+damage it. A tool that indicts working code is worse than one that stays quiet.
+
+Exemption is DECLARED BY THE OPERATOR, deliberately:
+  - never inferred from the corpus source — these are reviewer-authored and stay byte-identical,
+    so the runner does not get to require a marker inside someone else's file;
+  - never a hardcoded name list in here, which would rot the moment a corpus is added;
+  - a declared name matching no corpus is REFUSED (exit 2), because a typo'd exemption silently
+    exempts nothing while the operator believes it worked.
+Default is empty: with no declaration, behaviour is exactly as before.
+
 Exit 0 = every corpus behaved as expected. Exit 1 = at least one did not.
 """
 import glob
@@ -88,6 +111,17 @@ def main():
         return 2
     rule = sys.argv[1]
     expect_fail = "--expect-fail" in sys.argv[2:]
+
+    # --confirmatory: corpora that CONFIRM a property rather than hunt a defect. They pass
+    # against a broken rule too, legitimately, so under --expect-fail they can never "fail as
+    # expected" and were being reported XX. Declared explicitly by the operator — never
+    # inferred, never read out of the corpus file (these are reviewer-authored and must stay
+    # byte-identical), and never defaulted to a hardcoded name list that would rot.
+    confirmatory = set()
+    if "--confirmatory" in sys.argv:
+        i = sys.argv.index("--confirmatory")
+        if i + 1 < len(sys.argv):
+            confirmatory = {x.strip() for x in sys.argv[i + 1].split(",") if x.strip()}
     if not os.path.isfile(rule):
         print(f"  rule file not found: {rule}")
         return 2
@@ -97,19 +131,33 @@ def main():
         print(f"  no corpora found in {HERE}")
         return 2
 
+    # A declaration that matches nothing is not a declaration — it is a typo that silently
+    # exempts nobody while the operator believes otherwise. Refuse rather than run.
+    names = {os.path.basename(c) for c in corpora}
+    unknown = confirmatory - names
+    if unknown:
+        print(f"  --confirmatory names no corpus here: {', '.join(sorted(unknown))}")
+        print(f"  known: {', '.join(sorted(names))}")
+        return 2
+
     mode = "EXPECT FAIL" if expect_fail else "EXPECT CLEAN"
     print(f"\n=== adversarial corpora vs {os.path.basename(rule)}  [{mode}] ===")
     bad = []
     for c in corpora:
         clean, passed, total, printed, rc = run_corpus(c, rule)
+        name = os.path.basename(c)
+        is_conf = name in confirmatory
         score = f"{passed}/{total}" if passed is not None else "n/a"
         verdict = "clean" if clean else "FAILS"
-        agree = (not clean) if expect_fail else clean
+        # A confirmatory corpus is expected to stay CLEAN in both modes — that is what makes it
+        # confirmatory. Only defect-hunting corpora are required to fail under --expect-fail.
+        agree = clean if (is_conf or not expect_fail) else (not clean)
         flag = "ok " if agree else "XX "
-        print(f"  {flag} {os.path.basename(c):<34} {score:>7}  "
-              f"printed_failures={printed}  exit={rc}  -> {verdict}")
+        tag = "  [confirmatory]" if is_conf else ""
+        print(f"  {flag} {name:<34} {score:>7}  "
+              f"printed_failures={printed}  exit={rc}  -> {verdict}{tag}")
         if not agree:
-            bad.append(os.path.basename(c))
+            bad.append(name)
 
     print("\n" + "=" * 72)
     if bad:
@@ -117,8 +165,13 @@ def main():
         print(f"FAILED — {len(bad)} corpus/corpora did not {want}: {', '.join(bad)}")
         return 1
     if expect_fail:
-        print(f"PASSED — all {len(corpora)} corpora still DISCRIMINATE against this rule.")
+        n_disc = len(corpora) - len(confirmatory)
+        print(f"PASSED — all {n_disc} defect-hunting corpora still DISCRIMINATE against this rule.")
         print("         Their green against the fixed rule therefore carries information.")
+        if confirmatory:
+            print(f"         {len(confirmatory)} declared confirmatory and exempted: "
+                  f"{', '.join(sorted(confirmatory))}")
+            print("         Their green carries NO discrimination information, by construction.")
     else:
         print(f"PASSED — all {len(corpora)} corpora clean against this rule.")
         print("         Verify discrimination separately with --expect-fail against a known-")
