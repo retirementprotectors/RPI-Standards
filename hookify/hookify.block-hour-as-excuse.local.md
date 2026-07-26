@@ -40,14 +40,21 @@ conditions:
   - field: last_assistant_message
     operator: regex_match
     pattern: (at this hour|at midnight|at \d{1,2} ?a\.?m\.?|this late|late at night|end of a (very )?long session|after a \d+.hour|tonight,? and not|not tonight|not a tonight|too late to|while you'?re (fried|tired|exhausted|up)|when you'?re (fresh|rested)|in the morning|until morning|by morning|daylight (call|decision|window)|tomorrow morning|sleep on (it|this)|fresh eyes)
-  # 3. Exemption — the turn already did the work and is REPORTING a schedule, not refusing.
+  # 3. Exemption — the turn already did the work and is REPORTING, not refusing.
   - field: last_assistant_message
     operator: regex_not_match
-    pattern: (already (landed|shipped|merged|filed|fixed|done)|i (landed|shipped|merged|filed|fixed) (it|them|that)|verified live|exit ok|result=success)
-  # 4. Exemption — self-audit / quoting the rule itself (HIKARI's sweep, this file, retros).
+    pattern: (already (landed|shipped|merged|filed|fixed|done)|i (landed|shipped|merged|filed|fixed) (it|them|that)|(is|are|all) landed\b|verified live|exit ok|result=success|tested \d+/\d+|merged [0-9a-f]{7})
+  # 4. Exemption — META-DISCUSSION of this rule class: retros, sweeps, authoring or testing
+  #    a gate, and quoting a banned form in order to name it.
+  #    WIDENED 2026-07-26, same hour it shipped: this gate FALSE-POSITIVED on its author's
+  #    first live turn — the message described the gate, quoted its own test sentence
+  #    ("right call at 9am") and its evasion examples ("is a daylight call"), and tripped.
+  #    That is the failure mode that gets a gate switched off in a friction pass, which is
+  #    exactly how 20 of 96 rules went dark in SHIN-FRICTION-LAND-001. A gate that cries
+  #    wolf on people DISCUSSING it does not survive contact.
   - field: last_assistant_message
     operator: regex_not_match
-    pattern: (banned form|hedge sweep|block-hour-as-excuse|OB1-HOUR-AS-EXCUSE|quoting the ban|self-sweep|retraction)
+    pattern: (banned form|hedge sweep|block-hour-as-excuse|OB1-HOUR-AS-EXCUSE|quoting the ban|self-sweep|retraction|hookify|stop-tier|dispatcher|must.?fire|false.?positive|exemption|right call at 9 ?am|the gate (is|fires|catches|would|blocks)|this rule|symlink|\bretro(spective)?\b|i (said|wrote|used|twice) |caught myself|correction i owe|both dropped|dropped, and)
 ---
 
 ⛔ **BLOCKED — you are using the clock as the reason.**
