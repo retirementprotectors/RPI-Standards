@@ -9,7 +9,7 @@ conditions:
     pattern: Projects/_RPI_STANDARDS(?![\w-])
   - field: command
     operator: regex_match
-    pattern: (?:(?:^|\n)[ \t]*|(?:^|\n)(?![ \t]*[>\-*#])[^\n"'`#]*?(?:&&|\|\||;|\|)[ \t]*)git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b(?!\s+--\s)
+    pattern: (?:(?:^|\n)[ \t]*|(?:^|\n)(?![ \t]*(?:[>\-*#<|]|\d+[.)]))(?:[^\n"\'`#]|"[^"\n]*"|\'[^\'\n]*\'|`[^`\n]*`)*?(?:&&|\|\||;|\|)[ \t]*)git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b(?!\s+--\s)
 # MZ-STANDARDS-TREE-GUARD-001 (megazord, 2026-07-26) — the THIRD live shared tree.
 #
 # block-checkout-in-live-deploy-tree covers dojo-warriors and toMachina. It does not cover
@@ -55,7 +55,44 @@ conditions:
 # before the operator. Quoted, single-quoted, bulleted, blockquoted and commented mentions all
 # go quiet; every real hazard still fires, including the leading-whitespace form.
 #
-# ⚠️ WHAT IT STILL CANNOT SEE — the one surviving shape, DECLARED rather than denied:
+# ── TWO REVIEWER-FOUND DEFECTS, BOTH IN THE SAME CLAUSE (2026-07-26) ─────────────────────
+# This rule has now had its claim corrected TWICE by reviewers who chose their own inputs.
+#
+# 1. SHINOB1, against 4d815aa: the opening-marker lookahead covered > - * # but NOT `<`,
+#    `|`, or ordered-list tokens — so an html comment, a markdown TABLE ROW and `1.` / `1)`
+#    list items all fired. `|` is itself in the operator alternation, so a table row is a
+#    chain operator by construction. His one-character-class fix is applied.
+#
+# 2. HIKARI, same head, hazard-shaped corpus: FOUR FALSE NEGATIVES — real branch ops going
+#    SILENT. The guard was "no quote appears earlier on the line," which buys prose silence
+#    and ALSO silences any genuine command carrying a quoted argument:
+#        git -C <tree> commit -m "msg" && git <verb> main      <- escaped
+#        cd '<tree>' && git <verb> main                         <- escaped
+#        cd "<tree>" && git <verb> main                         <- escaped, and this is
+#        git -C <tree> stash push -m "wip" ; git <verb> main       BYTE-FOR-BYTE the incident
+#                                                                  shape that created this rule
+#    A false negative here is strictly worse than a false positive: the rule exists to catch
+#    exactly those. Her framing was the fix and she deliberately did not hand it to me —
+#    "is the git token inside an OPEN quote span" is a different question from "does a quote
+#    appear earlier on the line." Correct, and it is expressible: the guard now allows
+#    BALANCED quote spans ("..." '...' `...`) and only an UNCLOSED span blocks the match.
+#    A quoted mention never closes before the operator, so it stays quiet; a real command's
+#    quoted argument does close, so it fires.
+#
+#   MEASURED, core.rule_engine, both conditions ANDed, both reviewers' corpora:
+#            hazards fire   mentions quiet   safe quiet
+#     v1        6 / 10          1 / 10         3 / 4
+#     v3       10 / 10*         10 / 10        5 / 5     *6/10 once HIKARI's shapes are added
+#     v4       10 / 10         10 / 10        5 / 5
+#
+# ⚠️ WHAT IT STILL CANNOT SEE — DECLARED rather than denied. This paragraph said "the ONE
+# surviving shape" in the first draft of this fix. SHINOB1 measured FOUR: html comment,
+# markdown table cell, and numbered-list markers in both the 1. and 1) forms, none of
+# which the opening-marker lookahead covered — and `|` is itself in the operator
+# alternation, so a table ROW is a chain operator by construction. His one-character-class
+# fix is applied above and all four now go quiet. I am recording that the claim was wrong
+# a SECOND time in the same file, because that is the actual recurring defect here.
+# What remains, and it is genuinely one shape:
 # an INDENTED chained command ("    cd <tree> && git <verb> main") still fires. That is not
 # fixable here and arguably should not be — it is byte-identical to a real indented line in a
 # shell script, which SHOULD fire. Inside a fenced code block it is a mention; in a script it

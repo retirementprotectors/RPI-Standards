@@ -69,6 +69,28 @@ CASES = [
     (f"# git -C {P} {V} main",                           False, "mention: comment at line start"),
     (f"do not cd to {P} and git {V} main",               False, "mention: prose, 'and' not '&&'"),
 
+    # -- reviewer-chosen shapes (SHINOB1, against 4d815aa). A reviewer must pick inputs the
+    #    builder could not anticipate; these four fired on my v3 and none was in my declared
+    #    blind spot. `|` is itself in the operator alternation, so a table ROW is a chain
+    #    operator by construction.
+    (f"<!-- cd {P} && git {V} main -->",                 False, "mention: html comment"),
+    (f"| cd {P} && git {V} main | bad |",                False, "mention: markdown table cell"),
+    (f"1. cd {P} && git {V} main",                       False, "mention: numbered list"),
+    (f"1) cd {P} && git {V} main",                       False, "mention: numbered list, paren"),
+    (f"\tcd {P} && git {V} main",                        True,  "hazard: tab indent"),
+    (f"(cd {P} && git {V} main)",                        True,  "hazard: subshell"),
+    (f"cd {P} | git {V} main",                           True,  "hazard: pipe chain"),
+
+    # -- reviewer-chosen HAZARD shapes (HIKARI, against 4d815aa). She built a hazard-shaped
+    #    corpus because mine was mention-shaped, and found 4 FALSE NEGATIVES: real branch ops
+    #    going silent because a quote appeared earlier on the line. A false negative is
+    #    strictly worse than a false positive here -- the rule exists to catch exactly these.
+    #    Cases 2 and 3 are byte-for-byte the incident shape that created this rule.
+    (f'git -C {P} commit -m "fix the thing" && git {V} main', True, "hazard: quoted -m then chain"),
+    (f"cd '{P}' && git {V} main",                         True,  "hazard: single-quoted path"),
+    (f'cd "{P}" && git {S} main',                         True,  "hazard: double-quoted path"),
+    (f'git -C {P} stash push -m "wip" ; git {S} main',    True,  "hazard: quoted stash then ;"),
+
     # -- MUST BE QUIET: correct operations ------------------------------------
     (f"git -C {W} {V} -b megazord/thing",                False, "safe: worktree"),
     (f"git -C {W}-anchor {S} main",                      False, "safe: suffixed worktree"),
@@ -127,9 +149,10 @@ if failures:
     print(f"FAILED — {len(failures)} problem(s), {passes} passed")
     sys.exit(1)
 print(f"PASSED — {passes} behavioural checks through core.rule_engine.")
-print("         6/6 hazards fire | 8/8 mention shapes quiet | 9/9 safe ops quiet.")
+print("         13/13 hazards fire | 12/12 mention shapes quiet | 9/9 safe ops quiet.")
 print()
-print("         DECLARED BLIND SPOT, not fixed and not claimed fixed: an INDENTED chained")
+print("         DECLARED BLIND SPOT -- mis-stated as 'the one shape' before a reviewer")
+print("         measured four more. What actually remains: an INDENTED chained")
 print("         command inside a fenced code block still fires. It is byte-identical to a")
 print("         real indented line in a shell script -- which SHOULD fire -- so regex cannot")
 print("         separate them. Heredoc bodies are the same class. Both are why this rule")
