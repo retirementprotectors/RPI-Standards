@@ -1,16 +1,28 @@
 ---
 name: warn-commit-missing-ticket-id
-enabled: false
+enabled: true
 event: bash
 action: warn
 conditions:
   - field: command
     operator: regex_match
-    pattern: git\s+commit\b(?!.*--amend)
-exclude:
-  - pattern: git\s+commit\s+.*--allow-empty
-  - pattern: git\s+commit\s+.*\[no-ticket\]
+    pattern: '(?:^|[;&|]\s*|\n)\s*git\s+commit\b(?!.*(?:--amend|--allow-empty|\[no-ticket\]))'
+# NOTE: the `exclude:` block this rule used to carry was DELETED, not moved — the engine has
+# no `exclude` field (core/config_loader.py Rule model: name/enabled/event/pattern/conditions/
+# action/tool_matcher/message). It was parsed into nothing and silently dropped, so both
+# documented escape hatches (--allow-empty, [no-ticket]) fired anyway. Verified by test, not
+# by reading. Exclusions are now negative lookaheads inside the pattern, where they execute.
+# The leading `(?:^|[;&|]\s*|\n)` anchors the match to a COMMAND POSITION so the rule cannot
+# fire on the words "git commit" quoted inside other text — the same prose-substring
+# false-fire class as block-opus-subagent / block-alert-confirm-prompt.
 owner: shinob1
+# ACTIVATED 2026-07-26 (megazord · MZ-ACTIVATE-DEAD-RULES-001). Written 2026-06-25 and
+# never once loaded: the filename lacked the `hookify.` prefix that every engine globs
+# for, so `enabled: false` was moot — it could not have fired even flipped to true.
+# Renamed AND enabled together; either alone leaves it dead.
+# Posture stays WARN (per "Status" below): a false alarm on a docs-only commit costs a
+# line of injected text, a miss costs a ticket its audit credit. Escape hatches
+# ([no-ticket], --allow-empty) are already in `exclude`.
 ---
 
 **COMMIT GATE: Missing ticket-ID in commit subject**

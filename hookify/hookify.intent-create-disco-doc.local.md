@@ -1,17 +1,28 @@
 ---
 name: intent-create-disco-doc
 description: Fires when JDM wants to create a FORGE Discovery Document — injects full spec and template requirements
-event: UserPromptSubmit
+enabled: true
+event: prompt
 action: warn
 conditions:
-  prompt_contains:
-    - "#LetsCreateTheDiscoDoc"
-    - "#LetsCreateADiscoDoc"
-    - "create the disco doc"
-    - "write the disco doc"
-    - "create a discovery doc"
-    - "write a discovery document"
+  - field: user_prompt
+    operator: regex_match
+    pattern: '#LetsCreate(A|The)DiscoDoc|(creat|writ)(e|ing)\s+(the\s+|a\s+|an\s+)?(disco|discovery)\s+doc'
 owner: ronin
+# ACTIVATED 2026-07-26 (megazord · MZ-ACTIVATE-DEAD-RULES-001). This rule had NEVER
+# fired once since it was written. Three independent faults, all required for a fire:
+#   1. FILENAME `intent-create-disco-doc.local.md` lacked the `hookify.` prefix. Every
+#      engine globs `hookify.*.local.md` (config_loader.py:210, hookify-prompt-dispatch.py:61,
+#      hookify-stop-dispatch.py:95) — the file was never loaded by anything.
+#   2. `event: UserPromptSubmit` is not a value any dispatcher claims. The prompt tier
+#      matches `event == "prompt"`. UserPromptSubmit is the Claude Code HOOK name, not the
+#      hookify event name — an easy and invisible confusion.
+#   3. `enabled` was absent. Dispatchers require the literal string "true"; absent != true.
+#   4. `conditions.prompt_contains: [...]` is not a shape any parser reads. The parser walks
+#      `- field:` / `operator:` / `pattern:` items only, so conditions came back EMPTY and the
+#      prompt tier skips rules with no conditions (`if not conds: continue`).
+# Collapsed the 6 literal phrases into one alternation because the prompt tier ANDs its
+# conditions — six separate conditions would have required all six phrases in one prompt.
 ---
 
 ## FORGE Discovery Document — Creation Spec
