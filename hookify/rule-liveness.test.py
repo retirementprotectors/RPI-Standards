@@ -65,6 +65,7 @@ RUN
 Exit 0 = all pass. Exit 1 = at least one rule cannot fire, or fires wrongly.
 """
 import sys, os, re, glob
+import warnings as warnings_mod
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RULES_DIR = sys.argv[1] if len(sys.argv) > 1 else HERE
@@ -146,12 +147,47 @@ for path in all_rules:
     #     Caught by narrowing my own rule with `grep -E` — which DOES support POSIX classes —
     #     and shipping it to an engine that does not. Two rules, both mine, verified 0/5 on
     #     genuine triggers before the fix and 5/5 after.
+    #     STRENGTHENED at HIKARI's finding (2026-07-26): a literal `[[:` search catches only the
+    #     defect we already know about. The GENERAL failure is a DIALECT MISMATCH — a pattern
+    #     that is valid in the tool a warrior verified with (`grep -E`, `grep -P`) and means
+    #     something else, or nothing, in the engine that actually runs it. She verified and
+    #     SIGNED both of these rules using `grep -P`, where the same patterns return True.
+    #     grep and Python `re` are both "regex" and disagree silently: no error, no shell
+    #     warning, just False at runtime.
+    #
+    #     So the check below does not look for a token. It compiles each pattern through the
+    #     EXACT call the live matcher uses — rule_engine.py:24, `re.compile(p, re.IGNORECASE)`
+    #     — with warnings promoted to failures. Any pattern the real engine cannot compile
+    #     cleanly is reported, whether or not we have seen that particular defect before.
     for pl in re.findall(r"^\s*pattern:\s*(.*)$", fm, re.M):
-        if re.search(r"\[\[:\w+:\]\]|\[\[:\w+:\]", pl):
+        pl = pl.strip()
+        if len(pl) >= 2 and pl[0] in "'\"" and pl[-1] == pl[0]:
+            pl = pl[1:-1]
+        if not pl:
+            continue
+        posix = re.search(r"\[\[:\w+:\]", pl)
+        with warnings_mod.catch_warnings(record=True) as caught:
+            warnings_mod.simplefilter("always")
+            try:
+                re.compile(pl, re.IGNORECASE)   # same call as rule_engine.py:24
+                compile_err = None
+            except re.error as e:
+                compile_err = str(e)
+        if compile_err:
             problems.append(
-                "pattern contains a POSIX bracket expression ([[:...:]]) -> Python `re` has no "
-                "POSIX classes; the pattern compiles but can never match. Use \\s / \\d / \\w."
-            )
+                f"pattern does not compile in the live engine (re.compile): {compile_err}")
+            break
+        if caught:
+            detail = "; ".join(str(w.message) for w in caught)
+            if posix:
+                problems.append(
+                    "pattern contains a POSIX bracket expression ([[:...:]]) -> Python `re` has "
+                    "no POSIX classes; it compiles but can never match. Use \\s / \\d / \\w. "
+                    f"[engine warning: {detail}]")
+            else:
+                problems.append(
+                    "pattern compiles with a warning in the live engine -> it likely does not "
+                    f"mean what it appears to mean. [engine warning: {detail}]")
             break
 
     if problems:
@@ -329,5 +365,8 @@ if failures:
     for f in failures:
         print(f"  - {f}")
     sys.exit(1)
-print(f"PASSED — {passes} checks, every rule in {RULES_DIR} can fire")
+print(f"PASSED — {passes} checks. Every rule in {RULES_DIR} is LOADABLE by its dispatcher "
+      f"and its pattern compiles cleanly in the live engine.")
+print("         This does NOT prove any rule matches its intended triggers — only the "
+      "behavioural cases in Part 2 do that, and only for the rules that have them.")
 sys.exit(0)
