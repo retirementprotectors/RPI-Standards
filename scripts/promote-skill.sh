@@ -7,13 +7,18 @@
 #
 # Usage: ./scripts/promote-skill.sh <draft-path>
 #
-#   <draft-path>  Path to the draft skill directory (must contain all 4 files)
+#   <draft-path>  Path to the draft skill directory (must contain SKILL.md)
 #
 # What this does:
-#   1. Validates the 4-file structure: SKILL.md, gates.md, surface.html, skill.json
-#   2. Validates skill.json schema (required fields)
+#   1. Requires SKILL.md (the invocable unit). gates.md / surface.html / skill.json
+#      are OPTIONAL governance wrappers — present only if the skill wants a surface.
+#   2. Validates required metadata from SKILL.md FRONTMATTER (via lib/skill-frontmatter.mjs)
 #   3. HALTS — outputs the review checklist for SHINOB1 / lane-owner CXO
 #   4. After sign-off (operator types "APPROVED"), copies to canonical dir + propagates
+#
+# SKILL-FORMAT (OB1-GV2 lock, 2026-07-08): a skill IS a single SKILL.md with rich
+# frontmatter (id / owner_warrior / lane / version / hooks_enforcing / mcps_called).
+# The runtime only loads SKILL.md; the registry/surface read its frontmatter.
 #
 # RATIONALE: A skill symlinked into every warrior + every MDJ specialist is
 # high-blast-radius — same as a hookify rule. Field-draft → fleet law requires
@@ -50,71 +55,32 @@ echo "Draft:     $DRAFT_PATH"
 echo "Skill ID:  $SKILL_NAME"
 echo ""
 
-# ---- Step 1: Validate 4-file structure ----
-echo "Step 1 — Validating 4-file structure..."
-ERRORS=0
+# ---- Step 1: Require SKILL.md (invocable unit); wrappers optional ----
+echo "Step 1 — Validating structure (SKILL.md required; wrappers optional)..."
 
-for required_file in "SKILL.md" "gates.md" "surface.html" "skill.json"; do
-  if [ -f "$DRAFT_PATH/$required_file" ]; then
-    echo "  ✅ $required_file"
+if [ -f "$DRAFT_PATH/SKILL.md" ]; then
+  echo "  ✅ SKILL.md"
+else
+  echo "  ❌ SKILL.md — MISSING (required)"
+  echo ""
+  echo "❌ BLOCKED: SKILL.md is the invocable unit and must be present."
+  exit 1
+fi
+for optional_file in "gates.md" "surface.html" "skill.json"; do
+  if [ -f "$DRAFT_PATH/$optional_file" ]; then
+    echo "  ✅ $optional_file (optional wrapper — present)"
   else
-    echo "  ❌ $required_file — MISSING"
-    ((ERRORS++))
+    echo "  ·  $optional_file (optional — absent)"
   fi
 done
-
-if [ "$ERRORS" -gt 0 ]; then
-  echo ""
-  echo "❌ BLOCKED: $ERRORS required file(s) missing. Fix the draft and retry."
-  exit 1
-fi
 echo ""
 
-# ---- Step 2: Validate skill.json schema ----
-echo "Step 2 — Validating skill.json schema..."
+# ---- Step 2: Validate required metadata from SKILL.md frontmatter ----
+echo "Step 2 — Validating metadata (SKILL.md frontmatter; skill.json fallback)..."
 
-SKILL_JSON="$DRAFT_PATH/skill.json"
-
-if ! node -e "JSON.parse(require('fs').readFileSync('$SKILL_JSON','utf8'))" 2>/dev/null; then
-  echo "❌ BLOCKED: skill.json is not valid JSON."
+if ! node "$SCRIPT_DIR/lib/skill-frontmatter.mjs" --validate "$DRAFT_PATH"; then
   exit 1
 fi
-
-# Check required fields via node
-node << 'EOF'
-const fs = require('fs')
-const meta = JSON.parse(fs.readFileSync(process.env.SKILL_JSON_PATH, 'utf8'))
-const required = ['id', 'owner_warrior', 'lane', 'version', 'hooks_enforcing', 'mcps_called']
-const missing = required.filter(f => !(f in meta))
-if (missing.length) {
-  console.error('❌ BLOCKED: skill.json missing required fields:', missing.join(', '))
-  process.exit(1)
-}
-if (typeof meta.hooks_enforcing !== 'object' || !Array.isArray(meta.hooks_enforcing)) {
-  console.error('❌ BLOCKED: hooks_enforcing must be an array')
-  process.exit(1)
-}
-if (typeof meta.mcps_called !== 'object' || !Array.isArray(meta.mcps_called)) {
-  console.error('❌ BLOCKED: mcps_called must be an array')
-  process.exit(1)
-}
-console.log('  ✅ id:', meta.id)
-console.log('  ✅ owner_warrior:', meta.owner_warrior)
-console.log('  ✅ lane:', meta.lane)
-console.log('  ✅ version:', meta.version)
-console.log('  ✅ hooks_enforcing:', JSON.stringify(meta.hooks_enforcing))
-console.log('  ✅ mcps_called:', JSON.stringify(meta.mcps_called))
-EOF
-SKILL_JSON_PATH="$SKILL_JSON" node << 'JSEOF'
-const fs = require('fs')
-const meta = JSON.parse(fs.readFileSync(process.env.SKILL_JSON_PATH, 'utf8'))
-const required = ['id', 'owner_warrior', 'lane', 'version', 'hooks_enforcing', 'mcps_called']
-const missing = required.filter(f => !(f in meta))
-if (missing.length) { console.error('❌ BLOCKED: skill.json missing required fields:', missing.join(', ')); process.exit(1) }
-if (!Array.isArray(meta.hooks_enforcing)) { console.error('❌ BLOCKED: hooks_enforcing must be an array'); process.exit(1) }
-if (!Array.isArray(meta.mcps_called)) { console.error('❌ BLOCKED: mcps_called must be an array'); process.exit(1) }
-console.log('  ✅ Schema valid — id:', meta.id, '| owner:', meta.owner_warrior, '| v' + meta.version)
-JSEOF
 
 echo ""
 
@@ -136,21 +102,20 @@ echo "Review checklist:"
 echo ""
 echo "  □ SKILL.md: steps are accurate, correct, and safe to run fleet-wide"
 echo "  □ SKILL.md: no hallucinated tooling, no fabricated process steps"
-echo "  □ gates.md: references hookify rules BY NAME only (no duplicated patterns)"
-echo "  □ gates.md: referenced rules exist in _RPI_STANDARDS/hookify/"
-echo "  □ skill.json: id matches directory name ($SKILL_NAME)"
-echo "  □ skill.json: owner_warrior is correct"
-echo "  □ skill.json: hooks_enforcing cites real, existing hookify rules"
-echo "  □ surface.html: renders correctly; no PHI; no hard-coded data"
+echo "  □ SKILL.md frontmatter: id matches directory name ($SKILL_NAME)"
+echo "  □ SKILL.md frontmatter: owner_warrior is correct"
+echo "  □ SKILL.md frontmatter: hooks_enforcing cites real, existing hookify rules"
+echo "  □ gates.md (if present): references hookify rules BY NAME only (no duplicated patterns)"
+echo "  □ gates.md (if present): referenced rules exist in _RPI_STANDARDS/hookify/"
+echo "  □ surface.html (if present): renders correctly; no PHI; no hard-coded data"
 echo "  □ No hookify rule PATTERNS duplicated anywhere in this skill's files"
 echo "  □ Any NEW hookify rules needed by this skill have gone through the"
 echo "    hookify authoring process (SHINOB1 review) separately — NOT authored here"
 echo ""
 echo "Files to review:"
-echo "  $DRAFT_PATH/SKILL.md"
-echo "  $DRAFT_PATH/gates.md"
-echo "  $DRAFT_PATH/surface.html"
-echo "  $DRAFT_PATH/skill.json"
+for f in SKILL.md gates.md surface.html skill.json; do
+  [ -f "$DRAFT_PATH/$f" ] && echo "  $DRAFT_PATH/$f"
+done
 echo ""
 echo "If APPROVED, type exactly: APPROVED"
 echo "If REJECTED, type anything else (or Ctrl+C to abort)."
@@ -174,10 +139,12 @@ else
   mkdir -p "$CANONICAL_DIR"
 fi
 
-cp "$DRAFT_PATH/SKILL.md"     "$CANONICAL_DIR/SKILL.md"
-cp "$DRAFT_PATH/gates.md"     "$CANONICAL_DIR/gates.md"
-cp "$DRAFT_PATH/surface.html" "$CANONICAL_DIR/surface.html"
-cp "$DRAFT_PATH/skill.json"   "$CANONICAL_DIR/skill.json"
+cp "$DRAFT_PATH/SKILL.md" "$CANONICAL_DIR/SKILL.md"
+for optional_file in "gates.md" "surface.html" "skill.json"; do
+  if [ -f "$DRAFT_PATH/$optional_file" ]; then
+    cp "$DRAFT_PATH/$optional_file" "$CANONICAL_DIR/$optional_file"
+  fi
+done
 echo "  ✅ Copied to $CANONICAL_DIR"
 
 # Regenerate registry
