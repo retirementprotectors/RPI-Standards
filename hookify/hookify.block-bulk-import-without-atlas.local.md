@@ -33,7 +33,7 @@ conditions:
     # The old pattern also had FALSE NEGATIVES it never got credit for missing:
     # "migrate the anchor records to bigquery" and "backfill 3,000 rows into firestore"
     # both slipped through it. This closes those too.
-    pattern: (?i)(?:^|\n)[[:space:]]*(?:please[[:space:]]+)?(?:bulk[[:space:]-]?(?:import|load|insert|write|update)|batch[[:space:]-]?(?:import|load|insert|write|update)|import|migrate|seed|backfill)\b[^\n]{0,60}\b(?:firestore|bigquery|big[[:space:]-]?query|collection|table|dataset|records?|rows?|contacts?)\b
+    pattern: (?i)(?:^|\n)\s*(?:please\s+)?(?:bulk[\s-]?(?:import|load|insert|write|update)|batch[\s-]?(?:import|load|insert|write|update)|import|migrate|seed|backfill)\b[^\n]{0,60}\b(?:firestore|bigquery|big[\s-]?query|collection|table|dataset|records?|rows?|contacts?)\b
 exclude:
   - pattern: atlas|ATLAS|guardian|snapshot
 owner: megazord

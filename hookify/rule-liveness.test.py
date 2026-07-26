@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
-"""rule-liveness.test.py — proves every hookify rule CAN fire, and that the two rules
-activated by MZ-ACTIVATE-DEAD-RULES-001 actually DO.
+"""rule-liveness.test.py — proves every hookify rule is LOADABLE and that its pattern is
+not silently unmatchable, and that the two rules activated by MZ-ACTIVATE-DEAD-RULES-001
+actually DO fire.
+
+⚠️ WHAT THIS FILE PROVES, AND WHAT IT DOES NOT (corrected 2026-07-26, MZ-POSIX-PATTERN-DEATH-001)
+    It originally claimed to prove "every hookify rule CAN fire." That was overstated, and the
+    overstatement cost a live rule: block-bulk-import-without-atlas passed every check in Part 1
+    while being incapable of matching any input, because its pattern used POSIX classes that
+    Python `re` does not implement. A test that asserts more than it measures does not merely
+    miss a defect — it CERTIFIES the blind spot, and the next reader trusts the green.
+    Part 1 now proves: loadable (a-c) AND free of the one pattern defect known to compile clean
+    and never match (d). It still does NOT prove a pattern matches its INTENDED triggers — only
+    a behavioural case list (Part 2) does that, and only for the rules that have one.
 
 MZ-ACTIVATE-DEAD-RULES-001 (megazord, 2026-07-26).
 
@@ -54,6 +65,7 @@ RUN
 Exit 0 = all pass. Exit 1 = at least one rule cannot fire, or fires wrongly.
 """
 import sys, os, re, glob
+import warnings as warnings_mod
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RULES_DIR = sys.argv[1] if len(sys.argv) > 1 else HERE
@@ -117,6 +129,66 @@ for path in all_rules:
         problems.append(f"event {ev!r} not in {sorted(VALID_EVENTS)} -> no dispatcher claims it")
     if en not in ("true", "false"):
         problems.append(f"enabled {en!r} is neither 'true' nor 'false' -> dispatchers require =='true'")
+
+    # (d) POSIX bracket expressions in a pattern -> the rule loads clean and NEVER matches.
+    #     MZ-POSIX-PATTERN-DEATH-001 (megazord, 2026-07-26).
+    #
+    #     Every dispatcher evaluates patterns with Python `re`. Python `re` has NO POSIX
+    #     character classes. `[[:space:]]` does not mean "whitespace" — it compiles to the
+    #     set [ : s p a c e followed by a literal ], so it matches a bracket or a colon and
+    #     then a `]`. The regex COMPILES. It raises no error. It emits only a FutureWarning
+    #     ("Possible nested set"), which the dispatchers suppress or never surface. The rule
+    #     is loaded, enabled, listed as coverage — and cannot fire on any real input.
+    #
+    #     This is the exact failure this file exists to catch, and checks (a)-(c) all PASS it:
+    #     the filename is right, the event is valid, enabled is 'true'. Structural liveness
+    #     proves a rule can be LOADED. It does not prove the pattern can MATCH.
+    #
+    #     Caught by narrowing my own rule with `grep -E` — which DOES support POSIX classes —
+    #     and shipping it to an engine that does not. Two rules, both mine, verified 0/5 on
+    #     genuine triggers before the fix and 5/5 after.
+    #     STRENGTHENED at HIKARI's finding (2026-07-26): a literal `[[:` search catches only the
+    #     defect we already know about. The GENERAL failure is a DIALECT MISMATCH — a pattern
+    #     that is valid in the tool a warrior verified with (`grep -E`, `grep -P`) and means
+    #     something else, or nothing, in the engine that actually runs it. She verified and
+    #     SIGNED both of these rules using `grep -P`, where the same patterns return True.
+    #     grep and Python `re` are both "regex" and disagree silently: no error, no shell
+    #     warning, just False at runtime.
+    #
+    #     So the check below does not look for a token. It compiles each pattern through the
+    #     EXACT call the live matcher uses — rule_engine.py:24, `re.compile(p, re.IGNORECASE)`
+    #     — with warnings promoted to failures. Any pattern the real engine cannot compile
+    #     cleanly is reported, whether or not we have seen that particular defect before.
+    for pl in re.findall(r"^\s*pattern:\s*(.*)$", fm, re.M):
+        pl = pl.strip()
+        if len(pl) >= 2 and pl[0] in "'\"" and pl[-1] == pl[0]:
+            pl = pl[1:-1]
+        if not pl:
+            continue
+        posix = re.search(r"\[\[:\w+:\]", pl)
+        with warnings_mod.catch_warnings(record=True) as caught:
+            warnings_mod.simplefilter("always")
+            try:
+                re.compile(pl, re.IGNORECASE)   # same call as rule_engine.py:24
+                compile_err = None
+            except re.error as e:
+                compile_err = str(e)
+        if compile_err:
+            problems.append(
+                f"pattern does not compile in the live engine (re.compile): {compile_err}")
+            break
+        if caught:
+            detail = "; ".join(str(w.message) for w in caught)
+            if posix:
+                problems.append(
+                    "pattern contains a POSIX bracket expression ([[:...:]]) -> Python `re` has "
+                    "no POSIX classes; it compiles but can never match. Use \\s / \\d / \\w. "
+                    f"[engine warning: {detail}]")
+            else:
+                problems.append(
+                    "pattern compiles with a warning in the live engine -> it likely does not "
+                    f"mean what it appears to mean. [engine warning: {detail}]")
+            break
 
     if problems:
         for p in problems:
@@ -293,5 +365,8 @@ if failures:
     for f in failures:
         print(f"  - {f}")
     sys.exit(1)
-print(f"PASSED — {passes} checks, every rule in {RULES_DIR} can fire")
+print(f"PASSED — {passes} checks. Every rule in {RULES_DIR} is LOADABLE by its dispatcher "
+      f"and its pattern compiles cleanly in the live engine.")
+print("         This does NOT prove any rule matches its intended triggers — only the "
+      "behavioural cases in Part 2 do that, and only for the rules that have them.")
 sys.exit(0)
