@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
-"""rule-liveness.test.py — proves every hookify rule CAN fire, and that the two rules
-activated by MZ-ACTIVATE-DEAD-RULES-001 actually DO.
+"""rule-liveness.test.py — proves every hookify rule is LOADABLE and that its pattern is
+not silently unmatchable, and that the two rules activated by MZ-ACTIVATE-DEAD-RULES-001
+actually DO fire.
+
+⚠️ WHAT THIS FILE PROVES, AND WHAT IT DOES NOT (corrected 2026-07-26, MZ-POSIX-PATTERN-DEATH-001)
+    It originally claimed to prove "every hookify rule CAN fire." That was overstated, and the
+    overstatement cost a live rule: block-bulk-import-without-atlas passed every check in Part 1
+    while being incapable of matching any input, because its pattern used POSIX classes that
+    Python `re` does not implement. A test that asserts more than it measures does not merely
+    miss a defect — it CERTIFIES the blind spot, and the next reader trusts the green.
+    Part 1 now proves: loadable (a-c) AND free of the one pattern defect known to compile clean
+    and never match (d). It still does NOT prove a pattern matches its INTENDED triggers — only
+    a behavioural case list (Part 2) does that, and only for the rules that have one.
 
 MZ-ACTIVATE-DEAD-RULES-001 (megazord, 2026-07-26).
 
@@ -117,6 +128,31 @@ for path in all_rules:
         problems.append(f"event {ev!r} not in {sorted(VALID_EVENTS)} -> no dispatcher claims it")
     if en not in ("true", "false"):
         problems.append(f"enabled {en!r} is neither 'true' nor 'false' -> dispatchers require =='true'")
+
+    # (d) POSIX bracket expressions in a pattern -> the rule loads clean and NEVER matches.
+    #     MZ-POSIX-PATTERN-DEATH-001 (megazord, 2026-07-26).
+    #
+    #     Every dispatcher evaluates patterns with Python `re`. Python `re` has NO POSIX
+    #     character classes. `[[:space:]]` does not mean "whitespace" — it compiles to the
+    #     set [ : s p a c e followed by a literal ], so it matches a bracket or a colon and
+    #     then a `]`. The regex COMPILES. It raises no error. It emits only a FutureWarning
+    #     ("Possible nested set"), which the dispatchers suppress or never surface. The rule
+    #     is loaded, enabled, listed as coverage — and cannot fire on any real input.
+    #
+    #     This is the exact failure this file exists to catch, and checks (a)-(c) all PASS it:
+    #     the filename is right, the event is valid, enabled is 'true'. Structural liveness
+    #     proves a rule can be LOADED. It does not prove the pattern can MATCH.
+    #
+    #     Caught by narrowing my own rule with `grep -E` — which DOES support POSIX classes —
+    #     and shipping it to an engine that does not. Two rules, both mine, verified 0/5 on
+    #     genuine triggers before the fix and 5/5 after.
+    for pl in re.findall(r"^\s*pattern:\s*(.*)$", fm, re.M):
+        if re.search(r"\[\[:\w+:\]\]|\[\[:\w+:\]", pl):
+            problems.append(
+                "pattern contains a POSIX bracket expression ([[:...:]]) -> Python `re` has no "
+                "POSIX classes; the pattern compiles but can never match. Use \\s / \\d / \\w."
+            )
+            break
 
     if problems:
         for p in problems:

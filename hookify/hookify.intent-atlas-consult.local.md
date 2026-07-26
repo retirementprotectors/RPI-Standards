@@ -51,7 +51,7 @@ conditions:
     # 10/10. Both halves — no false positive, and NO false negative traded for it.
     # (`do a data import` failed my first draft; shipping that would have traded one defect for
     #  the other, so the verb branch was widened and everything re-run.)
-    pattern: (?i)(?:^|\n)[[:space:]]*(?:please[[:space:]]+)?(?:bulk[[:space:]-]?(?:import|load)|import|migrate|ingest|backfill|load|intake|(?:do|run|start|perform|kick[[:space:]]+off)[[:space:]]+(?:a[[:space:]]+)?(?:bulk[[:space:]-]|data[[:space:]-])?(?:import|migration|intake|load|backfill))\b[^\n]{0,60}\b(?:data|records?|contacts?|book[[:space:]]+of[[:space:]]+business|BoB|carrier[[:space:]]+(?:data|statements?)|commissions?|revenue|firestore|bigquery|collection|table|pipeline|queue|registry)\b
+    pattern: (?i)(?:^|\n)\s*(?:please\s+)?(?:bulk[\s-]?(?:import|load)|import|migrate|ingest|backfill|load|intake|(?:do|run|start|perform|kick\s+off)\s+(?:a\s+)?(?:bulk[\s-]|data[\s-])?(?:import|migration|intake|load|backfill))\b[^\n]{0,60}\b(?:data|records?|contacts?|book\s+of\s+business|BoB|carrier\s+(?:data|statements?)|commissions?|revenue|firestore|bigquery|collection|table|pipeline|queue|registry)\b
 owner: megazord
 ---
 
