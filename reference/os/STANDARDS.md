@@ -66,6 +66,77 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 - [x] Does Google Workspace meet HIPAA requirements? -- **Yes.** HIPAA-compliant with BAA in place.
 - [x] What training is required? -- **PHI Training deployed.** See Part 10.
 
+### What PHI Is -- and What It Is Not
+
+> **Added 2026-07-26.** Over-classification was costing more than under-classification: staff and
+> warriors were treating any client name as PHI and escalating on *sightings* rather than
+> *exposures*. This section is the authoritative test, taken from the regulation rather than
+> from custom.
+
+#### The regulatory definition (45 CFR 160.103)
+
+**"Individually identifiable health information"** is health information, including demographic
+information, that:
+
+1. Is created or received by a health care provider, health plan, employer, or clearinghouse; **and**
+2. **Relates to** one of three things -- (a) the past, present, or future **physical or mental health
+   or condition** of an individual; (b) the **provision of health care** to an individual; or (c) the
+   past, present, or future **payment for the provision of health care** to an individual; **and**
+3. Identifies the individual, or there is a reasonable basis to believe it can be used to identify them.
+
+**PHI** is that information in any form or medium. Exclusions: FERPA education records, employment
+records held by a covered entity **in its role as employer**, and a person deceased more than 50 years.
+
+**The operative structure: IDENTIFIER + HEALTH INFORMATION, linked.** Both halves. The 18 Safe
+Harbor identifiers (45 CFR 164.514(b)(2)(i)) include name, geography below state, dates, phone,
+email, SSN, medical record number, **health plan beneficiary number**, account number, and full-face
+images -- but an identifier **on its own is not PHI**. A name with no health nexus is CONFIDENTIAL
+business data. This is consistent with Part 1, where **Client Name is CONFIDENTIAL, not RESTRICTED**.
+
+#### Tier 1 -- CLINICAL (highest harm; inference counts)
+
+Diagnosis, condition, medication, treatment, provider or specialty, lab result, health intake.
+
+**A clinical detail that lets a reader INFER a condition is PHI even if the condition is never
+named.** This is the part most often missed:
+
+| Example | Why it is PHI |
+|---|---|
+| "Jane Doe, Tamoxifen" | The drug reveals the diagnosis |
+| "Jane Doe -- Dr. Smith, Oncologist" | The specialty reveals the diagnosis |
+| "Jane Doe, breast cancer" | Condition stated outright |
+
+#### Tier 2 -- COVERAGE + PAYMENT (PHI, but routine)
+
+Plan type, carrier, premium, enrollment status, policy/beneficiary number, claim.
+
+**This is PHI** -- prong 2(c), payment for the provision of health care, squarely covers it, and
+"health plan beneficiary number" is an enumerated identifier. **Do not classify it as non-PHI.**
+
+But it is also the substrate of the entire book of business. Handle it need-to-know under the rules
+in Part 3 and **keep working**. Encountering it is not an event.
+
+#### Not PHI at all
+
+| Example | Classification | Why |
+|---|---|---|
+| "Jane Doe" | CONFIDENTIAL (PII) | Identifier with no health nexus |
+| "Jane Doe -- invoice #4471" | CONFIDENTIAL | Billing with no health nexus |
+| "312 clients enrolled in MAPD" | INTERNAL | Aggregate; not identifiable |
+| "Client is on Eliquis" (unnamed, no other identifier) | INTERNAL | Health info; not identifiable |
+| Employee's own health record held as employer | Excluded | 160.103 employment-records exclusion |
+
+#### Classification is not escalation
+
+**This is the rule that ends the review marathons.** Determining "this is PHI" means *handle it
+correctly* -- storage, masking, logging, minimum necessary. It does **not** mean convene a review.
+
+- **Apply the test yourself and proceed.** It is self-serve. No cross-team adjudication.
+- **Escalate actual EXPOSURE** -- PHI that reached a surface or party it should not have
+  (see Part 6: Incident Response).
+- **A sighting is not an incident. Ambiguity is not an incident.** If you are unsure and nothing
+  has been exposed, apply Tier 1 handling and continue working.
+
 ### HIPAA Triggers (Active)
 
 | Activity | HIPAA Status | Controls |
@@ -191,6 +262,26 @@ RPI is both a **Covered Entity** (handles PHI as part of client service -- Medic
 - Terminated employees have access revoked same-day
 
 > For current role tables, MDJ instance access assignments, and detailed access matrices, see [POSTURE.md](POSTURE.md).
+
+### Google Workspace OU Semantics
+
+> **Rehomed here 2026-07-26** from `toMachina/docs/warriors/shared/phi-governance.md`, which is
+> retired. This is now the canonical home. Compliance-critical for any user-admin, offboarding,
+> or email-routing action.
+
+| OU | Meaning | Who goes here |
+|----|---------|---------------|
+| `/RPI- Archived Users` | FINRA email archiving via Global Relay | **Active LICENSED users only.** Do NOT move non-licensed users here. |
+| `/RPI- Offboarded` | Suspended/departed employees | Departed team members. NOT archived to Global Relay. |
+| `/RPI- Non-Archived Users` | Active employees NOT under securities email archiving | Non-licensed active staff. |
+
+**A departing employee goes to `/RPI- Offboarded`** -- never `/RPI- Archived Users`, which
+requires FINRA licensed-user status.
+
+**Super Admins:** read the live Workspace admin audit (`audit_admin_roles` / Admin SDK), never a
+hardcoded list. Super Admin access is not self-grantable. **JDM is sole Super Admin --
+GAM-verified 2026-07-06** (prior COO offboarded; see the Security Officer designation at the top
+of this document).
 
 ---
 
