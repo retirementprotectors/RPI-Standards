@@ -6,10 +6,19 @@ action: block
 conditions:
   - field: command
     operator: regex_match
-    pattern: Projects/dojo-warriors(?![\w-])
+    pattern: Projects/(dojo-warriors|toMachina)(?![\w-])
   - field: command
     operator: regex_match
     pattern: \bgit\s+(-C\s+\S+\s+)*(checkout|switch)\b
+# MZ-LIVETREE-GUARD-001 (megazord, 2026-07-26) — EXTENDED to toMachina.
+# This rule protected ONE of the two live deploy trees. `~/Projects/toMachina` is equally
+# live (scopes-updater.service, mwm-board-lander, seven wire timers, and every warrior's
+# SessionStart/Stop hooks exec out of it) and had NO guard of any kind.
+# Consequence, measured 2026-07-26: that tree sat on `kagami/ob1-axe-contacts-qp-cleanup-001`
+# for 8 days, 105 commits behind main. Its reflog shows kagami, shinob1 and ronin branches
+# checked out directly IN the live tree going back to at least 2026-06-29 — it had been in
+# routine use as a scratch checkout for over a month. The asymmetry was the whole bug: the
+# lesson was learned once (SHIN-TRUNK-UNIFY-001, T440 freeze) and never back-ported.
 owner: shinob1
 reviewed: 2026-06-26 SHINOB1 A6 — FP fix. Old single pattern matched the dojo-warriors PATH + the bare word "switch"/"checkout" anywhere in the command, so any `node /home/jdm/Projects/dojo-warriors/.../dojo-reply.mjs "...global switch..."` (hub-status prose) tripped it. Split into AND conditions: (1) references the live deploy path, AND (2) contains an actual `git [-C <path>] checkout|switch` op. Prose containing "switch"/"checkout" no longer fires; real branch ops on the live tree still blocked. Same prose-substring FP class as block-opus-subagent / block-alert-confirm-prompt.
 ---
