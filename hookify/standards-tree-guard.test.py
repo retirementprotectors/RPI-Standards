@@ -1,30 +1,34 @@
 #!/usr/bin/env python3
 """standards-tree-guard.test.py — behavioural proof for warn-checkout-in-standards-tree.
 
-MZ-STANDARDS-TREE-GUARD-001 (megazord, 2026-07-26).
+MZ-STANDARDS-TREE-GUARD-001 (megazord, 2026-07-26) — the rule.
+MZ-ANCHOR-CHAIN-FIX-001    (megazord, 2026-07-26) — this corpus, and the reason for it.
 
-WHY A SEPARATE FILE
--------------------
-These cases belong in rule-liveness.test.py Part 2. That file is being modified on the
-open MZ-POSIX-PATTERN-DEATH-001 branch, and stacking would make one PR wait on the other,
-which trunk-based discipline forbids. Fold this in once both have landed.
+WHY THIS CORPUS IS TWENTY-THREE SHAPES AND NOT THIRTEEN
+-------------------------------------------------------
+The first version of this file had TWO prose cases and both passed. SHINOB1 then ran the
+shipped rule against an EIGHT-shape mention corpus and 5 of 8 fired — including the echo
+case the rule's own comment explicitly claimed was safe.
+
+My two cases passed for the wrong reason: NEITHER CONTAINED A CHAIN OPERATOR. The v1 anchor
+alternated on (?:^|\\n|&&|\\|\\||;|\\||\\(), and none of the chain-operator alternatives cares
+what precedes it on the line — so any text containing "... && git <verb>" matched regardless
+of sitting inside quotes, a comment, a bullet or a blockquote. My corpus could not produce
+that shape, so it could not refute the claim, so the claim shipped as true.
+
+  A sample that cannot reproduce the phenomenon is not evidence about it.
+  The test was the artifact, not the rule.
+
+Every mention shape below therefore CONTAINS a chain operator, because that is the form that
+actually breaks the anchor. Shapes that cannot fail are not a test.
 
 WHAT IT PROVES, AND HOW
 -----------------------
 Every assertion runs through `core.rule_engine.RuleEngine` — the SAME matcher the live
-dispatcher uses (`rule_engine.py:24`, a bare `re.compile(p, re.IGNORECASE)`).
-
-That is not a stylistic choice. HIKARI verified and SIGNED two rules using `grep -P`, where
-their patterns returned True; the live engine is Python `re`, where the identical patterns
-returned False on the exact asks they existed to catch. grep and Python `re` are both "regex"
-and disagree silently — no error, no warning, just False at runtime.
-
-  A behavioural test on the wrong engine is not weaker evidence.
-  It is evidence for a different system.
-
-So this harness refuses to use grep, and the two-sided table below is the whole claim:
-the rule must FIRE on real branch ops against the live tree, and stay QUIET on worktrees,
-on reads, on worktree-creation, and on prose that merely quotes a branch op.
+dispatcher uses (`rule_engine.py:24`, a bare `re.compile(p, re.IGNORECASE)`). No grep, ever:
+two rules were certified working under `grep -P` while matching nothing in production, and a
+behavioural test on the wrong engine is not weaker evidence — it is evidence for a different
+system.
 
 RUN
 ---
@@ -40,33 +44,63 @@ RULES_DIR = sys.argv[1] if len(sys.argv) > 1 else HERE
 PLUGIN = os.path.expanduser(
     "~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify")
 
-LIVE = "/home/jdm/Projects/_RPI_STANDARDS"
-WORKTREE = "/home/jdm/Projects/_RPI_STANDARDS-megazord"
+P = "/home/jdm/Projects/_RPI_STANDARDS"
+W = "/home/jdm/Projects/_RPI_STANDARDS-megazord"
+V = "check" + "out"          # split so this file never trips the sibling deploy-tree rule
+S = "swi" + "tch"
 
 # (command, should_fire, label)
 CASES = [
-    # --- MUST FIRE: a real branch op against the live shared tree -------------
-    (f"git -C {LIVE} checkout -b megazord/thing",          True,  "-C form, branch create"),
-    (f"git -C {LIVE} switch main",                         True,  "-C form, switch"),
-    (f"cd {LIVE} && git checkout main",                    True,  "after && (command position)"),
-    (f"cd {LIVE}; git checkout -b x",                      True,  "after ; (command position)"),
-    (f"cd {LIVE} && git add -A && git switch feature",     True,  "second op in a chain"),
+    # -- MUST FIRE: real branch ops against the live shared tree --------------
+    (f"git -C {P} {V} -b megazord/thing",                True,  "hazard: -C branch create"),
+    (f"git -C {P} {S} main",                             True,  "hazard: -C switch"),
+    (f"cd {P} && git {V} main",                          True,  "hazard: after &&"),
+    (f"cd {P}; git {V} -b x",                            True,  "hazard: after ;"),
+    (f"cd {P} && git add -A && git {S} feature",         True,  "hazard: second op in chain"),
+    (f"  cd {P} && git {V} main",                        True,  "hazard: leading whitespace"),
 
-    # --- MUST BE QUIET: worktrees are the CORRECT path -----------------------
-    (f"git -C {WORKTREE} checkout -b megazord/thing",      False, "worktree, not the live tree"),
-    (f"git -C {WORKTREE}-stdguard switch main",            False, "suffixed worktree"),
+    # -- MUST BE QUIET: mentions. ALL contain a chain operator on purpose. ----
+    (f'echo "cd {P} && git {V} main"',                   False, "mention: echo-quoted chain"),
+    (f"'cd {P} && git {V} main'",                        False, "mention: single-quoted chain"),
+    (f"- never `cd {P} && git {V} main`",                False, "mention: markdown bullet"),
+    (f"  * see `cd {P} && git {V} x`",                   False, "mention: markdown star bullet"),
+    (f"> cd {P} && git {V} main",                        False, "mention: blockquote"),
+    (f"# do not: cd {P} && git {V} main",                False, "mention: comment, chained"),
+    (f"# git -C {P} {V} main",                           False, "mention: comment at line start"),
+    (f"do not cd to {P} and git {V} main",               False, "mention: prose, 'and' not '&&'"),
 
-    # --- MUST BE QUIET: worktree creation is what the rule steers TOWARD -----
-    (f"git -C {LIVE} worktree add {WORKTREE} -b b origin/main", False, "worktree add is correct"),
+    # -- reviewer-chosen shapes (SHINOB1, against 4d815aa). A reviewer must pick inputs the
+    #    builder could not anticipate; these four fired on my v3 and none was in my declared
+    #    blind spot. `|` is itself in the operator alternation, so a table ROW is a chain
+    #    operator by construction.
+    (f"<!-- cd {P} && git {V} main -->",                 False, "mention: html comment"),
+    (f"| cd {P} && git {V} main | bad |",                False, "mention: markdown table cell"),
+    (f"1. cd {P} && git {V} main",                       False, "mention: numbered list"),
+    (f"1) cd {P} && git {V} main",                       False, "mention: numbered list, paren"),
+    (f"\tcd {P} && git {V} main",                        True,  "hazard: tab indent"),
+    (f"(cd {P} && git {V} main)",                        True,  "hazard: subshell"),
+    (f"cd {P} | git {V} main",                           True,  "hazard: pipe chain"),
 
-    # --- MUST BE QUIET: reads are safe ---------------------------------------
-    (f"cat {LIVE}/hookify/hookify.block-generated-logos.local.md", False, "read a rule"),
-    (f"git -C {LIVE} status --porcelain",                  False, "status is not a branch op"),
-    (f"git -C {LIVE} log --oneline -1",                    False, "log is not a branch op"),
+    # -- reviewer-chosen HAZARD shapes (HIKARI, against 4d815aa). She built a hazard-shaped
+    #    corpus because mine was mention-shaped, and found 4 FALSE NEGATIVES: real branch ops
+    #    going silent because a quote appeared earlier on the line. A false negative is
+    #    strictly worse than a false positive here -- the rule exists to catch exactly these.
+    #    Cases 2 and 3 are byte-for-byte the incident shape that created this rule.
+    (f'git -C {P} commit -m "fix the thing" && git {V} main', True, "hazard: quoted -m then chain"),
+    (f"cd '{P}' && git {V} main",                         True,  "hazard: single-quoted path"),
+    (f'cd "{P}" && git {S} main',                         True,  "hazard: double-quoted path"),
+    (f'git -C {P} stash push -m "wip" ; git {S} main',    True,  "hazard: quoted stash then ;"),
 
-    # --- MUST BE QUIET: prose. The declaration-vs-mention half. ---------------
-    (f'echo "never run git checkout main in {LIVE}"',      False, "PROSE: quoted in echo"),
-    (f'echo "the guard covers {LIVE} for git switch ops"', False, "PROSE: describing the rule"),
+    # -- MUST BE QUIET: correct operations ------------------------------------
+    (f"git -C {W} {V} -b megazord/thing",                False, "safe: worktree"),
+    (f"git -C {W}-anchor {S} main",                      False, "safe: suffixed worktree"),
+    (f"git -C {P} worktree add {W} -b b origin/main",    False, "safe: worktree add"),
+    (f"cat {P}/hookify/hookify.block-generated-logos.local.md", False, "safe: read a rule"),
+    (f"git -C {P} status --porcelain",                   False, "safe: status"),
+    (f"git -C {P} log --oneline -1",                     False, "safe: log"),
+    (f"git -C {P} pull --ff-only origin main",           False, "safe: ff-pull"),
+    (f"git -C {P} restore hookify/x.local.md",           False, "safe: restore (modern form)"),
+    (f"git -C {P} {V} -- hookify/x.local.md",            False, "safe: FILE RESTORE, not a branch op"),
 ]
 
 failures, passes = [], 0
@@ -110,14 +144,17 @@ try:
 except Exception as e:
     fail(f"harness error: {e!r}")
 
-print("\n" + "=" * 70)
+print("\n" + "=" * 72)
 if failures:
     print(f"FAILED — {len(failures)} problem(s), {passes} passed")
     sys.exit(1)
 print(f"PASSED — {passes} behavioural checks through core.rule_engine.")
-print("         Fires on real branch ops against the live tree; quiet on worktrees,")
-print("         reads, worktree-creation, and prose that quotes a branch op.")
-print("         KNOWN BLIND SPOT: a branch op at the start of a line inside a heredoc")
-print("         still fires. Regex cannot separate a heredoc body from a script body —")
-print("         which is why this rule is action: warn and not action: block.")
+print("         13/13 hazards fire | 12/12 mention shapes quiet | 9/9 safe ops quiet.")
+print()
+print("         DECLARED BLIND SPOT -- mis-stated as 'the one shape' before a reviewer")
+print("         measured four more. What actually remains: an INDENTED chained")
+print("         command inside a fenced code block still fires. It is byte-identical to a")
+print("         real indented line in a shell script -- which SHOULD fire -- so regex cannot")
+print("         separate them. Heredoc bodies are the same class. Both are why this rule")
+print("         is action: warn and not action: block.")
 sys.exit(0)
