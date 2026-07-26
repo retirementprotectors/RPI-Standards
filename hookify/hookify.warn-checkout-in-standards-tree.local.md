@@ -9,7 +9,7 @@ conditions:
     pattern: Projects/_RPI_STANDARDS(?![\w-])
   - field: command
     operator: regex_match
-    pattern: (?:^|\n|&&|\|\||;|\||\()\s*git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b
+    pattern: (?:(?:^|\n)[ \t]*|(?:^|\n)(?![ \t]*[>\-*#])[^\n"'`#]*?(?:&&|\|\||;|\|)[ \t]*)git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b(?!\s+--\s)
 # MZ-STANDARDS-TREE-GUARD-001 (megazord, 2026-07-26) — the THIRD live shared tree.
 #
 # block-checkout-in-live-deploy-tree covers dojo-warriors and toMachina. It does not cover
@@ -29,15 +29,45 @@ conditions:
 # live rule work wedges the immune system instead of protecting it. Warn first, measure the
 # false-fire rate, and only then consider block. Upgrading is one word.
 #
-# WHAT THIS PATTERN CANNOT SEE — stated next to the result, per cross-warrior gotcha #42.
-# Condition 2 anchors on COMMAND POSITION (line start, or after && || ; | and an opening
-# paren) rather than matching the token anywhere. That is the declaration-vs-mention fix: it
-# will NOT fire on a quoted mention inside an echo, or on a path named mid-sentence.
-# It CAN still fire on a git command sitting at the start of a line INSIDE a heredoc or a
-# quoted multi-line string — regex cannot tell a heredoc body from a script body. That is a
-# known, accepted false-positive class, and it is precisely why this rule is warn and not
-# block. A guard that cannot distinguish a command from a quotation of one will fire on the
-# postmortem and miss the incident; warn posture makes that cost a nudge instead of a wedge.
+# ── MZ-ANCHOR-CHAIN-FIX-001 — A FALSE CLAIM, CORRECTED (2026-07-26) ──────────────────────
+# The v1 comment here asserted this rule "will NOT fire on a quoted mention inside an echo."
+# THAT WAS FALSE AND MEASURABLY SO. SHINOB1 read the shipped rule against an 8-shape mention
+# corpus and 5 of 8 fired, the echo case among them.
+#
+# MECHANISM: v1 anchored on (?:^|\n|&&|\|\||;|\||\() and NONE of the chain-operator
+# alternatives cares what PRECEDES it on the line. Any text containing "... && git <verb>"
+# matched regardless of sitting inside quotes, a comment, a bullet or a blockquote.
+# Line-start anchoring worked; the chain-operator anchors did not — and those are exactly the
+# forms documentation naturally uses.
+#
+# WHY MY OWN TEST MISSED IT: my corpus had two prose shapes and NEITHER contained a chain
+# operator, so both went quiet for the wrong reason and I read that as the anchor working.
+# A sample that cannot reproduce the phenomenon is not evidence about it. The test was the
+# artifact, not the rule — the same shape as the defect this whole arc is about.
+#
+#   MEASURED, through core.rule_engine, both conditions ANDed:
+#            mention shapes firing      hazards      safe ops
+#     v1            7 / 10               6 / 6        0 / 6
+#     v2 (this)     1 / 10               6 / 6        0 / 6
+#
+# v2 keeps the line-start branch and guards the chain-operator branch two ways: the line must
+# not OPEN with a markdown/comment marker (> - * #), and no quote or backtick may appear
+# before the operator. Quoted, single-quoted, bulleted, blockquoted and commented mentions all
+# go quiet; every real hazard still fires, including the leading-whitespace form.
+#
+# ⚠️ WHAT IT STILL CANNOT SEE — the one surviving shape, DECLARED rather than denied:
+# an INDENTED chained command ("    cd <tree> && git <verb> main") still fires. That is not
+# fixable here and arguably should not be — it is byte-identical to a real indented line in a
+# shell script, which SHOULD fire. Inside a fenced code block it is a mention; in a script it
+# is a command; regex cannot tell them apart. Heredoc bodies are the same class.
+# Both are why this rule is warn and not block: a guard that cannot distinguish a command from
+# a quotation of one will fire on the postmortem and miss the incident, and warn posture makes
+# that cost a nudge instead of a wedge.
+#
+# ALSO NOT MATCHED: a FILE-RESTORE checkout (the double-dash pathspec form). Restoring a
+# file is not a branch op and must not warn — found while writing this fix, by needing to
+# restore a file in the live tree and watching my own rule warn about it. The modern
+# restore subcommand never matched; the legacy double-dash form did, and now does not.
 #
 # NOT MATCHED, ON PURPOSE: the worktree-add subcommand. Creating a worktree is the CORRECT
 # action this rule steers toward, and its command contains neither checkout nor switch.
