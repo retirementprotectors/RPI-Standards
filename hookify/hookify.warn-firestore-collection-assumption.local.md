@@ -4,6 +4,11 @@ enabled: false
 event: PreToolUse
 action: warn
 owner: megazord
+# ALLOW-DORMANT: retired 2026-07-08 as a documented reference, not a live rule. The
+# `event: PreToolUse` value below is dead on purpose — see the rationale block. This
+# marker exempts the file from hookify/rule-liveness.test.py, which otherwise fails any
+# rule that cannot fire. Deliberate dormancy is declared and greppable; drifting into
+# deadness is what the test exists to catch.
 # RETIRED 2026-07-08 (megazord · §2d dormant-cluster sweep · JDM + SHINOB1 + HIKARI call).
 # Kept as a DORMANT DOCUMENTED REFERENCE (enabled:false), NOT deleted — deleting would lose the
 # concept + the known-collections seed below. Renamed to the hookify.* prefix so it shows honestly
