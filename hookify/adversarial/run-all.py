@@ -15,6 +15,25 @@ THIS RUNNER DOES NOT TRUST EXIT CODES. It reads each corpus's OUTPUT and treats 
 carrying the failure marker as a failure, then ANDs that with the exit code. A corpus that
 prints failures and exits 0 fails here. A corpus that exits 1 silently also fails here.
 
+NO SCORE IS NOT A PASS  (MZ-RUNALL-SCORE-CLAUSE-001, 2026-07-26)
+----------------------------------------------------------------
+The first cut of this runner shipped `passed is None or passed == total` — i.e. a corpus that
+printed NO score at all was waved through as clean. SHINOB1 built the artifact that proved it:
+a corpus which dies before it prints anything emits no score AND no failure marker, and if it
+lacks a `sys.exit` (round4b does) its return code is 0. All three "clean" signals are then
+satisfied by a corpus that never ran a single case, and the runner reports PASSED.
+
+That is this whole arc's defect wearing the runner's own uniform: A TEST THAT ASSERTS MORE
+THAN IT MEASURES DOES NOT MISS A DEFECT, IT CERTIFIES THE BLIND SPOT. The clause is now
+`passed is not None and passed == total` — absence of a score is absence of evidence, and
+absence of evidence is reported as FAILS, never as clean. If a corpus legitimately has no
+score to print, it must be taught to print one; it does not get to be exempt from measurement.
+
+Note the shape, because it generalises past this file: every one of the three signals was a
+NEGATIVE (no failures printed, no non-zero exit, no score mismatch), and a corpus that does
+nothing satisfies all negatives perfectly. A clean verdict needs at least one POSITIVE signal
+to rest on. Here that positive is "a score was actually printed."
+
   (This is not hypothetical. While wiring this up I read a corpus's exit status through
    `echo "$(basename $f): $?"` — the command substitution runs first and clobbers `$?`, so I
    read basename's status, not python's, and briefly concluded all three corpora were
@@ -55,9 +74,11 @@ def run_corpus(path, rule):
     printed = sum(1 for line in out.splitlines() if FAIL_MARKER in line)
     m = SCORE_RE.search(out)
     passed, total = (int(m.group(1)), int(m.group(2))) if m else (None, None)
-    # clean == no printed failures AND exit 0 AND (if a score was printed) all cases passed
+    # clean == no printed failures AND exit 0 AND a score was ACTUALLY PRINTED and complete.
+    # `passed is not None` is load-bearing: absence of a score is absence of evidence, not
+    # evidence of success. See NO SCORE IS NOT A PASS in the module docstring.
     clean = (printed == 0 and proc.returncode == 0
-             and (passed is None or passed == total))
+             and passed is not None and passed == total)
     return clean, passed, total, printed, proc.returncode
 
 
