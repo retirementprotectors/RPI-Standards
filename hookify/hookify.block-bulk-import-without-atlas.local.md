@@ -6,7 +6,34 @@ action: block
 conditions:
   - field: prompt
     operator: regex_match
-    pattern: (?:import|bulk|batch).*(?:data|write|update|firestore|migration)|(?:migrate|seed).*(?:firestore|collection)
+    # OB1-HOOKIFY-DECLARATION-ANCHOR-001 (2026-07-26, megazord — owner).
+    #
+    # WAS: (?:import|bulk|batch).*(?:data|write|update|firestore|migration)|(?:migrate|seed).*(?:firestore|collection)
+    #
+    # That pattern used GREEDY UNANCHORED `.*`, so it matched a MENTION anywhere in a
+    # prompt rather than a DECLARATION. In a long routed cross-warrior message, the word
+    # "importer" near the top and "data" three paragraphs down matched as one hit.
+    # It FALSE-FIRED THREE TIMES IN ONE NIGHT on peer traffic that was reporting results,
+    # not requesting an import.
+    #
+    # Why that is dangerous rather than merely noisy: this is an `event: prompt` rule, so
+    # a match INJECTS a mandatory-steps protocol into the seat's context. A false trigger
+    # is a FALSE ORDER. The self-check preamble below is the only thing between a phrase
+    # match and a fabricated directive — and a guard that cries wolf trains seats to skim
+    # exactly that preamble.
+    #
+    # NOW: anchored to a line-initial IMPERATIVE, with the data-target noun required
+    # WITHIN 60 CHARS ON THE SAME LINE. Matches a declaration, not a mention.
+    # (Same fix shape as MWM-META's `^event:` anchoring — a mention cannot match a declaration.)
+    #
+    # Verified against a corpus that REPRODUCES the bug before claiming the fix — the old
+    # pattern matches the real message that fired tonight, the new one does not:
+    #   real routed message that false-fired : OLD=MATCH  NEW=no   <- fixed
+    #   5 genuine bulk-data instructions     : OLD=3/5    NEW=5/5  <- gate can still fire
+    # The old pattern also had FALSE NEGATIVES it never got credit for missing:
+    # "migrate the anchor records to bigquery" and "backfill 3,000 rows into firestore"
+    # both slipped through it. This closes those too.
+    pattern: (?i)(?:^|\n)[[:space:]]*(?:please[[:space:]]+)?(?:bulk[[:space:]-]?(?:import|load|insert|write|update)|batch[[:space:]-]?(?:import|load|insert|write|update)|import|migrate|seed|backfill)\b[^\n]{0,60}\b(?:firestore|bigquery|big[[:space:]-]?query|collection|table|dataset|records?|rows?|contacts?)\b
 exclude:
   - pattern: atlas|ATLAS|guardian|snapshot
 owner: megazord
