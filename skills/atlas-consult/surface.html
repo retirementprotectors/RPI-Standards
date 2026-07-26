@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Draft — ATLAS Consult · Skills Registry (STAGED)</title>
+<style>
+:root{--bg:#0a0e17;--card:#111827;--card2:#1a2236;--border:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--green:#22c55e;--blue:#3b82f6;--cyan:#06b6d4;--red:#ef4444;--megazord:#10b981;--amber:#d29922}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;max-width:920px;margin:0 auto;padding:28px 20px}
+h1{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--megazord),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.meta{color:var(--muted);font-size:0.85rem;margin:4px 0 18px;display:flex;gap:16px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:999px}
+.badge.skill{background:rgba(59,130,246,0.12);color:var(--blue);border:1px solid rgba(59,130,246,0.35)}
+.badge.owner{background:rgba(16,185,129,0.12);color:var(--megazord);border:1px solid rgba(16,185,129,0.35)}
+.badge.staged{background:rgba(210,153,34,0.14);color:var(--amber);border:1px solid rgba(210,153,34,0.4)}
+.intro{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--megazord);border-radius:10px;padding:14px 18px;font-size:0.92rem;margin-bottom:20px}
+.intro strong{color:var(--megazord)}
+.alert{background:rgba(210,153,34,0.08);border:1px solid rgba(210,153,34,0.35);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:0.88rem;color:var(--muted)}
+.alert strong{color:var(--amber)}
+.section{margin-bottom:24px}
+.section h2{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.step{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:flex;gap:14px}
+.step .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--megazord)}
+.step h3{font-size:1rem;margin-bottom:3px}
+.step .who{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.step p{font-size:0.88rem;color:var(--muted)}
+.step p strong{color:var(--text)}
+.step ul{font-size:0.88rem;color:var(--muted);margin-top:5px;padding-left:18px}
+.step ul li{margin-bottom:2px}
+.invoke-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+.invoke-box h3{font-size:0.95rem;margin-bottom:6px}
+.invoke-box code{display:block;font-family:monospace;font-size:0.9rem;color:var(--cyan);background:var(--card2);padding:8px 12px;border-radius:6px;margin:6px 0}
+.invoke-box p{font-size:0.86rem;color:var(--muted)}
+.gates-table{width:100%;border-collapse:collapse;font-size:0.86rem}
+.gates-table th{text-align:left;padding:8px 12px;background:var(--card2);color:var(--muted);font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+.gates-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.gates-table tr:last-child td{border-bottom:none}
+code{font-size:0.8rem;background:rgba(16,185,129,0.1);color:var(--megazord);padding:1px 5px;border-radius:4px;font-family:monospace}
+.footer{color:var(--muted);font-size:0.75rem;border-top:1px solid var(--border);margin-top:22px;padding-top:12px}
+</style>
+</head>
+<body>
+
+<h1>🧭 ATLAS Consult</h1>
+<div class="meta">
+  <span class="badge staged">DRAFT · STAGED · NOT PROMOTED</span>
+  <span class="badge owner">Owner: MEGAZORD</span>
+  <span class="badge skill">Lane: Data Operations</span>
+  <span style="color:var(--muted);font-size:0.82rem;align-self:center">v0.1.0-draft · 2026-07-08</span>
+</div>
+
+<div class="alert"><strong>Staged draft — GV2 WS-B pilot:</strong> this surface renders a skill that has NOT been reviewed or promoted. It is the pattern-setter for converting the 9 dumb <code>intent-*</code> hookify rules (context-injectors, not violation-detectors) into invocable skills. Do not treat this page as canonical until SHINOB1 review + JDM bless land and this PR merges.</div>
+
+<div class="intro"><strong>Why this exists:</strong> <code>intent-atlas-consult</code> fired on every prompt matching its data-work regex, unconditionally injecting the ATLAS-consult runbook into context — a hot-path cost paid on every matching prompt whether or not the runbook was needed yet. As a skill, the same guidance is invoked deliberately with <code>/atlas-consult</code>, off the hot path.</div>
+
+<div class="section">
+<h2>How to invoke</h2>
+<div class="invoke-box">
+  <h3>Any warrior or MDJ specialist doing data-import / migration / intake / BoB work</h3>
+  <code>/atlas-consult</code>
+  <p>Walks through consulting ATLAS's Source Registry, Tool Registry, and Wire Definitions before any new data pipeline work — so work reuses what's already registered instead of recreating it blind.</p>
+</div>
+</div>
+
+<div class="section">
+<h2>The 6-step process</h2>
+
+<div class="step"><div class="n">1</div><div><div class="who">Before anything else</div><h3>Read <code>_SOURCE_REGISTRY</code></h3><p>Every carrier × product × domain, gap status (RED/YELLOW/GREEN), current vs. target method. Do not discover sources by browsing folders when ATLAS already catalogs them.</p></div></div>
+
+<div class="step"><div class="n">2</div><div><div class="who">Before building anything</div><h3>Read <code>_TOOL_REGISTRY</code></h3><p>~150 registered pipeline tools across 6 categories (intake/queuing, extraction/approval, normalization/validation, matching/dedup, external enrichment, bulk operations). Use registered tools — do not reinvent the pipeline.</p></div></div>
+
+<div class="step"><div class="n">3</div><div><div class="who">Understand the path</div><h3>Read <code>WIRE_DEFINITIONS</code></h3><p>The established path from source → intake → extraction → approval → MATRIX → frontend. Follow the wires.</p></div></div>
+
+<div class="step"><div class="n">4</div><div><div class="who">Even DATA-OUT sessions</div><h3>Still check ATLAS</h3><p>The source registry tells you if a data source is already known, its expected method, and which tools handle it — even when working from raw data toward the system.</p></div></div>
+
+<div class="step"><div class="n">5</div><div><div class="who">Never eyeball folders</div><h3>Priority lists reference the gap analysis</h3><p>Data-work priority lists reference <code>_SOURCE_REGISTRY</code> gap analysis, not a guess from folder contents.</p></div></div>
+
+<div class="step"><div class="n">6</div><div><div class="who">Never silently register</div><h3>Unregistered sources: FLAG, don't auto-register</h3><p>Found a source not in <code>_SOURCE_REGISTRY</code>? Flag it for JDM with file/folder name, what it appears to contain, and a register/skip/unclear recommendation. Agents do NOT write to <code>_SOURCE_REGISTRY</code> without explicit approval — the registry stays trustworthy only if it stays clean.</p></div></div>
+
+</div>
+
+<div class="section">
+<h2>ATLAS project details</h2>
+<div class="invoke-box">
+  <p><strong>Location:</strong> <code>~/Projects/RAPID_TOOLS/ATLAS/</code></p>
+  <p><strong>Script ID:</strong> <code>1dLLKTyOIOSN8W3X6oxn57FwbMHNCKDrI4HMdGojMRGfYAZpSNPHknUU_</code></p>
+  <p><strong>Key functions:</strong> <code>getRegistryForUI({})</code>, <code>getGapAnalysisForUI({"group_by":"gap_status"})</code>, <code>getToolRegistryForUI({})</code> (~107K chars — read saved file if token limit hit), <code>getWiresByProductLineForUI()</code>, <code>getAutomationStatusForUI()</code>, <code>getPipelineSnapshotForUI()</code></p>
+</div>
+</div>
+
+<div class="section">
+<h2>Enforcing hookify gates</h2>
+<table class="gates-table">
+  <thead><tr><th>Gate</th><th>Rule name</th><th>Enforces</th></tr></thead>
+  <tbody>
+    <tr><td>—</td><td><em>none</em></td><td>This skill enforces nothing at the code level. Its hookify predecessor (<code>intent-atlas-consult</code>) was a context-injector, not a violation-detector — it never blocked a bad action, it just injected this same guidance on every matching prompt. See <code>gates.md</code>.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="footer">🥷 SHINOB1 sub-seat (shinob1-build-wsb-atlas-skill) — GV2 WS-B pilot · ATLAS Consult · draft, staged, unpromoted · converted from hookify <code>intent-atlas-consult</code> · <code>_RPI_STANDARDS/skills/atlas-consult/</code> · <code>/atlas-consult</code> · #RunningOurOwnRACE</div>
+</body>
+</html>
