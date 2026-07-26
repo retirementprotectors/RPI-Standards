@@ -22,7 +22,35 @@ conditions:
     # (Found by HIKARI-DOJOV3 by reading the regex instead of theorising from a fire;
     #  independently probed by HIKARI, which ran strings THROUGH the pattern. Two
     #  differently-constructed checks, same answer.)
-    pattern: (#SendIt|#sendit|deploy\s+to\s+prod)
+    #
+    # OB1-INTENT-SENDIT-ANCHOR-001 (2026-07-26): ANCHORED. The previous pattern was
+    # correct about WHAT counts as an invocation and had no concept of WHERE. It matched
+    # the token anywhere, so it fired on every QUOTATION of itself -- and this rule's own
+    # documentation, its verification tables, and every routed message about it all
+    # contain the literal token. A matcher over a corpus that documents itself matches
+    # its own documentation.
+    # MEASURED before the fix, all three FIRED and all three are prose:
+    #     '"#SendIt narrowing noted." - MEGAZORD'          (a peer's quotation)
+    #     'the trigger now needs an explicit #SendIt'        (a mid-sentence mention)
+    #     '`#SendIt` fires on explicit invocation ONLY'      (a routed verification row)
+    # Same class HIKARI enumerated across every event:prompt rule: a numbered imperative
+    # body injected on a phrase match, with no anchor to separate a declaration from a
+    # discussion of one. This body is the DEPLOY PROTOCOL, so a false fire fabricates a
+    # deploy order -- the failure that hit six seats on 2026-07-25.
+    #
+    # Now: the token must OPEN A LINE (after optional whitespace) and must NOT be opened
+    # by a quote, backtick, blockquote or list marker.
+    # DELIBERATE FALSE-NEGATIVE, stated so nobody 'fixes' it: 'do X then #SendIt'
+    # mid-sentence will NOT fire. That tightens the contract to what the doctrine already
+    # says -- #SendIt is an EXPLICIT invocation -- and it falls in the safe direction: a
+    # missed fire injects no protocol, while a false fire manufactures a deploy order.
+    # For a rule whose body is a deploy procedure that asymmetry is the whole design.
+    #
+    # VERIFIED 15/15 before commit: 9 quotation/mention/routed forms QUIET (including the
+    # three above that previously fired), 6 real invocations FIRE ('#SendIt', indented,
+    # with trailing text, 'deploy to prod', indented, and after a newline).
+    # Falsifier, kept live: any line in this repo's own docs that fires this pattern.
+    pattern: (?i)(?:^|\n)[ \t]*(?![>"'`*_-])(?:#SendIt|deploy[ \t]+to[ \t]+prod)\b
 owner: shinob1
 ---
 
