@@ -233,6 +233,59 @@ except Exception as e:
     fail(f"intent-create-disco-doc: harness error: {e!r}")
 
 
+# ── Part 3 — the live-deploy-tree guards actually hold ──────────────────────
+# MZ-LIVETREE-GUARD-001 (2026-07-26). Both of these are `action: block`, so both
+# directions are load-bearing: a miss lets a warrior park a feature branch in a live
+# deploy tree (which is how ~/Projects/toMachina ended up 105 commits behind on
+# kagami/ob1-axe-contacts-qp-cleanup-001 for 8 days), and a false fire blocks legitimate
+# worktree work, which is how guards get switched off.
+print("\n=== Part 3: live-deploy-tree guards (both are action: block) ===")
+try:
+    sys.path.insert(0, PLUGIN)
+    from core.config_loader import load_rule_file as _lrf
+    from core.rule_engine import RuleEngine as _RE
+
+    guards = []
+    for n in ("hookify.block-git-checkout-main-in-worktree.local.md",
+              "hookify.block-checkout-in-live-deploy-tree.local.md"):
+        r = _lrf(os.path.join(RULES_DIR, n))
+        if r is None:
+            fail(f"{n}: failed to load")
+        else:
+            guards.append(r)
+
+    if len(guards) == 2:
+        _eng = _RE()
+
+        def blocked(cmd):
+            return bool(_eng.evaluate_rules(guards, {"tool_name": "Bash",
+                                                     "tool_input": {"command": cmd}}).get("systemMessage"))
+
+        cases = [
+            ("git checkout main",                                             True,  "line-start checkout"),
+            ("git switch main",                                               True,  "line-start switch"),
+            ("git -C /home/jdm/Projects/toMachina switch main",               True,  "-C form (closed hole)"),
+            ("cd /repo && git switch main",                                   True,  "after && (closed hole)"),
+            ("git add -A; git checkout main",                                 True,  "after ;"),
+            ("git -C /home/jdm/Projects/toMachina checkout kagami/foo",       True,  "toMachina live tree"),
+            ("git -C /home/jdm/Projects/dojo-warriors checkout foo",          True,  "dojo-warriors live tree"),
+            ("git -C /home/jdm/Projects/toMachina-megazord checkout foo",     False, "worktree stays allowed"),
+            ("git -C /home/jdm/Projects/dojo-warriors-megazord checkout foo", False, "worktree stays allowed"),
+            ("git checkout mainline-feature",                                 False, "'main' prefix, not main"),
+            ("git status",                                                    False, "unrelated"),
+            ("echo 'never run git checkout main here'",                       False, "prose must not block"),
+        ]
+        for cmd, expect, label in cases:
+            h = blocked(cmd)
+            if h == expect:
+                ok(f"{label}: {'blocks' if expect else 'allows'} — {cmd}")
+            else:
+                fail(f"{label}: expected {'BLOCK' if expect else 'allow'}, "
+                     f"got {'BLOCK' if h else 'allow'} — {cmd}")
+except Exception as e:
+    fail(f"live-tree guards: harness error: {e!r}")
+
+
 # ── verdict ─────────────────────────────────────────────────────────────────
 print("\n" + "=" * 70)
 if failures:

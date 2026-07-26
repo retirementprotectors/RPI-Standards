@@ -6,8 +6,26 @@ action: block
 conditions:
   - field: command
     operator: regex_match
-    pattern: ^\s*git\s+(checkout|switch)\s+(-[a-zA-Z]*\s+)*main(\s|$)
+    pattern: '(?:^|[;&|]\s*|\n)\s*git\s+(-C\s+\S+\s+)*(checkout|switch)\s+(-[a-zA-Z]*\s+)*main(\s|$)'
 owner: shinob1
+# MZ-LIVETREE-GUARD-001 (megazord, 2026-07-26) — closed two bypasses, both verified by test.
+# The old pattern anchored on `^\s*git`, so it only saw a command that was the FIRST thing
+# on the line. Two forms sailed straight through:
+#
+#   git -C /home/jdm/Projects/toMachina switch main     <- ALLOWED (the dangerous one)
+#   cd /repo && git switch main                          <- ALLOWED
+#
+# The `-C` form is the one that matters: it is the natural way to move ANOTHER tree's
+# branch, it is the most destructive form, and it was completely unguarded. The sibling
+# rule (block-checkout-in-live-deploy-tree) already handled `-C` correctly — the fix was
+# sitting in the next file over and was never back-ported. Now anchored to a COMMAND
+# POSITION instead of line-start, which catches `;`/`&&`/`||`/pipe/newline chains too.
+#
+# DELIBERATELY NOT CAUGHT: wrapper forms like `bash -c 'git switch main'`. Matching inside
+# a quoted string would make this block-action rule fire on prose that merely quotes the
+# command — the exact false-fire class that misfired five rules on 2026-07-25/26. For a
+# BLOCK rule a false alarm is worse than this particular miss: a wrapper is a deliberate
+# act, and this gate exists to stop accidents, not to defeat intent.
 ---
 
 **BLOCKED: `git checkout main` / `git switch main` in a worktree**
