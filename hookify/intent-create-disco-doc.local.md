@@ -37,14 +37,28 @@ You are creating a FORGE Discovery Document. This is the contract RONIN executes
 
 ---
 
-### Required Tabs (in order)
+### Required Tabs (the CANONICAL 8 — non-negotiable)
 
-1. **Vision** — Why this sprint exists, what problem it solves, what done looks like
-2. **Current State** — What exists today, what's broken, what's missing
-3. **Architecture** — How the solution works, diagrams if needed
-4. **Sprint Plan** ← **MOST CRITICAL — RONIN seeds from this**
+A Discovery Doc MUST include all 8 canonical tab panels, in order. This matches the hard gate
+`block-disco-missing-canonical-tabs` (checks for the 8 `id="panel-*"` markers) — authoring to a
+smaller set gets the doc HARD-BLOCKED at write time. Reconciled 2026-07-08 (GV2 WS-A conflict #2):
+this spec used to require only 4 tabs, which the 8-tab gate rejected.
 
-Additional tabs as needed (Auth, Data Model, API Spec, etc.)
+| # | Tab | `id="panel-*"` | Carries |
+|---|-----|----------------|---------|
+| 1 | **Pain** | `panel-pain` | Why this exists, the problem, what "done" looks like (the old "Vision") |
+| 2 | **Build** | `panel-build` | What gets built — scope, the shape of the solution |
+| 3 | **Architecture** | `panel-arch` | How it works; diagrams |
+| 4 | **Decisions** | `panel-decisions` | Key calls + trade-offs (the record JDM/warriors sign off on) |
+| 5 | **Phases** | `panel-phases` | Sequenced phases / milestones |
+| 6 | **Tickets** | `panel-tickets` | **MOST CRITICAL — RONIN seeds from this.** The TRK ticket table (format below) |
+| 7 | **Files** | `panel-files` | Files created/modified |
+| 8 | **Gates** | `panel-gates` | Acceptance / verification gates — how each ticket proves done |
+
+Start from the canonical template so all 8 panel IDs are present:
+`cp docs/templates/discovery-doc-template.html docs/discoveries/<sprint-name>.html`
+(format guide: `docs/templates/DISCOVERY_DOC_FORMAT.md`). The FORGE **Tickets** tab uses the exact
+TRK table format specified below; RONIN's seeder reads it.
 
 ---
 
@@ -90,10 +104,10 @@ RONIN's seeder reads this table. Every row becomes a Firestore tracker item.
 
 ### Reference Template
 
-The cleanest example to follow: `sprint-005-ronin-autonomy-discovery.html`
-Live at: `https://retirementprotectors.github.io/toMachina/sprint-005-ronin-autonomy-discovery.html`
-
-Use the same dark theme CSS, same tab structure, same Sprint Plan table format.
+The canonical structure is `docs/templates/discovery-doc-template.html` (all 8 panel IDs).
+For a worked example, read a recent doc under `docs/discoveries/` in the repo directly
+(the `github.io` public URL convention is retired — Pages 404s since the 2026-06-27 lockdown).
+Use the canonical dark-theme template, the 8-tab structure, and the TRK table format.
 
 ---
 
@@ -104,7 +118,7 @@ Use the same dark theme CSS, same tab structure, same Sprint Plan table format.
 - [ ] Every ticket has exact file path
 - [ ] Every ticket has acceptance criteria (not just a title)
 - [ ] TRK IDs follow `TRK-S[NN]-NNN` format
-- [ ] Doc is publicly accessible via URL (GitHub Pages or similar)
+- [ ] Doc lives at `docs/discoveries/<name>.html` in the repo (NOT a public `github.io` URL — that convention is retired). For `POST /forge/sprint`, pass the repo path / an auth-reachable URL, not `github.io`.
 - [ ] Sprint name matches what you'll use in POST /forge/sprint
 
 When ready: `POST /forge/sprint { name: "Sprint Name", discovery_doc: "https://URL" }`
