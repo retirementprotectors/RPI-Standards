@@ -17,11 +17,26 @@ week, pointed at the evidence itself.
 |---|---|---|---|
 | `round3-hazard-shapes.py` | `adv.py` | `4846600848e2906b` | HIKARI |
 | `round4-quote-spans.py` | `adv4.py` | `33e1b241b1ad8c62` | HIKARI |
-| `round4b-nesting-matrix.py` | `mirror.py` | `2d19d0fcc4bbff30` | HIKARI |
+| `round4b-nesting-matrix.py` | `mirror.py` | `b80cfe491b4caa2c` | HIKARI |
 
-**Byte-identical to the originals.** Renamed for clarity only; contents unmodified, verified
-with `cmp`. Do not "tidy" them — a reconstruction of a reviewer's corpus is a builder's corpus
-with better marketing.
+**Byte-identical to the originals**, with exactly one recorded exception below. Renamed for
+clarity only; contents otherwise unmodified, verified with `cmp`. Do not "tidy" them — a
+reconstruction of a reviewer's corpus is a builder's corpus with better marketing.
+
+**Exception — `round4b-nesting-matrix.py`, `HIK-CORPUS-EXIT-001`, by HIKARI (its author).**
+As committed in #77 it had **no `sys.exit`**, so it failed green: it printed its failures and
+returned rc 0, and any runner reading the exit code saw a clean pass. One line added —
+`sys.exit(1 if bad else 0)` — matching both siblings. Nothing else changed; no case, no
+expectation, no pattern. sha256 in the table updated from `2d19d0fcc4bbff30` accordingly,
+because a provenance table that still claimed byte-identity would be exactly the class of
+defect this corpus exists to catch.
+
+Proven both ways on a syntactically valid instrument (compile checked first, so the exit code
+means something): unmodified vs the live rule → `4/4 pass`, **rc 0**; a copy with a single
+expectation inverted → `3/4 pass` with the false negative reported, **rc 1**.
+
+The builder deliberately did *not* fix this — it is the reviewer's file, and a builder tidying
+a reviewer's corpus is how the arrangement stops meaning anything.
 
 ## What each one found
 

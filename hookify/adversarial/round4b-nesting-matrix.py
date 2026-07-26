@@ -17,3 +17,4 @@ print()
 for l,w,g,c in bad:
     print(f'  !! {"FALSE NEGATIVE" if w else "FALSE POSITIVE"}: {l}\n     {c!r}')
 print(f'{len(CASES)-len(bad)}/{len(CASES)} pass')
+sys.exit(1 if bad else 0)
