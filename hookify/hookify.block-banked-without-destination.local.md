@@ -51,38 +51,51 @@ conditions:
   #    A ticket id, a file path, a URL, a PR/commit, or a named collection all count.
   - field: last_assistant_message
     operator: regex_not_match
-    pattern: (?i)(\b(TRK|OB1|ZRD|MZD|HIK|KGM|VOL|RON|TKO)-[A-Z0-9-]{3,}|/[a-z0-9_.-]+/[a-z0-9_.-]+|https?://|\bPR\s*#?\d+|\b[0-9a-f]{7,40}\b|tracker_items|firestore|bigquery|\.json\b|\.ndjson\b|to\s+disk\b)
+    pattern: (?i)(spawn[-_ ]?(?:subcxo|worker|sub|seat)|spawn-subcxo-mesh|launch-warrior|dispatch(?:ed|ing)?\s+(?:a\s+)?(?:worker|seat|sub|ronin)|\b(TRK|OB1|ZRD|MZD|HIK|KGM|VOL|RON|TKO)-[A-Z0-9-]{3,}|subject[-_ ]registry|recall\.html|tracker_items|\bPR\s*#?\d+|\b[0-9a-f]{7,40}\b|to\s+disk\b|to\s+memory\b)
   # 3. Exemption — talking ABOUT the pattern (retro, this rule, critique).
   - field: last_assistant_message
     operator: regex_not_match
     pattern: (?i)(block-banked|OB1-BANKED|scrolls away|banned form|hedge sweep|hookify|this rule|the gate|retro|i (said|wrote|used)|caught myself|n-?gram|corpus|violations?\b|must-?not-?fire|must-?fire|false.?positive|re-?measured|measured|exemption|hits\b|by lane)
 ---
 
-⛔ **BLOCKED — "banked" is not a destination.**
+⛔ **BLOCKED — you banked something and took no action.**
 
-You said you banked / shelved / noted-for-later, and **you did not name where.**
+Naming a location does not count. *"Banked to `/tmp/notes.md`"* is how this box got to
+**93,704 `.md` files, 4,255 unique**, none of which anyone can find twice. A location is a
+coordinate. What is required is a **disposition** — a decision, and a worker that acts on
+it *now*.
 
-That is an acknowledgement wearing the costume of an action. It reads like the thing was
-handled. Nothing was written anywhere. It is the same defect as calling a ticket
-*"Delegated"* — the only artifact is that you said it.
+**Answer these four, in order, in this turn:**
 
-One of your own already put it better than this rule can:
+**1 · Does this belong on a Canonical Dynamic Subject Surface?**
+`https://mdjserver.tail7845ea.ts.net:8443/inbox/recall.html` — the Subjects registry.
+That is the default home for anything a human will ever need to find again.
 
-> *"'Banking it' is a hub post that scrolls away."*
+**2 · Why, or why not?** State it in one line. Not "probably" — decide.
 
-**The test — same as §7.2: banked WHERE?**
+**3 · If YES → SPAWN A WORKER TO ADD IT NOW.**
+```
+bash ~/Projects/dojo-warriors/scripts/spawn-subcxo-mesh.sh \
+  --parent RONIN --sub-type BUILD --scope-id <slug> --brief <brief-path>
+```
+Not "I'll add it." Not a ticket to add it later. The worker is spawned in this turn, or
+the information is not banked.
 
-Name one and this passes:
+**4 · If NO →**
+&nbsp;&nbsp;**a)** why not — what makes it *not* findable-worthy
+&nbsp;&nbsp;**b)** where does it correctly belong — the actual canonical home
+&nbsp;&nbsp;**c)** **spawn a worker to move it there RIGHT NOW**
 
-- a **ticket id** — `TRK-14798`, `OB1-…`, `ZRD-…`
-- a **file path** — `/home/jdm/inbox/…`
-- a **URL** — the surface it renders to
-- a **PR or commit sha**
-- a **collection** — `tracker_items`, Firestore, BigQuery
-- **to disk** — for genuine state persistence before a refresh
+---
 
-If you cannot name one, you have not banked anything. **Go write it somewhere it will be
-found by someone who is not you, then say where.**
+**What passes this gate:** a spawn command, a launched seat, a filed ticket id, a
+`subject-registry` entry, a PR/commit, or genuine state persistence (`to disk` before a
+refresh).
 
-JDM has 93,704 `.md` files and 4,255 unique. The reason nothing is findable is that
-"banked" has meant "mentioned once, in a stream, and never again."
+**What does not:** a file path. A promise. "Noted." "Banked."
+
+> *"'Banking it' is a hub post that scrolls away."* — one of your own, unprompted.
+
+The whole failure class in one line: **an acknowledgement wearing the costume of an
+action.** Same defect as calling a ticket *"Delegated"* — the only artifact is that you
+said it. Decide, then spawn.

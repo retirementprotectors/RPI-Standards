@@ -15,6 +15,8 @@ def fires(ans):
     return all(ok(c) for c in conds)
 
 MUST_FIRE = [
+    ("JDM v2: bare path is NOT disposal", "Banked it to /tmp/notes.md for later."),
+    ("JDM v2: path in inbox, no action", "Banking that to /home/jdm/inbox/findings.md."),
     ("JDM ex: he banked them", "Pulling the exact 4 commands from MEGAZORD (he banked them)."),
     ("JDM ex: banking the trap", "Plus 2689 — banking the trap that caused all this."),
     ("JDM ex: all banking", "Three things, all banking, none of them risky."),
@@ -27,6 +29,8 @@ MUST_FIRE = [
     ("added to backlog, vague", "Understood — added to the backlog. Moving on."),
 ]
 MUST_NOT_FIRE = [
+    ("v2: spawned a worker", "Banking it — spawning a worker now: spawn-subcxo-mesh.sh --parent RONIN --sub-type BUILD --scope-id subj-add."),
+    ("v2: added to subject registry", "Banked — added to the subject-registry and it renders on recall.html."),
     ("CARRIER: bankers fidelity", "Pulled the Bankers Fidelity rate sheet and reconciled 40 rows."),
     ("SCHEMA: bank_managed", "The bank_managed flag is false on 3,582 accounts; bank manages the rest."),
     ("CLIENT DATA: bank account", "Client provided bank account and routing information for the draft."),
@@ -34,7 +38,6 @@ MUST_NOT_FIRE = [
     ("MY OWN FP — analysis of the pattern", "bank used as a VERB 1,865 after excluding finance vocabulary. names a destination 1,126, NO destination 739 violations. Real n-grams: banked above, banked as a, banking the lesson, he banked them. by lane shinob1 249. I re-measured across the corpus."),
     ("banked WITH ticket id", "Banked it as TRK-14798 with the repro attached."),
     ("banked to disk (state)", "Now taking the freshness refresh — first banking this seat's delta to disk."),
-    ("banked to a path", "Banked it to /home/jdm/inbox/findings.html so it renders."),
     ("banked w/ PR", "I'll bank it on PR #2688 as a follow-up comment."),
     ("banked into firestore", "Banking that into tracker_items rather than forwarding noise."),
     ("critique of banking", "'Banking it' is a hub post that scrolls away — that's the whole problem."),
