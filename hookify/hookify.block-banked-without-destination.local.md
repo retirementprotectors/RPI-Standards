@@ -36,7 +36,17 @@ conditions:
   # 1. The turn claims to have banked / shelved / noted-for-later.
   - field: last_assistant_message
     operator: regex_match
-    pattern: (?i)\b(?:bank(?:ed|ing)?\s+(?:it|that|this|them)\b|i.?ll\s+bank\b|banked\s*[.!]|^\s*banked\s*$|noted\s+and\s+banked\b|logg(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|fil(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|shelv(?:ed|ing)\s+(?:it|that)\b|park(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|added\s+to\s+the\s+backlog\b)
+    pattern: (?i)(?:\bbank(?:ed|ing)\b|\bbank\s+it\b|\bi.?ll\s+bank\b|\bnoted\s+and\s+banked\b|\blogg(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|\bfil(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|\bshelv(?:ed|ing)\s+(?:it|that)\b|\bpark(?:ed|ing)\s+(?:it|that)\s+for\s+later\b|\badded\s+to\s+the\s+backlog\b)
+  # 1b. FINANCE-NOISE EXCLUSION — mandatory. The dominant n-grams in this corpus are
+  #     "bankers fidelity" (10,764 — a carrier), "bank_managed"/"bank manages" (7,164 —
+  #     a schema field), and client "bank account/routing/information". A gate that
+  #     fires on those is disabled within a day.
+  - field: last_assistant_message
+    operator: regex_not_match
+    pattern: (?i)\b(?:banker|bankers|bankrupt\w*|bank[_\s]manage\w*|bank\s+isn)
+  - field: last_assistant_message
+    operator: regex_not_match
+    pattern: (?i)\bbank(?:ing)?\s+(?:account|routing|information|info|statement|deposit|draft|transfer|fidelity|life|of\s)
   # 2. ...and NO destination artifact appears anywhere in the turn.
   #    A ticket id, a file path, a URL, a PR/commit, or a named collection all count.
   - field: last_assistant_message
@@ -45,7 +55,7 @@ conditions:
   # 3. Exemption — talking ABOUT the pattern (retro, this rule, critique).
   - field: last_assistant_message
     operator: regex_not_match
-    pattern: (?i)(block-banked|OB1-BANKED|scrolls away|banned form|hedge sweep|hookify|this rule|retro|i (said|wrote|used)|caught myself)
+    pattern: (?i)(block-banked|OB1-BANKED|scrolls away|banned form|hedge sweep|hookify|this rule|the gate|retro|i (said|wrote|used)|caught myself|n-?gram|corpus|violations?\b|must-?not-?fire|must-?fire|false.?positive|re-?measured|measured|exemption|hits\b|by lane)
 ---
 
 ⛔ **BLOCKED — "banked" is not a destination.**

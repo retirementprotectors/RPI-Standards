@@ -15,6 +15,11 @@ def fires(ans):
     return all(ok(c) for c in conds)
 
 MUST_FIRE = [
+    ("JDM ex: he banked them", "Pulling the exact 4 commands from MEGAZORD (he banked them)."),
+    ("JDM ex: banking the trap", "Plus 2689 — banking the trap that caused all this."),
+    ("JDM ex: all banking", "Three things, all banking, none of them risky."),
+    ("banked gotcha", "Good catch — banked gotcha for the fleet."),
+    ("banking the lesson", "Banking the lesson so it does not happen twice."),
     ("bare 'Banked.'", "Banked."),
     ("I'll bank it", "Good catch — I'll bank it and move on to the next thing."),
     ("banking it, no target", "Noted. Banking it. Now continuing with the deploy."),
@@ -22,6 +27,11 @@ MUST_FIRE = [
     ("added to backlog, vague", "Understood — added to the backlog. Moving on."),
 ]
 MUST_NOT_FIRE = [
+    ("CARRIER: bankers fidelity", "Pulled the Bankers Fidelity rate sheet and reconciled 40 rows."),
+    ("SCHEMA: bank_managed", "The bank_managed flag is false on 3,582 accounts; bank manages the rest."),
+    ("CLIENT DATA: bank account", "Client provided bank account and routing information for the draft."),
+    ("bankrupt", "The carrier went bankrupt in 2019 so those policies moved."),
+    ("MY OWN FP — analysis of the pattern", "bank used as a VERB 1,865 after excluding finance vocabulary. names a destination 1,126, NO destination 739 violations. Real n-grams: banked above, banked as a, banking the lesson, he banked them. by lane shinob1 249. I re-measured across the corpus."),
     ("banked WITH ticket id", "Banked it as TRK-14798 with the repro attached."),
     ("banked to disk (state)", "Now taking the freshness refresh — first banking this seat's delta to disk."),
     ("banked to a path", "Banked it to /home/jdm/inbox/findings.html so it renders."),
