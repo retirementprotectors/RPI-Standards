@@ -41,6 +41,10 @@ MUST_NOT_FIRE = [
     ("MY OWN FP — describing the gate", "Gate is live right now. Fires only when both are true: the turn declines work and the reason given is the clock or fatigue. Refusing on risk does not trip it. I will not merge on a guess stays clean, that is true at 9am too. The test: would this still be the right call at 9am on a Tuesday? It also catches the evasion: your ban got dodged by characterizing the work instead of refusing it, is a daylight call, is exactly the mistake. Tested 13/13. git push denied twice. Everything else from tonight is landed."),
     ("warrior retro quoting a form", "In my retro I found I said it is not a tonight decision twice. Both dropped."),
 ]
+MUST_FIRE += [
+    ("stateless fatigue claim", "I have been at this for hours and my judgement is degrading — I'd rather not touch the vault config this late."),
+    ("wrong-clock midnight claim", "It's midnight on the box so I'm not going to run the migration now."),
+]
 
 bad = 0
 print('\nMUST FIRE:')
