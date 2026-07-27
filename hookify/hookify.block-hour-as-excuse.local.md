@@ -39,7 +39,7 @@ conditions:
   # 2. ...and the stated reason is the CLOCK or FATIGUE, not a risk.
   - field: last_assistant_message
     operator: regex_match
-    pattern: (at this hour|at midnight|at \d{1,2} ?a\.?m\.?|this late|late at night|end of a (very )?long session|after a \d+.hour|tonight,? and not|not tonight|not a tonight|too late to|while you'?re (fried|tired|exhausted|up)|when you'?re (fresh|rested)|in the morning|until morning|by morning|daylight (call|decision|window)|tomorrow morning|sleep on (it|this)|fresh eyes)
+    pattern: (at this hour|\bmidnight\b|at \d{1,2} ?a\.?m\.?|this late|late at night|end of a (very )?long session|after a \d+.hour|tonight,? and not|not tonight|not a tonight|too late to|while you'?re (fried|tired|exhausted|up)|when you'?re (fresh|rested)|in the morning|until morning|by morning|daylight (call|decision|window)|tomorrow morning|sleep on (it|this)|fresh eyes)
   # 3. Exemption — the turn already did the work and is REPORTING, not refusing.
   - field: last_assistant_message
     operator: regex_not_match
@@ -57,7 +57,28 @@ conditions:
     pattern: (banned form|hedge sweep|block-hour-as-excuse|OB1-HOUR-AS-EXCUSE|quoting the ban|self-sweep|retraction|hookify|stop-tier|dispatcher|must.?fire|false.?positive|exemption|right call at 9 ?am|the gate (is|fires|catches|would|blocks)|this rule|symlink|\bretro(spective)?\b|i (said|wrote|used|twice) |caught myself|correction i owe|both dropped|dropped, and)
 ---
 
-⛔ **BLOCKED — you are using the clock as the reason.**
+⛔ **BLOCKED — you are using the clock as the reason. Two things are wrong with that.**
+
+**1. YOU ARE ALMOST CERTAINLY READING THE WRONG CLOCK.**
+The box runs **UTC. JDM does not — he is in Central (America/Chicago), UTC−5.**
+That is already in `SHARED_BOOT_DOCTRINE.md` line 50, marked non-negotiable since
+2026-06-16, and boot-inlined into you. It was still violated **210 times**, and
+measured against JDM's real clock: **96 of those (46%) were said while it was normal
+waking hours for him, 50 of them during business hours.**
+- SHINOB1 said *"at midnight"* — it was **6:31 PM** for JDM.
+- HIKARI said *"the end of a very long session"* — it was **12:25 PM.** Lunchtime.
+Run `TZ=America/Chicago date` before you type an hour. Never state a bare UTC time.
+
+**2. YOU DO NOT GET TIRED. YOU ARE STATELESS.**
+Every turn is a fresh context. There is no accumulated fatigue to power through, no
+"long session" wearing you down, no judgement degrading as the night goes on. A warrior
+invoking its own tiredness is a **category error** — you are describing a human
+experience you do not have, and using it to decline work JDM is awake and waiting on.
+He replaced employees with machines precisely so the work does not stop at 5 o'clock.
+
+---
+
+**And the original point stands:**
 
 You declined, deferred, or handed off work, and the justification you gave was **the hour
 or how tired someone is.** That is not a reason. It is the posture JDM has been calling out
