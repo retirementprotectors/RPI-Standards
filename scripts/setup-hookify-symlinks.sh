@@ -139,10 +139,22 @@ for project in "${PROJECTS[@]}"; do
     done
 
     echo "✅ $PROJECT_NAME"
-    ((SUCCESS++))
+    # OB1-SYMLINK-SETUP-SETEABORT-001 (2026-07-28) — DO NOT use ((VAR++)) UNDER set -e.
+    # `((x++))` is POST-increment: it evaluates to the OLD value, so when the counter is 0 the
+    # arithmetic result is 0, which bash reports as EXIT STATUS 1 — and `set -e` (line 12) kills
+    # the script on it. The counter reaching 1 for the FIRST time is therefore fatal.
+    # CONSEQUENCE, measured 2026-07-28: this loop aborted after its FIRST project on every run
+    # since the file was written. Of 154 project .claude directories on this box, exactly 2 held
+    # the newest rule set (~/.claude from the global section above, and toMachina as loop
+    # iteration one). 152 were frozen at whatever they had when last populated — rule counts
+    # clustered at 88/89/90/92/93/103/105/106, i.e. by AGE, not by intent.
+    # It was invisible because the caller (standards-mirror-sync.sh:96) treats the failure as
+    # non-fatal and the very next line logs "rule/skill set changed — symlinks refreshed".
+    # A block-action PHI gate was consequently absent from 152 working directories.
+    SUCCESS=$((SUCCESS + 1))
   else
     echo "⚠️  $PROJECT_NAME (not found - skipped)"
-    ((SKIPPED++))
+    SKIPPED=$((SKIPPED + 1))
   fi
 done
 
