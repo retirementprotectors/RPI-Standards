@@ -504,14 +504,35 @@ else:
     if c_links + c_files == 0:
         print(f"  {cwd_dir} exists but holds no {LOADER_GLOB} — no project-local rules.")
     else:
-        if not c_dangling:
+        if not c_dangling and c_links:
             ok(f"CWD .claude: all {c_links} symlinked rule(s) resolve")
+        elif not c_dangling:
+            # zero-of-zero must not print like N-of-N. Not a failure — c_files>0 here, so
+            # the population is real, it is simply not symlink-managed.
+            print(f"  CWD .claude: 0 symlinks to resolve ({c_files} regular file(s)) — "
+                  f"nothing checked, so nothing is claimed.")
         print(f"  CWD population: {c_links} symlink(s) + {c_files} regular file(s) "
               f"= {c_links + c_files} examined, {len(c_dangling)} dangling")
 
         # BRANCH 6 — THE FINDING. Rules that exist globally but not here do not load here.
-        missing = sorted(_names(CLAUDE_DIR) - _names(cwd_dir))
-        if missing:
+        # BRANCH 7 — the BASELINE of that comparison must itself be proven non-empty.
+        #     set() - anything == set(), so an absent or empty ~/.claude makes `missing`
+        #     empty and branch 6 prints a PASS — while ~/.claude was never read at all.
+        #     Branch 2 refuses exactly this ("examined(0) == existing(0) is not evidence")
+        #     for the ~/.claude population; branch 6 then reported that PASS anyway, eleven
+        #     lines later, over that same empty population. The rule was stated and not
+        #     applied to the comparison's own baseline. This is the fourth recurrence of
+        #     "a completeness check inherits the blindness of its population" — this time
+        #     INSIDE the fix for the third. (HIKARI, review of #94.)
+        baseline = _names(CLAUDE_DIR)
+        missing = sorted(baseline - _names(cwd_dir))
+        if not baseline:
+            fail(f"BASELINE EMPTY — the CWD rule set was compared against NOTHING. "
+                 f"{CLAUDE_DIR} yielded 0 rules matching {LOADER_GLOB} (absent, or present "
+                 f"and empty), so 'missing nothing' is vacuously true and carries no "
+                 f"information. Refusing to report PASS: this is the absence of evidence, "
+                 f"not evidence of absence. Fix the baseline, then re-read this result.")
+        elif missing:
             fail(f"{len(missing)} rule(s) present in ~/.claude are ABSENT from the CWD rule "
                  f"set — they DO NOT LOAD when working from this directory:\n          "
                  + "\n          ".join(missing)
@@ -520,8 +541,12 @@ else:
                    f"however green it looks globally. Named rather than counted: a count "
                    f"alone is what let a PHI gate sit dead.")
         else:
+            # Name the BASELINE, not the examined set. The old message reported the CWD
+            # count, which reads as "a real comparison over N rules" even when the thing
+            # compared against was empty. The load-bearing number is the baseline size.
             ok(f"CWD rule set is not missing anything present in ~/.claude "
-               f"({len(_names(cwd_dir))} rules)")
+               f"(compared against {len(baseline)} baseline rule(s); "
+               f"{len(_names(cwd_dir))} present here)")
 
 
 # ── verdict ─────────────────────────────────────────────────────────────────
