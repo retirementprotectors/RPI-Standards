@@ -43,6 +43,29 @@ data, not a gate setting; a PHI surface that claims it is not PHI dodges this ru
 layer above it. If the row genuinely does not carry PHI, that is a contract change, not an
 edit.
 
+**⚠ THIS IS A SINGLE-LINE BELT. READ THIS BEFORE CONCLUDING A ROW IS COVERED.**
+
+If you are reading this because you were BLOCKED, the block is correct — fix the row. But if you
+are reading this to decide whether some OTHER row is safe, the answer is: **this rule not firing
+is NOT evidence of compliance.**
+
+- **Multi-line rows are NOT matched.** The content pattern joins `permitted_tenancy` and
+  `is_phi` with `[^\n]*`, so both must sit on ONE physical line. A row that declares the
+  blanket rail on one line and `is_phi: true` two lines below sails straight through. One such
+  row exists in the registry today. Reformatting an object literal silently disarms this gate
+  and nothing reports it.
+- **L3 does not backstop that gap.** L3 examines only the **6 DIPSET registry rows**. This rule
+  is not DIPSET-scoped. The two layers have DIFFERENT SETS and neither covers the union — a
+  multi-line, non-DIPSET, `is_phi: true` row with a blanket rail is caught by NEITHER.
+- **Why it was not "fixed" with a multi-line pattern:** a regex spanning lines inside an object
+  literal cannot tell where a row ends, so it marries `permitted_tenancy` from one row to an
+  `is_phi: true` two rows below. On a BLOCK-action PHI gate a false positive is worse than a
+  false negative — it blocks correct work, and that is how you manufacture demand for a
+  carve-out. The real fix is a structural import-time assert over `HUB_SURFACE_DEF`, scoped
+  separately.
+
+Declared 2026-07-28 after review refusal: nobody had watched this rule FAIL, only pass.
+
 **3-LAYER ENFORCEMENT of this invariant:**
 - **L1 (source):** the DIPSET Surfaces scope-contract G-L3C + JDM's ruling to build the lock
   rather than accept the exception for Midwest (2026-07-26).
