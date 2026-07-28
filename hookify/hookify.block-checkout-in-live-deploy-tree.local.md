@@ -107,6 +107,38 @@ a worktree) combined with `checkout` or `switch`. The gate fires before the op r
 > gate, **an all-preventive remediation table is the tell that you have removed an escape hatch
 > without providing a door.**
 
+---
+
+### ⚠ IF YOU ARE BLOCKED WHILE *WRITING ABOUT* THIS GATE, THAT IS EXPECTED — NOT A BUG
+
+This rule matches the **text of your command**, so it fires on a command that merely *describes*
+a branch op on a live tree: an incident report, a commit message, a test harness, a message
+quoting the exact command you just tried. **The gate cannot tell a description from an act.**
+
+On 2026-07-28 it fired **seven times across three warriors and NOT ONCE on a real branch op.**
+Every single firing was a diagnosis, an incident report, a remedy's own test harness, or a commit
+message. It was failing on function and holding on conduct.
+
+**This is the accepted cost of a deliberate decision, recorded so you do not "fix" it:** an
+earlier version carried a `not_contains` exemption naming the repair script. That exemption was
+proven bypassable — appending the exempted name as a trailing `#` comment stood the whole rule
+down and let a real branch op through. It was removed rather than re-keyed, because
+**you cannot express "this executable was invoked, and nothing else dangerous was" as a text test
+over a raw command line.** Anchoring stops the comment form but not chaining. Removing it closed
+the bypass *and* restored this undiscussability. That trade is correct; the cost is real.
+
+**So if you need to file a report whose subject is a blocked command:** write the body to a
+**file** and pass the path (`tmux-dispatch.sh <TARGET> -f <path>`, `git commit -F <path>`,
+`gh pr create --body-file <path>`). The body then travels as a path rather than as command text,
+and this gate never sees it.
+
+**Declare that you did so.** The file route is a *route*, not an *evasion* — and the command
+alone cannot tell them apart, which is exactly why the declaration is the difference. Do not
+respell the command to slip a real branch op past this gate; that is the thing this rule exists
+to stop, and it is a different act from filing a report.
+
+---
+
 **The invariant:**
 `/home/jdm/Projects/dojo-warriors` = `main`. Always. `dojo-deploy-main.sh` depends on it.
 Your isolated worktree (`dojo-warriors-<warrior>`) is the right place for all branch ops.
