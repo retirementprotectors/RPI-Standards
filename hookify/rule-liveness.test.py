@@ -358,6 +358,76 @@ except Exception as e:
     fail(f"live-tree guards: harness error: {e!r}")
 
 
+# ── Part 4 — SYMLINK RESOLUTION (MZ-SYMLINK-RESOLUTION-001, 2026-07-28) ─────
+#
+# WHY THIS PART EXISTS, AND WHY ITS ABSENCE WAS THIS FILE'S OWN BLIND SPOT.
+# Parts 1-3 inspect the rule FILES IN A DIRECTORY. The dispatcher does not read that directory
+# — it reads ~/.claude, where the rules are SYMLINKS into the canonical checkout. So a rule can
+# be perfect in the directory and still be loaded by nothing, if the link that points at it
+# dangles.
+#
+# MEASURED, and it is why this exists rather than being a hypothetical:
+# hookify.block-blanket-rpi-on-phi-surface.local.md was symlinked into ~/.claude on 2026-07-26
+# 19:07 — roughly 35 HOURS BEFORE its target first existed on main. An `enabled: true`,
+# `action: block` PHI gate sat there, looking installed, unable to fire once. It was 1 of 106,
+# so this is not rot: it is the specific defect of SYMLINKING AT AUTHORING TIME RATHER THAN AT
+# MERGE TIME.
+#
+# This file's own docstring says it exists to kill "a rule that is loaded by nothing looks
+# exactly like a rule that never matched." That is precisely what happened, and Parts 1-3
+# walked past it for 35 hours, because they checked the rules I could see rather than the links
+# the loader follows. A CONTROL THAT INSPECTS THE WRONG POPULATION IS NOT A WEAK CONTROL, IT IS
+# AN ABSENT ONE.
+#
+# FAILURE DIRECTION, PER BRANCH — declared before the code, and branch 2 is the one that makes
+# the rest mean anything (SHINOB1's addition, and it is the population lesson pointed at me):
+#   1 dangling link ......... FAIL LOUD, naming the link AND its target. Never a warning: the
+#                             rule it points at is not enforcing, and silence reads as enforced.
+#   2 ZERO links found ...... FAIL, never pass. zero-of-zero and 106-of-106 produce identical
+#                             output. A green from an empty population is the exact defect this
+#                             part exists to catch, one layer up.
+#   3 ~/.claude missing ..... FAIL LOUD, never skip. "Cannot check" is not "nothing wrong."
+#   4 regular file, not a
+#     symlink ............... NOT a failure. Counted and reported separately — a real file is
+#                             loadable; it is simply not managed by the symlink sync.
+print("\n=== Part 4: symlink resolution (the links the DISPATCHER actually follows) ===")
+CLAUDE_DIR = os.path.expanduser("~/.claude")
+if not os.path.isdir(CLAUDE_DIR):
+    # BRANCH 3 — never skip.
+    fail(f"{CLAUDE_DIR} does not exist — cannot verify what the dispatcher loads. "
+         f"This is a FAILURE, not a skip: 'cannot check' is not 'nothing wrong'.")
+else:
+    linked = sorted(glob.glob(os.path.join(CLAUDE_DIR, LOADER_GLOB)))
+    n_links = n_files = n_dangling = 0
+    for p in linked:
+        if os.path.islink(p):
+            n_links += 1
+            if not os.path.exists(p):          # follows the link; False when target is missing
+                n_dangling += 1
+                # BRANCH 1 — name the link AND the target, or the reader cannot act on it.
+                fail(f"DANGLING SYMLINK — rule is NOT loadable: {os.path.basename(p)}\n"
+                     f"          -> {os.readlink(p)}\n"
+                     f"          The rule reads as installed and enforces NOTHING. Most likely "
+                     f"symlinked at authoring time, before its file reached main.")
+        else:
+            n_files += 1
+
+    # BRANCH 2 — an empty population must not read as success.
+    if n_links == 0 and n_files == 0:
+        fail(f"no rules matching {LOADER_GLOB} found in {CLAUDE_DIR} — refusing to report PASS "
+             f"over an EMPTY POPULATION. examined(0) == existing(0) is not evidence; it is the "
+             f"absence of evidence. Check the path before trusting this result.")
+    else:
+        if n_dangling == 0 and n_links > 0:
+            ok(f"all {n_links} symlinked rules resolve — every link the dispatcher follows "
+               f"reaches a real file")
+        if n_files:
+            ok(f"{n_files} rule(s) present as regular files (not symlink-managed) — loadable, "
+               f"reported for completeness rather than as a defect")
+        print(f"  population: {n_links} symlink(s) + {n_files} regular file(s) "
+              f"= {n_links + n_files} examined, {n_dangling} dangling")
+
+
 # ── verdict ─────────────────────────────────────────────────────────────────
 print("\n" + "=" * 70)
 if failures:
