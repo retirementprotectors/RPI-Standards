@@ -56,15 +56,44 @@ it reviewing #78 and reproduced it against the shipped runner, unmodified:
     ok  round9-partial-score.py  3/3  printed_failures=0  exit=0  -> clean
     PASSED — all 1 corpora clean.  exit=0
 
-A corpus that failed 2 of 12 certified clean, runner exits 0. Fixed by taking the LAST match
-(`findall()[-1]`) — the aggregate a corpus prints last is the one that describes the whole run.
+A corpus that failed 2 of 12 certified clean, runner exits 0. Mitigated by taking the LAST
+match (`findall()[-1]`) — the aggregate a corpus prints last is USUALLY the one describing the
+whole run.
+
+⚠ READ THIS BEFORE YOU TREAT THE ABOVE AS SOLVED — IT IS A BETTER GUESS, NOT AN ANCHOR.
+`findall()[-1]` MOVES the failure, it does not delete it. A corpus that prints a trailing
+per-section line AFTER its aggregate is misread in exactly the mirrored direction, and the
+runner will again certify a partial score as the whole run. First-vs-last is still a
+POSITIONAL guess about where the truth sits in a stream; it is only a better one.
+
+The genuinely correct fix ANCHORS the score to a REQUIRED final-summary FORMAT — the corpus
+declares "this line is my aggregate" and the runner reads that, so the signal stops depending
+on print order at all. That is deliberately NOT done here: it changes the contract every
+reviewer-authored corpus must satisfy, and those files are committed byte-identical on
+purpose. It needs its own scope, not a rider on this one.
+
+    OPEN: MZ-RUNALL-SCORE-FORMAT-ANCHOR-001 — anchor the score to a declared final-summary
+    format instead of a stream position. Until that lands, this runner's positive signal is
+    ORDER-DEPENDENT and a corpus author can still defeat it by accident.
+      OWNER: MEGAZORD builds it (this runner is MZ-owned).
+      GATE:  it changes the output contract every corpus must satisfy, and the corpora are
+             HIKARI's, committed byte-identical on purpose — so the contract change is HERS
+             to accept before a line is written, not a thing the runner imposes downstream.
+      DEMO:  the residual is reproducible, not asserted — a corpus printing
+             "AGGREGATE: 10 / 12 pass" then "teardown check: 3 / 3 pass" scores 3/3 and
+             certifies clean at exit 0 against THIS revision. Re-run it before you scope
+             the fix; a residual nobody can demonstrate is a guess.
+
+Named by HIKARI against her own prescription, immediately after prescribing it — which is the
+only reason it is written down instead of shipped as "fixed."
 
 Two things worth keeping from how this was found:
 
   - It is the file's own indictment turned on itself. A TEST THAT ASSERTS MORE THAN IT
     MEASURES CERTIFIES THE BLIND SPOT — and the fix for the previous blind spot arrived
     carrying the next one. Adding a positive signal is not sufficient; the positive has to be
-    ANCHORED to the proposition it claims to support.
+    ANCHORED to the proposition it claims to support — and note that THIS change does not yet
+    achieve that. It narrows the gap. Anchoring is the lesson; ordering is what is implemented.
 
   - LATENT, NOT LIVE, and that distinction was checked before grading rather than assumed:
     all three committed corpora print exactly one score line, so it could not bite that day.
@@ -136,7 +165,13 @@ def run_corpus(path, rule):
     # LAST score, not the first. `.search()` returns the FIRST match in the stream, so a
     # corpus that prints a per-section tally before its aggregate was scored on the SECTION:
     # "warmup 3 / 3 pass" then "main 10 / 12 pass" read as 3/3 -> clean, exit 0, for a run
-    # that failed 2 of 12. See UNANCHORED POSITIVE SIGNAL in the module docstring.
+    # that failed 2 of 12.
+    #
+    # ⚠ STILL POSITIONAL — this is a better guess, not an anchor. A corpus printing a
+    # trailing per-section line AFTER its aggregate defeats it in the mirrored direction;
+    # measured, not theorised ("AGGREGATE: 10 / 12" then "teardown: 3 / 3" reads 3/3 ->
+    # clean). Do not read this line as making the score signal order-independent.
+    # OPEN: MZ-RUNALL-SCORE-FORMAT-ANCHOR-001. See UNANCHORED POSITIVE SIGNAL in the docstring.
     ms = SCORE_RE.findall(out)
     passed, total = (int(ms[-1][0]), int(ms[-1][1])) if ms else (None, None)
     # clean == no printed failures AND exit 0 AND a score was ACTUALLY PRINTED and complete.
