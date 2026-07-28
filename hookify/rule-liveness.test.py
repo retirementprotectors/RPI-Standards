@@ -390,6 +390,62 @@ except Exception as e:
 #   4 regular file, not a
 #     symlink ............... NOT a failure. Counted and reported separately — a real file is
 #                             loadable; it is simply not managed by the symlink sync.
+# ── SCOPE CORRECTION (MZ-LOADER-POPULATION-001, 2026-07-28) ─────────────────
+# Part 4 shipped in #92 inspecting ~/.claude ONLY. THAT IS 1/147th OF THE POPULATION.
+# Read the dispatcher's own source before trusting any claim about what it loads:
+#
+#   ~/.claude/plugins/.../hookify/core/config_loader.py
+#     :210  pattern = os.path.join('.claude', 'hookify.*.local.md')
+#     :211  files = glob.glob(pattern)
+#
+# THE PATH IS RELATIVE. The loader globs `.claude/` relative to PROCESS CWD, so the rule set
+# that is live depends on WHICH DIRECTORY THE WARRIOR IS SITTING IN. Measured on this box:
+# 146 project .claude dirs carry hookify rules, with counts of 89 / 90 / 92 / 105 / 106 — the
+# enforcement surface is DIVERGENT PER TREE, not uniform. When this was written,
+# block-blanket-rpi-on-phi-surface (an enabled action:block PHI gate) was present in ONE of
+# those 146 and in ~/.claude, and absent from the other 145.
+#
+# So the original Part 4 reported "all 106 resolve, 0 dangling, PASS" while the directory the
+# running warrior actually loads from was missing a PHI gate. A COMPLETENESS CHECK INHERITS THE
+# BLINDNESS OF ITS POPULATION — third recurrence of that lesson in one night, and this one was
+# inside the Part written to implement it.
+#
+# ALSO SETTLED HERE, so nobody re-derives it: LOADER_GLOB is PROVEN, not inferred. It is the
+# loader's literal pattern at :210. A file named `hookify.foo.md` without `.local` is not loaded
+# by the dispatcher AT ALL, so Part 4 skipping it is CORRECT — and Part 1 already fails it
+# ("filename does not match loader glob -> loaded by NO engine"). No glob-divergence check needed.
+#
+# FAILURE DIRECTION, PER BRANCH:
+#   1 dangling in EITHER population ... FAIL LOUD. A link that resolves globally and dangles
+#                                       locally still means the rule is dead where you are.
+#   2 empty population ................ FAIL, never pass (unchanged from #92).
+#   3 ~/.claude missing ............... FAIL LOUD, never skip (unchanged).
+#   4 regular file .................... not a failure (unchanged).
+#   5 CWD .claude MISSING ENTIRELY .... report, do NOT fail. Running from a directory with no
+#                                       .claude is legitimate (a scratch dir); it is not a
+#                                       disarmed gate, and failing here would train people to
+#                                       ignore the check.
+#   6 rules in ~/.claude ABSENT from the CWD set ... FAIL. This is the finding. Those rules do
+#                                       not load where you are working, silently, and the tell
+#                                       is only ever a count. Name them, do not just count them.
+def _scan(d):
+    """Return (links, regular_files, dangling[list of (name,target)]) for one .claude dir."""
+    links = regular = 0
+    dangling = []
+    for p in sorted(glob.glob(os.path.join(d, LOADER_GLOB))):
+        if os.path.islink(p):
+            links += 1
+            if not os.path.exists(p):
+                dangling.append((os.path.basename(p), os.readlink(p)))
+        else:
+            regular += 1
+    return links, regular, dangling
+
+
+def _names(d):
+    return {os.path.basename(p) for p in glob.glob(os.path.join(d, LOADER_GLOB))}
+
+
 print("\n=== Part 4: symlink resolution (the links the DISPATCHER actually follows) ===")
 CLAUDE_DIR = os.path.expanduser("~/.claude")
 if not os.path.isdir(CLAUDE_DIR):
@@ -419,13 +475,48 @@ else:
              f"absence of evidence. Check the path before trusting this result.")
     else:
         if n_dangling == 0 and n_links > 0:
-            ok(f"all {n_links} symlinked rules resolve — every link the dispatcher follows "
-               f"reaches a real file")
+            ok(f"~/.claude: all {n_links} symlinked rules resolve")
         if n_files:
-            ok(f"{n_files} rule(s) present as regular files (not symlink-managed) — loadable, "
-               f"reported for completeness rather than as a defect")
-        print(f"  population: {n_links} symlink(s) + {n_files} regular file(s) "
+            ok(f"~/.claude: {n_files} rule(s) present as regular files (not symlink-managed) — "
+               f"loadable, reported for completeness rather than as a defect")
+        print(f"  ~/.claude population: {n_links} symlink(s) + {n_files} regular file(s) "
               f"= {n_links + n_files} examined, {n_dangling} dangling")
+
+    # ── the population the loader ACTUALLY globs for this invocation ────────────
+    cwd_dir = os.path.join(os.getcwd(), ".claude")
+    print(f"\n  -- CWD-relative population (what config_loader.py:210 globs right now) --")
+    print(f"  cwd: {os.getcwd()}")
+    if not os.path.isdir(cwd_dir):
+        # BRANCH 5 — legitimate, not a disarmed gate. Report, do not fail.
+        print(f"  {cwd_dir} does not exist — no project-local rule set for this directory. "
+              f"Reported, NOT failed: running from a dir with no .claude is legitimate.")
+    else:
+        c_links, c_files, c_dangling = _scan(cwd_dir)
+        for name, target in c_dangling:
+            # BRANCH 1 — dangling HERE means dead HERE, even if it resolves globally.
+            fail(f"DANGLING SYMLINK in the CWD rule set — rule is NOT loadable from this "
+                 f"directory: {name}\n          -> {target}")
+        if c_links + c_files == 0:
+            print(f"  {cwd_dir} exists but holds no {LOADER_GLOB} — no project-local rules.")
+        else:
+            if not c_dangling:
+                ok(f"CWD .claude: all {c_links} symlinked rule(s) resolve")
+            print(f"  CWD population: {c_links} symlink(s) + {c_files} regular file(s) "
+                  f"= {c_links + c_files} examined, {len(c_dangling)} dangling")
+
+            # BRANCH 6 — THE FINDING. Rules that exist globally but not here do not load here.
+            missing = sorted(_names(CLAUDE_DIR) - _names(cwd_dir))
+            if missing:
+                fail(f"{len(missing)} rule(s) present in ~/.claude are ABSENT from the CWD rule "
+                     f"set — they DO NOT LOAD when working from this directory:\n          "
+                     + "\n          ".join(missing)
+                     + f"\n          The dispatcher globs .claude/ RELATIVE TO CWD "
+                       f"(config_loader.py:210), so a rule missing here is not enforcing here, "
+                       f"however green it looks globally. Named rather than counted: a count "
+                       f"alone is what let a PHI gate sit dead.")
+            else:
+                ok(f"CWD rule set is not missing anything present in ~/.claude "
+                   f"({len(_names(cwd_dir))} rules)")
 
 
 # ── verdict ─────────────────────────────────────────────────────────────────
