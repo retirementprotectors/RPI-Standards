@@ -5,11 +5,18 @@ MZ-ADVERSARIAL-CORPUS-001 (megazord, 2026-07-26).
 
 WHY A RUNNER RATHER THAN JUST THE CORPORA
 -----------------------------------------
-The corpora in this directory are HIKARI's, committed byte-identical (see README.md). Two of
-them exit 1 on a miss. `round4b-nesting-matrix.py` has NO sys.exit at all — it prints its
-failures and returns 0 regardless. A committed test that cannot fail loudly is worse than no
-test: the next reader sees green and stops looking. That is the exact defect this whole arc
-was about, so the runner refuses to inherit it.
+The corpora in this directory are HIKARI's, committed byte-identical (see README.md). When
+this runner was built, two of them exited 1 on a miss and `round4b-nesting-matrix.py` had NO
+sys.exit at all — it printed its failures and returned 0 regardless. A committed test that
+cannot fail loudly is worse than no test: the next reader sees green and stops looking. That
+is the exact defect this whole arc was about, so the runner refuses to inherit it.
+
+STATUS UPDATE (2026-07-26): that specific gap is CLOSED — HIKARI added the missing `sys.exit`
+to round4b in #79, and all three corpora now fail loudly on their own. **The runner does not
+relax because of it.** The design below is deliberately independent of whether any given
+corpus happens to be well-behaved today: a corpus is one edit away from losing its exit at any
+time, and the runner must not have to be re-hardened when that happens. Read the next
+paragraph as a standing rule, not as a workaround for a defect that has since been fixed.
 
 THIS RUNNER DOES NOT TRUST EXIT CODES. It reads each corpus's OUTPUT and treats any line
 carrying the failure marker as a failure, then ANDs that with the exit code. A corpus that
@@ -20,8 +27,11 @@ NO SCORE IS NOT A PASS  (MZ-RUNALL-SCORE-CLAUSE-001, 2026-07-26)
 The first cut of this runner shipped `passed is None or passed == total` — i.e. a corpus that
 printed NO score at all was waved through as clean. SHINOB1 built the artifact that proved it:
 a corpus which dies before it prints anything emits no score AND no failure marker, and if it
-lacks a `sys.exit` (round4b does) its return code is 0. All three "clean" signals are then
-satisfied by a corpus that never ran a single case, and the runner reports PASSED.
+lacks a `sys.exit` its return code is 0 as well. All three "clean" signals are then satisfied
+by a corpus that never ran a single case, and the runner reports PASSED. (The corpus that
+originally demonstrated this, round4b, has since been given a `sys.exit` in #79 — which
+removes one instance, not the class. Any corpus authored without one lands here again, and
+this clause is what catches it.)
 
 That is this whole arc's defect wearing the runner's own uniform: A TEST THAT ASSERTS MORE
 THAN IT MEASURES DOES NOT MISS A DEFECT, IT CERTIFIES THE BLIND SPOT. The clause is now
