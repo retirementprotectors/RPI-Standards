@@ -44,6 +44,34 @@ NEGATIVE (no failures printed, no non-zero exit, no score mismatch), and a corpu
 nothing satisfies all negatives perfectly. A clean verdict needs at least one POSITIVE signal
 to rest on. Here that positive is "a score was actually printed."
 
+UNANCHORED POSITIVE SIGNAL  (MZ-RUNALL-SCORE-ANCHOR-001, 2026-07-28)
+--------------------------------------------------------------------
+Promoting "a score was printed" to the load-bearing POSITIVE was correct, and it shipped
+UNANCHORED: `SCORE_RE.search()` returns the FIRST match in the stream, so the signal accepted
+any N/N anywhere in the output — including one describing a FRACTION of the run. HIKARI found
+it reviewing #78 and reproduced it against the shipped runner, unmodified:
+
+    corpus prints "warmup section:  3 / 3 pass"    <- read as THE score
+                  "main section:   10 / 12 pass"   <- the real result, never read
+    ok  round9-partial-score.py  3/3  printed_failures=0  exit=0  -> clean
+    PASSED — all 1 corpora clean.  exit=0
+
+A corpus that failed 2 of 12 certified clean, runner exits 0. Fixed by taking the LAST match
+(`findall()[-1]`) — the aggregate a corpus prints last is the one that describes the whole run.
+
+Two things worth keeping from how this was found:
+
+  - It is the file's own indictment turned on itself. A TEST THAT ASSERTS MORE THAN IT
+    MEASURES CERTIFIES THE BLIND SPOT — and the fix for the previous blind spot arrived
+    carrying the next one. Adding a positive signal is not sufficient; the positive has to be
+    ANCHORED to the proposition it claims to support.
+
+  - LATENT, NOT LIVE, and that distinction was checked before grading rather than assumed:
+    all three committed corpora print exactly one score line, so it could not bite that day.
+    It bites the next corpus author. "Today's three are fine" is population-of-3 reasoning,
+    and this runner is a STANDING GATE — the population it must survive is the one that does
+    not exist yet.
+
   (This is not hypothetical. While wiring this up I read a corpus's exit status through
    `echo "$(basename $f): $?"` — the command substitution runs first and clobbers `$?`, so I
    read basename's status, not python's, and briefly concluded all three corpora were
@@ -105,8 +133,12 @@ def run_corpus(path, rule):
                           capture_output=True, text=True)
     out = (proc.stdout or "") + (proc.stderr or "")
     printed = sum(1 for line in out.splitlines() if FAIL_MARKER in line)
-    m = SCORE_RE.search(out)
-    passed, total = (int(m.group(1)), int(m.group(2))) if m else (None, None)
+    # LAST score, not the first. `.search()` returns the FIRST match in the stream, so a
+    # corpus that prints a per-section tally before its aggregate was scored on the SECTION:
+    # "warmup 3 / 3 pass" then "main 10 / 12 pass" read as 3/3 -> clean, exit 0, for a run
+    # that failed 2 of 12. See UNANCHORED POSITIVE SIGNAL in the module docstring.
+    ms = SCORE_RE.findall(out)
+    passed, total = (int(ms[-1][0]), int(ms[-1][1])) if ms else (None, None)
     # clean == no printed failures AND exit 0 AND a score was ACTUALLY PRINTED and complete.
     # `passed is not None` is load-bearing: absence of a score is absence of evidence, not
     # evidence of success. See NO SCORE IS NOT A PASS in the module docstring.
@@ -186,6 +218,14 @@ def main():
         print(f"PASSED — all {len(corpora)} corpora clean against this rule.")
         print("         Verify discrimination separately with --expect-fail against a known-")
         print("         broken revision; a corpus that passes on both proves nothing.")
+        # Exemptions print in BOTH modes. They used to print only under --expect-fail, so a
+        # clean run that silently exempted a corpus was byte-identical to one that exempted
+        # nothing. If a run drops coverage, the TRANSCRIPT has to say so — otherwise the
+        # reader inherits a green they cannot size. (HIKARI, review of #78.)
+        if confirmatory:
+            print(f"         {len(confirmatory)} declared confirmatory: "
+                  f"{', '.join(sorted(confirmatory))}")
+            print("         (no effect in this mode — they are only exempted under --expect-fail)")
     return 0
 
 
