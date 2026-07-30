@@ -1446,6 +1446,196 @@ else:
               f"dispatcher's population and omits enforce.sh's own.")
 
 
+# ── Part 7 — exemption assertability invariants (TRK-HOOK-221) ──────────────
+# Part 5 proves each rule is REACHABLE in its tier. This Part pins the two facts
+# about the tiers THEMSELVES that the TRK-HOOK-221 triage rests on. Neither is a
+# defect to fix; both are limits, and a limit that lives only in a report rots.
+# HIKARI's standing rule, 2026-07-30: "Declaring a limit is a PASS, and it belongs
+# in a TEST so it cannot rot. If you must pin a defect you are forbidden to fix,
+# assert it PRESENT and fail loudly if it ever starts working."
+#
+# INVARIANT 1 — THE NEGATIVE OPERATORS ARE NOT PORTABLE ACROSS TIERS.
+# An exemption condition is only an escape in a tier that IMPLEMENTS its operator.
+# Where the tier does not implement it, the condition never evaluates true, so the
+# whole ANDed rule silently NEVER FIRES. The same syntax is therefore a real escape
+# in one tier and a kill switch in another — measured 2026-07-30: `not_contains`
+# escapes in file/bash and kills in stop/prompt; `regex_not_match` escapes in stop
+# and kills in file/bash. This is the field-filter-drop class Part 5 documents,
+# reappearing in the OPERATOR dimension. A triage that used one shared operator
+# list would mis-sort the corpus in BOTH directions.
+#
+# INVARIANT 2 — THE STOP TIER EXPOSES NO SYSTEM-POPULATED FIELD.
+# Every field that tier can see is one the author composes. So "re-key this
+# exemption onto something the author cannot simply assert" is not a hard fix
+# there — it is an IMPOSSIBLE one, and location-scoping (the safe form elsewhere)
+# is unavailable because the tier never sees a path. That impossibility is the
+# entire reason TRK-HOOK-221 ruled ACCEPT-AND-MONITOR for the stop-tier rules
+# instead of tightening their exemptions. The day a system-populated field appears
+# in that tier, the ruling should be revisited — so this fails loudly to say so.
+#
+# FAILURE DIRECTION, DECLARED BEFORE THE CODE:
+#   1 a tier's derived operator set is EMPTY .... FAIL. Asserting "op is absent"
+#         against an empty set passes vacuously and would report a green over a
+#         derivation that has silently stopped working. Same defect as Part 5
+#         branch 1, one layer up: here the empty population is the ASSERTION'S OWN.
+#   2 an exemption operator CHANGES tier ........ FAIL, in either direction. Newly
+#         honoured => rules that were dead are now live escapes. Newly unhonoured
+#         => rules that were enforcing are now silently dead.
+#   3 the stop tier gains a system-populated field FAIL, and name the ruling that
+#         it invalidates.
+print("\n=== Part 7: exemption assertability invariants (TRK-HOOK-221) ===")
+
+# Subjects of the assertions, not a copy of any engine's table: every set these are
+# tested against is derived live in Part 5 from that tier's own dispatcher source.
+EXEMPTION_OPS = ("not_contains", "regex_not_match")
+
+# Measured against the wired engines on 2026-07-30. True = the tier implements the
+# operator, so an exemption using it is a REAL escape there; False = the tier does
+# not, so the condition can never evaluate true and the rule NEVER FIRES.
+EXEMPTION_HONOURED_AT_221 = {
+    ("not_contains", "file"): True,   ("not_contains", "bash"): True,
+    ("not_contains", "stop"): False,  ("not_contains", "prompt"): False,
+    ("regex_not_match", "file"): False, ("regex_not_match", "bash"): False,
+    ("regex_not_match", "stop"): True,  ("regex_not_match", "prompt"): False,
+}
+
+# SYSTEM-POPULATED: the harness fills these from the actual tool call, so an
+# exemption keyed on one is UNASSERTABLE — to claim it you must really be operating
+# there. Every other field a tier exposes is AUTHOR-COMPOSED: the author types the
+# value, so the exemption is a self-declared escape. This set is a JUDGEMENT, and it
+# is the only thing in this Part deliberately written down rather than derived.
+SYSTEM_POPULATED_FIELDS = {"file_path", "path", "tool", "tool_name"}
+
+if not TIER_OPS:
+    fail("Part 7 cannot run — no tier vocabularies were derived. The invariants below "
+         "would pass vacuously against empty sets, which is exactly the green-over-an-"
+         "empty-population defect they exist to prevent.")
+else:
+    # ── Invariant 1: the per-tier operator table has not shifted ────────────
+    for op, tier in sorted(EXEMPTION_HONOURED_AT_221):
+        live = TIER_OPS.get(tier)
+        if not live:
+            fail(f"tier {tier!r} derived an EMPTY operator set — refusing to assert anything "
+                 f"about {op!r} against nothing. `{op} not in set()` is True for every op, so "
+                 f"this invariant would report PASS while checking a vacuum.")
+            continue
+        was = EXEMPTION_HONOURED_AT_221[(op, tier)]
+        now = op in live
+        if now == was:
+            ok(f"[{tier}] {op}: still {'HONOURED (exemptions here are real escapes)' if was else 'NOT honoured (a condition using it can never be true — the rule never fires)'}")
+        elif now and not was:
+            fail(f"[{tier}] {op} is NOW HONOURED and was not when TRK-HOOK-221 measured this "
+                 f"tier. Every rule in this tier carrying a {op} condition just changed meaning: "
+                 f"it was silently DEAD and is now a LIVE, author-assertable escape. Re-run the "
+                 f"221 triage for this tier before trusting any exemption count.")
+        else:
+            fail(f"[{tier}] {op} is NO LONGER HONOURED and was when TRK-HOOK-221 measured this "
+                 f"tier. Every rule here using it has gone silently DEAD — it reads as armed and "
+                 f"can never fire. This is a loss of enforcement, not a tightening.")
+
+    # ── Invariant 2: the stop tier still exposes no system-populated field ──
+    stop_fields = TIER_FIELDS.get("stop")
+    if not stop_fields:
+        fail("the stop tier derived an EMPTY field set — refusing to claim it exposes no "
+             "system-populated field, because an empty set trivially satisfies that claim.")
+    else:
+        assertable = stop_fields & SYSTEM_POPULATED_FIELDS
+        if assertable:
+            fail(f"the stop tier now exposes system-populated field(s) {sorted(assertable)}. "
+                 f"TRK-HOOK-221 ruled ACCEPT-AND-MONITOR for the stop-tier exemptions ONLY "
+                 f"because no such field existed there, making an unassertable re-key "
+                 f"impossible. That is no longer true — the ruling should be revisited and "
+                 f"those exemptions may now be fixable rather than merely monitorable.")
+        else:
+            ok(f"[stop] every field this tier exposes is author-composed "
+               f"({sorted(stop_fields)}) — no system-populated field to re-key an exemption "
+               f"onto, so TRK-HOOK-221's accept-and-monitor ruling still stands")
+
+    # ── Invariant 3: the named defects are STILL PRESENT ────────────────────
+    # TRK-HOOK-221 is a TRIAGE: it names defects and is explicitly forbidden to fix
+    # them (the fixes are a separate ticket, and two of them need the actor question
+    # answered first). A named-but-unfixed defect rots silently — someone edits the
+    # rule, the finding stops being true, and the report still says it is. So each
+    # one is asserted PRESENT here and FAILS when it disappears. A failure in this
+    # block is GOOD NEWS that needs a record update, not a regression.
+    #
+    # THE TAXONOMY these were sorted with — three classes, not two:
+    #   SYSTEM-POPULATED  the harness fills the field from the real tool call, so the
+    #                     exemption is UNASSERTABLE. Not a defect.
+    #   SELF-ENFORCING    author-composed, but uttering the token changes what the
+    #                     MACHINE DOES, not merely what the GATE SEES — a flag the
+    #                     program consumes. Compliance and claim are the same act.
+    #                     Not a defect. (This is the class a two-way split misses,
+    #                     and it is the difference between 4 defects and 7.)
+    #   AUTHOR-COMPOSED   a bare marker. The author types it and the gate stands
+    #                     down, with nothing else required. DEFECT when the rule
+    #                     exists to restrain the author.
+    # The deciding question is SEMANTIC, never mechanical: can the author legitimately
+    # BE the authority on this exemption? 11 armed candidate conditions across 5 rules
+    # reduced to 4 defects across 4 rules by asking it.
+    NAMED_DEFECTS = {
+        "block-done-without-live-verify": (
+            "content", "not_contains",
+            "a completion gate whose exemption is a bare marker the author types; "
+            "nothing requires that any verification happened"),
+        "block-global-claudemd-write": (
+            "content", "not_contains",
+            "guards a fleet-wide injected surface behind a marker token. HIKARI's "
+            "ruling: find the stub-maintenance ACTOR first — re-keying blind breaks "
+            "it silently; if no actor exists the marker protects nothing"),
+        "block-banked-without-destination": (
+            "last_assistant_message", "regex_not_match",
+            "the meta-discussion exemption; measured 71.4% suppression of would-be "
+            "fires over 888 real turns from this contract's own sessions"),
+        "block-hour-as-excuse": (
+            "last_assistant_message", "regex_not_match",
+            "the meta-discussion exemption; live rate UNMEASURED (0 natural triggers "
+            "in 888 turns — limit declared, assertability proven by positive control)"),
+    }
+    for rule_name, (fld, op, why) in sorted(NAMED_DEFECTS.items()):
+        rpath = os.path.join(RULES_DIR, f"hookify.{rule_name}.local.md")
+        if not os.path.exists(rpath):
+            fail(f"TRK-HOOK-221 named {rule_name} as carrying a self-declared escape, and the "
+                 f"rule file no longer exists. The triage record is now describing a rule that "
+                 f"is not in the corpus — update it.")
+            continue
+        present = any(c.get("field") == fld and c.get("operator") == op
+                      for c in _conditions(frontmatter(rpath)))
+        if present:
+            ok(f"[221 defect, still open] {rule_name}: {fld}/{op} — {why}")
+        else:
+            fail(f"TRK-HOOK-221 named {rule_name}'s {fld}/{op} exemption as a self-declared "
+                 f"escape, and that condition is GONE. If it was fixed, the fix ticket must "
+                 f"drop it from this record; if it was merely moved, the escape may still "
+                 f"exist under another key and the triage needs re-running for this rule.")
+
+    # ── census: candidates, stated as candidates ────────────────────────────
+    # A mechanical property produces CANDIDATES. Only the semantic question above
+    # produces defects. Printed rather than asserted, so the two are never conflated.
+    _cand = {"SYSTEM": 0, "AUTHOR": 0}
+    _armed = {"SYSTEM": 0, "AUTHOR": 0}
+    for _p in sorted(glob.glob(os.path.join(RULES_DIR, LOADER_GLOB))):
+        _fm = frontmatter(_p)
+        _en = re.search(r"^enabled:\s*(\S+)", _fm, re.M)
+        _ac = re.search(r"^action:\s*(\S+)", _fm, re.M)
+        _is_armed = bool(_en and _en.group(1).strip().lower() == "true"
+                         and _ac and _ac.group(1).strip() == "block")
+        for _c in _conditions(_fm):
+            if _c.get("operator") not in EXEMPTION_OPS:
+                continue
+            _k = "SYSTEM" if _c.get("field") in SYSTEM_POPULATED_FIELDS else "AUTHOR"
+            _cand[_k] += 1
+            if _is_armed:
+                _armed[_k] += 1
+    print(f"\n  -- exemption census (CANDIDATES, not defects) --")
+    print(f"  system-populated (unassertable) {_cand['SYSTEM']:>3}   of those armed {_armed['SYSTEM']:>3}")
+    print(f"  author-composed  (assertable)   {_cand['AUTHOR']:>3}   of those armed {_armed['AUTHOR']:>3}")
+    print(f"  named DEFECTS after semantic triage: {len(NAMED_DEFECTS)} "
+          f"(the armed author-composed figure is a candidate population — it counts "
+          f"self-enforcing flags, domain noise filters, and one rule's own pass "
+          f"condition, none of which are escapes)")
+
+
 # ── verdict ─────────────────────────────────────────────────────────────────
 print("\n" + "=" * 70)
 if failures:
