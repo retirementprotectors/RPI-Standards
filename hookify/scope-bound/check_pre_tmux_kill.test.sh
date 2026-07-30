@@ -163,6 +163,39 @@ else
 fi
 
 echo
+echo "=== 6. TRK-HOOK-218 — routing is a third gate input, not silently skipped or trusted ==="
+# Missing tooling falls OPEN (consistent with this file's existing FORGE_STATE_LOAD posture)
+# but the fall-open is DECLARED, never reported as "checked clean".
+OUT=$(SEAT_ROUTED_ENUMERATE=/nonexistent/enumerate.mjs timeout 120 bash "$CHECK" \
+  "shinob1-disco-sub-hookify-overhaul-001" 2>&1)
+if grep -q "routed_items:    not checked — enumeration script unavailable" <<<"$OUT"; then
+  ok "missing enumeration script falls open but says so — never silently 'clean'"
+else
+  bad "missing enumeration script did not declare its own fall-open"
+fi
+
+FAKE_ENUM=$(mktemp -d)/fake-enumerate.mjs
+printf '#!/usr/bin/env node\nconsole.error("STUB: 1 open item routed to this seat");\nprocess.exit(1);\n' > "$FAKE_ENUM"
+OUT=$(SEAT_ROUTED_ENUMERATE="$FAKE_ENUM" timeout 120 bash "$CHECK" \
+  "shinob1-disco-sub-hookify-overhaul-001" 2>&1); RC=$?
+if [ $RC -eq 1 ] && grep -q "routed_items:    BLOCKED — open item(s) are routed to" <<<"$OUT" \
+  && grep -q "STUB: 1 open item routed to this seat" <<<"$OUT"; then
+  ok "a routed-item verdict (exit 1) BLOCKS and names the routed item(s) in the message"
+else
+  bad "a routed-item verdict did not block, or did not surface the finding"
+fi
+
+printf '#!/usr/bin/env node\nconsole.error("STUB: routing store unreadable");\nprocess.exit(2);\n' > "$FAKE_ENUM"
+OUT=$(SEAT_ROUTED_ENUMERATE="$FAKE_ENUM" timeout 120 bash "$CHECK" \
+  "shinob1-disco-sub-hookify-overhaul-001" 2>&1); RC=$?
+if [ $RC -eq 1 ] && grep -q "routed_items:    CANNOT-RUN" <<<"$OUT"; then
+  ok "CANNOT-RUN (exit 2) BLOCKS — an unreadable routing store is never treated as clean"
+else
+  bad "CANNOT-RUN from the routing check was not treated as a block"
+fi
+rm -rf "$(dirname "$FAKE_ENUM")"
+
+echo
 echo "======================================================================"
 if [ $FAIL -gt 0 ]; then
   echo "FAILED — $FAIL case(s), $PASS passed"
@@ -170,6 +203,7 @@ if [ $FAIL -gt 0 ]; then
 fi
 echo "PASSED — $PASS checks."
 echo "         The merge half reads REALITY and names its evidence; a failed lookup is"
-echo "         distinguished from an unmerged PR; the closed path is unchanged; and the"
-echo "         unverifiable half is declared rather than quietly dropped."
+echo "         distinguished from an unmerged PR; the closed path is unchanged; the"
+echo "         unverifiable half is declared rather than quietly dropped; and TRK-HOOK-218"
+echo "         routing is now a third gate input that blocks or declares, never guesses."
 exit 0

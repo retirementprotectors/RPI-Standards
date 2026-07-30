@@ -124,7 +124,43 @@ if [[ "$PR_MERGED" != "true" && -n "$SCOPE_SLUG" ]] && command -v gh >/dev/null 
   fi
 fi
 
-if [[ "$PR_MERGED" == "true" && "$PARENT_ACK" == "true" ]]; then
+# ── TRK-HOOK-218 (ronin, 2026-07-30) — DOES ANYTHING STILL POINT AT THIS SEAT? ──────────
+#
+# disco_pr_merged and parent_ack can both be legitimately true while work is still
+# ROUTED to this seat — that combination is exactly how a correct, agreed, well-timed
+# close orphans something. Two real instances, not hypothetical: seat-routed-enumerate.mjs
+# was built from `shinob1-disco-sub-rpi-medicare-bob-valuation-001` and
+# `megazord-disco-sub-mwm-book-ingestion`, both closed 2026-07-07 with a pending item still
+# unhomed 23 days later. Routing was never among this gate's inputs; now it is.
+#
+# THIS SCOPE DOES NOT OWN THE ENUMERATION — TRK-HOOK-218 (RONIN-HOOKIFY-W6) built and owns
+# scripts/seat-routed-enumerate.mjs; this call is the integration point it deliberately did
+# not wire itself. Three-way exit code, kept distinct rather than collapsed to pass/fail:
+#   0 nothing routed here → clear   1 open item names this seat → BLOCK
+#   2 CANNOT-RUN (store unreadable / population empty) → BLOCK, never treated as clean
+# Missing tooling (no node, no script at the resolved path) is the one case that falls
+# open, consistent with this file's existing FORGE_STATE_LOAD posture — an infra gap is
+# not license to hard-block a path nobody wired yet, but it is never silently reported as
+# "checked clean".
+SEAT_ROUTED_ENUMERATE="${SEAT_ROUTED_ENUMERATE:-/home/jdm/Projects/dojo-warriors/scripts/seat-routed-enumerate.mjs}"
+ROUTING_CLEAR="true"
+ROUTING_VERDICT="not checked — enumeration script unavailable at ${SEAT_ROUTED_ENUMERATE}"
+ROUTING_OUT=""
+
+if command -v node >/dev/null 2>&1 && [[ -f "$SEAT_ROUTED_ENUMERATE" ]]; then
+  set +e
+  ROUTING_OUT=$(node "$SEAT_ROUTED_ENUMERATE" "$SESSION_NAME" 2>&1)
+  ROUTING_RC=$?
+  set -e
+  case "$ROUTING_RC" in
+    0) ROUTING_CLEAR="true";  ROUTING_VERDICT="clean — nothing routed to ${SESSION_NAME}" ;;
+    1) ROUTING_CLEAR="false"; ROUTING_VERDICT="BLOCKED — open item(s) are routed to ${SESSION_NAME}" ;;
+    2) ROUTING_CLEAR="false"; ROUTING_VERDICT="CANNOT-RUN — routing store unreadable; refusing to treat as clean" ;;
+    *) ROUTING_CLEAR="false"; ROUTING_VERDICT="unexpected exit ${ROUTING_RC}; refusing to treat as clean" ;;
+  esac
+fi
+
+if [[ "$PR_MERGED" == "true" && "$PARENT_ACK" == "true" && "$ROUTING_CLEAR" == "true" ]]; then
   exit 0
 fi
 
@@ -135,6 +171,7 @@ Current gate state for ${SESSION_NAME}:
   disco_pr_merged: ${PR_MERGED}${PR_EVIDENCE:+  (VERIFIED LIVE: ${PR_EVIDENCE})}
       lookup: ${PR_LOOKUP}
   parent_ack:      ${PARENT_ACK}
+  routed_items:    ${ROUTING_VERDICT}
 
 To open the gate:
   1. A PR carrying scope '${SCOPE_SLUG}' must be MERGED in ${GATE_REPO}.
@@ -155,7 +192,14 @@ To open the gate:
      Until it exists, get your parent's ACK the way you already do — this gate just
      stops pretending it checked.
 
-Do NOT kill this session until both are true.
+  3. routed_items (TRK-HOOK-218) — nothing may still name this seat as its home.
+     If BLOCKED, re-home each open item to a live seat (or its warrior) before
+     closing. If CANNOT-RUN, the routing store could not be read — fix that before
+     retrying; do not force past it, that is the exact failure mode this closes.
+     Detail:
+${ROUTING_OUT}
+
+Do NOT kill this session until all three are true.
 ZRD-SCOPE-005-001 / TRK-14758 Death-Gate Protocol.
 EOF
 exit 1
