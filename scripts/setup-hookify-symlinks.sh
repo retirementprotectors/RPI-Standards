@@ -14,8 +14,54 @@ set -e
 # Determine the script's directory and _RPI_STANDARDS root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STANDARDS_ROOT="$(dirname "$SCRIPT_DIR")"
-HOOKIFY_DIR="$STANDARDS_ROOT/hookify"
 PROJECTS_ROOT="$(dirname "$STANDARDS_ROOT")"
+
+# ── TRK-HOOK-306 · THE RULE SOURCE IS RESOLVED, NOT DERIVED FROM WHERE THIS FILE SITS ──
+#
+# THIS LINE USED TO READ:  HOOKIFY_DIR="$STANDARDS_ROOT/hookify"
+#
+# It caused a live incident during the TRK-HOOK-303 cutover on 2026-07-30. standards-mirror-sync
+# (a 10-minute timer) calls this script at :96. It fired at 23:41:15, 22 SECONDS before the
+# migration's repoint finished, and re-armed all four repos in the PROJECTS array below against
+# the OLD root — because STANDARDS_ROOT is _RPI_STANDARDS, whatever the fleet's canonical root
+# has since become. The migration's own gate then reported 4 trees / 424 links still on the
+# retired root, and the cause was this line, on a timer, racing the migration.
+#
+# An installer that derives the SOURCE OF TRUTH from its own location cannot be moved. It will
+# keep arming the fleet at wherever it happens to live, forever, and it will do so silently:
+# every link it writes is valid, every count it prints is right, and the target is wrong.
+#
+# MIRRORED — dojo-warriors/scripts/hookify-canonical-root.sh holds the same candidate order and
+# the same non-emptiness test. Change both halves or neither. Sourced when reachable so there is
+# one definition; the inline fallback exists only because this script must still run on a box
+# where dojo-warriors has not been cloned.
+_CANON_HELPER="$HOME/Projects/dojo-warriors/scripts/hookify-canonical-root.sh"
+if [ -r "$_CANON_HELPER" ]; then
+  # shellcheck source=/dev/null
+  . "$_CANON_HELPER"
+else
+  HOOKIFY_CANON_CANDIDATES=("$HOME/Projects/dojo-warriors/hookify" "$HOME/Projects/_RPI_STANDARDS/hookify")
+  hookify_canonical_root() {
+    if [ -n "${HOOKIFY_CANON_DIR:-}" ]; then
+      [ -d "$HOOKIFY_CANON_DIR" ] && compgen -G "$HOOKIFY_CANON_DIR/hookify.*.local.md" >/dev/null 2>&1 \
+        && { printf '%s\n' "$HOOKIFY_CANON_DIR"; return 0; }
+      return 1
+    fi
+    local c
+    for c in "${HOOKIFY_CANON_CANDIDATES[@]}"; do
+      [ -d "$c" ] && compgen -G "$c/hookify.*.local.md" >/dev/null 2>&1 && { printf '%s\n' "$c"; return 0; }
+    done
+    return 1
+  }
+fi
+
+if ! HOOKIFY_DIR="$(hookify_canonical_root)"; then
+  echo "❌ REFUSING: no canonical hookify root resolved." >&2
+  echo "   Checked: ${HOOKIFY_CANON_CANDIDATES[*]:-<helper-defined>}" >&2
+  echo "   A candidate must CONTAIN hookify.*.local.md, not merely exist — pointing the fleet" >&2
+  echo "   at an empty directory is not a partial install, it is silent total disarm." >&2
+  exit 1
+fi
 
 # ── OB1-INSTALLER-CANONICAL-GUARD-001 — REFUSE TO RUN FROM A NON-CANONICAL CHECKOUT ──
 #
@@ -237,12 +283,63 @@ for project in "${PROJECTS[@]}"; do
 done
 
 echo ""
+# ── TRK-HOOK-306 · OPTION C — NAME WHAT THIS INSTALLER DOES NOT COVER. DO NOT ARM IT. ──
+#
+# SHINOB1 ruling, 2026-07-30: provisioning-at-creation only, plus a NAMED-tree report. Arming
+# the uncovered trees is a SEPARATE, REVIEWABLE ACT and is deliberately not done here.
+#
+# WHY NOT JUST ARM THEM (option A, refused): hookify-symlink-repair.sh:17 deliberately refuses
+# to seed a tree carrying ZERO rules, because seeding one ARMS a tree the liveness sweep
+# deliberately ignores — and :195 marks the sweep/repair pair "change both halves or neither".
+# Arming from here would overrule a documented, deliberate stance as a SIDE EFFECT of an
+# installer change. Touching live enforcement is not a side effect of anything.
+#
+# WHY NAMED AND NOT COUNTED: a count tells nobody WHICH tree is unprotected. That is
+# MZ-SYMLINK-RESOLUTION-001's finding — a count let a dead PHI gate sit unnoticed for 35 hours.
+#
+# THE DENOMINATOR IS DERIVED, NOT ASSERTED: computed live from disk each run, so a tree created
+# or removed changes this report with zero edits here. NEVER sum it with the liveness sweep's
+# population or with gate G5's — they answer different questions over different denominators.
+echo "================================================"
+echo "NOT COVERED BY THIS INSTALLER (reported, deliberately NOT armed)"
+echo "================================================"
+_uncovered=0
+_examined=0
+for _d in "$PROJECTS_ROOT"/*/; do
+  [ -d "$_d" ] || continue
+  case "$(basename "$_d")" in
+    toMachina-*|dojo-warriors-*|_RPI_STANDARDS-*) ;;
+    *) continue ;;
+  esac
+  _examined=$((_examined + 1))
+  if ! compgen -G "$_d.claude/hookify.*.local.md" >/dev/null 2>&1; then
+    echo "  ZERO RULES: ${_d%/}"
+    _uncovered=$((_uncovered + 1))
+  fi
+done
+echo ""
+echo "  examined $_examined launcher-pattern worktree(s); $_uncovered hold ZERO hookify rules."
+if [ "$_uncovered" -gt 0 ]; then
+  echo "  A session started in any tree named above loads NO rules — the plugin globs .claude/"
+  echo "  relative to CWD, so 'nothing there' is not a default set, it is no enforcement at all."
+  echo "  This installer does NOT arm them, by ruling. Provisioning at CREATION is"
+  echo "  launch-warrior.sh's job (TRK-HOOK-307); arming EXISTING trees is its own decision."
+fi
+echo ""
 echo "================================================"
 echo "Setup Complete"
 echo "================================================"
 echo ""
+# TRK-HOOK-306 — THIS LINE USED TO PRINT A SUCCESS FOR A SYMLINK IT NO LONGER CREATES.
+# It read:  echo "  ✅ ~/.claude/CLAUDE.md → $MASTER_CLAUDE_FILE"
+# MASTER_CLAUDE_FILE was deleted along with the global-CLAUDE.md step (OB1-HOOKIFY-INSTALLER-
+# FIX-001). There is no `set -u`, so the variable expanded to empty and the installer printed
+# a green checkmark for a link that does not exist, on every run, to every operator.
+# An installer claiming coverage it does not deliver is the exact defect class this whole
+# scope exists to kill — sitting inside the installer that distributes the gates.
 echo "Global Standards:"
-echo "  ✅ ~/.claude/CLAUDE.md → $MASTER_CLAUDE_FILE"
+echo "  (none — the global CLAUDE.md symlink step was deliberately removed; see the note at"
+echo "   Step 1. Nothing is installed to ~/.claude/CLAUDE.md and nothing should be.)"
 echo ""
 echo "Hookify Rules:"
 echo "  ✅ Configured: $SUCCESS projects"
@@ -273,8 +370,8 @@ fi
 echo ""
 
 echo "To edit:"
-echo "  - Standards: $MASTER_CLAUDE_FILE"
-echo "  - Rules:     $HOOKIFY_DIR/"
+# TRK-HOOK-306 — second $MASTER_CLAUDE_FILE expansion, same deleted variable, same silent empty.
+echo "  - Rules:     $HOOKIFY_DIR/   (RESOLVED canonical root, not this script's location)"
 echo ""
 echo "================================================"
 echo "⚠️  Manual Step Required: API Keys"
