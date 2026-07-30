@@ -29,6 +29,19 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHECK="${HERE}/check_pre_tmux_kill.sh"
+# ⚠️ THIS OVERRIDE IS THE REASON CASE 0 EXISTS. Read both together.
+#
+# Cases 1-5 export FORGE_STATE_LOAD so they can exercise the merge-half logic at all. That is
+# a configuration PRODUCTION DOES NOT HAVE, and on a ticket whose subject is that the DEFAULT
+# resolution is broken, a suite that only ever runs with the override CERTIFIES THE FIX AND
+# CANNOT OBSERVE THE BUG.
+#
+# I shipped that in the first cut of this file and flagged it rather than quietly correcting
+# it, because a test that passed for the wrong reason and got silently fixed leaves the next
+# reader with the same false confidence I had.
+#
+# Case 0 therefore runs FIRST, with NO override, and asserts the default path as a real
+# session computes it.
 export FORGE_STATE_LOAD="${FORGE_STATE_LOAD:-/home/jdm/Projects/toMachina/scripts/forge-state-load.mjs}"
 
 PASS=0
@@ -36,6 +49,39 @@ FAIL=0
 ok()   { PASS=$((PASS+1)); echo "  pass  $1"; }
 bad()  { FAIL=$((FAIL+1)); echo "  FAIL  $1"; }
 
+echo "=== 0. DEFAULT LOADER RESOLUTION — no override, the way a real session computes it ==="
+# ⚠️ THIS CASE ASSERTS A KNOWN DEFECT AS PRESENT, not as fixed. Do not "make it pass."
+#
+# check_pre_tmux_kill.sh derives the loader from SCRIPT_DIR/../../.. — which is
+# /home/jdm/Projects, one directory too high — then exits 0 at the `[[ ! -f ]]` guard before
+# reading either exit_gate field. Measured on the live box: 233 firings, 233 passes, 0 blocks.
+# The gate has never read a field in its life, and every other break we catalogued sits
+# DOWNSTREAM of this one.
+#
+# THE MERGE-HALF FIX IN THIS PR DELIBERATELY DOES NOT REPAIR IT. Repairing the path ALONE
+# makes every disco-sub on the fleet unkillable, because disco_pr_merged is never written
+# today either. Path fix + parent_ack reduction ship as ONE UNIT, under doctrine audit.
+#
+# So this case pins the defect so it is VISIBLE and so the one-unit build has to change this
+# assertion deliberately rather than discover it. Declaring a limit is a pass; hiding it
+# behind an override is what made the first cut of this file worthless.
+_SD="$HERE"
+_GUESS="$(cd "${_SD}/../../.." && pwd)/scripts/forge-state-load.mjs"
+echo "        default resolves to: ${_GUESS}"
+if [ ! -f "$_GUESS" ]; then
+  ok "default loader path does NOT exist — the documented defect is still present as expected"
+else
+  bad "default loader path now EXISTS. If the one-unit fix landed, UPDATE THIS CASE and re-run
+        cases 1-5 without the override — do not simply delete this assertion."
+fi
+_OUT0=$(env -u FORGE_STATE_LOAD timeout 60 bash "$CHECK" "shinob1-disco-sub-hookify-overhaul-001" 2>&1); _RC0=$?
+if [ $_RC0 -eq 0 ] && [ -z "$_OUT0" ]; then
+  ok "with NO override the gate exits 0 silently — it never reaches either exit_gate field"
+else
+  bad "unexpected behaviour with no override (rc=$_RC0) — re-read this case before changing it"
+fi
+
+echo
 echo "=== 1. a non-sub session is not this gate's business ==="
 OUT=$(bash "$CHECK" "RONIN-HOOKIFY-OVERHAUL" 2>&1); RC=$?
 [ $RC -eq 0 ] && ok "ordinary session passes through (rc=0)" \
