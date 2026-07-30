@@ -50,12 +50,18 @@ rules deliberately retired as documented references (e.g.
 warn-firestore-collection-assumption, retired 2026-07-08 with a signed rationale).
 Opting out is explicit and greppable; drifting into deadness is not.
 
-Part 2 — BEHAVIOURAL, for the two activated rules: each must fire on its real triggers,
-stay quiet on its documented escape hatches, and — critically — stay quiet when its
-trigger words appear as PROSE inside another command. That last class (a rule matching
-its own keywords quoted in someone else's text) is what caused five separate misfires on
-2026-07-25/26, including one that injected a fabricated deploy procedure into six
-warriors. A new rule is not allowed to reintroduce it.
+Part 2 — BEHAVIOURAL. Each rule must fire on its real triggers, stay quiet on its documented
+escape hatches, and — critically — stay quiet when its trigger words appear as PROSE inside
+another command. That last class (a rule matching its own keywords quoted in someone else's
+text) is what caused five separate misfires on 2026-07-25/26, including one that injected a
+fabricated deploy procedure into six warriors. A new rule is not allowed to reintroduce it.
+
+    2a  warn-commit-missing-ticket-id — bash tier, hand-written case list.
+    2b  EVERY event: prompt rule — all 12, not the 1 this block used to cover
+        (TRK-HOOK-102). Positive probes are DERIVED from each rule's own pattern and
+        verified against it before use; a rule whose probe cannot be derived is reported
+        UNPROVEN rather than counted as passing, because claimed-but-unmeasured coverage is
+        the exact defect that left 11 of 12 rules untested inside a green report.
 
 Part 5 — PER-TIER VOCABULARY REACHABILITY (TRK-HOOK-101, ronin, 2026-07-30). Parts 1-4 prove a
 rule is LOADED. Part 5 proves its CONDITIONS can actually evaluate, against the vocabulary of
@@ -346,69 +352,247 @@ try:
                      f"got {'FIRE' if hit else 'quiet'} — {cmd}")
 except Exception as e:
     fail(f"warn-commit-missing-ticket-id: harness error: {e!r}")
+# -- 2b. EVERY event: prompt rule, not two of them (TRK-HOOK-102, ronin, 2026-07-30) ---
+#
+# WHAT THIS REPLACES, AND WHY WIDENING IT IS THE WHOLE TICKET.
+# This block used to exercise ONE prompt-tier rule (intent-create-disco-doc) for the
+# field-filter-drop bug it documents inline. There are TWELVE. The other eleven were
+# asserted about by nothing — and the docstring at the top of this file already states the
+# principle they violated: a test that asserts more than it measures does not merely miss a
+# defect, it CERTIFIES the blind spot. "Part 2 — behavioural" reads like behavioural coverage
+# of the prompt tier. It was behavioural coverage of 1/12 of the prompt tier.
+#
+# THE BUG CLASS, restated from the dispatcher's own source:
+#   hookify-prompt-dispatch.py:68  conds = [c for c in r["conditions"]
+#                                           if c.get("field") in ("user_prompt", "prompt")]
+#   hookify-prompt-dispatch.py:69  if not conds: continue
+#   hookify-prompt-dispatch.py:72  ok = all(... for c in conds)
+# A condition whose field the dispatcher does not recognize is not an error. It is DROPPED
+# from the AND. Losing a term from an AND makes the rule MORE PERMISSIVE — it fires on a
+# strictly wider set of inputs than its author wrote. If every condition is dropped, the
+# rule is skipped entirely. One defect, two opposite symptoms, neither of them visible.
+#
+# WHAT IS ASSERTED FOR ALL TWELVE:
+#   a) the dispatcher parses >= 1 usable condition                     FAIL if not
+#   b) no condition is silently dropped from the AND                   FAIL if any, naming it
+#   c) a POSITIVE probe derived from the rule's own pattern fires      FAIL if it does not
+#   d) neutral, unrelated inputs stay quiet                            FAIL if any fires
+#   e) the trigger QUOTED INSIDE PROSE                                 REPORTED, never failed
+#
+# ON (c) AND HONEST COVERAGE. The probe is derived by partially un-escaping the rule's own
+# regex, then VERIFIED against that regex before it is used. If the derivation cannot produce
+# a verified match, the rule is reported UNPROVEN rather than passed. This is the point of the
+# whole exercise: coverage that is claimed and not measured is exactly what put 11 of these 12
+# rules in a green report while nothing tested them.
+#
+# ON (e) AND WHY IT IS NOT A FAILURE. A rule firing on its own keywords quoted in someone
+# else's text is a real misfire class — it caused five separate misfires on 2026-07-25/26,
+# one of which injected a fabricated deploy procedure into six warriors. But most of these
+# patterns are deliberately unanchored, fixing them is not this ticket's scope, and failing on
+# a defect the reader is forbidden to repair only teaches the reader to ignore the check
+# (same reasoning as Part 5's stop-tier report). It is surfaced for the MISFIRING bucket.
+print("\n-- ALL event: prompt rules (hit-Enter tier) --")
 
-# -- 2b. intent-create-disco-doc (event: prompt, prompt dispatcher) ----------
-print("\n-- intent-create-disco-doc (prompt tier) --")
-try:
-    rp = os.path.join(RULES_DIR, "hookify.intent-create-disco-doc.local.md")
-    fm = frontmatter(rp)
+# Neutral controls: ordinary working requests that no intent rule should claim. If one of
+# these fires, that is a LIVE misfire on real traffic, not a test artifact.
+NEUTRAL_INPUTS = [
+    "what is the status of the deploy",
+    "read docs/discoveries/foo.html and summarize it",
+    "fix the typo in the readme",
+    "why did CI fail on PR 42",
+    "show me the last 10 commits",
+]
 
-    def field(k):
-        m = re.search(rf"^{k}:\s*(.*)$", fm, re.M)
+
+def _derive_probe(pattern):
+    """Best-effort: build a string that MATCHES `pattern`. Verified before use, None if not.
+
+    Deliberately partial. It handles the shapes these rules actually use (escaped
+    whitespace, alternation, optional groups, word boundaries, line anchors) and gives up
+    on anything else. Giving up is SAFE because the result is verified against the real
+    regex before it is trusted — an un-derivable probe becomes UNPROVEN, never a false pass
+    and never a false failure.
+    """
+    def _split_alts(s):
+        out, depth, cur = [], 0, ""
+        i = 0
+        while i < len(s):
+            ch = s[i]
+            if ch == "\\" and i + 1 < len(s):
+                cur += s[i:i + 2]
+                i += 2
+                continue
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+            if ch == "|" and depth == 0:
+                out.append(cur)
+                cur = ""
+            else:
+                cur += ch
+            i += 1
+        out.append(cur)
+        return out
+
+    def _simplify(s):
+        prev = None
+        while prev != s:
+            prev = s
+            s = re.sub(r"\(\?i\)", "", s)
+            s = re.sub(r"\(\?[:=!][^()]*\)\?", "", s)      # optional non-capturing group
+            s = re.sub(r"\(\?![^()]*\)", "", s)            # negative lookahead
+            s = re.sub(r"\(\?=[^()]*\)", "", s)            # positive lookahead
+            s = re.sub(r"\([^()|]*\)\?", "", s)            # optional simple group
+            s = re.sub(r"\(\?:\^\|\\n\)", "", s)           # line-start anchor group
+            # innermost group -> its first alternative
+            s = re.sub(r"\(\?:([^()]*)\)", lambda m: _split_alts(m.group(1))[0], s)
+            s = re.sub(r"\(([^()]*)\)", lambda m: _split_alts(m.group(1))[0], s)
+            s = re.sub(r"\[\^\\n\]\*", "", s)
+            s = re.sub(r"\[ \\t\][*+]", " ", s)
+            s = re.sub(r"\\s[*+]", " ", s)
+            s = re.sub(r"\\w[*+]", "x", s)
+            s = re.sub(r"\\d[*+]", "1", s)
+            s = re.sub(r"\[[^\]]*\][*?]", "", s)
+            s = re.sub(r"\[([^\]^])[^\]]*\]", r"\1", s)    # char class -> first member
+            s = s.replace(r"\b", "").replace(r"\B", "")
+            s = re.sub(r"[\^$]", "", s)
+            s = re.sub(r"\\([-./'\"#\\])", r"\1", s)
+            s = re.sub(r"([a-zA-Z0-9 ])\?", r"\1", s)      # optional single char -> keep it
+        return s.strip()
+
+    for branch in _split_alts(pattern):
+        cand = _simplify(branch)
+        if not cand or len(cand) < 3:
+            continue
+        try:
+            if re.search(pattern, cand, re.IGNORECASE):
+                return cand
+        except re.error:
+            return None
+    return None
+
+
+_hitenter_rules = []
+for _p in sorted(glob.glob(os.path.join(RULES_DIR, LOADER_GLOB))):
+    _fm2 = frontmatter(_p)
+    if _fm2 and re.search(r"^event:\s*prompt\s*$", _fm2, re.M):
+        _hitenter_rules.append((os.path.basename(_p), _fm2))
+
+if not _hitenter_rules:
+    # Same refusal as everywhere else in this file: an empty population must not read clean.
+    fail(f"no event: prompt rules found in {RULES_DIR} — refusing to report the hit-Enter "
+         f"tier as covered over an EMPTY population.")
+else:
+    print(f"  {len(_hitenter_rules)} rule(s) under test (was 1 before TRK-HOOK-102)")
+
+_unproven, _misfire_prose = [], []
+for _base, _rfm in _hitenter_rules:
+    def _f2(k, _x=_rfm):
+        m = re.search(rf"^{k}:\s*(.*)$", _x, re.M)
         return (m.group(1).strip() if m else "")
 
-    if field("event") != "prompt":
-        fail(f"intent-create-disco-doc: event is {field('event')!r}, prompt tier requires 'prompt'")
-    elif field("enabled") != "true":
-        fail(f"intent-create-disco-doc: enabled is {field('enabled')!r}, dispatcher requires 'true'")
+    _en = _f2("enabled")
+
+    # Reproduce the dispatcher's OWN parse (hookify-prompt-dispatch.py:21-45), not a
+    # reasonable-looking equivalent. The bug being tested for lives in that parse.
+    _all_conds, _cur2 = [], None
+    for _line in _rfm.splitlines():
+        _s2 = _line.strip()
+        if _s2.startswith("- field:"):
+            _cur2 = {"field": _s2.split(":", 1)[1].strip()}
+            _all_conds.append(_cur2)
+        elif _cur2 is not None and _s2.startswith("operator:"):
+            _cur2["operator"] = _s2.split(":", 1)[1].strip()
+        elif _cur2 is not None and _s2.startswith("pattern:"):
+            _pv = _s2.split(":", 1)[1].strip()
+            if len(_pv) >= 2 and _pv[0] in "'\"" and _pv[-1] == _pv[0]:
+                _pv = _pv[1:-1]
+            _cur2["pattern"] = _pv
+
+    _ACCEPTED = ("user_prompt", "prompt")
+    _kept = [c for c in _all_conds if c.get("field") in _ACCEPTED]
+    _dropped = [c for c in _all_conds if c.get("field") not in _ACCEPTED]
+
+    # (b) a dropped condition is the headline bug of this tier — name it and say what it does.
+    if _dropped:
+        fail(f"{_base}: {len(_dropped)} condition(s) SILENTLY DROPPED by the dispatcher — "
+             f"field(s) {[c.get('field') for c in _dropped]} are not in {list(_ACCEPTED)} "
+             f"(hookify-prompt-dispatch.py:68). The AND loses those terms, so the rule "
+             f"matches a STRICTLY WIDER set of inputs than it was written for. Not an "
+             f"error, not a log line — a permissiveness change nobody asked for.")
+
+    # (a) every condition dropped -> the dispatcher skips the rule outright.
+    if not _kept:
+        fail(f"{_base}: dispatcher parses ZERO usable conditions -> "
+             f"`if not conds: continue` (hookify-prompt-dispatch.py:69) skips the rule "
+             f"entirely. enabled={_en!r} and it enforces nothing.")
+        continue
+
+    def _fires(text, conds=_kept):
+        # hookify-prompt-dispatch.py:72-73 — regex_match only, ANDed, IGNORECASE.
+        try:
+            return all(c.get("operator") == "regex_match" and c.get("pattern")
+                       and re.search(c["pattern"], text, re.IGNORECASE) for c in conds)
+        except re.error:
+            return False
+
+    # (c) positive control, derived from the rule's own pattern and verified before use.
+    _probe = None
+    if len(_kept) == 1 and _kept[0].get("pattern"):
+        _probe = _derive_probe(_kept[0]["pattern"])
+    if _probe is None:
+        _unproven.append(_base)
+        print(f"  ....  {_base}: UNPROVEN — no verified positive probe could be derived "
+              f"from its pattern ({len(_kept)} condition(s)). Reported as uncovered rather "
+              f"than counted as passing.")
+    elif _fires(_probe):
+        ok(f"{_base}: fires on a probe derived from its own pattern — {_probe!r}")
     else:
-        # Reproduce the dispatcher's own condition parse (hookify-prompt-dispatch.py:36-46,
-        # 68-74): it reads ONLY `- field:` / `operator:` / `pattern:` triples, keeps those
-        # whose field is user_prompt|prompt, and ANDs them.
-        conds, cur = [], None
-        for line in fm.splitlines():
-            s = line.strip()
-            if s.startswith("- field:"):
-                cur = {"field": s.split(":", 1)[1].strip()}
-                conds.append(cur)
-            elif cur is not None and s.startswith("operator:"):
-                cur["operator"] = s.split(":", 1)[1].strip()
-            elif cur is not None and s.startswith("pattern:"):
-                p = s.split(":", 1)[1].strip()
-                if len(p) >= 2 and p[0] in "'\"" and p[-1] == p[0]:
-                    p = p[1:-1]
-                cur["pattern"] = p
-        conds = [c for c in conds if c.get("field") in ("user_prompt", "prompt")]
+        fail(f"{_base}: a probe DERIVED FROM AND VERIFIED AGAINST its own pattern "
+             f"({_probe!r}) does not fire through the dispatcher's evaluation path. The "
+             f"pattern matches but the rule does not — the parse or the operator is the "
+             f"defect, not the regex.")
 
-        if not conds:
-            fail("intent-create-disco-doc: dispatcher parses ZERO usable conditions "
-                 "(it reads only `- field:`/`operator:`/`pattern:` triples) -> "
-                 "`if not conds: continue` skips the rule")
-        else:
-            def fires(prompt):
-                return all(c.get("operator") == "regex_match" and c.get("pattern")
-                           and re.search(c["pattern"], prompt, re.IGNORECASE)
-                           for c in conds)
+    # (d) neutral controls — an intent rule claiming ordinary work is a live misfire.
+    _wrong = [p for p in NEUTRAL_INPUTS if _fires(p)]
+    if _wrong:
+        fail(f"{_base}: fires on {len(_wrong)} unrelated input(s) that no intent rule "
+             f"should claim: {_wrong!r}. This is a live misfire on ordinary traffic.")
+    else:
+        ok(f"{_base}: quiet on all {len(NEUTRAL_INPUTS)} neutral control inputs")
 
-            cases = [
-                ("#LetsCreateTheDiscoDoc for sprint 9",                True,  "hashtag trigger"),
-                ("#LetsCreateADiscoDoc",                              True,  "hashtag trigger (A)"),
-                ("please create a discovery doc for the enrichment work", True, "natural phrasing"),
-                ("write the disco doc",                               True,  "natural phrasing"),
-                ("what is the status of the deploy",                  False, "unrelated"),
-                ("read docs/discoveries/foo.html and summarize it",    False, "reading, not creating"),
-                ("the disco doc already exists",                      False, "mentions it, no create verb"),
-            ]
-            for prompt, expect, label in cases:
-                hit = fires(prompt)
-                if hit == expect:
-                    ok(f"{label}: {'fires' if expect else 'quiet'} — {prompt!r}")
-                else:
-                    fail(f"{label}: expected {'FIRE' if expect else 'quiet'}, "
-                         f"got {'FIRE' if hit else 'quiet'} — {prompt!r}")
-except Exception as e:
-    fail(f"intent-create-disco-doc: harness error: {e!r}")
+    # (e) trigger quoted inside prose — REPORTED, never failed. See the header note.
+    if _probe and _fires(f'in the runbook it says "{_probe}" is the trigger phrase'):
+        _misfire_prose.append(_base)
 
+if _misfire_prose:
+    print(f"\n  -- reported, NOT failed: {len(_misfire_prose)} rule(s) also fire when their "
+          f"trigger appears QUOTED INSIDE PROSE --")
+    for _b in _misfire_prose:
+        print(f"     {_b}")
+    print("     These patterns are unanchored by design. The class is real (five misfires on "
+          "2026-07-25/26, one injected a fabricated deploy procedure into six warriors) but "
+          "anchoring them is not this ticket's scope. Surfaced for the MISFIRING bucket.")
+    print("     OBSERVED IN THREE SEATS, 2026-07-30 — and the sharpest form of it is this: "
+          "THESE RULES FIRE ON REPORTS ABOUT THESE RULES. A status message that merely "
+          "QUOTED the derived probe strings above, as test data, matched four prompt-tier "
+          "rules in the PM's seat and injected a full plan-execution protocol — 'Plan "
+          "approved. Switching to MEDIUM thinking for execution.' — when nobody had "
+          "approved a plan. So the population most disrupted by this defect is exactly the "
+          "seats auditing it, and the disruption scales with how carefully they document. "
+          "Two consequences worth carrying: anyone reporting on this corpus should NOT "
+          "quote trigger literals verbatim, and the injected guard text "
+          "(OB1-INTENT-INJECT-001) telling the reader to verify a human actually asked is "
+          "the only reason a misfiring inject is survivable rather than obeyed.")
+
+if _unproven:
+    print(f"\n  -- honest coverage: {len(_unproven)} of {len(_hitenter_rules)} rule(s) have "
+          f"NO verified positive probe --")
+    for _b in _unproven:
+        print(f"     {_b}")
+    print("     Reported as uncovered rather than counted as passing. This file's own "
+          "docstring: a test that asserts more than it measures CERTIFIES the blind spot.")
 
 # ── Part 3 — the live-deploy-tree guards actually hold ──────────────────────
 # MZ-LIVETREE-GUARD-001 (2026-07-26). Both of these are `action: block`, so both
