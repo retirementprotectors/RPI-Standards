@@ -9,10 +9,7 @@ conditions:
     pattern: hookify\.[^/]+\.local\.md$
   - field: file_path
     operator: not_contains
-    pattern: _RPI_STANDARDS/hookify/
-  - field: file_path
-    operator: not_contains
-    pattern: dojo-warriors/hookify/
+    pattern: /hookify/
 owner: shinob1
 ---
 
