@@ -26,13 +26,34 @@ echo "Projects root:  $PROJECTS_ROOT"
 echo ""
 
 # ============================================
-# Step 1: Global CLAUDE.md Symlink
+# Step 1: Directories + hook script permissions
 # ============================================
-echo "Setting up global CLAUDE.md..."
+# OB1-HOOKIFY-INSTALLER-FIX-001 — THE GLOBAL CLAUDE.md SYMLINK STEP IS GONE ON PURPOSE.
+#
+# WHAT THIS STEP USED TO DO, AND WHY IT IS A DEFECT NOW: it linked ~/.claude/CLAUDE.md ->
+# _RPI_STANDARDS/CLAUDE.md, and it HARD-EXITED (line 48-51, under `set -e`) if that master
+# file was missing. OB1-CLAUDEMD-ROOT-DELETE-001 deleted that master file the same day — the
+# retired stub was auto-injecting into every seat and there is no read-block that can stop a
+# CLAUDE.md from loading, so deleting it was the only mechanism.
+#
+# THE CONSEQUENCE WAS IMMEDIATE AND SILENT-ISH: the installer began exiting 1 at the gate,
+# BEFORE Step 2 — which is where all 106 hookify rules get symlinked. So from the moment the
+# stub was deleted:
+#   - a warrior who edits a rule and runs the prescribed refresh (this script, named in
+#     hookify.block-hookify-rule-write-outside-canonical) gets a failure having installed nothing
+#   - a rebuilt box never installs the immune system at all
+# The script printed an error, so it was not silent — but it was pointing at a file whose
+# absence is CORRECT, which reads as a broken environment rather than a stale installer.
+#
+# ⚠️ REMOVING ONLY THE GATE WOULD HAVE BEEN WORSE THAN LEAVING IT BROKEN. The `ln -s` two
+# lines below the gate would then RE-CREATE ~/.claude/CLAUDE.md pointing at a deleted path,
+# and the next run of the fleet-wide installer would resurrect the exact global injection we
+# spent today removing — as a dangling symlink, no less. The whole step goes, not the check.
+#
+# Kept from the old Step 1: the mkdir and the chmod. Those are still load-bearing.
+echo "Preparing ~/.claude ..."
 
 GLOBAL_CLAUDE_DIR="$HOME/.claude"
-GLOBAL_CLAUDE_FILE="$GLOBAL_CLAUDE_DIR/CLAUDE.md"
-MASTER_CLAUDE_FILE="$STANDARDS_ROOT/CLAUDE.md"
 
 # Create ~/.claude directory and hooks subdirectory if they don't exist
 mkdir -p "$GLOBAL_CLAUDE_DIR"
@@ -44,22 +65,12 @@ if ls "$GLOBAL_CLAUDE_DIR/hooks/"*.sh 1>/dev/null 2>&1; then
   echo "✅ Hook scripts made executable"
 fi
 
-# Check if master CLAUDE.md exists
-if [ ! -f "$MASTER_CLAUDE_FILE" ]; then
-  echo "❌ ERROR: Master CLAUDE.md not found at $MASTER_CLAUDE_FILE"
-  exit 1
+# A leftover ~/.claude/CLAUDE.md from a pre-deletion box would still auto-inject. Retire it
+# rather than leaving it: renamed, never deleted, so an operator can see what was there.
+if [ -L "$GLOBAL_CLAUDE_DIR/CLAUDE.md" ] || [ -f "$GLOBAL_CLAUDE_DIR/CLAUDE.md" ]; then
+  mv "$GLOBAL_CLAUDE_DIR/CLAUDE.md" "$GLOBAL_CLAUDE_DIR/CLAUDE.md.retired-$(date +%Y%m%d%H%M%S)"
+  echo "⚠️  Retired a leftover ~/.claude/CLAUDE.md (it would have auto-injected into every seat)"
 fi
-
-# Remove existing CLAUDE.md (file or symlink) and create symlink
-if [ -L "$GLOBAL_CLAUDE_FILE" ]; then
-  rm "$GLOBAL_CLAUDE_FILE"
-elif [ -f "$GLOBAL_CLAUDE_FILE" ]; then
-  echo "   Backing up existing CLAUDE.md to CLAUDE.md.backup"
-  mv "$GLOBAL_CLAUDE_FILE" "$GLOBAL_CLAUDE_FILE.backup"
-fi
-
-ln -s "$MASTER_CLAUDE_FILE" "$GLOBAL_CLAUDE_FILE"
-echo "✅ Global CLAUDE.md linked to $MASTER_CLAUDE_FILE"
 echo ""
 
 # ============================================
