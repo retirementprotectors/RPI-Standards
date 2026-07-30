@@ -341,6 +341,127 @@ def run_part6():
     return 1 if bad else 0
 
 
+TOTAL_RE = re.compile(
+    r"ENFORCED CORPUS\s*=\s*(\d+)\s*\(hookify tiers\)\s*\+\s*(\d+)\s*\(scope-bound\)\s*"
+    r"=\s*(\d+)\s*rule files")
+
+
+def _corpus_totals(tmp, label):
+    """Run the instrument over `tmp` and read the totals IT derived. None if untrustworthy."""
+    proc = subprocess.run([sys.executable, INSTRUMENT, tmp],
+                          capture_output=True, text=True, timeout=300)
+    out = _completed_or_none(proc, "=== Part 6")
+    if out is None:
+        return None
+    m = TOTAL_RE.search(out)
+    if not m:
+        print(f"FAIL [{label}]: the instrument printed no ENFORCED CORPUS line — there is no "
+              f"derived denominator to check, which is itself the G1 failure.")
+        return None
+    hookify, sb, total = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    if hookify + sb != total:
+        print(f"FAIL [{label}]: the instrument's own arithmetic disagrees — "
+              f"{hookify} + {sb} != {total}.")
+        return None
+    print(f"  {label}: hookify={hookify}  scope-bound={sb}  total={total}")
+    return hookify, sb, total
+
+
+def run_g1():
+    """GATE G1 — THE DENOMINATOR IS DERIVED FROM DISK, NOT ASSERTED.
+
+    G1's acceptance is not "the total is 112". It is that the total MOVES when the corpus moves,
+    with zero code edits, in BOTH families. A hardcoded literal passes a spot-check of the number
+    and fails this.
+
+    THIS EXISTED ONLY AS A HAND-RUN UNTIL NOW. G1 was proved by adding one file per family to the
+    live corpus and watching 112 -> 114 -> 112 (RONIN, 2026-07-30). That proof was real and it
+    rotted the moment it finished: nothing re-ran it, and a gate whose evidence is a paragraph in
+    a report is a gate nobody will notice breaking. HIKARI approved folding it in here.
+
+    Both directions, because a total that only ever grows is also broken: add a file and it must
+    rise, remove it and it must fall back. The removal arm is what catches a cache, a memoised
+    glob, or a denominator read once at import.
+    """
+    print("\n--- Gate G1 (denominator derived from disk, both families, both directions) ---")
+    real_enforce = os.path.join(HERE, "enforce.sh")
+    if not os.path.exists(real_enforce):
+        print("FAIL: enforce.sh not found — Part 6's half of the denominator cannot be derived.")
+        return 1
+
+    with tempfile.TemporaryDirectory(prefix="ronin-mutation-g1-") as tmp:
+        with open(real_enforce, encoding="utf-8", errors="replace") as src:
+            with open(os.path.join(tmp, "enforce.sh"), "w", encoding="utf-8") as dst:
+                dst.write(src.read())
+        sb = os.path.join(tmp, "scope-bound")
+        os.makedirs(sb)
+
+        def write_rule(stem):
+            p = os.path.join(tmp, f"hookify.{stem}.local.md")
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write(f"---\nname: {stem}\nenabled: true\nevent: file\naction: warn\n"
+                         f"conditions:\n  - field: file_path\n    operator: contains\n"
+                         f"    value: {stem}-sentinel\n---\n\nSynthetic G1 rule.\n")
+            return p
+
+        def write_sb(stem):
+            p = os.path.join(sb, f"{stem}.local.md")
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write(f"---\nname: {stem}\nevent: pre-write\n"
+                         f"check: check_{stem.replace('-', '_')}.sh\n---\n\nSynthetic G1 rule.\n")
+            return p
+
+        for i in range(3):
+            write_rule(f"zz-g1-base-{i}")
+        for i in range(2):
+            write_sb(f"zz-g1-sb-base-{i}")
+
+        base = _corpus_totals(tmp, "baseline")
+        if base is None:
+            return 1
+        if base != (3, 2, 5):
+            print(f"FAIL: baseline should be 3 + 2 = 5 by construction, got {base}. The "
+                  f"instrument is not counting the directory it was handed.")
+            return 1
+
+        added = [write_rule("zz-g1-added"), write_sb("zz-g1-sb-added")]
+        # Prove the mutation landed BEFORE reading the verdict — a write that silently failed
+        # returns the number already expected, which is the one nobody re-examines.
+        landed = [p for p in added if os.path.exists(p)]
+        if len(landed) != 2:
+            print(f"FAIL: G1 mutation did not land ({len(landed)}/2 files) — the totals below "
+                  f"would be meaningless.")
+            return 1
+        print(f"  mutation landed: {sum(os.path.getsize(p) for p in landed)} bytes across "
+              f"2 files, one per family")
+
+        grown = _corpus_totals(tmp, "after +1 per family")
+        if grown is None:
+            return 1
+
+        for p in added:
+            os.unlink(p)
+        shrunk = _corpus_totals(tmp, "after removal")
+        if shrunk is None:
+            return 1
+
+    bad = 0
+    if grown != (4, 3, 7):
+        print(f"  FAIL  the total did not follow the corpus UP: expected 4 + 3 = 7, got {grown}. "
+              f"A denominator that ignores a new file is asserted, not derived.")
+        bad += 1
+    else:
+        print("  pass  total rose with the corpus, in BOTH families (3+2=5 -> 4+3=7)")
+    if shrunk != base:
+        print(f"  FAIL  the total did not follow the corpus DOWN: expected {base}, got {shrunk}. "
+              f"A total that only grows is reading a cache, not the disk.")
+        bad += 1
+    else:
+        print("  pass  total fell back when the files were removed — the removal arm is what "
+              "catches a memoised glob or an import-time read")
+    return 1 if bad else 0
+
+
 def main():
     if not os.path.exists(INSTRUMENT):
         print(f"FAIL: instrument not found at {INSTRUMENT}")
@@ -395,14 +516,18 @@ def main():
     print("\n--- Part 6 (scope-bound / enforce.sh tier) ---")
     bad += run_part6()
 
+    bad += run_g1()
+
     print("\n" + "=" * 70)
     if bad:
         print(f"MUTATION TEST FAILED — {bad} case(s) wrong. The instrument does not "
               f"discriminate; treat its verdicts on the real corpus as unproven.")
         return 1
     print("MUTATION TEST PASSED — Parts 5 and 6 fail broken rules and stay quiet on sound "
-          "ones. The SAME operator gets opposite verdicts on the file and stop tiers, and "
-          "scope-bound rules are judged by enforce.sh's contract rather than hookify's (G2).")
+          "ones. The SAME operator gets opposite verdicts on the file and stop tiers, "
+          "scope-bound rules are judged by enforce.sh's contract rather than hookify's (G2), "
+          "and the corpus denominator follows the disk in both families and both directions "
+          "(G1).")
     return 0
 
 
