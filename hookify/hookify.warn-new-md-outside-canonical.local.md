@@ -37,9 +37,26 @@ conditions:
   #   discoveries/          disco docs
   #   warriors/<w>/         soul / spirit / WORKFLOW / templates
   #   README / CLAUDE.md    entry points
+  # TRK-HOOK-202 (2026-07-30, ronin): this condition read `operator: regex_not_match`.
+  # The file tier does not implement it — rule_engine.py supports exactly contains,
+  # ends_with, equals, not_contains, regex_match, starts_with, and an unknown operator
+  # falls through to `else: return False`. Conditions are ANDed, so this rule has NEVER
+  # fired, silently, since it was introduced on 2026-07-27. `regex_not_match` IS real on
+  # the stop tier — the same line is correct there and dead here, which is exactly why it
+  # survived review.
+  #
+  # Re-expressed as the negation the tier does support: a `regex_match` whose pattern is a
+  # negative lookahead. `\A` anchors the guard so it is evaluated once at string start
+  # rather than re-tried at every offset. The anchored members of the original alternation
+  # (README/CLAUDE) keep their `$`; the rest stay unanchored, as before.
+  #
+  # `/tmp/` IS NEW, and it is a correction, not a widening: the rule's own body tells the
+  # author to "put it in /tmp or the session scratchpad" — and then warned on exactly that.
+  # A gate that fires on the remedy it prescribes trains people to ignore it. Nobody could
+  # have noticed before now, because the rule could not fire at all.
   - field: file_path
-    operator: regex_not_match
-    pattern: (docs/warriors/|/doctrine/|_RPI_STANDARDS/hookify/|/briefs/|/discoveries/|/warriors/[a-z0-9-]+/|README\.md$|CLAUDE\.md$|/node_modules/|/\.github/)
+    operator: regex_match
+    pattern: \A(?!.*(?:docs/warriors/|/doctrine/|_RPI_STANDARDS/hookify/|/briefs/|/discoveries/|/warriors/[a-z0-9-]+/|/node_modules/|/\.github/|/tmp/))(?!.*(?:README|CLAUDE)\.md$).*
 ---
 
 ⚠️ **You are writing a `.md` outside every canonical home. Will anyone ever find this?**
