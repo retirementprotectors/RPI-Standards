@@ -9,7 +9,38 @@ conditions:
     pattern: Projects/_RPI_STANDARDS(?![\w-])
   - field: command
     operator: regex_match
-    pattern: (?:(?:^|\n)[ \t]*|(?:^|\n)(?![ \t]*(?:[>\-*#<|]|\d+[.)]))(?:[^\n"\'`#]|"[^"\n]*"|\'[^\'\n]*\'|`[^`\n]*`)*?(?:&&|\|\||;|\|)[ \t]*)git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b(?!\s+--\s)
+    pattern: (?:(?:(?:^|\n)[ \t]*|(?:^|\n)(?![ \t]*(?:[>\-*#<|]|\d+[.)]))(?:[^\n"\'`#]|"[^"\n]*"|\'[^\'\n]*\'|`[^`\n]*`)*?(?:&&|\|\||;|\|)[ \t]*)git\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b(?!\s+--\s))|(?:(?:\A[ \t]*|(?:^|\n)(?![ \t]*(?:[>\-*#<|]|\d+[.)]))(?:[^\n"\'`#]|"[^"\n]*"|\'[^\'\n]*\'|`[^`\n]*`)*?(?:&&|\|\||;|\|)[ \t]*)(?:ba|z|k)?sh\s+(?:-[A-Za-z]+\s+)*-c\s*(?:"[^"]*|\'[^\']*)\bgit\s+(?:-C\s+\S+\s+)*(?:checkout|switch)\b)
+# ── TRK-HOOK-215 (ronin, 2026-07-30) — SILENT ON THE HAZARD IT NAMES ────────────────────
+# This rule went QUIET on 4 of 8 real branch ops, on the tree its own body calls the
+# worst-exposed of the three. Everything else this contract found was a gate firing when it
+# should not. This was a gate not firing when it should, where silence disarms the fleet.
+#
+# The four, and why the shipped pattern could not see them:
+#   bash -c "cd <tree> && git <verb> main"   the && lives INSIDE a quoted span, which the
+#   bash -c 'cd <tree> && git <verb> main'   chain branch consumes as a unit, so the operator
+#   sh   -c "git -C <tree> <verb> main"      is never available; and the line-start branch
+#                                            requires git itself at line start.
+#   GIT_PAGER=cat git -C <tree> <verb> main  an env assignment sits between line start and
+#                                            git, so [ \t]* never reaches the verb.
+#
+# THREE OF THE FOUR ARE NOW CAUGHT. A second alternative recognises a shell interpreter
+# invoked with -c whose quoted script carries the git op — with the INTERPRETER anchored to
+# \A or a real chain operator, never a bare newline. That anchor is the whole trick: a genuine
+# `bash -c` hazard IS the command being run, while a documented one sits on a continuation
+# line inside someone's report. Verified against this file's own mention corpus AND against a
+# real 215 status report: 0 false fires.
+#
+# ⚠️ THE FOURTH IS DECLARED INEXPRESSIBLE, NOT FIXED, AND THE MEASUREMENT IS WHY.
+# Allowing an env-var prefix catches `GIT_PAGER=cat git -C <tree> <verb>` — and fires on the
+# DOCUMENTATION of that same hazard, because an indented line in a quoted report is
+# byte-identical to an indented line in a shell script. Measured both ways: with the env
+# allowance, hazard FIRES and its own doc line FIRES; without it, both go quiet. There is no
+# third option available to a text test, which is this file's own declared limit
+# ("inside a fenced code block it is a mention; in a script it is a command; regex cannot tell
+# them apart") reached from a new direction. An env-prefixed branch op on this tree needs a
+# check that reads TREE STATE rather than command text — routed to TRK-HOOK-208's L2/L3 half.
+# Recorded here rather than left for the next reader to rediscover by being missed.
+#
 # MZ-STANDARDS-TREE-GUARD-001 (megazord, 2026-07-26) — the THIRD live shared tree.
 #
 # block-checkout-in-live-deploy-tree covers dojo-warriors and toMachina. It does not cover

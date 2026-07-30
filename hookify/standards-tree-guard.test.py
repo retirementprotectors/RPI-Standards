@@ -41,8 +41,33 @@ import sys, os, warnings
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RULES_DIR = sys.argv[1] if len(sys.argv) > 1 else HERE
-PLUGIN = os.path.expanduser(
-    "~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify")
+
+
+# TRK-HOOK-215 (ronin, 2026-07-30): this pointed at the MARKETPLACE checkout, which is not the
+# copy Claude Code runs. installed_plugins.json names the wired build in its installPath; there
+# are ~19 copies of rule_engine.py on this box and only one enforces. They agree today, which is
+# exactly why it was invisible — the moment they diverge, this file certifies the rule against a
+# copy that enforces nothing. Same defect corrected in rule-liveness.test.py under TRK-HOOK-101,
+# and in the Discovery Doc's own citation before that; third instance of one class.
+def _wired_plugin():
+    import json
+    manifest = os.path.expanduser("~/.claude/plugins/installed_plugins.json")
+    fallback = os.path.expanduser(
+        "~/.claude/plugins/marketplaces/claude-plugins-official/plugins/hookify")
+    try:
+        data = json.load(open(manifest, encoding="utf-8"))
+    except Exception:
+        return fallback
+    for key, entries in (data.get("plugins") or {}).items():
+        if key.startswith("hookify@"):
+            for ent in (entries if isinstance(entries, list) else [entries]):
+                p = (ent or {}).get("installPath")
+                if p and os.path.isdir(p):
+                    return p
+    return fallback
+
+
+PLUGIN = _wired_plugin()
 
 P = "/home/jdm/Projects/_RPI_STANDARDS"
 W = "/home/jdm/Projects/_RPI_STANDARDS-megazord"
@@ -101,6 +126,39 @@ CASES = [
     (f"git -C {P} pull --ff-only origin main",           False, "safe: ff-pull"),
     (f"git -C {P} restore hookify/x.local.md",           False, "safe: restore (modern form)"),
     (f"git -C {P} {V} -- hookify/x.local.md",            False, "safe: FILE RESTORE, not a branch op"),
+
+    # ── TRK-HOOK-215 (ronin, 2026-07-30) — WRAPPER + PREFIX HAZARDS ─────────────────────
+    # A FOURTH review pass, and the first to sample this axis. Three prior rounds all chose
+    # MENTION shapes; the rule was measured 23 ways and went QUIET on 4 of 8 real branch ops
+    # because nobody asked how a command could be WRAPPED. Same lesson as this file's own
+    # header, one axis over: a corpus that cannot produce the shape cannot refute the claim.
+    #
+    # Why the shipped pattern missed all four: in the bash -c forms the && lives INSIDE a
+    # quoted span, which the chain branch consumes as a unit, so the operator is never
+    # available — and the line-start branch requires `git` itself at line start.
+    (f'bash -c "cd {P} && git {V} main"',                True,  "hazard: bash -c, double quotes"),
+    (f"bash -c 'cd {P} && git {V} main'",                True,  "hazard: bash -c, single quotes"),
+    (f'sh -c "git -C {P} {S} main"',                     True,  "hazard: sh -c with the -C form"),
+    (f'cd /tmp && bash -c "git -C {P} {V} main"',        True,  "hazard: wrapper after a chain op"),
+
+    # -- DOCUMENTATION OF THE HAZARDS. The decisive corpus, and the reason the first fix
+    #    attempt was thrown away: a synthetic mention list called it clean, then it fired on a
+    #    real status report describing these same four shapes. Documentation of a hazard is the
+    #    shape MOST likely to false-fire, because it contains the hazard verbatim.
+    (f'bash n.sh "r:\n  bash -c \\"cd {P} && git {V} main\\" QUIET"', False, "DOC: bash -c double"),
+    (f"bash n.sh \"r:\n  bash -c 'cd {P} && git {V} main' QUIET\"",   False, "DOC: bash -c single"),
+    (f'bash n.sh "r:\n  sh -c \\"git -C {P} {S} main\\" QUIET"',      False, "DOC: sh -c"),
+    (f'bash n.sh "r:\n  GIT_PAGER=cat git -C {P} {V} main QUIET"',    False, "DOC: env prefix"),
+
+    # -- DECLARED INEXPRESSIBLE, asserted as STILL MISSED so the limit cannot rot into a
+    #    silent regression. Allowing an env-var prefix catches this hazard AND fires on the
+    #    DOC line above it — measured both ways, and there is no third option available to a
+    #    text test. An env-prefixed branch op on this tree needs a check that reads TREE STATE,
+    #    not command text: routed to TRK-HOOK-208's L2/L3 half.
+    #    IF THIS EVER FIRES: either someone solved it — then delete this row and re-run the
+    #    DOC cases, which is exactly where the previous attempt broke — or it fires for a
+    #    reason nobody measured.
+    (f"GIT_PAGER=cat git -C {P} {V} main",               False, "DECLARED-MISS: env-var prefix (TRK-HOOK-208)"),
 ]
 
 failures, passes = [], 0
@@ -149,7 +207,8 @@ if failures:
     print(f"FAILED — {len(failures)} problem(s), {passes} passed")
     sys.exit(1)
 print(f"PASSED — {passes} behavioural checks through core.rule_engine.")
-print("         13/13 hazards fire | 12/12 mention shapes quiet | 9/9 safe ops quiet.")
+print("         17/17 hazards fire | 16/16 mention + documentation shapes quiet |")
+print("         9/9 safe ops quiet | 1 declared-inexpressible hazard still declared.")
 print()
 print("         DECLARED BLIND SPOT -- mis-stated as 'the one shape' before a reviewer")
 print("         measured four more. What actually remains: an INDENTED chained")
