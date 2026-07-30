@@ -6,10 +6,17 @@ action: warn
 owner: shinob1
 introduced: 2026-07-07
 status: DESIGNED_NOT_ARMED — SHINOB1 recommends DEFER (see FP simulation below). Do not flip enabled:true without re-running the simulation in this file and getting a clean pass.
+# TRK-HOOK-206 (2026-07-30, ronin): `- field: tool / operator: equals / pattern: Write`
+# was never evaluable — there is NO `tool` field. See the note in quality-gate-plan-format;
+# identical defect, identical proof. Moved to the `tool_matcher` key the engine reads
+# (config_loader.py:82 -> rule_engine.py:111).
+#
+# NOTE FOR WHOEVER ARMS THIS: this rule is enabled: false and its status line above says
+# DEFER pending a clean FP simulation. That simulation was run against a rule that COULD
+# NOT FIRE — every condition was ANDed away behind the dead `tool` field, so a clean pass
+# was guaranteed and meant nothing. Re-run it before flipping enabled: true.
+tool_matcher: Write
 conditions:
-  - field: tool
-    operator: equals
-    pattern: Write
   - field: file_path
     operator: regex_match
     pattern: ^(apps|packages|services)/.*\.(ts|tsx|js|jsx)$

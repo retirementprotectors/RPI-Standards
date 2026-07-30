@@ -7,10 +7,29 @@ conditions:
   - field: command
     operator: regex_match
     pattern: git\s+commit\b
-exclude:
-  - pattern: git\s+commit\s+.*--allow-empty
-  - pattern: git\s+commit\s+.*\[no-adr\]
-  - pattern: git\s+commit\s+.*\[no-ticket\]
+  # TRK-HOOK-203 (2026-07-30, ronin): dead `exclude:` key (zero implementations anywhere)
+  # re-expressed as ANDed not_contains on the same field the rule already reads. Each
+  # original exclusion was `git commit .* <token>`; the `git commit` half is already
+  # required by the condition above, so only the distinguishing token needs excluding.
+  # The opt-out tokens are matched WITHOUT their square brackets, deliberately. The corpus
+  # linter compiles every condition pattern with re.compile regardless of operator, and a
+  # bracketed literal like the original opt-out flag is not a valid regex — it reads as a
+  # character class with an invalid range and fails the corpus lint. Caught by running the
+  # instrument, not by review.
+  #
+  # WHAT THIS NOW PERMITS, stated rather than buried: a commit whose message merely contains
+  # the bare token also skips the gate, where the original required the bracketed form. The
+  # gate is a WARN on a rule that is enabled: false, and the token is an intentional opt-out
+  # either way, so the widening is accepted. Narrow it here if that ever stops being true.
+  - field: command
+    operator: not_contains
+    pattern: --allow-empty
+  - field: command
+    operator: not_contains
+    pattern: no-adr
+  - field: command
+    operator: not_contains
+    pattern: no-ticket
 owner: shinob1
 ---
 

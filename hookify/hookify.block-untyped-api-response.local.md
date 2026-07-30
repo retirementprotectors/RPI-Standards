@@ -4,14 +4,28 @@ enabled: true
 event: file
 action: block
 conditions:
+  # TRK-HOOK-206 (2026-07-30, ronin): `field: path` -> `file_path`.
+  # `path` is not a key of any tool_input the engine sees, so _extract_field returned None,
+  # _check_condition returned False, and — conditions being ANDed — this rule could NEVER
+  # match. It was enabled: true and read as armed for its whole life. Probed against the
+  # wired engine (Bash, Edit, MultiEdit, Write): None for every tool.
+  #
+  # TRK-HOOK-203 (same commit, same files): the `exclude:` key below was DEAD — the string
+  # "exclude" appears zero times in rule_engine.py, config_loader.py, enforce.sh and all
+  # four dispatchers. It was never an exclusion; it was a comment. Re-expressed as ANDed
+  # not_contains conditions, which the file tier does implement.
   - field: content
     operator: regex_match
     pattern: res\.json\(successResponse\(\{
-  - field: path
+  - field: file_path
     operator: regex_match
     pattern: services/api/src/routes/
-exclude:
-  - pattern: \.test\.(ts|js)
+  - field: file_path
+    operator: not_contains
+    pattern: .test.ts
+  - field: file_path
+    operator: not_contains
+    pattern: .test.js
 owner: shinob1
 ---
 

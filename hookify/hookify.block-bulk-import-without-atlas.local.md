@@ -34,8 +34,22 @@ conditions:
     # "migrate the anchor records to bigquery" and "backfill 3,000 rows into firestore"
     # both slipped through it. This closes those too.
     pattern: (?i)(?:^|\n)\s*(?:please\s+)?(?:bulk[\s-]?(?:import|load|insert|write|update)|batch[\s-]?(?:import|load|insert|write|update)|import|migrate|seed|backfill)\b[^\n]{0,60}\b(?:firestore|bigquery|big[\s-]?query|collection|table|dataset|records?|rows?|contacts?)\b
-exclude:
-  - pattern: atlas|ATLAS|guardian|snapshot
+  # TRK-HOOK-203 (2026-07-30, ronin): dead `exclude:` key (zero implementations across
+  # rule_engine.py, config_loader.py, enforce.sh and all four dispatchers) re-expressed
+  # as a second ANDed condition.
+  #
+  # This tier could NOT take the not_contains form the ticket names. hookify-prompt-dispatch.py
+  # implements exactly ONE operator, regex_match (line 113), and exactly two fields — see
+  # line 104. A not_contains here would have authored a NEW unknown-operator defect, the
+  # very class this scope exists to kill, while closing another. So: negative lookahead.
+  #
+  # `\A` + `(?s)` so the guard is evaluated once at string start and `.` spans newlines:
+  # the exempting token may appear ANYWHERE in a multi-line routed message, not only on
+  # the first line. The dispatcher already applies re.IGNORECASE globally (line 114),
+  # which is why the original's redundant `atlas|ATLAS` alternation collapses to one token.
+  - field: prompt
+    operator: regex_match
+    pattern: (?s)\A(?!.*(?:atlas|guardian|snapshot))
 owner: megazord
 ---
 

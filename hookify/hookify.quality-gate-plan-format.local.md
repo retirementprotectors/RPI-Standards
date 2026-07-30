@@ -3,13 +3,17 @@ name: quality-gate-plan-format
 enabled: false
 event: file
 action: block
+# TRK-HOOK-206 (2026-07-30, ronin): `- field: tool / operator: equals / pattern: Write`
+# was not a condition the engine can evaluate — there is NO `tool` field at all.
+# _extract_field probes tool_input, and the tool NAME is never a key of it, so the
+# condition returned None -> False -> ANDed away, killing the whole rule. Tool matching
+# is a separate frontmatter key, `tool_matcher`, read by config_loader.py:82 and applied
+# in rule_engine.py:111. Moved to where the engine actually looks.
+tool_matcher: Write
 conditions:
   - field: file_path
     operator: regex_match
     pattern: \.claude/plans/.*\.md$
-  - field: tool
-    operator: equals
-    pattern: Write
   - field: content
     operator: not_contains
     pattern: Acceptance Criteria
