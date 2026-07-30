@@ -66,8 +66,14 @@ operator and field name it checks against is DERIVED LIVE from each dispatcher's
 run time; none is written down in this file. It also emits the classification census the Phase-1
 report (TRK-HOOK-104) consumes, and refuses to pass unless that census partitions the corpus.
 
-Part 5's own discrimination is proven separately and must stay proven:
-    python3 hookify/rule-liveness-part5-mutation.test.py
+Part 6 — THE FOURTH TIER (TRK-HOOK-101). enforce.sh is a dispatcher too, with its own rule
+directory (scope-bound/), its own file glob, its own event vocabulary, and its own reachability
+contract — and it never reads `enabled:`. Parts 1-5 never looked at it, which is why this file
+used to say "106 rules" when the ENFORCED corpus is 112. Part 6 derives that tier from
+enforce.sh's own source and judges those rules by enforce.sh's contract, never hookify's.
+
+Parts 5 and 6 discrimination is proven separately and must stay proven:
+    python3 hookify/rule-liveness-reachability-mutation.test.py
 
 RUN
 ---
@@ -1041,6 +1047,160 @@ if TIER_OPS and not [f for f in failures if "derived EMPTY" in f]:
                "which is the population it was written to stop losing.")
     else:
         ok(f"census partitions the corpus exactly: {partition} classified == {total} rule files")
+
+
+# ── Part 6 — THE FOURTH TIER: scope-bound/ (TRK-HOOK-101, ronin, 2026-07-30) ──
+#
+# THE POPULATION THIS WHOLE FILE WAS MISSING.
+# Parts 1-5 examine `hookify.*.local.md` in ONE directory. There is a fourth dispatcher —
+# enforce.sh — with its own rule directory (`scope-bound/`), its own file glob, its own event
+# vocabulary, and its own definition of what makes a rule reachable. Six live rule files sit
+# there. Five have real fires on record. Parts 1-5 never looked at any of them, so this file's
+# headline number was 106 when the ENFORCED corpus is 112.
+#
+# That is this file's own recurring lesson, for the fifth time and at the widest scope yet:
+# A COMPLETENESS CHECK INHERITS THE BLINDNESS OF ITS POPULATION. Part 4 learned it about
+# ~/.claude vs the 146 CWD trees. Part 4 branch 7 learned it about its own baseline. Here the
+# missed population is not a directory — it is an entire DISPATCHER.
+#
+# WHY THIS IS A DERIVED TIER AND NOT AN EXCLUSION LIST (HIKARI ruling, 2026-07-30).
+# The cheap fix is `if 'scope-bound' in path: continue` — six names hardcoded as "these don't
+# count." That would bake "these rules enforce invisibly and that is fine" into the instrument
+# built to find rules that enforce invisibly. It re-creates this scope's core defect inside its
+# own fix. enforce.sh is a dispatcher; it has a source and a vocabulary; it gets exactly the
+# same treatment as the other three (Q2: derive from each dispatcher's own source, per tier).
+#
+# WHAT REACHABILITY MEANS ON THIS TIER — read off enforce.sh, not assumed:
+#   enforce.sh:145  for rule_file in "$SCOPE_BOUND_DIR"/*.local.md   <- glob, NOT hookify.*
+#   enforce.sh:149  event: <comma-separated list>, matched against the events enforce.sh
+#                   actually calls dispatch_scope_bound_event with. An event no call site
+#                   passes is never dispatched — the rule is inert.
+#   enforce.sh:172  check: <basename> override, else check_<event_underscored>.sh
+#   enforce.sh:177  [[ ! -x "$check_script" ]] -> log ::missing-check and SKIP. Not executable
+#                   is the same as not there: the gate silently stops gating.
+#
+# AND WHAT IT DOES NOT MEAN: enforce.sh NEVER READS `enabled:` (grep -c: zero occurrences).
+# None of these 6 files declares one. Judging them by Parts 1-5's vocabulary would fail all six
+# live rules on `enabled` and `event` — six false positives on rules that are provably firing.
+# Applying one tier's contract to another tier's rules is the exact error that put three false
+# positives in Discovery Doc v1.0. Part 6 therefore checks these files against enforce.sh's
+# rules and nothing else.
+print("\n=== Part 6: scope-bound tier (enforce.sh — the fourth dispatcher) ===")
+
+_ENFORCE = os.path.join(RULES_DIR, "enforce.sh")
+SCOPE_BOUND_DIR = os.environ.get("HOOKIFY_SCOPE_BOUND_DIR") or os.path.join(
+    RULES_DIR, "scope-bound")
+
+if not os.path.exists(_ENFORCE):
+    fail(f"cannot derive the scope-bound vocabulary — {_ENFORCE} not found. Six live rules "
+         f"with real fires on record would go UNCHECKED and this file would still print a "
+         f"census. 'Cannot check' is not 'nothing wrong'.")
+elif not os.path.isdir(SCOPE_BOUND_DIR):
+    print(f"  {SCOPE_BOUND_DIR} does not exist — no scope-bound rules for this checkout. "
+          f"Reported, not failed (a worktree may legitimately not carry it).")
+else:
+    _esrc = open(_ENFORCE, encoding="utf-8", errors="replace").read()
+
+    # (6a) the live event vocabulary = the events enforce.sh actually dispatches.
+    DISPATCHED = sorted(set(re.findall(
+        r"dispatch_scope_bound_event\s+[\"']([A-Za-z][A-Za-z0-9_-]*)[\"']", _esrc)))
+    # (6b) the glob enforce.sh walks, and the default check-script name template.
+    _gm = re.search(r"for\s+rule_file\s+in\s+\"\$SCOPE_BOUND_DIR\"/(\S+);", _esrc)
+    SB_GLOB = _gm.group(1) if _gm else None
+    _cm = re.search(r"default_check_basename=\"([^\"]+)\"", _esrc)
+    CHECK_TMPL = _cm.group(1) if _cm else None
+
+    if not DISPATCHED:
+        # Same refusal as Part 5 branch 1: an empty vocabulary makes every rule look valid.
+        fail("derived ZERO dispatched events from enforce.sh — refusing to check against "
+             "nothing. Every scope-bound rule would read as reachable. The derivation no "
+             "longer matches enforce.sh's call sites; fix the derivation, not the verdict.")
+    elif not SB_GLOB or not CHECK_TMPL:
+        fail(f"could not derive enforce.sh's rule glob ({SB_GLOB!r}) or check-script template "
+             f"({CHECK_TMPL!r}) — the scope-bound population and its check resolution would be "
+             f"guessed rather than read. Refusing.")
+    else:
+        print(f"  dispatcher: {_ENFORCE}")
+        print(f"  rule dir:   {SCOPE_BOUND_DIR}")
+        print(f"  glob:       {SB_GLOB}   (note: NOT {LOADER_GLOB} — a different population)")
+        print(f"  events dispatched live: {DISPATCHED}")
+        print(f"  check resolution: `check:` override, else {CHECK_TMPL}")
+        print(f"  note: enforce.sh never reads `enabled:` — these rules are NOT judged by "
+              f"Parts 1-5's vocabulary, and must not be.")
+
+        sb_files = sorted(glob.glob(os.path.join(SCOPE_BOUND_DIR, SB_GLOB)))
+        if not sb_files:
+            fail(f"no files matching {SB_GLOB} in {SCOPE_BOUND_DIR} — refusing to report a "
+                 f"clean scope-bound tier over an EMPTY population (Part 4 branch 2, one "
+                 f"dispatcher over).")
+
+        sb_clean, sb_broken = [], []
+        for rf in sb_files:
+            base = os.path.basename(rf)
+            fm = frontmatter(rf)
+            rule_id = base[:-len(".local.md")] if base.endswith(".local.md") else base
+            problems = []
+
+            m = re.search(r"^event:\s*(.*)$", fm, re.M)
+            declared = [e.strip() for e in (m.group(1) if m else "").split(",") if e.strip()]
+            if not declared:
+                problems.append("declares no `event:` -> enforce.sh:150 `continue`s past it; "
+                                "the rule is never dispatched by anything")
+            else:
+                dead = [e for e in declared if e not in DISPATCHED]
+                if dead and len(dead) == len(declared):
+                    problems.append(
+                        f"every declared event {dead} is dispatched by NO call site in "
+                        f"enforce.sh (live events: {DISPATCHED}) -> this rule can never run")
+                elif dead:
+                    problems.append(
+                        f"declared event(s) {dead} are dispatched by no call site (live: "
+                        f"{DISPATCHED}) — the rule still runs on its other events, but those "
+                        f"entries are dead weight and read as coverage")
+
+            cm = re.search(r"^check:\s*(.*)$", fm, re.M)
+            if cm and cm.group(1).strip():
+                check_basename = cm.group(1).strip()
+                origin = "`check:` override"
+            elif declared:
+                check_basename = CHECK_TMPL.replace(
+                    "${underscored}", declared[0].replace("-", "_"))
+                origin = f"default template {CHECK_TMPL}"
+            else:
+                check_basename, origin = None, None
+
+            if check_basename:
+                cpath = os.path.join(SCOPE_BOUND_DIR, check_basename)
+                if not os.path.exists(cpath):
+                    problems.append(
+                        f"its check script ({origin}) does not exist: {check_basename}. "
+                        f"enforce.sh:177 logs `{rule_id}::missing-check` and SKIPS — the rule "
+                        f"reads as a BLOCK gate and blocks nothing")
+                elif not os.access(cpath, os.X_OK):
+                    problems.append(
+                        f"its check script {check_basename} exists but is NOT EXECUTABLE. "
+                        f"enforce.sh:177 tests `-x`, so this fails exactly like a missing "
+                        f"file — silently, via `continue`. A chmod is the whole difference "
+                        f"between a live gate and a decoration")
+
+            if problems:
+                sb_broken.append(base)
+                for p in problems:
+                    fail(f"{base} [scope-bound tier]: {p}")
+            else:
+                sb_clean.append(base)
+                ok(f"{base}: dispatched on {declared}, check {check_basename} present + "
+                   f"executable")
+
+        print(f"\n  -- scope-bound census --")
+        print(f"  reachable-clean   {len(sb_clean):>3}")
+        print(f"  defective         {len(sb_broken):>3}")
+        print(f"  scope-bound total {len(sb_files):>3}")
+        hookify_total = len(glob.glob(os.path.join(RULES_DIR, LOADER_GLOB)))
+        print(f"\n  ENFORCED CORPUS = {hookify_total} (hookify tiers) + {len(sb_files)} "
+              f"(scope-bound) = {hookify_total + len(sb_files)} rule files.")
+        print(f"  The '{hookify_total} rules' figure quoted throughout this scope counts one "
+              f"dispatcher's population and omits enforce.sh's own.")
 
 
 # ── verdict ─────────────────────────────────────────────────────────────────
