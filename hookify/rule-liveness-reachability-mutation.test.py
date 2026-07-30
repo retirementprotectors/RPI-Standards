@@ -39,9 +39,13 @@ Exit 0 = Parts 5 and 6 discriminate correctly on all 11 cases. Exit 1 = they do 
 verdict either produces about the real corpus should be trusted until they do.
 
 NOTE ON EXIT CODES: this harness asserts on the instrument's OUTPUT LINES, not on its exit
-code. Run against a synthetic directory, Parts 2-4 legitimately fail (the rules they name by
-hand are not there), so the process always exits 1. Reading the exit code here would prove
-nothing. Stated rather than left for the next reader to rediscover.
+code — run against a synthetic directory, Parts 1-4 legitimately fail on rules they name by
+hand, so the process always exits 1. The exit code IS captured, directly off subprocess.run
+and never through a shell pipeline (`cmd | tail` then `$?` reports tail's status, not the
+command's — two seats produced a false red from that shape an hour apart on 2026-07-30). It is
+reported alongside a completion proof rather than asserted on: see _completed_or_none, which
+refuses to read any verdict from a run that crashed or stopped short, because an empty flag
+set makes every MUST-BE-QUIET case pass for the wrong reason.
 """
 import os
 import re
@@ -51,6 +55,49 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 INSTRUMENT = os.path.join(HERE, "rule-liveness.test.py")
+
+
+def _completed_or_none(proc, part_header):
+    """Return the instrument's combined output, or None if this run cannot be trusted.
+
+    THE FALSE-GREEN THIS CLOSES, which is subtle and was live in the first cut:
+    every assertion below is "did the instrument FLAG this rule name?". If the instrument
+    dies partway through — an unhandled exception, a missing dispatcher, a timeout — the
+    flagged set comes back EMPTY. Every `MUST FAIL` case then correctly fails, but every
+    `MUST BE QUIET` case PASSES, because nothing was flagged. A crashed run reports a
+    partial green, and the quiet direction is exactly the direction that catches false
+    positives. So the run's completion must be proven before any verdict is read off it.
+
+    EXIT CODE HANDLING (HIKARI ruling + parent SHINOB1's ask, 2026-07-30): `proc.returncode`
+    is read DIRECTLY off subprocess.run. It is never obtained through a shell pipeline —
+    `cmd | tail` then `$?` yields tail's status, not the command's, and two seats produced a
+    false red from exactly that shape an hour apart on the same evening. A false red in the
+    instrument built to eliminate false reds is not an irony worth shipping.
+    """
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if "Traceback (most recent call last)" in out:
+        print(f"FAIL: the instrument raised an unhandled exception (exit {proc.returncode}). "
+              f"An empty flag set would make every MUST-BE-QUIET case pass for the wrong "
+              f"reason, so no verdict is read from this run.")
+        print(out[-2000:])
+        return None
+    if part_header not in out:
+        print(f"FAIL: {part_header} did not run at all (exit {proc.returncode}) — cannot "
+              f"assert on its verdicts.")
+        print(out[-2000:])
+        return None
+    if "=" * 70 not in out:
+        print(f"FAIL: the instrument did not reach its verdict banner (exit "
+              f"{proc.returncode}) — it stopped partway, so the flag set is incomplete and "
+              f"the quiet direction proves nothing.")
+        print(out[-2000:])
+        return None
+    # Exit 1 is EXPECTED here: run against a synthetic directory, Parts 1-4 legitimately
+    # fail on rules they name by hand. What must not happen is a crash, which the checks
+    # above catch. Reported so the reader sees a captured code rather than an assumed one.
+    print(f"  instrument completed, exit={proc.returncode} (captured from subprocess.run, "
+          f"not through a pipe; exit 1 is expected on a synthetic corpus)")
+    return out
 
 # (filename_stem, frontmatter, must_fail, why)
 CASES = [
@@ -183,11 +230,9 @@ def run_part6():
 
         proc = subprocess.run([sys.executable, INSTRUMENT, tmp],
                               capture_output=True, text=True, timeout=300)
-        out = proc.stdout + proc.stderr
+        out = _completed_or_none(proc, "=== Part 6")
 
-    if "=== Part 6" not in out:
-        print("FAIL: Part 6 did not run — cannot assert on its verdicts.")
-        print(out[-3000:])
+    if out is None:
         return 1
     part6 = out.split("=== Part 6", 1)[1]
     flagged = set()
@@ -232,11 +277,9 @@ def main():
 
         proc = subprocess.run([sys.executable, INSTRUMENT, tmp],
                               capture_output=True, text=True, timeout=300)
-        out = proc.stdout + proc.stderr
+        out = _completed_or_none(proc, "=== Part 5")
 
-    if "=== Part 5" not in out:
-        print("FAIL: Part 5 did not run at all — cannot assert on its verdicts.")
-        print(out[-3000:])
+    if out is None:
         return 1
 
     # Only Part 5's own FAIL lines are in scope. Parts 1-4 fail by construction here.
