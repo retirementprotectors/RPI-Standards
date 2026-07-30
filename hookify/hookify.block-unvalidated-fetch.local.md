@@ -7,12 +7,21 @@ conditions:
   - field: content
     operator: regex_match
     pattern: from\s+['"]\.\./fetchWithAuth['"]|from\s+['"]\.\/fetchWithAuth['"]
-  - field: path
+  # TRK-HOOK-206 (2026-07-30, ronin): `field: path` -> `file_path` — see the note in
+  # block-untyped-api-response; identical defect, identical proof. Never able to match.
+  # TRK-HOOK-203 (same commit): dead `exclude:` key re-expressed as ANDed not_contains.
+  - field: file_path
     operator: regex_match
     pattern: packages/ui/src/(modules|components)/
-exclude:
-  - pattern: fetchValidated\.ts$
-  - pattern: \.test\.(ts|js)
+  - field: file_path
+    operator: not_contains
+    pattern: fetchValidated.ts
+  - field: file_path
+    operator: not_contains
+    pattern: .test.ts
+  - field: file_path
+    operator: not_contains
+    pattern: .test.js
 owner: shinob1
 ---
 

@@ -7,11 +7,22 @@ conditions:
   - field: content
     operator: regex_match
     pattern: (1byyXMJDpjzgqkhTjJ2GdvTclaGYMDKQ1BQEnz61Eg-w|1nnSY-J3n6DtVvKqyC40zpEt1sROtHkIEqmSwG-5d9dU)
-exclude:
-  - pattern: \.(md|html|txt|json|yaml|yml|csv|jsonl)$
-  - pattern: docs/templates/
-  - pattern: docs/discoveries/
-  - pattern: /inbox/
+  # TRK-HOOK-203 (2026-07-30, ronin): the `exclude:` key was DEAD — zero implementations
+  # across rule_engine.py, config_loader.py, enforce.sh and all four dispatchers. Every
+  # exclusion below was therefore inert: this rule has been blocking .md/.html docs,
+  # templates, discoveries and /inbox/ the whole time its author believed they were exempt.
+  # PROVEN, not argued: the Edit that first tried to write this very comment was DENIED by
+  # this rule, because a rule file that detects an ID must contain that ID, and the `.md`
+  # exemption meant to permit it was inert. The repair was blocked by the defect it repairs.
+  #
+  # Re-expressed as ONE negative-lookahead file_path condition rather than a chain of
+  # not_contains, deliberately: the extension exclusions are ANCHORED (`$`). As
+  # not_contains they would lose the anchor and exempt any path merely CONTAINING ".md"
+  # — e.g. `docs/my.md.backup.ts` — which widens what the rule PERMITS. The lookahead
+  # preserves the original semantics exactly.
+  - field: file_path
+    operator: regex_match
+    pattern: \A(?!.*(?:docs/templates/|docs/discoveries/|/inbox/))(?!.*\.(?:md|html|txt|json|yaml|yml|csv|jsonl)$).*
 owner: megazord
 ---
 
