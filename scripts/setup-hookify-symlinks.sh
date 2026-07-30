@@ -17,6 +17,47 @@ STANDARDS_ROOT="$(dirname "$SCRIPT_DIR")"
 HOOKIFY_DIR="$STANDARDS_ROOT/hookify"
 PROJECTS_ROOT="$(dirname "$STANDARDS_ROOT")"
 
+# ── OB1-INSTALLER-CANONICAL-GUARD-001 — REFUSE TO RUN FROM A NON-CANONICAL CHECKOUT ──
+#
+# STANDARDS_ROOT is derived from wherever this script happens to SIT. That means running it
+# out of a worktree silently re-points EVERY symlink — global, and per-project — at that
+# worktree. The fleet's entire immune system then hangs off a feature branch that is one
+# `git worktree remove` away from vanishing, and it vanishes SILENTLY: the dispatcher globs
+# a directory, and a missing directory yields an empty rule list, not an error.
+#
+# THIS IS NOT HYPOTHETICAL. I did it today, 2026-07-30, while testing the installer fix from
+# `_RPI_STANDARDS-ob1-claudemd`. 318 symlinks — 106 global, 106 in dojo-warriors, 106 in
+# toMachina — all silently re-pointed at a temporary worktree. Nothing warned. The run
+# printed the same success it always prints, and the rule COUNT was identical, so every
+# instrument I had said 106/106 healthy while the source of truth was a branch checkout.
+#
+# The count was the wrong measurement. `readlink -f` was the right one, and nothing was
+# looking at it. That is the whole lesson: a symlink farm can be complete and still wrong,
+# and only its TARGET discriminates.
+#
+# PROJECTS_ROOT is why it stayed quiet — a worktree at ~/Projects/_RPI_STANDARDS-<x> has the
+# same parent as the canonical tree, so the project list still resolved and every repo got
+# its 106. Everything downstream looked correct.
+#
+# Override exists for a genuine relocation, and it is deliberately ugly to type so it cannot
+# be reached for casually.
+CANONICAL_STANDARDS_ROOT="${CANONICAL_STANDARDS_ROOT:-$HOME/Projects/_RPI_STANDARDS}"
+if [ "$STANDARDS_ROOT" != "$CANONICAL_STANDARDS_ROOT" ] && [ "${ALLOW_NONCANONICAL_STANDARDS_ROOT:-}" != "yes-i-mean-it" ]; then
+  echo "❌ REFUSING: this script is running from a NON-CANONICAL checkout." >&2
+  echo "     running from : $STANDARDS_ROOT" >&2
+  echo "     canonical    : $CANONICAL_STANDARDS_ROOT" >&2
+  echo "" >&2
+  echo "   Every symlink it creates would point HERE. The fleet's rules would then live in" >&2
+  echo "   this checkout, and deleting it would take the whole immune system down silently" >&2
+  echo "   — an empty rule directory reads as 'no rules matched', never as an error." >&2
+  echo "" >&2
+  echo "   Run it from the canonical tree instead:" >&2
+  echo "     bash $CANONICAL_STANDARDS_ROOT/scripts/setup-hookify-symlinks.sh" >&2
+  echo "" >&2
+  echo "   Genuinely relocating? ALLOW_NONCANONICAL_STANDARDS_ROOT=yes-i-mean-it" >&2
+  exit 1
+fi
+
 echo "================================================"
 echo "RPI Development Machine Setup"
 echo "================================================"
