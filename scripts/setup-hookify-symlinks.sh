@@ -99,19 +99,45 @@ echo "  quality-gate-plan-format, quality-gate-phase-complete, quality-gate-audi
 echo ""
 
 # All RPI project directories (relative to PROJECTS_ROOT)
-# Updated for post-toMachina directory structure
+#
+# OB1-HOOKIFY-INSTALLER-FIX-001 — THE LIST WAS PROTECTING GHOSTS AND SKIPPING THE WARRIORS.
+#
+# JDM, 2026-07-30: "Isn't dojo-warriors the one that should literally have ALL OF THEM?!
+# toMachina doesn't WRITE ITSELF, the Warriors do!" He is right, and the list proves it:
+#
+#   MEASURED 2026-07-30, every entry as it stood:
+#     toMachina            EXISTS   106 rules linked
+#     gas/RAPID_CORE       GONE
+#     gas/RAPID_IMPORT     GONE
+#     gas/DEX              GONE
+#     services/MCP-Hub     EXISTS
+#     services/PDF_SERVICE GONE
+#     services/Marketing-Hub GONE
+#     _RPI_STANDARDS       EXISTS
+#     dojo-warriors        EXISTS — AND WAS NEVER ON THE LIST.  0 rules linked.
+#
+# FIVE OF SEVEN ENTRIES POINTED AT DIRECTORIES THAT NO LONGER EXIST, and the one repo where
+# all nine warriors actually live and work was absent. The comment above this list said
+# "updated for post-toMachina directory structure" — it was written before dojo-warriors was
+# the warriors' home and never revisited.
+#
+# WHY THE GAP WAS INVISIBLE: rules load from a path RELATIVE to the session's working
+# directory. A warrior launched into dojo-warriors got the prompt/stop dispatchers (those use
+# absolute paths) and ZERO of the file/bash gates — no secret blocking, no PHI-in-logs
+# blocking. An empty rule directory yields an empty list, not an error, so the session reads
+# exactly like a protected one. The `if [ -d ]` guard below also means the five dead entries
+# were skipped silently, so the SKIPPED count never looked alarming enough to investigate.
+#
+# The dead entries are removed rather than left as harmless no-ops: a list naming five
+# directories that do not exist is a list nobody trusts enough to read carefully.
 PROJECTS=(
-  # toMachina monorepo (THE platform)
+  # dojo-warriors — WHO the machine is. Every warrior session runs here. Highest priority.
+  "dojo-warriors"
+  # toMachina monorepo — WHAT they build.
   "toMachina"
-  # GAS engines (maintenance mode — only 3 remain)
-  "gas/RAPID_CORE"
-  "gas/RAPID_IMPORT"
-  "gas/DEX"
-  # Standalone services
+  # Standalone services still on disk
   "services/MCP-Hub"
-  "services/PDF_SERVICE"
-  "services/Marketing-Hub"
-  # Standards
+  # Standards (canonical home of the rules themselves)
   "_RPI_STANDARDS"
 )
 
