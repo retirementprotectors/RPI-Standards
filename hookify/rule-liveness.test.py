@@ -574,6 +574,17 @@ if _misfire_prose:
     print("     These patterns are unanchored by design. The class is real (five misfires on "
           "2026-07-25/26, one injected a fabricated deploy procedure into six warriors) but "
           "anchoring them is not this ticket's scope. Surfaced for the MISFIRING bucket.")
+    print("     OBSERVED IN THREE SEATS, 2026-07-30 — and the sharpest form of it is this: "
+          "THESE RULES FIRE ON REPORTS ABOUT THESE RULES. A status message that merely "
+          "QUOTED the derived probe strings above, as test data, matched four prompt-tier "
+          "rules in the PM's seat and injected a full plan-execution protocol — 'Plan "
+          "approved. Switching to MEDIUM thinking for execution.' — when nobody had "
+          "approved a plan. So the population most disrupted by this defect is exactly the "
+          "seats auditing it, and the disruption scales with how carefully they document. "
+          "Two consequences worth carrying: anyone reporting on this corpus should NOT "
+          "quote trigger literals verbatim, and the injected guard text "
+          "(OB1-INTENT-INJECT-001) telling the reader to verify a human actually asked is "
+          "the only reason a misfiring inject is survivable rather than obeyed.")
 
 if _unproven:
     print(f"\n  -- honest coverage: {len(_unproven)} of {len(_hitenter_rules)} rule(s) have "
