@@ -9,6 +9,28 @@ owner: megazord
 # marker exempts the file from hookify/rule-liveness.test.py, which otherwise fails any
 # rule that cannot fire. Deliberate dormancy is declared and greppable; drifting into
 # deadness is what the test exists to catch.
+#
+# TRK-HOOK-201 DISPOSITION (2026-07-30, ronin) — WONTFIX, and the ticket is CLOSED by this
+# note rather than by a change. The ticket reads "vacuous `event: PreToolUse`; migrate to a
+# real hookify event or retire." IT IS ALREADY RETIRED. The retirement is a signed call
+# (JDM + SHINOB1 + HIKARI, 2026-07-08) recorded immediately above, and the dead event value
+# is deliberate, not drift. Migrating it to a live event would REVIVE a rule three people
+# agreed to retire, in a diff that reads as a correctness fix. Reason 4 above is the one that
+# matters: `db.collection('literal')` fires on every legitimate access, so arming this stub
+# turns it into a noise generator — the opposite of the immune system's job.
+#
+# THE INSTRUMENTS DISAGREE ABOUT THIS FILE, and that is the only real defect here:
+#   · hookify/rule-liveness.test.py  -> bucket `dormant-declared`  (honors ALLOW-DORMANT)
+#   · scripts/hookify-corpus-census.py (toMachina) -> bucket `vacuous-event` (does NOT)
+# Phase 2's G3 requires the vacuous-event bucket to be EMPTY, so measured by the census that
+# gate can never go green while this correctly-retired file exists. The fix belongs in the
+# census, not here: teach it the ALLOW-DORMANT marker the other instrument already honors.
+# Raised to the PM rather than done in this lane, because the census is TRK-HOOK-104's
+# artifact and editing another ticket's live instrument mid-flight is how two seats produce
+# one broken denominator.
+#
+# DO NOT "FIX" THE EVENT VALUE. If you are reading this because a linter flagged it, the
+# linter is the thing to change.
 # RETIRED 2026-07-08 (megazord · §2d dormant-cluster sweep · JDM + SHINOB1 + HIKARI call).
 # Kept as a DORMANT DOCUMENTED REFERENCE (enabled:false), NOT deleted — deleting would lose the
 # concept + the known-collections seed below. Renamed to the hookify.* prefix so it shows honestly
