@@ -188,6 +188,93 @@ SB_CASES = [
 ]
 
 
+# ── Part 2b (hit-Enter / prompt tier behavioural) ───────────────────────────
+# TRK-HOOK-102 widened Part 2b from 1 rule to all 12. Those new assertions get the same
+# treatment as every other one in this file: watched failing before they are believed.
+#
+# The quiet case (p2-clean) is load-bearing again. Part 2b now runs FIVE neutral controls
+# against every rule and derives a positive probe from each rule's own pattern — plenty of
+# surface to false-fire on. A suite that only proves the failing direction would not notice
+# Part 2b calling every healthy rule broken.
+#
+#   p2-clean ....... unique trigger, matches no neutral control ...... MUST BE QUIET
+#   p2-dropped ..... one condition on a field the dispatcher drops ... MUST FAIL
+#   p2-allbad ...... every condition dropped -> rule skipped .......... MUST FAIL
+#   p2-misfire ..... pattern claims an ordinary working request ....... MUST FAIL
+P2_CASES = [
+    ("p2-clean", "zzq-unique-trigger-alpha", False,
+     "unique trigger, quiet on all neutral controls — must not false-fire"),
+    ("p2-misfire", "status of the deploy", True,
+     "claims an ordinary request — a live misfire on real traffic"),
+]
+
+
+def run_part2b():
+    """Exercise the widened prompt-tier suite against synthetic rules."""
+    with tempfile.TemporaryDirectory(prefix="ronin-mutation-p2-") as tmp:
+        for stem, pat, _mf, _why in P2_CASES:
+            with open(os.path.join(tmp, f"hookify.{stem}.local.md"), "w",
+                      encoding="utf-8") as fh:
+                fh.write(f"---\nname: {stem}\nenabled: true\nevent: prompt\naction: warn\n"
+                         f"conditions:\n  - field: user_prompt\n    operator: regex_match\n"
+                         f"    pattern: {pat}\n---\n\nSynthetic prompt rule.\n")
+        # one condition dropped (file_path is not in the dispatcher's accepted fields),
+        # one kept -> the AND silently loses a term and the rule gets more permissive
+        with open(os.path.join(tmp, "hookify.p2-dropped.local.md"), "w",
+                  encoding="utf-8") as fh:
+            fh.write("---\nname: p2-dropped\nenabled: true\nevent: prompt\naction: warn\n"
+                     "conditions:\n  - field: file_path\n    operator: regex_match\n"
+                     "    pattern: services/\n  - field: user_prompt\n"
+                     "    operator: regex_match\n    pattern: zzq-unique-trigger-beta\n"
+                     "---\n\nSynthetic prompt rule.\n")
+        # every condition dropped -> `if not conds: continue` skips the rule outright
+        with open(os.path.join(tmp, "hookify.p2-allbad.local.md"), "w",
+                  encoding="utf-8") as fh:
+            fh.write("---\nname: p2-allbad\nenabled: true\nevent: prompt\naction: warn\n"
+                     "conditions:\n  - field: file_path\n    operator: regex_match\n"
+                     "    pattern: services/\n---\n\nSynthetic prompt rule.\n")
+
+        expected = [c[0] for c in P2_CASES] + ["p2-dropped", "p2-allbad"]
+        written = sorted(f for f in os.listdir(tmp) if f.endswith(".local.md"))
+        if len(written) != len(expected):
+            print(f"FAIL: prompt-tier mutation did not land — "
+                  f"{len(written)}/{len(expected)}")
+            return 1
+        print(f"prompt-tier mutation landed: {len(written)} synthetic rule(s)")
+
+        proc = subprocess.run([sys.executable, INSTRUMENT, tmp],
+                              capture_output=True, text=True, timeout=300)
+        out = _completed_or_none(proc, "-- ALL event: prompt rules")
+
+    if out is None:
+        return 1
+    # Scope to Part 2b's own section: Part 5 also evaluates these files and would flag the
+    # dropped-field rules for its own reasons. Counting its verdicts here would prove Part 5
+    # works twice and Part 2b not at all.
+    seg = out.split("-- ALL event: prompt rules", 1)[1].split("=== Part 3", 1)[0]
+    flagged = set()
+    for line in seg.splitlines():
+        m = re.search(r"FAIL\s+hookify\.(p2-[a-z-]+)\.local\.md", line)
+        if m:
+            flagged.add(m.group(1))
+
+    print(f"\nPart 2b flagged: {sorted(flagged) or 'nothing'}\n")
+    bad = 0
+    checks = list(P2_CASES) + [
+        ("p2-dropped", None, True, "one condition dropped -> AND silently widened"),
+        ("p2-allbad", None, True, "all conditions dropped -> dispatcher skips the rule"),
+    ]
+    for stem, _pat, must_fail, why in checks:
+        hit = stem in flagged
+        if hit == must_fail:
+            print(f"  pass  {stem}: {'flagged' if must_fail else 'quiet'} as required — {why}")
+        else:
+            bad += 1
+            print(f"  FAIL  {stem}: expected {'FLAG' if must_fail else 'QUIET'}, "
+                  f"got {'FLAG' if hit else 'QUIET'} — {why}")
+    return 1 if bad else 0
+
+
 def run_part6():
     """Build a synthetic scope-bound tier next to a real copy of enforce.sh, and assert."""
     real_enforce = os.path.join(HERE, "enforce.sh")
@@ -301,6 +388,9 @@ def main():
             bad += 1
             print(f"  FAIL  {stem}: expected {'FLAG' if must_fail else 'QUIET'}, "
                   f"got {'FLAG' if hit else 'QUIET'} — {why}")
+
+    print("\n--- Part 2b (hit-Enter / prompt tier behavioural) ---")
+    bad += run_part2b()
 
     print("\n--- Part 6 (scope-bound / enforce.sh tier) ---")
     bad += run_part6()
