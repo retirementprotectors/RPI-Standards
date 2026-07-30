@@ -65,9 +65,99 @@ RPI_APPROVAL_HUB_CHECK="$VALID"   run 0 "CLASS A wire/execute WITH valid Approva
 RPI_APPROVAL_HUB_CHECK="$INVALID" run 2 "CLASS A wire/execute with INVALID sig (forged approval)"  "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')"
 rm -f "$VALID" "$INVALID"
 
+# ── LIVE DISPATCH CHAIN (TRK-HOOK-211 · ronin/W1 · 2026-07-30) ───────────────────
+# Everything above calls $CHECK DIRECTLY. That proves the CHECK. It does not prove the
+# CHAIN, and those are not the same claim: a sibling scope-bound gate passed its own
+# direct-call review while its dispatcher never reached it, because the loader resolved
+# one directory level off. A green check behind a broken dispatcher is vacuous.
+# So: re-run the decisive cases THROUGH enforce.sh, the way a real tool call arrives.
+ENFORCE="$HERE/../enforce.sh"
+
+# run_chain <expected-exit> <name> <tool_json> [env assignments...]
+# Drives the dispatcher, and — the point of this helper — captures a per-run violation
+# log so we can tell "the check ran and ALLOWED" apart from "the check was never reached."
+# Both exit 0. Only the log distinguishes them. Never trust the null without it.
+CHAIN_LOG=""
+run_chain() {
+  local want="$1" name="$2" json="$3"; shift 3
+  local got=0
+  CHAIN_LOG="$(mktemp)"
+  env "$@" HOOKIFY_SCOPE_BOUND_DIR="$HERE" HOOKIFY_VIOLATION_LOG="$CHAIN_LOG" \
+    bash "$ENFORCE" <<<"$json" >/dev/null 2>&1 || got=$?
+  if [[ "$got" -eq "$want" ]]; then echo "  PASS  $name"; else echo "  FAIL  $name (want exit $want, got $got)"; fail=$((fail+1)); fi
+}
+# assert_log <grep-pattern> <name> — the positive control on the run just performed.
+assert_log() {
+  if grep -q "$1" "$CHAIN_LOG" 2>/dev/null; then echo "  PASS  $2"; else echo "  FAIL  $2 (no matching record in violation log)"; fail=$((fail+1)); fi
+  rm -f "$CHAIN_LOG"
+}
+
+RULE="block-case-money-move-without-approval"
+
+if [[ ! -r "$ENFORCE" ]]; then
+  echo "  FAIL  dispatcher $ENFORCE missing/unreadable — the chain is untestable, which is itself the defect"
+  fail=$((fail+1))
+else
+  echo "== LIVE CHAIN: tool call -> enforce.sh -> pre-case-money-move -> this check =="
+  export RPI_CASE_SEAT="VOLTRON-LINDA-PIERCE"
+  unset RPI_APPROVAL_HUB_CHECK
+
+  run_chain 2 "CHAIN CLASS A — money-exec reaches the gate and is refused" "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')"
+  assert_log "\"rule\":\"${RULE}\"" "  ^ log attributes the refusal to THIS rule, by name"
+
+  run_chain 2 "CHAIN CLASS B — external send refused"                      "$(j_tool 'mcp__rpi-workspace__gmail_send_email')"
+  run_chain 2 "CHAIN CLASS C — custodian-portal interaction refused"       "$(j_tool 'mcp__plugin_playwright_playwright__browser_click')"
+  run_chain 2 "CHAIN CLASS D — money-instruction write refused"            "$(j_bash "$FS_WRITE")"
+
+  # THE POSITIVE CONTROL. A read verb must exit 0 *having been evaluated* — the ::passed
+  # record is the proof. Without this assertion, an exit 0 from a dispatcher that never
+  # dispatched reads identically, and that is the silent failure this scope exists to catch.
+  run_chain 0 "CHAIN read verb — allowed"                                  "$(j_tool 'mcp__plugin_playwright_playwright__browser_navigate')"
+  assert_log "\"rule\":\"${RULE}::passed\"" "  ^ POSITIVE CONTROL: the allow came from an EVALUATION, not a skip"
+
+  echo "== LIVE CHAIN: the green — a valid release must actually release =="
+  V2="$(mktemp)"; printf '#!/usr/bin/env bash\nexit 0\n' > "$V2"; chmod +x "$V2"
+  I2="$(mktemp)"; printf '#!/usr/bin/env bash\nexit 1\n' > "$I2"; chmod +x "$I2"
+  run_chain 0 "CHAIN GREEN — CLASS A released by a valid grant"            "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')" RPI_APPROVAL_HUB_CHECK="$V2"
+  assert_log "\"rule\":\"${RULE}::passed\"" "  ^ the green is an EVALUATED pass, not an unreached gate"
+  run_chain 2 "CHAIN — forged grant still refused"                         "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')" RPI_APPROVAL_HUB_CHECK="$I2"
+  run_chain 2 "CHAIN — absent helper fails CLOSED"                         "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')" RPI_APPROVAL_HUB_CHECK=/nonexistent/approval-hub-verify.sh
+  rm -f "$V2" "$I2"
+
+  echo "== LIVE CHAIN: non-case seat is still N/A through the dispatcher =="
+  unset RPI_CASE_SEAT
+  run_chain 0 "CHAIN — money-exec outside a case seat is allowed"          "$(j_bash 'curl -X POST https://tm-api/api/voltron/wire/execute')"
+  export RPI_CASE_SEAT="VOLTRON-LINDA-PIERCE"
+fi
+
+# ── PINNED DEFECT — F1: the production release path is currently unreachable ──────
+# Reported to HIKARI + SHINOB1 2026-07-30 and deliberately NOT fixed here: fixing it means
+# building MEGAZORD's Approval-Hub validator, which is outside this file's boundary.
+#
+# The green above is real, but reachable ONLY because the test supplies a release helper.
+# On this box the DEFAULT helper does not exist, so in production every money action from
+# a case seat is denied with no achievable release. That is intentional fail-closed
+# posture — and it is also an always-red gate, the state that gets forced past until the
+# fleet learns that gates are noise.
+#
+# So it is asserted as PRESENT and fails LOUDLY the moment it stops being true. When the
+# validator lands this test goes red on purpose: that is the signal to re-verify the green
+# against the REAL validator rather than a stub, and then retire this block. A limit that
+# is declared cannot rot into a silent regression; a limit left in a comment always does.
+echo "== PINNED: F1 — default Approval-Hub validator absent (always-red window) =="
+DEFAULT_HELPER="$HOME/.claude/hooks/approval-hub-verify.sh"
+if [[ ! -x "$DEFAULT_HELPER" ]]; then
+  echo "  PASS  F1 still PRESENT — no default validator, so the release path is unreachable in production (expected today)"
+else
+  echo "  FAIL  F1 RESOLVED — a default Approval-Hub validator now exists at $DEFAULT_HELPER."
+  echo "        This is GOOD NEWS and a REQUIRED ACTION: re-verify the green against the real"
+  echo "        validator, confirm a forged grant is still refused, then delete this pinned block."
+  fail=$((fail+1))
+fi
+
 echo ""
 if [[ "$fail" -eq 0 ]]; then
-  echo "✅ pre-case-money-move self-test PASSED — HOLDS the injected money surface, PASSES legit case work + a valid release, BLOCKS a forged sig."
+  echo "✅ pre-case-money-move self-test PASSED — HOLDS the injected money surface, PASSES legit case work + a valid release, BLOCKS a forged sig, and the LIVE CHAIN (enforce.sh -> pre-case-money-move -> check) is demonstrated in BOTH directions with a positive control."
   exit 0
 else
   echo "❌ pre-case-money-move self-test FAILED — $fail case(s). Gate NOT safe to arm."
