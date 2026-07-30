@@ -193,6 +193,53 @@ if [ $RC -eq 1 ] && grep -q "routed_items:    CANNOT-RUN" <<<"$OUT"; then
 else
   bad "CANNOT-RUN from the routing check was not treated as a block"
 fi
+rm -f "$FAKE_ENUM"
+
+# ⚠️ RONIN-HOOKIFY-W3 (audit of this PR, 2026-07-30): the three assertions above all use
+# "shinob1-disco-sub-hookify-overhaul-001", whose parent_ack is ALREADY false — so rc=1 is
+# guaranteed before routing is even consulted. Deleting `&& "$ROUTING_CLEAR" == "true"` from
+# the gate's final condition still passes all of them; W3 diffed the mutant against this PR
+# head and confirmed it. Section 6 above proves routing REPORTS. It does not prove routing
+# GATES. This isolating pair is that proof: force the other two halves TRUE with a stub
+# loader (the override the rest of this suite already relies on, per case 0's own banner),
+# and hold routing as the ONLY variable across a clear/routed pair.
+echo
+echo "=== 6b. ISOLATION — routing is the ONLY variable, both other halves forced TRUE ==="
+FAKE_LOADER=$(mktemp -d)/fake-forge-state-load.mjs
+printf '#!/usr/bin/env node\nconsole.log(JSON.stringify({exit_gate:{disco_pr_merged:true,parent_ack:true}}));\nprocess.exit(0);\n' > "$FAKE_LOADER"
+ISO_SESSION="ronin-disco-sub-trkhook219isolationtest"  # prefix must have NO hyphens (^[a-zA-Z0-9_]+-disco-sub-)
+
+FAKE_ENUM=$(mktemp -d)/fake-enumerate.mjs
+printf '#!/usr/bin/env node\nconsole.log("STUB: nothing routed");\nprocess.exit(0);\n' > "$FAKE_ENUM"
+OUT=$(FORGE_STATE_LOAD="$FAKE_LOADER" SEAT_ROUTED_ENUMERATE="$FAKE_ENUM" \
+  timeout 120 bash "$CHECK" "$ISO_SESSION" 2>&1); RC=$?
+if [ $RC -eq 0 ]; then
+  ok "both halves TRUE + routing CLEAR -> rc=0 (allowed) — the affirmative path still works"
+else
+  bad "both halves TRUE + routing CLEAR should allow the kill, got rc=$RC"
+fi
+
+printf '#!/usr/bin/env node\nconsole.error("STUB: 1 open item routed to this seat");\nprocess.exit(1);\n' > "$FAKE_ENUM"
+OUT=$(FORGE_STATE_LOAD="$FAKE_LOADER" SEAT_ROUTED_ENUMERATE="$FAKE_ENUM" \
+  timeout 120 bash "$CHECK" "$ISO_SESSION" 2>&1); RC=$?
+if [ $RC -eq 1 ]; then
+  ok "both halves TRUE + routing ROUTED -> rc=1 (BLOCKED) — routing alone flips an otherwise-open gate"
+else
+  bad "MUTATION-CATCHING CASE FAILED: with both other halves TRUE, routing=routed did not block " \
+      "(rc=$RC) — routing is decorative, not gating. This is the exact defect W3 found."
+fi
+rm -rf "$(dirname "$FAKE_LOADER")" "$(dirname "$FAKE_ENUM")"
+
+# W3's second finding, unrelated to the mutant: a PLAIN invocation with no FORGE_STATE_LOAD
+# override still exits 0 at the case-0 loader-path defect and never reaches ANY of this —
+# not a regression from this PR, but this new input is INERT in production until that
+# resolution lands. Declaring it here too so nobody reads a green run as "routing enforced
+# live"; case 0 above already pins the same defect for the merge/parent_ack halves.
+echo
+echo "=== 6c. DECLARED LIMIT — routing is inert in production until the case-0 defect resolves ==="
+ok "LIMIT: with the default (unrepaired) loader path, this gate never reaches the routing check
+        either — it exits 0 at the same guard case 0 pins. Wiring routing does not make it live;
+        that is a separate, already-declared defect (W3, PR #120 audit)"
 rm -rf "$(dirname "$FAKE_ENUM")"
 
 echo
