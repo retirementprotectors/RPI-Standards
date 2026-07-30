@@ -35,7 +35,27 @@ set -euo pipefail
 # Allow override of the ENF-006 CLI location for tests.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT_GUESS="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
-FORGE_STATE_LOAD="${FORGE_STATE_LOAD:-${REPO_ROOT_GUESS}/scripts/forge-state-load.mjs}"
+#
+# TRK-HOOK-211 (2026-07-30): FORGE_STATE_LOAD was defined here and tested as the
+# guard on the active-sub branch below — but that branch never invoked it. It
+# calls HOOKIFY_FORGE_STATE_LIST, a different script, auto-defaulted just below.
+# The guard therefore tested one artifact and the body depended on another.
+#
+# Worse, the tested path could never exist: REPO_ROOT_GUESS resolves to
+# ~/Projects (three levels up from scope-bound/), so the guard looked for
+# ~/Projects/scripts/forge-state-load.mjs. The real loader lives in the toMachina
+# repo — a DIFFERENT repository — so no number of `..` from here can reach it.
+# `[[ -f ]]` was permanently false, ACTIVE_FOUND permanently 0, and the branch
+# could only ever block. VACUOUS RED: a gate with no achievable pass condition.
+#
+# Measured before/after (see check_pre_slack_post.test.sh, cases GREEN/RED):
+# with an active sub genuinely present the check still exited 1; removing this
+# vestigial guard is the single variable that makes it exit 0.
+#
+# NOTE for whoever fixes check_pre_tmux_kill.sh: it defines the same variable
+# from the same wrong REPO_ROOT_GUESS, but it genuinely `node`-invokes it. Its
+# fix is to REPOINT the path, not to delete the guard. Do not copy this change
+# across — that file is another seat's boundary.
 
 # Phase 5 partial 5.4 / SHINOB1-FORGE-STATE-LIST-001:
 # Auto-default the list-script path to toMachina/scripts/forge-state-list.mjs
@@ -234,7 +254,10 @@ WINDOW_SEC="${HOOKIFY_SPAWN_WINDOW_SEC:-3600}"
 # we fall back to "no active sub" → block.
 
 ACTIVE_FOUND=0
-if command -v node >/dev/null 2>&1 && [[ -f "$FORGE_STATE_LOAD" ]]; then
+# TRK-HOOK-211: guard on the artifact this branch actually invokes (the list
+# script, checked for -x just below), not on an unrelated loader that was never
+# called from here. `node` is still required — the list script is a .mjs.
+if command -v node >/dev/null 2>&1; then
   # Query the dispatcher-level helper (ENF-006). The CLI as specified takes a
   # specific session name; for the list-probe variant we accept a wildcard via
   # an opt-in env (HOOKIFY_FORGE_STATE_LIST) the deployment can wire up later.
