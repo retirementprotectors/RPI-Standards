@@ -65,6 +65,65 @@ fi
 PR_MERGED=$(echo "$STATE_JSON" | jq -r '.exit_gate.disco_pr_merged // false' 2>/dev/null)
 PARENT_ACK=$(echo "$STATE_JSON" | jq -r '.exit_gate.parent_ack // false' 2>/dev/null)
 
+# ── TRK-HOOK-210 (ronin, 2026-07-30) — READ REALITY FOR THE MERGE HALF ──────────────────
+#
+# WHAT WAS BROKEN. `exit_gate.disco_pr_merged` is a FLAG, and five independent things stand
+# between that flag and the truth it claims to report:
+#   1. parent_ack flips only on a Slack reaction_added — that transport is decommissioned
+#   2. disco_pr_merged flips only on a GitHub webhook to POST /api/forge/exit-gate
+#   3. the exit_gate OBJECT is never seeded on the launcher path — only seedRunState creates
+#      it, so the doc exists and is silent, and `// false` DEFAULTS rather than reads
+#   4. exit-gate.ts:37 derives the session from the PR branch via ^(\w+)-disco-sub-(\S+)$ —
+#      \w+ cannot match a slash, and the fleet's convention is <warrior>/<TICKET>. Measured
+#      against every branch this contract used: 0 of 7 match. It is a convention mismatch,
+#      not a typo, so no better regex fixes it.
+#   5. parent_ack_channel is the EMPTY STRING — the ack has no destination even if the
+#      transport returned
+#
+# Every one of those is a mechanism that REPORTS reality instead of BEING it. So this half
+# now asks GitHub directly. The flag is kept as a FALLBACK, never as the primary.
+#
+# RESOLUTION IS BY SCOPE, NOT BY BRANCH NAME — break 4 is unfixable at the regex level, so
+# the branch is not consulted at all. The session's scope slug is matched against the
+# `scope:` line in merged PR bodies, case-insensitively.
+#
+# ⚠️ DECLARED LIMIT: scope → PR is ONE-TO-MANY. This verifies "a merged PR carrying this
+# scope exists", NOT "the disco PR specifically". The satisfying PR is NAMED in the output so
+# the verdict is auditable rather than asserted. Narrowing it further needs a scope→PR
+# registry that does not exist today.
+#
+# "COULD NOT LOOK" IS NOT "NOT MERGED" — inherited from dojo-warriors/scripts/death-gate.sh
+# (OB1-DEATHGATE-REPO-RESOLVE-001), which documents three observed failure modes from getting
+# this wrong, including a FALSE PASS where "the guard reads green precisely when it has
+# verified nothing." Cited, not copied: that script performs a close, this one is a predicate.
+#
+# THIS DOES NOT TIGHTEN THE GATE. Every tooling gap falls back to the pre-existing flag
+# behaviour, so a box without gh or without network behaves exactly as it did before. Fixing
+# a gate is not a licence to make it stricter on a path nobody asked about.
+GATE_REPO="${FORGE_DISCO_REPO:-retirementprotectors/toMachina}"
+SCOPE_SLUG="${SESSION_NAME#*-disco-sub-}"
+PR_EVIDENCE=""
+PR_LOOKUP="not attempted"
+
+if [[ "$PR_MERGED" != "true" && -n "$SCOPE_SLUG" ]] && command -v gh >/dev/null 2>&1; then
+  set +e
+  MATCHED=$(timeout 25 gh pr list --repo "$GATE_REPO" --state merged --limit 40 \
+      --json number,body,mergedAt \
+      -q "[.[] | select(.body != null and (.body|test(\"scope:.*${SCOPE_SLUG}\";\"i\")))] \
+          | sort_by(.mergedAt) | last | \"#\(.number) merged \(.mergedAt)\"" 2>/dev/null)
+  GH_RC=$?
+  set -e
+  if [[ $GH_RC -ne 0 ]]; then
+    PR_LOOKUP="COULD NOT LOOK (gh rc=${GH_RC}) — this is not 'your PR is unmerged'"
+  elif [[ -n "$MATCHED" && "$MATCHED" != "null" ]]; then
+    PR_MERGED="true"
+    PR_EVIDENCE="$MATCHED"
+    PR_LOOKUP="verified live in ${GATE_REPO}"
+  else
+    PR_LOOKUP="no merged PR in ${GATE_REPO} carries scope '${SCOPE_SLUG}'"
+  fi
+fi
+
 if [[ "$PR_MERGED" == "true" && "$PARENT_ACK" == "true" ]]; then
   exit 0
 fi
@@ -73,15 +132,28 @@ cat >&2 <<EOF
 BLOCKED: tmux kill-session requires exit gate to be fully open.
 
 Current gate state for ${SESSION_NAME}:
-  disco_pr_merged: ${PR_MERGED}
+  disco_pr_merged: ${PR_MERGED}${PR_EVIDENCE:+  (VERIFIED LIVE: ${PR_EVIDENCE})}
+      lookup: ${PR_LOOKUP}
   parent_ack:      ${PARENT_ACK}
 
 To open the gate:
-  1. PR must be merged to main (GitHub webhook auto-flips disco_pr_merged
-     via POST /api/forge/exit-gate)
-  2. Parent CXO must ✅-react to your completion post in bilateral channel
-     (Slack reaction_added listener auto-flips parent_ack
-     via /api/events/slack)
+  1. A PR carrying scope '${SCOPE_SLUG}' must be MERGED in ${GATE_REPO}.
+     This is now read from GitHub directly (TRK-HOOK-210); the Firestore flag is
+     only a fallback. If the lookup line above says COULD NOT LOOK, the gate did
+     not fail your PR — it failed to reach GitHub. Those are different problems.
+
+  2. parent_ack — ⚠️ READ THIS BEFORE CHASING IT.
+     PARENT ACK IS STILL REQUIRED BY DOCTRINE. This GATE cannot VERIFY it, and the
+     two statements are different. There is currently NO live signal a parent can
+     emit that this check could read: the Slack transport is decommissioned,
+     parent_ack_channel is empty, formal GitHub approvals are structurally
+     impossible (the fleet is one identity), and the attestation convention appears
+     on roughly 1 merged PR in 50 and is SELF-DECLARED TEXT by its own header
+     (.github/workflows/verify-signer-not-builder.yml:44-52 — "THIS CHECK'S PASS
+     RATE IS NOT EVIDENCE THAT signer≠builder IS ENFORCED").
+     Defining a signal a parent can actually EMIT is TRK-HOOK-219 (ARCH, SHINOB1).
+     Until it exists, get your parent's ACK the way you already do — this gate just
+     stops pretending it checked.
 
 Do NOT kill this session until both are true.
 ZRD-SCOPE-005-001 / TRK-14758 Death-Gate Protocol.
