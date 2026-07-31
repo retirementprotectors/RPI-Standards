@@ -106,7 +106,8 @@ check("violation snippet quotes the hub directive text, not empty",
       "do the thing" in out, True)
 
 # ---------------------------------------------------------------------------------
-# F · TIE MARK_HUB TO ITS SOURCE OF TRUTH (RONIN-HOOKIFY-W8, audit of RPI#123)
+# F · TIE MARK_HUB TO ITS SOURCE OF TRUTH (RONIN-HOOKIFY-W8, audit of RPI#123;
+#     tightened per RONIN-HOOKIFY-W5's audit of the dojo-warriors twin, dw#446)
 #
 # THE ORIGINAL DEFECT, ONE TURN LATER. This detector was blind because it hardcoded a
 # delivery format that was later retired. Fixing the hardcode without tying it to its
@@ -116,7 +117,20 @@ check("violation snippet quotes the hub directive text, not empty",
 # fixtures agree with each other while both could silently diverge from reality. If the
 # watcher's template changes, this suite stays 13/13 green and cannot see it.
 #
-# So this asserts the INVARIANT CORE PHRASE — the literal text surrounding the
+# ⛔ W5's finding on the dw#446 twin of this section: restating the invariant text as
+# two NEW string literals here still leaves MARK_HUB itself — the field that DECIDES
+# detection — tied to nothing. Rename MARK_HUB and its fixtures together (a careless
+# "update the constant" edit, the shape the edit actually takes) and this assertion
+# stayed green while the detector went blind, because INVARIANT_PREFIX/SUFFIX were
+# never connected to MARK_HUB, only to the watcher.
+#
+# So the invariant text is now DERIVED from MARK_HUB — imported as a constant, not a
+# function, so this stays true to the file's own rule (drive behaviour through stdin,
+# never through an imported function) while still closing the gap. If MARK_HUB drifts,
+# the derived prefix/suffix drift with it and stop matching the (unchanged) watcher —
+# which is exactly the recurrence this assertion exists to catch.
+#
+# This asserts the INVARIANT CORE PHRASE — the literal text surrounding the
 # interpolated ${senderLabel} — still appears verbatim in the live watcher source.
 # FAILS LOUD (not skipped) if the source file cannot be found at all: a failed read is
 # an error, not evidence the invariant holds. Declared in prose gets re-litigated;
@@ -127,8 +141,20 @@ WATCHER_CANDIDATES = [
                  "dojo-deliver-watcher.mjs"),
     os.path.expanduser("~/Projects/dojo-warriors/mdj-agent/scripts/dojo-deliver-watcher.mjs"),
 ]
-INVARIANT_PREFIX = "[Dojo DM from ${senderLabel}"
-INVARIANT_SUFFIX = "— answer IN THE HUB, NOT Slack]"
+
+import importlib.util
+_spec = importlib.util.spec_from_file_location("_detector_under_test", DETECTOR)
+_detector = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_detector)
+MARK_HUB = _detector.MARK_HUB  # the field that DECIDES detection — not a restated copy
+
+_before, _sep, _after = MARK_HUB.partition("JDM")
+if not _sep:
+    fail_msg = f"MARK_HUB {MARK_HUB!r} does not contain 'JDM' — cannot derive the invariant"
+    FAILS.append(f"MARK_HUB source tie: {fail_msg}")
+    print(f"  FAIL  MARK_HUB source tie: {fail_msg}")
+INVARIANT_PREFIX = _before + "${senderLabel}"
+INVARIANT_SUFFIX = _after.strip()
 
 watcher_path = next((p for p in WATCHER_CANDIDATES if os.path.isfile(p)), None)
 if watcher_path is None:
