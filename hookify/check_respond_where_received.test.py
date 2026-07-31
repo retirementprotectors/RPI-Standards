@@ -105,13 +105,50 @@ out = run([user(HUB_DIRECTIVE_JDM), assistant_text("no reply")])
 check("violation snippet quotes the hub directive text, not empty",
       "do the thing" in out, True)
 
+# ---------------------------------------------------------------------------------
+# F · TIE MARK_HUB TO ITS SOURCE OF TRUTH (RONIN-HOOKIFY-W8, audit of RPI#123)
+#
+# THE ORIGINAL DEFECT, ONE TURN LATER. This detector was blind because it hardcoded a
+# delivery format that was later retired. Fixing the hardcode without tying it to its
+# source repeats the exact failure shape: MARK_HUB is a copy of formatDelivery()'s
+# output in dojo-deliver-watcher.mjs — a different repo, a different language — and
+# every fixture above builds its directive from THIS FILE's own constant. Detector and
+# fixtures agree with each other while both could silently diverge from reality. If the
+# watcher's template changes, this suite stays 13/13 green and cannot see it.
+#
+# So this asserts the INVARIANT CORE PHRASE — the literal text surrounding the
+# interpolated ${senderLabel} — still appears verbatim in the live watcher source.
+# FAILS LOUD (not skipped) if the source file cannot be found at all: a failed read is
+# an error, not evidence the invariant holds. Declared in prose gets re-litigated;
+# asserted in a test it blocks the re-litigation (TRK-HOOK-237's own standing rule).
+print("\n=== F · MARK_HUB is tied to dojo-deliver-watcher.mjs, not just to itself ===")
+WATCHER_CANDIDATES = [
+    os.path.join(HERE, "..", "..", "dojo-warriors", "mdj-agent", "scripts",
+                 "dojo-deliver-watcher.mjs"),
+    os.path.expanduser("~/Projects/dojo-warriors/mdj-agent/scripts/dojo-deliver-watcher.mjs"),
+]
+INVARIANT_PREFIX = "[Dojo DM from ${senderLabel}"
+INVARIANT_SUFFIX = "— answer IN THE HUB, NOT Slack]"
+
+watcher_path = next((p for p in WATCHER_CANDIDATES if os.path.isfile(p)), None)
+if watcher_path is None:
+    fail_msg = ("source file not found at any candidate path — CANNOT VERIFY, "
+                "not treated as a pass")
+    FAILS.append(f"MARK_HUB source tie: {fail_msg}")
+    print(f"  FAIL  MARK_HUB source tie: {fail_msg}")
+else:
+    src = open(watcher_path, encoding="utf-8").read()
+    tied = INVARIANT_PREFIX in src and INVARIANT_SUFFIX in src
+    check(f"invariant core phrase found verbatim in {os.path.basename(watcher_path)}",
+          tied, True)
+
 print()
 if FAILS:
     print(f"FAILED — {len(FAILS)} case(s):")
     for f in FAILS:
         print(f"  - {f}")
     sys.exit(1)
-print(f"PASSED — {5 + 2 + 1 + 4 + 1} assertions. "
+print(f"PASSED — {5 + 2 + 1 + 4 + 1 + 1} assertions. "
       "Slack era unchanged, hub era now caught, dead remedy no longer accepted, "
-      "scope not widened past JDM directives.")
+      "scope not widened past JDM directives, MARK_HUB tied to its source.")
 sys.exit(0)
