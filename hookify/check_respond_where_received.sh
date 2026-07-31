@@ -30,19 +30,29 @@ VERDICT="$(printf '%s' "$TRANSCRIPT" | python3 "$_PY" 2>/dev/null)"
 
 if [[ "$VERDICT" == VIOLATION* ]]; then
   SNIP="${VERDICT#VIOLATION$'\t'}"
+  # TRK-HOOK-238 — the remedy below used to name ONLY mcp__slack__slack_post_message.
+  # Slack is decommissioned; a warrior following that instruction literally could not
+  # perform it. The live remedy is the hub reply the directive's own delivery footer
+  # already printed. Slack is kept in the text as a historical note only — a
+  # transcript from before the cutover can still trip this same detector.
   cat >&2 <<MSG
 ::warn-respond-where-you-receive::
 🛑 RULE #1 VIOLATION — "RESPOND WHERE YOU RECEIVE."
 
-JDM sent you a directive and you did NOT post your response back to your
-bilateral channel — you answered console-only. That makes JDM chase your
-response to another surface, which is the #1 non-negotiable rule.
+JDM sent you a directive and you did NOT reply back where it arrived — you
+answered console-only. That makes JDM chase your response to another surface,
+which is the #1 non-negotiable rule.
 
   Directive: ${SNIP}
 
-FIX IT NOW, before you stop: post your Acknowledge | Execute | Report to your
-own bilateral Slack channel (mcp__slack__slack_post_message). Every JDM
-directive gets its ACK, its progress, AND its final report IN that bilateral.
+FIX IT NOW, before you stop: post your Acknowledge | Execute | Report using
+the reply command printed in the directive's own delivery footer — a
+\`node .../dojo-reply.mjs <thread> <you> <owner> "<reply>"\` call. Every JDM
+directive gets its ACK, its progress, AND its final report there.
+
+(If this fired against a PRE-CUTOVER transcript carrying the old Slack-dispatch
+mark, the historical remedy was mcp__slack__slack_post_message — that channel
+is decommissioned now and this note does not apply to a live session.)
 
 (Cross-warrior tmux coordination is exempt — this only fires on JDM directives,
 never warrior-to-warrior traffic.)
