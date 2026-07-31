@@ -80,6 +80,18 @@ mdj-agent through a Slack Events API webhook, which parsed and queued per warrio
 was idle at the prompt. That entire path is dead. The queue/watchdog *mechanism* survives
 in the Hub pipeline; only the Slack ingress and egress are gone.
 
+### Access Model
+
+| Warrior | MCP Access | Firestore | Git | Portal |
+|---------|-----------|-----------|-----|--------|
+| SHINOB1 (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| 2HINOBI (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| MUSASHI (tmux) | Full (8 MCPs) | Read/Write | Yes | Via CLI |
+| RONIN (CCSDK) | SA key auth | Read/Write | Yes (PR only) | No |
+| RAIDEN (CCSDK) | SA key auth | Read | No | No |
+| VOLTRON (CCSDK) | SA key auth | Read (client data) | No | Yes — only via toMachina Platform |
+
+---
 ## Warrior Types
 
 | Type | Interface | Persistence | Rebuild Required |
