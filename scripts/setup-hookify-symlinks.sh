@@ -16,6 +16,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STANDARDS_ROOT="$(dirname "$SCRIPT_DIR")"
 PROJECTS_ROOT="$(dirname "$STANDARDS_ROOT")"
 
+# TRK-HOOK-309 — symlink replacement must never leave the path absent. See atomic-symlink.sh.
+# shellcheck source=scripts/atomic-symlink.sh
+. "$SCRIPT_DIR/atomic-symlink.sh"
+
 # ── TRK-HOOK-306 · THE RULE SOURCE IS RESOLVED, NOT DERIVED FROM WHERE THIS FILE SITS ──
 #
 # THIS LINE USED TO READ:  HOOKIFY_DIR="$STANDARDS_ROOT/hookify"
@@ -235,7 +239,11 @@ SKIPPED=0
 echo "Setting up global hookify rules in ~/.claude/..."
 for rule in "$HOOKIFY_DIR"/hookify.*.local.md; do
   if [ -f "$rule" ]; then
-    ln -sf "$rule" "$GLOBAL_CLAUDE_DIR/"
+    # TRK-HOOK-309: atomic replace. `ln -sf` left each of the 106 global rule paths absent
+    # between unlink(2) and symlink(2) — and an absent rule file is not an error to any
+    # loader, it is a rule that silently did not match.
+    atomic_ln "$rule" "$GLOBAL_CLAUDE_DIR/$(basename "$rule")" \
+      || echo "⚠️  FAILED to install global rule link: $(basename "$rule") (left unchanged)" >&2
   fi
 done
 GLOBAL_RULE_COUNT=$(ls -1 "$GLOBAL_CLAUDE_DIR"/hookify.*.local.md 2>/dev/null | wc -l | tr -d ' ')
@@ -258,7 +266,12 @@ for project in "${PROJECTS[@]}"; do
     # Create fresh symlinks for each hookify rule
     for rule in "$HOOKIFY_DIR"/hookify.*.local.md; do
       if [ -f "$rule" ]; then
-        ln -sf "$rule" "$PROJECT_PATH/.claude/"
+        # TRK-HOOK-309: atomic replace. This site rewrites 106 links per project across the
+        # PROJECTS array — 424 per run — on a 10-minute timer via standards-mirror-sync, while
+        # 17 seats fire hooks continuously. Restarting that timer without this fix would have
+        # made the migration's own race a permanent, recurring condition.
+        atomic_ln "$rule" "$PROJECT_PATH/.claude/$(basename "$rule")" \
+          || echo "⚠️  FAILED to install rule link: $PROJECT_NAME/$(basename "$rule") (left unchanged)" >&2
       fi
     done
 
