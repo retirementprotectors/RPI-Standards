@@ -5,8 +5,21 @@
 #
 # ── WHY THIS EXISTS ───────────────────────────────────────────────────────────────────
 #
-# `ln -sf <target> <link>` is NOT atomic. It is unlink(2) followed by symlink(2), and
-# BETWEEN THOSE TWO CALLS THE PATH DOES NOT EXIST.
+# ⚠️ PREMISE CORRECTED BY MEASUREMENT, 2026-07-31. The original ticket said `ln -sf` is
+# unlink(2)+symlink(2). ON GNU COREUTILS 9.4 THAT IS FALSE — `ln -sf` creates a temporary and
+# rename(2)s it, and is already atomic. Measured: 20,000 `ln -sf` replacements -> 0 absent
+# observations; the positive control `rm -f` + `ln -s` -> 1,991,738. The observer can see a
+# window; the zero is real.
+#
+# THE MEASURED DEFECT WAS ONE SITE, NOT FOUR: setup-skills-symlinks.sh:133-134 did an EXPLICIT
+# `rm -f` before the replace, which opens the whole window itself regardless of what `ln` does.
+# That site is reached by standards-mirror-sync's 10-minute timer, so it was a real recurring
+# race on the SKILL.md links — session-start, pre-flight-check, registry-check, atlas-consult.
+#
+# THIS HELPER IS STILL WORTH SHIPPING, for reasons that are not the original one:
+#   · it makes the guarantee EXPLICIT instead of depending on an undocumented coreutils
+#     implementation detail that a version bump could silently change;
+#   · `ln -sf` is NOT atomic on every implementation — busybox and some BSDs unlink first.
 #
 # For a hookify rule link that window is not academic. The rule loaders glob a directory and
 # an absent entry is not an error — it is simply a rule that was not found. So a hook firing
