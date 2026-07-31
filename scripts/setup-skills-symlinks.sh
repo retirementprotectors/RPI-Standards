@@ -18,6 +18,10 @@ STANDARDS_ROOT="$(dirname "$SCRIPT_DIR")"
 SKILLS_DIR="$STANDARDS_ROOT/skills"
 PROJECTS_ROOT="$(dirname "$STANDARDS_ROOT")"
 
+# TRK-HOOK-309 — symlink replacement must never leave the path absent. See atomic-symlink.sh.
+# shellcheck source=scripts/atomic-symlink.sh
+. "$SCRIPT_DIR/atomic-symlink.sh"
+
 # ── TRK-HOOK-305a — REFUSE TO RUN FROM A NON-CANONICAL CHECKOUT ──────────────────────
 #
 # THE HEADER OF THIS FILE SAYS IT "Mirrors setup-hookify-symlinks.sh exactly." IT DID NOT.
@@ -109,7 +113,11 @@ for skill_dir in "$SKILLS_DIR"/*/; do
   if [ -f "$skill_md" ]; then
     target_dir="$GLOBAL_CLAUDE_DIR/skills/$skill_name"
     mkdir -p "$target_dir"
-    ln -sf "$skill_md" "$target_dir/SKILL.md"
+    # TRK-HOOK-309: atomic replace. `ln -sf` here left ~/.claude/skills/<n>/SKILL.md absent
+    # between unlink(2) and symlink(2); a skill resolved in that window is simply uninvocable,
+    # never an error.
+    atomic_ln "$skill_md" "$target_dir/SKILL.md" \
+      || echo "⚠️  FAILED to install skill link: $target_dir/SKILL.md (left unchanged)" >&2
   fi
 done
 GLOBAL_SKILL_COUNT=$(find "$GLOBAL_CLAUDE_DIR/skills" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
@@ -129,9 +137,15 @@ for project in "${PROJECTS[@]}"; do
       if [ -f "$skill_md" ]; then
         target_dir="$PROJECT_PATH/.claude/skills/$skill_name"
         mkdir -p "$target_dir"
-        # Remove and re-create symlink (idempotent)
-        rm -f "$target_dir/SKILL.md"
-        ln -sf "$skill_md" "$target_dir/SKILL.md"
+        # TRK-HOOK-309 — THE WORST OF THE FOUR SITES. This was:
+        #     rm -f "$target_dir/SKILL.md"        <- explicit unlink
+        #     ln -sf "$skill_md" "$target_dir/SKILL.md"
+        # an explicit unlink followed by a non-atomic replace: a STRICTLY WIDER absent-window
+        # than plain `ln -sf`. The old comment called the pair "idempotent", which it is —
+        # while saying nothing about the gap it opens. Idempotent and atomic are different
+        # properties, and that comment conflated them.
+        atomic_ln "$skill_md" "$target_dir/SKILL.md" \
+          || echo "⚠️  FAILED to install skill link: $target_dir/SKILL.md (left unchanged)" >&2
       fi
     done
     echo "✅ $PROJECT_NAME"
